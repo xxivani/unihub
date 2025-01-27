@@ -12,7 +12,7 @@ TODO:
 
    - Madiha Nazar mxn399@student.bham.ac.uk
    - Santhimanasa Bolimera sxb1818@student.bham.ac.uk
-   - <!-- this is a comment: delete this (and Alice and Bob), add your name and email  -->
+   - Saachi Bhagat srb391@student.bham.ac.uk
 
 3. Modify [gdpr-policy.component.html](src/main/webapp/app/gdpr-policy/gdpr-policy.component.html) to add your team number (replace X) and team members to the contact section.
 

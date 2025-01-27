@@ -10,7 +10,7 @@ TODO:
 
 2. Add your name below:
 
-   - Alice S. example@student.bham.ac.uk
+   - Madiha Nazar mxn399@student.bham.ac.uk
    - Bob S. example@student.bham.ac.uk
    - <!-- this is a comment: delete this (and Alice and Bob), add your name and email  -->
 

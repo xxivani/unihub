@@ -14,6 +14,7 @@ TODO:
    - Santhimanasa Bolimera sxb1818@student.bham.ac.uk
    - Saachi Bhagat srb391@student.bham.ac.uk
    - Shivani Siva Narayan sxs2281@student.bham.ac.uk
+   - Hao Ying hxy256@student.bham.ac.uk
 3. Modify [gdpr-policy.component.html](src/main/webapp/app/gdpr-policy/gdpr-policy.component.html) to add your team number (replace X) and team members to the contact section.
 
 <!-- this is a comment: delete lines TODO: and 1. 2. 3. once done... -->

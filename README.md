@@ -1,4 +1,3 @@
-# teamproject24 template application
 
 This application was generated using JHipster 8.7.3 for the team project 2024-2025 module at the university of Birmingham.
 

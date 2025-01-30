@@ -6,11 +6,9 @@ This application was generated using JHipster 8.7.3 for the team project 2024-20
 
 TODO:
 
-1. Add your team number above (replace X)
-
 2. Add your name below:
 
-   - Madiha Nazar mxn399@student.bham.ac.uk
+   - Madiha Nazar mxn399@student.bham.sc.uk
    - Santhimanasa Bolimera sxb1818@student.bham.ac.uk
    - Saachi Bhagat srb391@student.bham.ac.uk
    - Shivani Siva Narayan sxs2281@student.bham.ac.uk

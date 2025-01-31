@@ -1,0 +1,95 @@
+/**
+ * Enum for different user roles
+ */
+enum UserRole {
+  STUDENT,
+  COMMITTEE_MEMBER,
+  ADMIN
+}
+
+/**
+ * Enum for available themes
+ */
+enum ThemeType {
+  LIGHT,
+  DARK
+}
+
+/**
+ * Enum for available languages
+ */
+enum LanguageType {
+  ENGLISH,
+  CHINESE
+}
+
+/**
+ * User entity - base entity for authentication and settings
+ */
+entity User {
+  username String required,
+  email String required unique,
+  password String required,
+  role UserRole required
+}
+
+/**
+ * Notification entity - for storing user notifications
+ */
+entity Notification {
+  title String required,
+  message TextBlob required,
+  createdAt Instant required,
+  read Boolean required
+}
+
+/**
+ * Event entity - used for homepage events section
+ */
+entity Event {
+  name String required,
+  description TextBlob required,
+  date LocalDate required,
+  time Instant required,  
+  location String required,
+  club String required,
+  imageUrl String
+}
+
+/**
+ * User Preferences - Stores settings (dark mode, notifications, language)
+ */
+entity UserPreferences {
+  theme ThemeType required,
+  notificationsEnabled Boolean required,
+  eventRemindersEnabled Boolean required,
+  language LanguageType required
+}
+
+/**
+ * Followed Clubs - Tracking user club subscriptions
+ */
+entity FollowedClub {
+  clubName String required,
+  notificationsEnabled Boolean required
+}
+
+// Define Relationships
+relationship OneToMany {
+  User to Notification { user }
+  User to UserPreferences { user }
+  User to FollowedClub { user }
+}
+
+relationship ManyToOne {
+  Notification to User { user }
+  UserPreferences to User { user }
+  FollowedClub to User { user }
+}
+
+// Define pagination for large entities
+paginate Event, Notification with infinite-scroll
+paginate UserPreferences with pagination
+
+// Enable service implementation for entities
+service all with serviceImpl

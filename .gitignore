@@ -151,3 +151,10 @@ Desktop.ini
 ######################
 /coverage/
 /.nyc_output/
+
+
+# Ignore Python virtual environments & history
+venv/
+.venv/
+
+.history/

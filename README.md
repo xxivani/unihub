@@ -1,4 +1,3 @@
-
 This application was generated using JHipster 8.7.3 for the team project 2024-2025 module at the university of Birmingham.
 
 # Team 77
@@ -11,10 +10,10 @@ TODO:
    - Santhimanasa Bolimera sxb1818@student.bham.ac.uk
    - Saachi Bhagat srb391@student.bham.ac.uk
    - Shivani Siva Narayan sxs2281@student.bham.ac.uk
-     
+   - Hao Ying hxy256@student.bham.ac.uk
    - Haozhe Peng hxp222@student.bham.ac.uk
    - Takwa Kurban tlk331@student.bham.ac.uk
-     
+
 3. Modify [gdpr-policy.component.html](src/main/webapp/app/gdpr-policy/gdpr-policy.component.html) to add your team number (replace X) and team members to the contact section.
 
 <!-- this is a comment: delete lines TODO: and 1. 2. 3. once done... -->

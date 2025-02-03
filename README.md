@@ -11,7 +11,7 @@ TODO:
    - Santhimanasa Bolimera sxb1818@student.bham.ac.uk
    - Saachi Bhagat srb391@student.bham.ac.uk
    - Shivani Siva Narayan sxs2281@student.bham.ac.uk
-   - Hao Ying hxy256@student.bham.ac.uk
+     
    - Haozhe Peng hxp222@student.bham.ac.uk
    - Takwa Kurban tlk331@student.bham.ac.uk
      

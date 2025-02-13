@@ -15,10 +15,7 @@ jobs:
     steps:
       # Checkout the repository (Manual Clone)
       - name: Checkout repository
-        run: |
-          git clone https://github.com/uob-team-project/team77.git
-          cd team77
-          git checkout team77-new
+        run: actions/checkout@v4
 
       # Install Node.js manually
       - name: Set up Node.js (Manual)
@@ -36,7 +33,7 @@ jobs:
           npm run build || echo "⚠️ No build script found, skipping..."
 
       # Install & Build Frontend (Client)
-      - name: 🌍 Install and Build Frontend (client)
+      - name: Install and Build Frontend (client)
         run: |
           cd team77/client
           npm install

@@ -15,7 +15,10 @@ jobs:
     steps:
       # Checkout the repository (Manual Clone)
       - name: Checkout repository
-        uses: actions/checkout@v4
+        run: |
+          git clone https://github.com/uob-team-project/team77.git
+          cd team77
+          git checkout team77-new
 
       # Install Node.js manually
       - name: Set up Node.js (Manual)

@@ -3,10 +3,10 @@ name: CI - Checks if Frontend & Backend Compile
 on:
   push:
     branches:
-      - main  # Runs when you push to 'main' branch
+      - team77-new  # Runs when you push to 'team77-new' branch
   pull_request:
     branches:
-      - main  # Runs when a pull request is made
+      - team77-new  # Runs when a pull request is made
 
 jobs:
   build:

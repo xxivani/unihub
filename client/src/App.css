@@ -1,0 +1,5 @@
+/* Ensure content is visible below fixed navbar */
+.main-content {
+  padding-top: 80px; /* Adjust based on navbar height */
+  text-align: center; /* Centers the text */
+}

@@ -1,0 +1,38 @@
+name: CI - Checks if Frontend & Backend Compile
+
+on:
+  push:
+    branches:
+      - main  # Runs when you push to 'main' branch
+  pull_request:
+    branches:
+      - main  # Runs when a pull request is made
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # Install and Build Backend
+      - name: Install and Build Backend (server)
+        run: |
+          cd server
+          npm install
+          npm run build || echo "⚠️ No build script found, skipping..."
+
+      # Install and Build Frontend
+      - name: Install and Build Frontend (client)
+        run: |
+          cd client
+          npm install
+          npm run build

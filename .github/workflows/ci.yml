@@ -15,7 +15,7 @@ jobs:
     steps:
       # Checkout the repository (Manual Clone)
       - name: Checkout repository
-        run: actions/checkout@v4
+        uses: actions/checkout@v4
 
       # Install Node.js manually
       - name: Set up Node.js (Manual)

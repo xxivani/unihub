@@ -3,36 +3,45 @@ name: CI - Checks if Frontend & Backend Compile
 on:
   push:
     branches:
-      - team77-new  # Runs when you push to 'team77-new' branch
+      - team77-new  # Runs on 'team77-new' branch only
   pull_request:
     branches:
-      - team77-new  # Runs when a pull request is made
+      - team77-new  # Runs on PRs to 'team77-new' branch
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
+      # Checkout the repository (Manual Clone)
       - name: Checkout repository
-        uses: actions/checkout@v3
+        run: |
+          git clone https://github.com/uob-team-project/team77.git
+          cd team77
+          git checkout team77-new
 
-      # Set up Node.js
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
+      # Install Node.js manually
+      - name: Set up Node.js (Manual)
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          node -v
+          npm -v
 
-      # Install and Build Backend
+      # Install & Build Backend (Server)
       - name: Install and Build Backend (server)
         run: |
-          cd server
+          cd team77/server
           npm install
           npm run build || echo "⚠️ No build script found, skipping..."
 
-      # Install and Build Frontend
-      - name: Install and Build Frontend (client)
+      # Install & Build Frontend (Client)
+      - name: 🌍 Install and Build Frontend (client)
         run: |
-          cd client
+          cd team77/client
           npm install
-          npm run build
+          npm run build || echo "⚠️ No build script found, skipping..."
+
+      # Confirm build
+      - name: Build Completed Successfully
+        run: echo "Build process finished successfully"

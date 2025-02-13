@@ -14,9 +14,9 @@ jobs:
 
     steps:
       # Checkout the repository (Manual Clone)
-      - name: Checkout repository
+      - name: clone repository
         run: |
-          git clone https://github.com/uob-team-project/team77.git
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/uob-team-project/team77.git
           cd team77
           git checkout team77-new
 

@@ -1,14 +1,10 @@
-const pgp = require('pg-promise')();
-require('dotenv').config();
-
-const db = pgp(`postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`);
+const pgp = require('pg-promise')(/* options */)
+const db = pgp('postgres://team77:team77@localhost:5433/UniHub')
 
 db.one('SELECT $1 AS value', 123)
   .then((data) => {
-    console.log('PostgreSQL Connected:', data.value);
+    console.log('DATA:', data.value)
   })
   .catch((error) => {
-    console.log(' Database Connection Error:', error);
-  });
-
-module.exports = db;
+    console.log('ERROR:', error)
+  })

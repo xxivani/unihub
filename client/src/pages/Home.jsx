@@ -1,10 +1,9 @@
-import React from "react";
+import HeroSection from "../components/Homepage/HeroSection";
 
 const Home = () => {
   return (
     <div>
-      <h1>Welcome to UniHub</h1>
-      <p>Explore upcoming events, clubs, and more!</p>
+      <HeroSection />
     </div>
   );
 };

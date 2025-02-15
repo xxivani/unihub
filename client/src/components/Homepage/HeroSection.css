@@ -1,0 +1,17 @@
+.hero-container {
+  height: 100vh; /* Fullscreen */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-image: url("/assets/images/hero.jpeg");
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-text {
+  color: white;
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+}

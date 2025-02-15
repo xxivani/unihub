@@ -1,7 +1,13 @@
-import React from "react";
+
+
 
 const RoleOpenings = () => {
-  return <h1>Role Openings Page</h1>;
+  return (
+    <div>
+        <h1>Events Page</h1>
+        <p>role openings </p>
+    </div>
+    );
 };
 
 export default RoleOpenings;

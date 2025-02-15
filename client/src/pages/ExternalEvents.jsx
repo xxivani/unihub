@@ -1,7 +1,12 @@
-import React from "react";
+
 
 const ExternalEvents = () => {
-  return <h1>External Events Page</h1>;
+  return (
+    <div>
+        <h1>Events Page</h1>
+        <p>upcoming external events</p>
+    </div>
+    );
 };
 
 export default ExternalEvents;

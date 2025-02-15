@@ -1,11 +1,4 @@
-/* Remove default margin/padding on the page */
-html, body {
-  margin: 0;
-  padding: 0;
-  /* By default, let the page scroll if content overflows */
-  overflow-x: hidden; 
-  overflow-y: auto;  
-}
+
 
 /* Make sure #root (the React mount point) and .main-content can grow if needed */
 #root, .main-content {

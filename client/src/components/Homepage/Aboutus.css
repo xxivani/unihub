@@ -1,0 +1,73 @@
+.aboutus {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 350px; /* or 300px if you prefer more space */
+  margin-bottom: 100px;
+}
+
+.aboutus-card {
+  background-color: #d9cdbe;
+  width: 100%;
+  min-height: 600px; /* flexible height */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 50px;
+}
+
+.aboutus-text-whole {
+  display: flex;
+  align-items: center; /* Aligns items in the same row */
+  gap: 5px; /* Adds space between the line and text */
+  justify-content: left; /* Centers the whole section */
+  margin-left: 20px;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+.aboutus-text {
+  color: var(--green, #2a3b1c);
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* TEXT CONTAINER */
+.aboutus-text-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* reduce padding if it pushes layout too wide */
+  padding: 150px;
+}
+
+/* Remove or reduce fixed widths */
+.aboutus-heading {
+  /* width: 705px; <-- Remove or use max-width if needed */
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 80px;
+}
+
+.text {
+  /* width: 608px; <-- Remove or use max-width if needed */
+  font-size: 16px;
+  line-height: 1.6;
+  margin-top: 20px;
+}
+
+/* IMAGE */
+.img {
+  width: 400px;
+  height: 554px;
+  background-image: url("/assets/images/img.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

@@ -1,4 +1,4 @@
-
+import "./App.css"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import CustomNavbar from "./components/Navbar/navbar";
 import Home from "./pages/Home";
@@ -23,5 +23,6 @@ function App() {
     </Router>
   );
 }
+
 
 export default App;

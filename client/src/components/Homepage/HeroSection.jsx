@@ -1,14 +1,19 @@
 
 import "./HeroSection.css"
 
-import heroImage from "/assets/images/hero.jpeg";
 
 const HeroSection = () => {
   return (
-    <div className="hero-container" style={{ backgroundImage: `url(${heroImage})` }}>
-      <h1 className="hero-text">ENGAGE. EXPLORE. UNWIND.</h1>
+    <div className="hero-container">
+      <div className="hero-overlay"></div> {/* Overlay added here */}
+      <div className="text-container">
+        <h1 className="hero-text">ENGAGE.</h1>
+        <h1 className="hero-text explore-text">EXPLORE.</h1>
+        <h1 className="hero-text">UNWIND.</h1>
+      </div>
     </div>
   );
 };
 
 export default HeroSection;
+

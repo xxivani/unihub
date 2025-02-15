@@ -12,4 +12,5 @@ html, body {
   min-height: 100vh; /* They can expand beyond the viewport if content is large */
   display: flex;
   flex-direction: column;
+  background: var(--bg-color, #F4F1EC);
 }

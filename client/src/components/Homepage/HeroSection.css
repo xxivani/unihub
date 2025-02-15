@@ -19,8 +19,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4); /* Adjust opacity for brightness */
-  z-index: 1; /* Puts overlay between background and text */
+  background: rgba(0, 0, 0, 0.4); 
+  z-index: 1; /* puts overlay between background and text */
 }
 
 .text-container {
@@ -29,8 +29,8 @@
   align-items: flex-start;
   text-align: left;
   padding-right: 5vw;
-  z-index: 2; /* Ensures text is above overlay */
-  position: relative; /* So it stays above the overlay */
+  z-index: 2; /* makes sure text is above overlay */
+  position: relative; 
 }
 
 .hero-text {
@@ -42,5 +42,5 @@
 }
 
 .explore-text {
-  color: #e6b800; /* Gold/Yellow */
+  color: #F4BE37; 
 }

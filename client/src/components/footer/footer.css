@@ -1,0 +1,49 @@
+.Footer-container {
+    width: 100%;
+    min-height: 370px; 
+    background: #0b0706;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 50px 100px;
+  }
+  
+  .UniHub-text {
+    color: #fff;
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 160%;
+    margin-top: 34px;
+  }
+  
+  .text-containers {
+    display: flex;
+    gap: 140px; /*adds space bw our team n connect*/
+    justify-content: space-evenly;
+    margin: auto;
+  }
+  .text-container-1{
+    margin-left: 680px;
+  }
+
+  .heading {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 34px;
+    margin-bottom: 23px;
+  }
+  .normal-text {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 400;
+    opacity: 0.78;
+    margin-bottom: 20px;
+    text-decoration: none; /* Removes default underline */
+    display: block; /* Ensures each link is on a new line */
+  }
+  
+  .normal-text:hover {
+    text-decoration: underline; /* Adds underline on hover */
+  }
+  

@@ -10,3 +10,4 @@ backend/dist/
 docker-data/
 # Logs
 *.log
+target/

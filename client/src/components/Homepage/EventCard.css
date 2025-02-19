@@ -1,0 +1,34 @@
+/* no lines should show up for the place and time the event takes place*/
+
+/* add padding to the list of events*/
+
+/* the heading should be a link that redirects the user to the event in detail*/
+
+/* the view all events button will redirect the user to all events*/
+
+.Events-Section{
+    margin-bottom: 100px;
+
+}
+
+.card {
+  border: none !important;  /* Removes the default card border */
+  box-shadow: none; /* Prevents shadows if Bootstrap applies any */
+  
+}
+
+.card-group {
+  gap: 20px; /* Adds spacing between cards */
+}
+
+.list-group-item {
+  border: none !important; /* Removes the dividers from the list group */
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Adds space between the icon and text */
+}
+
+.list-group-item svg {
+  width: 16px;  /* Adjust the size of the icons */
+  height: 16px;
+}

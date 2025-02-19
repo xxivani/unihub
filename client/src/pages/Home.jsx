@@ -1,13 +1,13 @@
 import HeroSection from "../components/Homepage/HeroSection";
-import Footer from "../components/footer/footer";
 import Aboutus from "../components/Homepage/Aboutus";
+import EventCards from "../components/Homepage/EventCard";
 
 const Home = () => {
   return (
     <div>
       <HeroSection />
       <Aboutus />
-      <Footer />
+      <EventCards />
     
     </div>
   );

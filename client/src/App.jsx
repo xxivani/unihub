@@ -6,6 +6,7 @@ import Clubs from "./pages/Clubs";
 import Events from "./pages/Events";
 import RoleOpenings from "./pages/RoleOpenings";
 import ExternalEvents from "./pages/ExternalEvents";
+import Footer from "./components/footer/footer";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/external-events" element={<ExternalEvents />} />
         </Routes>
       </div>
+      <Footer />
     </Router>
   );
 }

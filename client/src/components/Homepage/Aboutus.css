@@ -2,7 +2,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: 350px; 
+  margin-top: 300px; 
   margin-bottom: 100px;
   height: 360px;
   
@@ -11,7 +11,7 @@
 .aboutus-card {
   background-color: #d9cdbe;
   width: 100%;
-  min-height: 600px;
+  min-height: 570px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -24,7 +24,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-bottom: 60px;
+  margin-bottom: 10px;
   align-self: flex-start;
   margin-left: 60px;
 }
@@ -65,7 +65,7 @@
 
 .img {
   width: 400px;
-  height: 554px;
+  height: 504px;
   background-image: url("/assets/images/img.jpeg");
   background-size: cover;
   background-position: center;

@@ -1,6 +1,7 @@
 import HeroSection from "../components/Homepage/HeroSection";
 import Aboutus from "../components/Homepage/Aboutus";
 import EventCards from "../components/Homepage/EventCard";
+import LatestEvents from "../components/Homepage/LatestNews";
 
 const Home = () => {
   return (
@@ -8,6 +9,7 @@ const Home = () => {
       <HeroSection />
       <Aboutus />
       <EventCards />
+      <LatestEvents />
     
     </div>
   );

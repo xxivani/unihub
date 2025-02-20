@@ -18,21 +18,11 @@ const CustomNavbar = () => {
             {/* Committee Dropdown */}
             <NavDropdown title="Committee" id="committee-dropdown" menuVariant="dark">
               <NavDropdown.Item as={Link} to="/committee/dashboard">Dashboard</NavDropdown.Item>
-
-               {/* events dropdown*/}
-              <NavDropdown title="Events" id="events-dropdown" className="customDropdown" menuVariant="dark">
-                <NavDropdown.Item as={Link} to="/committee/events/create">Create Event</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/committee/events/manage">View/Update Event</NavDropdown.Item>
-              </NavDropdown>
-
-              {/*role openings dropdown*/}
-              <NavDropdown title="Role Openings" id="roles-dropdown" className="customDropdown" menuVariant="dark">
-                <NavDropdown.Item as={Link} to="/committee/roles/create">Create Role Opening</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/committee/roles/manage">View/Update Role Opening</NavDropdown.Item>
-              </NavDropdown>
-              
+              <NavDropdown.Item as={Link} to="/committee/events">Events</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/committee/roles">Role Openings</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/committee/budget-tracker">Budget Tracker</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/committee/calendar">Committee Calendar</NavDropdown.Item>
+
             </NavDropdown>
           </Nav>
 

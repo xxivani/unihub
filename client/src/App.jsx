@@ -8,6 +8,12 @@ import RoleOpenings from "./pages/RoleOpenings";
 import ExternalEvents from "./pages/ExternalEvents";
 import Footer from "./components/footer/footer";
 
+import CommitteeEvents from "./pages/committee/CommiteeEvents";
+import Dashboard from "./pages/committee/Dashboard";
+import CommitteeCalendar from "./pages/committee/CommiteeCalender";
+import BudgetTracker from "./pages/committee/Budget-Tracker";
+import CommitteeRoles from "./pages/committee/Commitee-Role-openings";
+
 function App() {
   return (
     <Router>
@@ -19,6 +25,12 @@ function App() {
           <Route path="/events" element={<Events />} />
           <Route path="/roles" element={<RoleOpenings />} />
           <Route path="/external-events" element={<ExternalEvents />} />
+          {/* Committee Routes */}
+        <Route path="/committee/dashboard" element={<Dashboard />} />
+        <Route path="/committee/Events" element={<CommitteeEvents />} />
+        <Route path="/committee/roles" element={<CommitteeRoles />} />
+        <Route path="/committee/budget-tracker" element={<BudgetTracker />} />
+        <Route path="/committee/calendar" element={<CommitteeCalendar />} />
         </Routes>
       </div>
       <Footer />

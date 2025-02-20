@@ -39,11 +39,11 @@
     font-weight: 400;
     opacity: 0.78;
     margin-bottom: 20px;
-    text-decoration: none; /* Removes default underline */
-    display: block; /* Ensures each link is on a new line */
+    text-decoration: none; 
+    display: block;
   }
   
   .normal-text:hover {
-    text-decoration: underline; /* Adds underline on hover */
+    text-decoration: underline; 
   }
   

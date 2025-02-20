@@ -1,4 +1,4 @@
-/* Navbar Container */
+
 .navbar {
     background: #111;
     color: white;
@@ -8,7 +8,7 @@
     align-items: center;
   }
   
-  /* Navbar Logo */
+
   .nav-logo a {
     color: white;
     font-size: 20px;
@@ -16,7 +16,7 @@
     font-weight: bold;
   }
   
-  /* Navbar Links */
+
   .nav-links {
     list-style: none;
     display: flex;
@@ -28,7 +28,7 @@
     text-decoration: none;
   }
   
-  /* Dropdown Menu */
+
   .dropdown {
     position: relative;
   }
@@ -47,29 +47,29 @@
   .dropdown:hover .dropdown-menu {
     display: block;
   }
-  /* Ensure sub-dropdown menus match main dropdown */
+
 .custom-dropdown .dropdown-menu {
   background-color: black !important;
 }
 
-/* Fix text color */
+
 .custom-dropdown .dropdown-item {
   color: white !important;
 }
 
-/* Ensure hover effect */
+
 .custom-dropdown .dropdown-item:hover {
   background-color: grey !important;
 }
 
-  /* Hamburger Menu (For Mobile) */
+
   .hamburger {
     display: none;
     cursor: pointer;
     font-size: 24px;
   }
   
-  /* Responsive Design */
+
   @media screen and (max-width: 768px) {
     .nav-links {
       display: none;

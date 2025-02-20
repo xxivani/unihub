@@ -1,8 +1,6 @@
 
-
-/* Make sure #root (the React mount point) and .main-content can grow if needed */
 #root, .main-content {
-  min-height: 100vh; /* They can expand beyond the viewport if content is large */
+  min-height: 100vh; 
   display: flex;
   flex: 1;
   flex-direction: column;

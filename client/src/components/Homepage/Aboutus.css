@@ -2,14 +2,16 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: 350px; /* or 300px if you prefer more space */
+  margin-top: 350px; 
   margin-bottom: 100px;
+  height: 360px;
+  
 }
 
 .aboutus-card {
   background-color: #d9cdbe;
   width: 100%;
-  min-height: 600px; /* flexible height */
+  min-height: 600px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -20,35 +22,33 @@
 
 .aboutus-text-whole {
   display: flex;
-  align-items: center; /* Aligns items in the same row */
-  gap: 5px; /* Adds space between the line and text */
-  justify-content: left; /* Centers the whole section */
-  margin-left: 20px;
-  margin-bottom: 15px;
-  font-size: 16px;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 60px;
+  align-self: flex-start;
+  margin-left: 60px;
 }
 .aboutus-text {
-  color: var(--green, #2a3b1c);
-  font-size: 32px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-  letter-spacing: 2px;
+  font-size: 1.8rem;
+  font-weight: bold;
   text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #1D2130;
+  text-align: left;
 }
 
-/* TEXT CONTAINER */
+
 .aboutus-text-container {
   flex: 1;
   display: flex;
   flex-direction: column;
-  /* reduce padding if it pushes layout too wide */
+
   padding: 150px;
 }
 
-/* Remove or reduce fixed widths */
+
 .aboutus-heading {
-  /* width: 705px; <-- Remove or use max-width if needed */
+ 
   font-size: 40px;
   font-weight: 700;
   line-height: 1.2;
@@ -56,13 +56,13 @@
 }
 
 .text {
-  /* width: 608px; <-- Remove or use max-width if needed */
+
   font-size: 16px;
   line-height: 1.6;
   margin-top: 20px;
 }
 
-/* IMAGE */
+
 .img {
   width: 400px;
   height: 554px;

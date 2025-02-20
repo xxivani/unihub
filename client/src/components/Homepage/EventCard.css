@@ -6,29 +6,105 @@
 
 /* the view all events button will redirect the user to all events*/
 
-.Events-Section{
-    margin-bottom: 100px;
-
+.events-section {
+  margin-bottom: 200px;
+  margin-top: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
-.card {
-  border: none !important;  /* Removes the default card border */
-  box-shadow: none; /* Prevents shadows if Bootstrap applies any */
-  
-}
-
-.card-group {
-  gap: 20px; /* Adds spacing between cards */
-}
-
-.list-group-item {
-  border: none !important; /* Removes the dividers from the list group */
+.events-heading-wrapper {
   display: flex;
   align-items: center;
-  gap: 10px; /* Adds space between the icon and text */
+  gap: 15px;
+  margin-bottom: 60px;
+  align-self: flex-start;
+  margin-left: 60px;
 }
 
-.list-group-item svg {
-  width: 16px;  /* Adjust the size of the icons */
-  height: 16px;
+.events-heading {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #1D2130;
+  text-align: left;
+}
+
+
+.events-card-group {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.event-card {
+  border: none !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+  max-width: 370px;
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+}
+
+.event-img {
+  border-radius: 8px;
+  height: 200px;
+  object-fit: cover;
+}
+
+.event-title-link {
+  text-decoration: none;
+  font-weight: bold;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.event-title-link:hover {
+  color: #007bff;
+}
+
+.event-details {
+  padding: 10px 15px;
+  text-align: left;
+}
+
+.event-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: #555;
+  border: none !important;
+}
+
+
+.event-description {
+  font-size: 0.9rem;
+  color: #666;
+  padding: 0 15px 15px;
+}
+
+.view-all-events-button {
+  display: inline-block;
+  background-color: #f5c518;
+  color: #000;
+  padding: 18px 140px;
+  border-radius: 5px;
+  font-weight: bold;
+  margin-top: 20px;
+  text-decoration: none;
+  transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  margin-top: 80px;
+}
+
+.view-all-events-button:hover {
+  background-color: #e0b000;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
 }

@@ -1,4 +1,4 @@
-name: Build and Push Docker Images
+name: Build, Push, and Deploy Docker Images
 
 on:
   push:
@@ -40,3 +40,24 @@ jobs:
           docker tag ghcr.io/uob-team-project/team77-client:${{ github.sha }} ghcr.io/uob-team-project/team77-client:latest
           docker push ghcr.io/uob-team-project/team77-client:${{ github.sha }}
           docker push ghcr.io/uob-team-project/team77-client:latest
+
+  deploy:
+    needs: build-push
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy with Docker Compose
+        run: |
+          # Ensure you're in the directory with your docker-compose.yml file (update the path if necessary)
+          cd .
+          # Pull the latest images from GHCR
+          docker-compose pull
+          # Bring down any existing containers (ignore errors if none exist)
+          docker-compose down || true
+          # Start the containers in detached mode
+          docker-compose up -d
+          # Optional: Clean up unused Docker objects
+          docker system prune --force --filter "until=24h"

@@ -13,8 +13,9 @@ services:
       - "5432:5432"
 
   server:
-    image: shivanisnsn/unihub-server:latest 
+    image: ghcr.io/uob-team-project/unihub-server:latest  
     container_name: unihub_server
+    restart: always
     depends_on:
       - db
     environment:
@@ -27,8 +28,9 @@ services:
       - "5000:5000"
 
   client:
-    image: shivanisnsn/unihub-client:latest  
+    image: ghcr.io/uob-team-project/unihub-client:latest 
     container_name: unihub_client
+    restart: always
     depends_on:
       - server
     ports:

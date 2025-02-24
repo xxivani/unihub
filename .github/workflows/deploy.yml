@@ -26,14 +26,14 @@ jobs:
       # Build and push the server image
       - name: Build and Push Server Image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/unihub-server:latest ./server
-          docker push ghcr.io/${{ github.repository_owner }}/unihub-server:latest
+          docker build -t ghcr.io/${{ github.repository_owner }}/team77/unihub-server:latest ./server
+          docker push ghcr.io/${{ github.repository_owner }}/team77/unihub-server:latest
 
       # Build and push the client image
       - name: Build and Push Client Image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/unihub-client:latest ./client
-          docker push ghcr.io/${{ github.repository_owner }}/unihub-client:latest
+          docker build -t ghcr.io/${{ github.repository_owner }}/team77/unihub-client:latest ./client
+          docker push ghcr.io/${{ github.repository_owner }}/team77/unihub-client:latest
 
   deploy:
     name: Deploy Application on Azure VM
@@ -50,16 +50,16 @@ jobs:
       - name: Deploy Application via SSH
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }} << 'EOF'
-            echo "🚀 Stopping and Removing Existing Containers..."
+            echo "Stopping and Removing Existing Containers..."
             docker stop unihub_client unihub_server || true
             docker rm unihub_client unihub_server || true
 
-            echo "📥 Pulling New Images from GHCR..."
+            echo "Pulling New Images from GHCR..."
             docker pull ghcr.io/${{ github.repository_owner }}/unihub-server:latest
             docker pull ghcr.io/${{ github.repository_owner }}/unihub-client:latest
 
-            echo "🔄 Starting Application Using Docker Compose..."
+            echo "Starting Application Using Docker Compose..."
             docker compose -f ~/team77/docker-compose.yml up -d
 
-            echo "✅ Deployment Completed Successfully!"
+            echo "Deployment Completed Successfully!"
           EOF

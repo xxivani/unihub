@@ -1,35 +1,26 @@
 version: "3.8"
 
 services:
-  db:
-    image: postgres
-    container_name: unihub_db
-    restart: always
-    environment:
-      POSTGRES_USER: team77
-      POSTGRES_PASSWORD: team77
-      POSTGRES_DB: UniHub
-    ports:
-      - "5432:5432"
-
   server:
-    image: ghcr.io/uob-team-project/unihub-server:latest
-    container_name: unihub_server
-    depends_on:
-      - db
-    environment:
-      - DB_HOST=db
-      - DB_USER=team77
-      - DB_PASSWORD=team77
-      - DB_NAME=UniHub
-      - DB_PORT=5432
+    image: ghcr.io/uob-team-project/team77-server:latest
+    restart: always
     ports:
-      - "5000:5000"
+      - "3000:3000"  
+    environment:
+      NODE_ENV: production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
 
   client:
-    image: ghcr.io/uob-team-project/unihub-client:latest
-    container_name: unihub_client
-    depends_on:
-      - server
+    image: ghcr.io/uob-team-project/team77-client:latest
+    restart: always
     ports:
-      - "5173:5173"
+      - "80:80"      
+    environment:
+      NODE_ENV: production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"

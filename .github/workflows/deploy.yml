@@ -40,7 +40,7 @@ jobs:
           docker tag ghcr.io/uob-team-project/team77-client:${{ github.sha }} ghcr.io/uob-team-project/team77-client:latest
           docker push ghcr.io/uob-team-project/team77-client:${{ github.sha }}
           docker push ghcr.io/uob-team-project/team77-client:latest
-
+  
   deploy:
     needs: build-push
     runs-on: self-hosted
@@ -48,6 +48,13 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Ensure Docker Compose v2 is installed
         run: |

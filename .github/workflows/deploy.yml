@@ -49,15 +49,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Deploy with Docker Compose
+      - name: Ensure Docker Compose v2 is installed
         run: |
-          # Ensure you're in the directory with your docker-compose.yml file (update the path if necessary)
-          cd .
-          # Pull the latest images from GHCR
-          docker-compose pull
-          # Bring down any existing containers (ignore errors if none exist)
-          docker-compose down || true
-          # Start the containers in detached mode
-          docker-compose up -d
-          # Optional: Clean up unused Docker objects
+          if ! docker compose version >/dev/null 2>&1; then
+            echo "Docker Compose v2 not found. Installing..."
+            sudo apt-get update
+            sudo apt-get install -y docker-compose-plugin
+          else
+            echo "Docker Compose v2 is already installed."
+          fi
+
+      - name: Deploy with Docker Compose v2
+        run: |
+          docker compose pull
+          docker compose down || true
+          docker compose up -d
           docker system prune --force --filter "until=24h"

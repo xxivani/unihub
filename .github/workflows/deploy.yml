@@ -1,0 +1,154 @@
+name: Build and Deploy MERN Application
+
+on: [push, pull_request]
+
+jobs:
+  publish-docker:
+    name: Publish Docker
+    if: contains(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags/')
+    concurrency:
+      group: deployment
+    runs-on: self-hosted
+    permissions:
+      contents: read
+      packages: write
+    services:
+      docker:
+        image: docker:dind
+        options: >-
+          --privileged
+          --env DOCKER_TLS_CERTDIR=
+        ports:
+          - 2375:2375
+    env:
+      DOCKER_HOST: 'tcp://127.0.0.1:2375'
+      DOCKER_DRIVER: overlay2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Wait for Docker Daemon
+        run: |
+          for i in {1..10}; do
+            if docker info; then
+              break
+            fi
+            echo "Waiting for Docker Daemon..."
+            sleep 3
+          done
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node_modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: node_modules-
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Build application
+        run: |
+          npm run build
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image to ghcr
+        run: |
+          echo "pushing ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }}"
+          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }} .
+          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }}
+
+  deploy-dev:
+    name: Deploy development app via SSH
+    runs-on: self-hosted
+    needs: publish-docker
+    if: success() && ( contains(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags/') )
+    concurrency:
+      group: deployment
+    env:
+      RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
+      DEVURL: '${{ github.event.repository.name }}.dev.bham.team'
+      CI_REGISTRY_USER: ${{ github.actor }}
+      CI_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      CI_REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "$RSA_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/id_rsa
+
+      - name: Add SSH known hosts
+        run: |
+          ssh-keyscan -H ${{ secrets.DEPLOY_IP }} >> ~/.ssh/known_hosts
+
+      - name: Install Docker and prepare the server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }} "
+            rm -rf ~/team-project || true
+            which docker || sh team-project/install-docker.sh
+          "
+
+      - name: Transfer files to the server
+        run: |
+          scp -o StrictHostKeyChecking=no -r src/main/docker/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/team-project
+
+      - name: Deploy the app and clean Docker
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }} "
+            docker compose -f ~/team-project/dev.yml up -d
+            docker system prune --force --filter 'until=24h'
+          "
+
+  deploy-prod:
+    name: Deploy production version via SSH
+    runs-on: self-hosted
+    needs: deploy-dev
+    if: success() && startsWith(github.ref, 'refs/tags/')
+
+    concurrency:
+      group: deployment
+
+    env:
+      RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "$RSA_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/id_rsa
+
+      - name: Add SSH known hosts
+        run: |
+          ssh-keyscan -H ${{ secrets.DEPLOY_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy the production application using Docker Compose
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }} "
+            docker compose -f ~/team-project/prd.yml up -d
+            docker system prune --force --filter 'until=24h'
+          "

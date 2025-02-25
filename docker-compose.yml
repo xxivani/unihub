@@ -1,23 +1,25 @@
 version: "3.8"
 
 services:
-  server:
-    image: ghcr.io/uob-team-project/team77-server:latest
-    ports:
-      - "3000:3000"
+  team77-dev:
+    image: ghcr.io/uob-team-project/team77-client:latest
+    # Expose port 8080 internally so Caddy can reach it by its service name.
+    expose:
+      - "8080"
     networks:
       - app-network
 
-  client:
+  team77-prd:
     image: ghcr.io/uob-team-project/team77-client:latest
-    ports:
-      - "80:80"
+    expose:
+      - "8080"
     networks:
       - app-network
 
   caddy:
     image: caddy:2-alpine
     restart: always
+    # Caddy listens on ports 80 and 443 on the host.
     ports:
       - "80:80"
       - "443:443"

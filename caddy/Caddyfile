@@ -1,52 +1,11 @@
 {
-	# Email address for Let's Encrypt (you can use a generic alias if you don't want to use your personal email)
-	email no-reply@unihub.bham.team
-	# Use the real ACME endpoint for obtaining certificates
-	acme_ca https://acme-v02.api.letsencrypt.org/directory
-}
-
-unihub.bham.team {
-	handle_errors {
-		respond "This production version of the app will only become available after a tagged commit has been made to the main branch.
-
-A development version of the app should be accessible here: http://unihub.dev.bham.team
-
-Error connecting to production app backend on docker host http://teamproject-prd:8080.
-
-After a tagged commit has deployed, wait 30 seconds and refresh this page.
-
-If still not live, login to the VM via SSH and try to debug using 'docker compose -f ~/team-project/prd.yml up'"
-	}
-	reverse_proxy http://teamproject-prd:8080
+    # Use a generic alias if you don't want to use your personal email.
+    email no-reply@unihub.dev.bham.team
+    acme_ca https://acme-v02.api.letsencrypt.org/directory
 }
 
 unihub.dev.bham.team {
-	handle_errors {
-		respond "Error connecting to unihub.dev development app backend on docker host http://teamproject-dev:8080.
-
-After a commit to the main branch has deployed, wait 30 seconds and refresh this page.
-
-If still not live, login to the VM via SSH and try to debug using 'docker compose -f ~/team-project/dev.yml up'"
-	}
-	reverse_proxy http://teamproject-dev:8080
-}
-
-# The following block can be used for a fallback when accessing via the VM IP (optional)
-DEPLOY_IP:80 {
-	header Content-Type text/html
-  respond <<HTML
-          <html>
-           <h1>Caddy web server is running on DEPLOY_IP </h1> <br/>
-           <p>After getting DNS entries from <a href="https://forms.office.com/e/C0kaiRMuDD">https://forms.office.com/e/C0kaiRMuDD</a> <br/> try:
-           <a href="http://unihub.dev.bham.team">http://unihub.dev.bham.team</a> or<br> <a href="http://unihub.bham.team">http://unihub.bham.team</a> </p>
-          <html>
-          HTML 200
-}
-
-# If you need to serve another custom URL, update or remove this block as necessary
-dubai.bham.team {
-	handle_errors {
-		respond "CUSTOMURL not working check DOMAIN is up"
-	}
-	reverse_proxy http://teamproject-prd:8080
+    # Since Caddy is in its own container on the same Docker network,
+    # reference the client container by its service name.
+    reverse_proxy client:80
 }

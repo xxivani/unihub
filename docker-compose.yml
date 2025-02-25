@@ -3,24 +3,31 @@ version: "3.8"
 services:
   server:
     image: ghcr.io/uob-team-project/team77-server:latest
-    restart: always
     ports:
-      - "3000:3000"  
-    environment:
-      NODE_ENV: production
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
+      - "3000:3000"
+    networks:
+      - app-network
 
   client:
     image: ghcr.io/uob-team-project/team77-client:latest
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+  caddy:
+    image: caddy:2-alpine
     restart: always
     ports:
-      - "80:80"      
-    environment:
-      NODE_ENV: production
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy/data:/data
+      - ./caddy/config:/config
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

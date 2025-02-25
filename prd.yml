@@ -8,7 +8,7 @@ services:
       - NODE_ENV=production
       - PORT=8080
     ports:
-      - "8080:8080"
+      - "8080:8080"   
     networks:
       - prd-network
 
@@ -19,19 +19,19 @@ services:
       - NODE_ENV=production
       - PORT=80
       - REACT_APP_API_URL=http://team77-prd-server:8080
-    ports:
-      - "80:80"
+    expose:
+      - "80"   
     networks:
       - prd-network
 
   caddy:
     image: caddy:2-alpine
     restart: always
-    volumes:
-      - ./caddy:/etc/caddy
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80"     
+      - "443:443"   
+    volumes:
+      - ./caddy:/etc/caddy   
     depends_on:
       - team77-prd-server
       - team77-prd-client

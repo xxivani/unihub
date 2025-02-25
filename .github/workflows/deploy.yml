@@ -57,6 +57,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Manual GHCR login (if needed)
+        run: |
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+
       - name: Ensure Docker Compose v2 is installed
         run: |
           if ! docker compose version >/dev/null 2>&1; then

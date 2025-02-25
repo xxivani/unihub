@@ -6,6 +6,7 @@
 }
 
 unihub.bham.team {
+    tls internal
     handle_errors {
         respond "This production version of the app will only become available after a tagged commit has been made to the main branch.
 

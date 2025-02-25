@@ -1,10 +1,15 @@
 {
+    # Email address for Let's Encrypt (use a generic alias if you prefer)
     email no-reply@unihub.bham.team
+    # Use the real ACME endpoint for obtaining certificates
     acme_ca https://acme-v02.api.letsencrypt.org/directory
 }
 
-# Production: team77.bham.team will reverse proxy to the production backend.
 team77.bham.team {
+    # For production, we want HTTPS using the production ACME endpoint.
+    # (Remove "tls internal" if you want real certificates; it's added here for testing purposes.)
+    # tls internal
+
     handle_errors {
         respond "This production version of the app will only become available after a tagged commit has been made to the main branch.
 
@@ -19,7 +24,6 @@ If still not live, login to the VM via SSH and try to debug using 'docker compos
     reverse_proxy http://team77-prd-server:8080
 }
 
-# Development: team77.dev.bham.team will reverse proxy to the development backend.
 team77.dev.bham.team {
     handle_errors {
         respond "Error connecting to team77.dev development app backend on docker host http://team77-dev-server:8080.
@@ -31,7 +35,7 @@ If still not live, login to the VM via SSH and try to debug using 'docker compos
     reverse_proxy http://team77-dev-server:8080
 }
 
-# Fallback block for direct VM IP access.
+# The following block is optional and acts as a fallback when accessing via the VM IP.
 DEPLOY_IP:80 {
     header Content-Type text/html
     respond <<HTML
@@ -44,10 +48,10 @@ DEPLOY_IP:80 {
           HTML 200
 }
 
-# Optional: if you have another custom URL, update as needed.
+# If you need to serve another custom URL, update or remove this block as necessary.
 unihub.bham.team {
     handle_errors {
-        respond "CUSTOMURL not working check DOMAIN is up"
+        respond "CUSTOMURL not working, check DOMAIN is up"
     }
     reverse_proxy http://team77-prd-server:8080
 }

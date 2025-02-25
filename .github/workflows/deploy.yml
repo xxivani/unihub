@@ -39,15 +39,16 @@ jobs:
           docker tag ghcr.io/uob-team-project/team77-client:${{ github.sha }} ghcr.io/uob-team-project/team77-client:latest
           docker push ghcr.io/uob-team-project/team77-client:${{ github.sha }}
           docker push ghcr.io/uob-team-project/team77-client:latest
-  
+
   deploy:
     needs: build-push
     runs-on: self-hosted
     steps:
-      - name: Cleanup problematic directory
+      - name: Cleanup problematic directories
         run: |
           sudo rm -rf /home/ubuntu/actions-runner/_work/team77/team77/caddy/config/caddy || true
-  
+          sudo rm -rf /home/ubuntu/actions-runner/_work/team77/team77/caddy/data/caddy || true
+
       - name: Checkout Repository
         uses: actions/checkout@v4
 

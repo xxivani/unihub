@@ -39,7 +39,7 @@ jobs:
           docker tag ghcr.io/uob-team-project/team77-client:${{ github.sha }} ghcr.io/uob-team-project/team77-client:latest
           docker push ghcr.io/uob-team-project/team77-client:${{ github.sha }}
           docker push ghcr.io/uob-team-project/team77-client:latest
-
+  
   deploy:
     needs: build-push
     runs-on: self-hosted
@@ -75,3 +75,7 @@ jobs:
           docker compose down || true
           docker compose up -d
           docker system prune --force --filter "until=24h"
+
+      - name: Restart Caddy to Apply Changes
+        run: |
+          docker compose restart caddy || true

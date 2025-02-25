@@ -5,7 +5,7 @@
     acme_ca https://acme-v02.api.letsencrypt.org/directory
 }
 
-unihub.bham.team {
+team77.bham.team {
     tls internal
     handle_errors {
         respond "This production version of the app will only become available after a tagged commit has been made to the main branch.
@@ -21,7 +21,7 @@ If still not live, login to the VM via SSH and try to debug using 'docker compos
     reverse_proxy http://team77-prd:8080
 }
 
-unihub.dev.bham.team {
+team77.dev.bham.team {
     handle_errors {
         respond "Error connecting to unihub.dev development app backend on docker host http://team77-dev:8080.
 
@@ -45,7 +45,7 @@ DEPLOY_IP:80 {
 }
 
 # If you need to serve another custom URL, update or remove this block as necessary.
-dubai.bham.team {
+unihub.bham.team {
     handle_errors {
         respond "CUSTOMURL not working check DOMAIN is up"
     }

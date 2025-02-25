@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  team77-server:
+    image: ghcr.io/uob-team-project/team77-server:latest
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+  team77-client:
+    image: ghcr.io/uob-team-project/team77-client:latest
+    restart: always
+    depends_on:
+      - team77-server
+    networks:
+      - app-network
+
+  caddy:
+    image: caddy:2-alpine
+    restart: always
+    volumes:
+      - /etc/caddy/Caddyfile:/etc/caddy/Caddyfile
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - team77-server
+      - team77-client
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

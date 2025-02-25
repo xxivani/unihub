@@ -6,7 +6,3 @@
 unihub.bham.team {
     reverse_proxy client:80
 }
-
-unihub.dev.bham.team {
-    reverse_proxy client:80
-}

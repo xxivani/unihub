@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  team77-dev-server:
+    container_name: team77-dev-server
+    image: ghcr.io/uob-team-project/team77-server:latest
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+    ports:
+      - "8080:8080"
+    networks:
+      - dev-network
+
+  team77-dev-client:
+    container_name: team77-dev-client
+    image: ghcr.io/uob-team-project/team77-client:latest
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - REACT_APP_API_URL=http://team77-dev-server:8080
+    ports:
+      - "3000:3000"
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+    driver: bridge

@@ -24,6 +24,20 @@ services:
     networks:
       - prd-network
 
+  caddy:
+    image: caddy:2-alpine
+    restart: always
+    volumes:
+      - ./caddy:/etc/caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - team77-prd-server
+      - team77-prd-client
+    networks:
+      - prd-network
+
 networks:
   prd-network:
     driver: bridge

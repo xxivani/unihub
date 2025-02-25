@@ -11,13 +11,13 @@ unihub.bham.team {
 
 A development version of the app should be accessible here: http://unihub.dev.bham.team
 
-Error connecting to production app backend on docker host http://team77-server-1:3000.
+Error connecting to production app backend on docker host http://team77-server-1:8080.
 
 After a tagged commit has deployed, wait 30 seconds and refresh this page.
 
 If still not live, login to the VM via SSH and try to debug using 'docker compose -f ~/team-project/prd.yml up'"
     }
-    reverse_proxy http://team77-server-1:3000
+    reverse_proxy http://team77-server-1:8080
 }
 
 unihub.dev.bham.team {
@@ -48,5 +48,5 @@ dubai.bham.team {
     handle_errors {
         respond "CUSTOMURL not working check DOMAIN is up"
     }
-    reverse_proxy http://team77-server-1:3000
+    reverse_proxy http://team77-server-1:8080
 }

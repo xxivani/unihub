@@ -1,11 +1,8 @@
 {
-    # Use a generic alias if you don't want to use your personal email.
     email no-reply@unihub.dev.bham.team
     acme_ca https://acme-v02.api.letsencrypt.org/directory
 }
 
 unihub.dev.bham.team {
-    # Since Caddy is in its own container on the same Docker network,
-    # reference the client container by its service name.
     reverse_proxy client:80
 }

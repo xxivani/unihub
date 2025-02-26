@@ -76,8 +76,8 @@ jobs:
 
   deploy-prod:
     name: Deploy Production via SSH
-    needs: deploy-dev
     runs-on: self-hosted
+    needs: deploy-dev
     if: success() && startsWith(github.ref, 'refs/tags/')
     concurrency:
       group: deployment
@@ -86,7 +86,7 @@ jobs:
       DEPLOY_IP: ${{ secrets.DEPLOY_IP }}
       DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up SSH key for connection
@@ -101,6 +101,14 @@ jobs:
         run: |
           ssh-keyscan -H ${{ secrets.DEPLOY_IP }} >> ~/.ssh/known_hosts
 
-      - name: Deploy Production
+      - name: Transfer repository to VM
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/prd.yml up -d --remove-orphans && docker system prune --force --filter 'until=24h'"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project"
+          scp -o StrictHostKeyChecking=no -r $GITHUB_WORKSPACE/* $DEPLOY_USER@$DEPLOY_IP:~/team-project/
+
+      - name: Deploy Production Application
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            docker compose -f ~/team-project/prd.yml up -d --remove-orphans &&
+            docker system prune --force --filter 'until=24h'
+          "

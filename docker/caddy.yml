@@ -4,12 +4,10 @@ services:
     image: caddy:2-alpine
     restart: always
     ports:
-      - '80:80'
-      - '443:443'
+      - "80:80"
+      - "443:443"
     volumes:
-      - ~/caddy/Caddyfile:/etc/caddy/Caddyfile
-      - ~/caddy/data:/data
-      - ~/caddy/config:/config
+      - ./Caddyfile:/etc/caddy/Caddyfile
     networks:
       - app-network
 networks:

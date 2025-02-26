@@ -70,14 +70,22 @@ jobs:
         run: |
           ssh-keyscan -H ${{ secrets.DEPLOY_IP }} >> ~/.ssh/known_hosts
 
-      - name: Deploy Development
+      - name: Transfer deployment files to VM (Development)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/dev.yml up -d --remove-orphans && docker system prune --force --filter 'until=24h'"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project"
+          scp -o StrictHostKeyChecking=no -r ./docker/* $DEPLOY_USER@$DEPLOY_IP:~/team-project/
+
+      - name: Deploy Development Environment
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            docker compose -f ~/team-project/dev.yml up -d --remove-orphans &&
+            docker system prune --force --filter 'until=24h'
+          "
 
   deploy-prod:
     name: Deploy Production via SSH
-    runs-on: self-hosted
     needs: deploy-dev
+    runs-on: self-hosted
     if: success() && startsWith(github.ref, 'refs/tags/')
     concurrency:
       group: deployment
@@ -86,7 +94,7 @@ jobs:
       DEPLOY_IP: ${{ secrets.DEPLOY_IP }}
       DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up SSH key for connection
@@ -101,12 +109,12 @@ jobs:
         run: |
           ssh-keyscan -H ${{ secrets.DEPLOY_IP }} >> ~/.ssh/known_hosts
 
-      - name: Transfer repository to VM
+      - name: Transfer deployment files to VM (Production)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project"
-          scp -o StrictHostKeyChecking=no -r $GITHUB_WORKSPACE/* $DEPLOY_USER@$DEPLOY_IP:~/team-project/
+          scp -o StrictHostKeyChecking=no -r ./docker/* $DEPLOY_USER@$DEPLOY_IP:~/team-project/
 
-      - name: Deploy Production Application
+      - name: Deploy Production Environment
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
             docker compose -f ~/team-project/prd.yml up -d --remove-orphans &&

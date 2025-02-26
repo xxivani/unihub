@@ -45,7 +45,7 @@ jobs:
           docker push ghcr.io/uob-team-project/team77-client:latest
 
   deploy-dev:
-    name: Deploy Development
+    name: Deploy Development 
     needs: build-push
     runs-on: self-hosted
     if: success() && ( contains(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags/') )

@@ -1,6 +1,10 @@
 name: Build, Push, and Deploy Docker Images
 
-on: [push, pull_request]
+on:
+  push:
+    tags:
+      - '*'
+
 
 
 permissions:

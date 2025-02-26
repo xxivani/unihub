@@ -45,7 +45,7 @@ jobs:
           docker push ghcr.io/uob-team-project/team77-client:latest
 
   deploy-dev:
-    name: Deploy Development
+    name: Deploy Development via SSH
     needs: build-push
     runs-on: self-hosted
     if: success() && ( contains(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags/') )
@@ -71,11 +71,11 @@ jobs:
         run: |
           ssh-keyscan -H ${{ secrets.DEPLOY_IP }} >> ~/.ssh/known_hosts
 
-      - name: Clean previous deployment on VM
+      - name: Clear previous deployment on VM
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "rm -rf ~/team-project || true"
 
-      - name: Transfer deployment files to VM (Dev)
+      - name: Transfer deployment files to VM (Development)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project"
           scp -o StrictHostKeyChecking=no -r ./docker/* $DEPLOY_USER@$DEPLOY_IP:~/team-project/
@@ -83,6 +83,10 @@ jobs:
       - name: Clean up old containers on VM (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/dev.yml down --remove-orphans || true && docker container prune -f"
+
+      - name: Force remove any container bound to port 3000
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker rm -f \$(docker ps -q --filter 'publish=3000') || true"
 
       - name: Deploy Development Environment
         run: |

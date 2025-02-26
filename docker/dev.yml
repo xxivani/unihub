@@ -32,7 +32,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./docker:/etc/caddy
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile
     depends_on:
       - team77-dev-server
     networks:

@@ -1,0 +1,44 @@
+.right-box {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.right-box form {
+    display: flex;
+    flex-direction: column;
+}
+
+.right-box form label {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.right-box form input,
+.right-box form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.right-box form textarea {
+    resize: vertical;
+}
+
+.right-box button {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.right-box button:hover {
+    background-color: #333333;
+}

@@ -1,0 +1,25 @@
+.left-box {
+    background-color: #D9CDBE;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.left-box h2 {
+    font-size: 40px;
+    font-style: bold;
+    margin-bottom: 4px;
+    margin-left: 10px;
+}
+
+.left-box p {
+    font-size: 16px;
+    margin-bottom: 16px;
+    margin-left: 10px
+}
+
+.left-box img {
+    width: 100%;
+    padding: 10px;
+}

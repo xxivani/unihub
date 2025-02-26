@@ -1,31 +1,68 @@
 version: "3.8"
 
 services:
-  server:
+  # Database container using PostgreSQL
+  db:
+    image: postgres:14-alpine
+    container_name: team77-db
+    restart: always
+    environment:
+      POSTGRES_USER: your_db_user
+      POSTGRES_PASSWORD: your_db_password
+      POSTGRES_DB: your_db_name
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - prd-network
+
+  # Backend container
+  team77-prd-server:
+    container_name: team77-prd-server
     image: ghcr.io/uob-team-project/team77-server:latest
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - DATABASE_URL=postgres://your_db_user:your_db_password@db:5432/your_db_name
+    depends_on:
+      - db
+    networks:
+      - prd-network
     ports:
-      - "3000:3000"
-    networks:
-      - app-network
+      - "9090:8080"
 
-  client:
+  # Frontend container
+  team77-prd-client:
+    container_name: team77-prd-client
     image: ghcr.io/uob-team-project/team77-client:latest
-    expose:
-      - "80"  # Removes host port binding to prevent conflicts
+    environment:
+      - NODE_ENV=production
+      - PORT=80
+      - REACT_APP_API_URL=http://team77-prd-server:8080
+    depends_on:
+      - team77-prd-server
     networks:
-      - app-network
+      - prd-network
+    expose:
+      - "80"
 
-  caddy:
-    image: caddy:2-alpine
+  # Nginx reverse proxy container
+  nginx:
+    container_name: team77-prd-nginx
+    image: nginx:alpine
     restart: always
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./docker/Caddyfile:/etc/caddy/Caddyfile
+      - ./docker/nginx-prod.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - team77-prd-server
     networks:
-      - app-network
+      - prd-network
 
 networks:
-  app-network:
+  prd-network:
     driver: bridge
+
+volumes:
+  db-data:

@@ -2,10 +2,11 @@ name: Build, Push, and Deploy Docker Images
 
 on:
   push:
+    branches:
+      - main
     tags:
-      - '*'
-
-
+      - 'v*'
+  pull_request:
 
 permissions:
   contents: read
@@ -41,47 +42,65 @@ jobs:
           docker tag ghcr.io/uob-team-project/team77-client:${{ github.sha }} ghcr.io/uob-team-project/team77-client:latest
           docker push ghcr.io/uob-team-project/team77-client:${{ github.sha }}
           docker push ghcr.io/uob-team-project/team77-client:latest
-  
-  deploy:
+
+  deploy-dev:
+    name: Deploy Development via SSH
     needs: build-push
     runs-on: self-hosted
+    if: success() && ( contains(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags/') )
+    concurrency:
+      group: deployment
+    env:
+      RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
+      DEPLOY_IP: ${{ secrets.DEPLOY_IP }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
     steps:
-      - name: Cleanup problematic directories
-        run: |
-          sudo rm -rf /home/ubuntu/actions-runner/_work/team77/team77/caddy/config/caddy || true
-          sudo rm -rf /home/ubuntu/actions-runner/_work/team77/team77/caddy/data/caddy || true
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Manual GHCR login (if needed)
+      - name: Set up SSH key for connection
         run: |
-          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          mkdir -p ~/.ssh
+          echo "$RSA_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
 
-      - name: Ensure Docker Compose v2 is installed
+      - name: Add SSH known hosts
         run: |
-          if ! docker compose version >/dev/null 2>&1; then
-            echo "Docker Compose v2 not found. Installing..."
-            sudo apt-get update
-            sudo apt-get install -y docker-compose-plugin
-          else
-            echo "Docker Compose v2 is already installed."
-          fi
+          ssh-keyscan -H ${{ secrets.DEPLOY_IP }} >> ~/.ssh/known_hosts
 
-      - name: Deploy with Docker Compose v2
+      - name: Deploy Development
         run: |
-          docker compose pull
-          docker compose down || true
-          docker compose up -d
-          docker system prune --force --filter "until=24h"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/dev.yml up -d --remove-orphans && docker system prune --force --filter 'until=24h'"
 
-      - name: Restart Caddy to Apply Changes
+  deploy-prod:
+    name: Deploy Production via SSH
+    needs: deploy-dev
+    runs-on: self-hosted
+    if: success() && startsWith(github.ref, 'refs/tags/')
+    concurrency:
+      group: deployment
+    env:
+      RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
+      DEPLOY_IP: ${{ secrets.DEPLOY_IP }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH key for connection
         run: |
-          docker compose restart caddy || true
+          mkdir -p ~/.ssh
+          echo "$RSA_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
+
+      - name: Add SSH known hosts
+        run: |
+          ssh-keyscan -H ${{ secrets.DEPLOY_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy Production
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/prd.yml up -d --remove-orphans && docker system prune --force --filter 'until=24h'"

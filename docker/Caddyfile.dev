@@ -1,0 +1,14 @@
+{
+    email no-reply@unihub.bham.team
+    acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+team77.dev.bham.team {
+    handle_errors {
+        respond "Error connecting to the development backend at http://team77-dev-server:8080.
+
+After a commit has deployed, wait 30 seconds and refresh this page.
+If still not live, login to the VM via SSH and try to debug using 'docker compose -f ~/team-project/dev.yml up'"
+    }
+    reverse_proxy http://team77-dev-server:8080
+}

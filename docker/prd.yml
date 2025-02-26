@@ -31,7 +31,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./caddy:/etc/caddy
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile
+
     depends_on:
       - team77-prd-server
       - team77-prd-client

@@ -24,6 +24,20 @@ services:
     networks:
       - dev-network
 
+  caddy:
+    container_name: team77-dev-caddy
+    image: caddy:2-alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/Caddyfile.dev:/etc/caddy/Caddyfile
+    depends_on:
+      - team77-dev-server
+    networks:
+      - dev-network
+
 networks:
   dev-network:
     driver: bridge

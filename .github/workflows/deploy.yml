@@ -44,7 +44,7 @@ jobs:
           docker push ghcr.io/uob-team-project/team77-client:latest
 
   deploy-dev:
-    name: Deploy Development 
+    name: Deploy Development
     needs: build-push
     runs-on: self-hosted
     if: success() && ( contains(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags/') )
@@ -74,26 +74,32 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "rm -rf ~/team-project || true"
 
+
+      - name: Create db.env on VM (Dev)
+        if: env.DB_ENV_DEV != ''
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
+            "mkdir -p ~/team-project && echo '${{ secrets.DB_ENV_DEV }}' > ~/team-project/db.env"
+
       - name: Transfer deployment files to VM (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project"
           scp -o StrictHostKeyChecking=no -r ./docker/* $DEPLOY_USER@$DEPLOY_IP:~/team-project/
-          scp -o StrictHostKeyChecking=no ./dev.yml $DEPLOY_USER@$DEPLOY_IP:~/team-project/
 
       - name: Clean up old containers on VM (Dev)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/dev.yml down --remove-orphans || true && docker container prune -f"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
+            "docker compose -f ~/team-project/dev.yml down --remove-orphans || true && docker container prune -f"
 
       - name: Force remove any container bound to port 3000
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker rm -f \$(docker ps -q --filter 'publish=3000') || true"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
+            "docker rm -f \$(docker ps -q --filter 'publish=3000') || true"
 
       - name: Deploy Development Environment
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            docker compose -f ~/team-project/dev.yml up -d --remove-orphans &&
-            docker system prune --force --filter 'until=24h'
-          "
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
+            "docker compose -f ~/team-project/dev.yml up -d --remove-orphans && docker system prune --force --filter 'until=24h'"
 
   deploy-prod:
     name: Deploy Production
@@ -122,23 +128,27 @@ jobs:
         run: |
           ssh-keyscan -H ${{ secrets.DEPLOY_IP }} >> ~/.ssh/known_hosts
 
-      - name: Clean previous deployment on VM (Prod)
+      - name: Clear previous deployment on VM (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "rm -rf ~/team-project || true"
+
+      # Create db.env on the VM from DB_ENV (production credentials)
+      - name: Create db.env on VM (Prod)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
+            "mkdir -p ~/team-project && echo '${{ secrets.DB_ENV }}' > ~/team-project/db.env"
 
       - name: Transfer deployment files to VM (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project"
           scp -o StrictHostKeyChecking=no -r ./docker/* $DEPLOY_USER@$DEPLOY_IP:~/team-project/
-          scp -o StrictHostKeyChecking=no ./prd.yml $DEPLOY_USER@$DEPLOY_IP:~/team-project/
 
       - name: Clean up old containers on VM (Prod)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/prd.yml down --remove-orphans || true && docker container prune -f"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
+            "docker compose -f ~/team-project/prd.yml down --remove-orphans || true && docker container prune -f"
 
       - name: Deploy Production Environment
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            docker compose -f ~/team-project/prd.yml up -d --remove-orphans &&
-            docker system prune --force --filter 'until=24h'
-          "
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
+            "docker compose -f ~/team-project/prd.yml up -d --remove-orphans && docker system prune --force --filter 'until=24h'"

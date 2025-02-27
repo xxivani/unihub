@@ -132,10 +132,10 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "rm -rf ~/team-project || true"
 
-      - name: Create db.env on VM (Prod)
+      - name: Create db.env on VM (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
-            "mkdir -p ~/team-project && echo '${{ secrets.DB_ENV }}' > ~/team-project/db.env"
+            "mkdir -p ~/team-project && printf '%s' '${{ secrets.DB_ENV }}' > ~/team-project/db.env"
 
       - name: Transfer deployment files to VM (Prod)
         run: |

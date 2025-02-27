@@ -4,7 +4,7 @@ import CustomNavbar from "./components/Navbar/navbar";
 import Home from "./pages/Home";
 import Clubs from "./pages/Clubs";
 import Events from "./pages/Events";
-import RoleOpenings from "./pages/RoleOpenings";
+import RoleOpenings from "./pages/RoleOpening/RoleOpenings";
 import ExternalEvents from "./pages/ExternalEvents";
 import Footer from "./components/footer/footer";
 
@@ -22,6 +22,7 @@ import EditEvent from "./pages/committee/committee-events/EditEvent";
 import ViewRoles from "./pages/committee/commitee-Roles/ViewRoles";
 import CreateRole from "./pages/committee/commitee-Roles/CreateRole";
 import EditRole from "./pages/committee/commitee-Roles/EditRole";
+import ApplyRoleOpening from "./pages/RoleOpening/ApplyRoleOpening";
 
 function App() {
   return (
@@ -29,13 +30,12 @@ function App() {
       <CustomNavbar />
       <div className="main-content">
         <Routes>
-          {/* Default route should be Home */}
           <Route path="/" element={<Home />} />
 
-          {/* Public Routes */}
           <Route path="/clubs" element={<Clubs />} />
           <Route path="/events" element={<Events />} />
           <Route path="/roles" element={<RoleOpenings />} />
+          <Route path="/roles/apply" element={<ApplyRoleOpening />} />
           <Route path="/external-events" element={<ExternalEvents />} />
 
           {/* Committee Routes */}

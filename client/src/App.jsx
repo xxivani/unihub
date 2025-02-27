@@ -29,7 +29,7 @@ function App() {
       <CustomNavbar />
       <div className="main-content">
         <Routes>
-          {/* Default route should be Home */}
+      
           <Route path="/" element={<Home />} />
 
           {/* Public Routes */}

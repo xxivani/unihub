@@ -11,7 +11,7 @@ services:
   client:
     image: ghcr.io/uob-team-project/team77-client:latest
     expose:
-      - "80"  # Removes host port binding to prevent conflicts
+      - "80"  
     networks:
       - app-network
 

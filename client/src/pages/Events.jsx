@@ -1,12 +1,15 @@
+//Components ordering for the event page
 
+import TopSection from "../components/events/top-section";
+import BrowseEvents from "../components/events/browse-events";
 
-const Events = () => {
+const Home = () => {
   return (
     <div>
-        <h1>Events Page</h1>
-        <p>upcoming events</p>
+      <TopSection/>
+      <BrowseEvents/>
     </div>
-    );
+  );
 };
 
-export default Events;
+export default Home;

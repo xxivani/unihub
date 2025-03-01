@@ -145,6 +145,8 @@ import Auth from "./pages/Auth";
 import Home from "./pages/Home";
 import Clubs from "./pages/Clubs";
 import Events from "./pages/Events";
+import RoleOpenings from "./pages/RoleOpenings";
+import NewsSection from "./pages/News";
 import ExternalEvents from "./pages/ExternalEvents";
 import RoleOpenings from "./pages/RoleOpenings";
 import Footer from "./components/footer/footer";
@@ -185,7 +187,7 @@ function AppContent() {
       {!isAuthPage &&  !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <CustomNavbar />} {/* Hide Navbar on Auth Page */}
       <div className="main-content">
         <Routes>
-          {/* Default route should be Home */}
+      
           <Route path="/" element={<Home />} />
 
           {/* Public Routes */}
@@ -195,6 +197,8 @@ function AppContent() {
           <Route path="/roles" element={<RoleOpenings />} />
           <Route path="/external-events" element={<ExternalEvents />} />
           <Route path="/details-ext" element={<DetailsExt />} />
+          <Route path="/news" element={<NewsSection />} />
+
 
           {/* Committee Routes */}
           <Route path="/committee/dashboard" element={<Dashboard />} />

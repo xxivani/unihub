@@ -1,0 +1,12 @@
+.entity6-title1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    margin: 0px;
+    font-style: bold;
+}
+
+.entity6-title1 h1 {
+    font-size: 2em;
+}

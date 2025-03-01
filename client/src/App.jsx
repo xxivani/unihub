@@ -53,7 +53,7 @@ function AppContent() {
           <Route path="/clubs" element={<Clubs />} />
           <Route path="/events" element={<Events />} />
           <Route path="/roles" element={<RoleOpenings />} />
-          <Route path="/roles/apply" element={<ApplyRoleOpening />} />
+          <Route path="/roles/apply/:index" element={<ApplyRoleOpening />} />
           <Route path="/external-events" element={<ExternalEvents />} />
           <Route path="/details-ext" element={<DetailsExt />} />
           <Route path="/news" element={<NewsSection />} />

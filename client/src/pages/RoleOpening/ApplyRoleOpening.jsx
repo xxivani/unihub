@@ -1,12 +1,12 @@
-import RightBoxEdit from "../../components/committeeRO/RightBoxEdit";
-import TitleEdit from "../../components/committeeRO/TitleEdit";
+import FormApply from "../../components/viewRO/FormApply";
+import TitleApply from "../../components/viewRO/TitleApply";
 import "./ApplyRoleOpening.css"
 
 const ApplyRoleOpening = () => {
     return (
-        <div className="apply-role-opening">
-            <TitleEdit />
-            <RightBoxEdit />
+        <div className="entity6-apply-role-opening">
+            <TitleApply />
+            <FormApply />
         </div>
     );
 };

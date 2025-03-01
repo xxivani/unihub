@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Clubs from "./pages/Clubs";
 import Events from "./pages/Events";
 import RoleOpenings from "./pages/RoleOpenings";
+import NewsSection from "./pages/News";
 import ExternalEvents from "./pages/ExternalEvents";
 import Footer from "./components/footer/footer";
 
@@ -23,6 +24,7 @@ import ViewRoles from "./pages/committee/commitee-Roles/ViewRoles";
 import CreateRole from "./pages/committee/commitee-Roles/CreateRole";
 import EditRole from "./pages/committee/commitee-Roles/EditRole";
 
+
 function App() {
   return (
     <Router>
@@ -37,6 +39,8 @@ function App() {
           <Route path="/events" element={<Events />} />
           <Route path="/roles" element={<RoleOpenings />} />
           <Route path="/external-events" element={<ExternalEvents />} />
+          <Route path="/news" element={<NewsSection />} />
+
 
           {/* Committee Routes */}
           <Route path="/committee/dashboard" element={<Dashboard />} />

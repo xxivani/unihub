@@ -13,6 +13,7 @@ const CustomNavbar = () => {
             <Nav.Link as={Link} to="/clubs">Clubs</Nav.Link>
             <Nav.Link as={Link} to="/events">Events</Nav.Link>
             <Nav.Link as={Link} to="/roles">Role Openings</Nav.Link>
+            <Nav.Link as={Link} to="/news">News</Nav.Link>
             <Nav.Link as={Link} to="/external-events">External Events</Nav.Link>
 
             {/* Committee Dropdown */}

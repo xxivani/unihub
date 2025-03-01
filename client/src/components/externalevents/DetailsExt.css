@@ -1,0 +1,339 @@
+/* General Page Layout */
+.page-container-details-ext {
+    display: flex;
+    justify-content: center;
+    padding: 5rem;
+    background-color: #f4f4f4;
+}
+
+.content-wrapper-details-ext {
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Header */
+.detail-header-details-ext {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.detail-title-details-ext {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.event-logo-details-ext {
+    width: 50px;
+    height: 50px;
+}
+
+.event-title-details-ext {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.detail-buttons-details-ext {
+    display: flex;
+    gap: 1rem;
+}
+
+.follow-button-details-ext,
+.notification-button-details-ext {
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+}
+
+.follow-button-details-ext {
+    width: 200px;  /* Set the width to a fixed value */
+    padding: 0.5rem 1rem;  /* Optional: Adjust padding for height */
+    border: none;
+    cursor: pointer;
+    background-color: #e6d69c;
+    color: rgb(0, 0, 0);
+}
+
+
+.notification-button-details-ext {
+    color:black;
+}
+
+/* Main Content */
+.detail-content-details-ext {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+@media (min-width: 768px) {
+    .detail-content-details-ext {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Event Description */
+.detail-description-details-ext {
+    background-color: white;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.description-image-details-ext {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.event-description-image-details-ext {
+    width: 100%;
+    max-width: 600px;  /* You can adjust the width based on your preference */
+    height: 200px;
+    border-radius: 0.75rem;
+    object-fit: cover;
+    
+}
+
+.description-text-details-ext {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #555;
+}
+
+.detailext-details-details-ext {
+    margin-top: 1rem;
+}
+
+.detail-item-details-ext {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.icon-green-details-ext {
+    color: #000000;
+}
+
+/* Ticket Section */
+.ticket-section-details-ext {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ticket-box-details-ext {
+    background-color: white;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    width: 100%;
+}
+
+/* Ticket Price */
+.ticket-price-details-ext {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.ticket-availability-details-ext {
+    margin-bottom: 1rem;
+}
+
+.availability-item-details-ext {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+
+/* Event Team Box */
+.event-team-box-details-ext {
+    background-color: white;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.section-title-details-ext {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.event-team-grid-details-ext {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.team-member-details-ext {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.member-avatar-details-ext {
+    font-size: 2rem;
+    color: #ccc;
+}
+
+.member-info-details-ext {
+    text-align: left;
+}
+
+.member-role-details-ext {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #555;
+}
+
+.member-name-details-ext {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+/* Form Overlay - with specific class names */
+.details-ext-form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Form Container - with specific class names */
+.details-ext-form-container {
+    background-color: white;
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.details-ext-close-form-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #777;
+}
+
+.details-ext-form-container h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    color: #333;
+    text-align: center;
+}
+
+/* Form Elements - with specific class names */
+.details-ext-signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.details-ext-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.details-ext-form-group label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #555;
+}
+
+.details-ext-form-group input {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.details-ext-form-actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.details-ext-submit-button {
+    background-color: #e6d69c;
+    color: black;
+    border: none;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 250px;
+    transition: background-color 0.3s;
+}
+
+.details-ext-submit-button:hover {
+    background-color: #d9c88a;
+}
+
+/* Success Modal - with specific class names */
+.details-ext-success-modal {
+    background-color: white;
+    border-radius: 10px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.details-ext-success-modal h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.details-ext-success-modal p {
+    margin-bottom: 1.5rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+.details-ext-return-button {
+    background-color: #2A3B1C;
+    color: rgb(255, 249, 249);
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.details-ext-return-button:hover {
+    background-color: #2A3B1C;
+}

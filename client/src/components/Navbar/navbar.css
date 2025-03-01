@@ -90,3 +90,25 @@
     }
   }
   
+
+  .bell-icon, .user-icon {
+    display: inline-block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .bell-icon {
+    background-image: url('../../assets/bell-icon.svg');
+    width: 22px;            
+    height: 22px;          
+  }
+  
+  .user-icon {
+    background-image: url('../../assets/user-icon.png');
+    width: 24px;          
+    height: 24px;  
+  }
+  

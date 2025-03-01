@@ -27,11 +27,11 @@ const CustomNavbar = () => {
             </NavDropdown>
           </Nav>
 
-          {/* Right Side (Login & Notifications) */}
+          {/* Login & Notifications */}
           <Nav>
             <Nav.Link as={Link} to="/auth">Register / Login</Nav.Link>
-            <Nav.Link><i className="bi bi-bell"></i></Nav.Link>
-            <Nav.Link><i className="bi bi-person-circle"></i></Nav.Link>
+            <Nav.Link><i className="bell-icon"></i></Nav.Link>
+            <Nav.Link><i className="user-icon"></i></Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

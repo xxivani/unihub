@@ -1,6 +1,16 @@
+import BudgetDashboard from '../../components/committee/budget-tracker/BudgetDashboard';
+import Sidebar from '../../components/sidebar/Sidebar';
+
 const BudgetTracker = () => {
-    return ;
-  };
+  return (
+    <div>
+      <BudgetDashboard />
+      <Sidebar />
+      
+    </div>
+  );
   
-  export default BudgetTracker;
+};
   
+  
+export default BudgetTracker;

@@ -1,11 +1,11 @@
-.card-buttons {
+.entity6-card-buttons {
     display: flex;
     flex-direction: column;
     margin-right: 10px; 
     
 }
 
-.rocard {
+.entity6-rocard {
     display: flex;
     flex-direction: row !important;
     border: 1px solid #ccc;
@@ -16,28 +16,18 @@
     background-color: white;
 }
 
-.card-image {
+.entity6-card-image {
     width: 300px; /* Adjust size as needed */
     height: 200px;
     margin-right: 20px;
     border-radius: 8px;
 }
 
-.card-content {
+.entity6-card-content {
     flex-grow: 1;
 }
 
-.card h2 {
-    font-size: 1.8em;
-    margin-bottom: 8px;
-}
-
-.card p {
-    margin: 8px 0;
-    font-size: 1.2em;
-}
-
-.view-button {
+.entity6-view-button {
     text-align: center;
     color: #000;
     font-weight: 500;
@@ -52,7 +42,7 @@
     margin-bottom: 10px;
 }
 
-.apply-button {
+.entity6-apply-button {
     text-align: center;
     text-decoration: none;
     font-weight: 500;

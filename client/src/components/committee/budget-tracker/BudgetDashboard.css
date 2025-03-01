@@ -1,0 +1,213 @@
+.budget-dashboard {
+    display: flex;
+    margin-top: 90px;
+    margin-left: 100px;
+    height: 1000px;
+}
+
+.main-budget-dash {
+    flex: 3;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+
+}
+
+.budget-dashboard-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.budget-boxes {
+    display: flex;
+    gap: 20px;
+    width: 600px;
+    height: 150px;
+    margin-top: 15px;
+    margin-left: 20px;
+    
+}
+.budget-box1, .budget-box2, .budget-box3 {
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    height: 150px;
+    width: 210px;
+    padding: 15px;
+    overflow: hidden;
+    position: relative;
+    
+}
+
+.budget-box-title {
+    margin-left: 6px;
+    gap: 10px;
+    opacity: 0.7;
+}
+.budget-icon {
+    font-size: 22px;
+    margin-left: 10px;
+    opacity: 0.7;
+    margin-top: 3px;
+    
+}
+.icon {
+    display: flex;
+    flex-direction: row;
+}
+.amount {
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+}
+.graph-overlay {
+    position: absolute;
+    padding: 10px;
+    bottom: 0; 
+    left: 50%;
+    width: 95%;
+    height: 45%;
+    background-image: url('./Image-removebg-preview.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.8;
+    pointer-events: none;
+    transform: translateX(-50%);
+
+}
+
+
+.budget-box-wrapper {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 100%;
+}
+
+.budget-box1 {
+    background-color: #88b663;
+
+}
+.budget-box2 {
+    background-color: #d9cdbe;
+    
+}
+.budget-box3 {
+    background-color: #f6c955;
+   
+}
+
+.monthly-expense{
+    background-color: white;
+    height: 370px;
+    width: 800px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05);
+    gap: 20px;
+    margin-left: 20px;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+
+.latest-event-expense-title {
+    margin-top: 20px;
+    margin-left: 20px;
+
+}
+
+.latest-event-expense {
+    background-color: white;
+    height: 300px;
+    width: 800px;
+    box-shadow: 0px 0px 7px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-left: 20px;
+    margin-top: 20px;
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    /* align-items: center; */
+
+}
+
+.expense-breakdown {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    
+}
+.expense-breakdown-chart {
+    background-color: white;
+    padding: 20px;
+    height: 250px;
+    width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.expense-breakdown-title {
+    /* margin-top: 10px; */
+    margin-left: 20px;
+}
+
+.add-expense-button {
+    /* flex: 1; */
+    display: flex;
+    flex-direction: row;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    background-color: #F4BE37;
+}
+.add-expense-icon {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4be37;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.add-expense-icon:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+.expense-tooltip {
+    position: absolute;
+    left: 70px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    font-size: 14px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+.budget-committee-members {
+    background-color: white;
+    padding: 20px;
+    height: 667px;
+    width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.budget-committee-members-title {
+    margin-top: 10px;
+    margin-left: 20px;
+}
+

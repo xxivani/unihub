@@ -1,10 +1,13 @@
 
+import React from "react";
+import TopSection from "../components/Clubs/topSection"; // Import the TopSection component
+import BrowseClubs from "../components/Clubs/BrowseClubs"; // Import BrowseClubs component
 
 const Clubs = () => {
   return (
     <div>
-      <h1>Welcome to Clubs</h1>
-      <p>Discover and follow university clubs.</p>
+      <TopSection />
+      <BrowseClubs /> {/* This renders the list of clubs */}
     </div>
   );
 };

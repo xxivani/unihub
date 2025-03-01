@@ -21,15 +21,15 @@ function Login() {
   };
 
   const handleLogin = (e) => {
-    e.preventDefault(); // Prevent page refresh
-
-    // Example Admin Credentials
+    e.preventDefault();
+  
     const adminEmail = "admin@123";
     const adminPassword = "admin@123";
-
+  
     if (email === adminEmail && password === adminPassword) {
+      localStorage.setItem("user", JSON.stringify({ email })); // Save user data
       alert("Admin login successful!");
-      navigate("/"); // Redirect to home (or admin dashboard)
+      navigate("/"); // Redirect
     } else {
       alert("Invalid email or password");
     }

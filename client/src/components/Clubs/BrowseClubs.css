@@ -1,0 +1,55 @@
+.browse-clubs {
+    width: 100%;
+    min-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 2vh;
+}
+
+
+.browse-clubs-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+
+.browse-clubs-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0 20px;
+}
+
+/* 
+   The event-pagination classes 
+   to match your teammate’s styling 
+*/
+.event-pagination {
+    margin: 0 auto;
+}
+
+.event-pagination a {
+    border-radius: 15px;
+    margin-top: 5vh;
+    color: #313131;
+    padding: 8px 16px;
+    font-size: 16px;
+    text-decoration: none;
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+}
+
+.event-pagination a.active {
+    background-color: #b3b3b3;
+    border-radius: 15px;
+    color: white;
+}
+
+.event-pagination a:hover:not(.active) {
+    background-color: #e3dfd9;
+}

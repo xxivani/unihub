@@ -1,0 +1,22 @@
+.entity6-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    margin-top: 80px;
+    margin-left: 18px;
+    font-style: bold;
+}
+
+.entity6-title h1 {
+    font-size: 2em;
+}
+
+.create-role-btn {
+    padding: 10px 20px;
+    background-color: #101923;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 10px;
+}

@@ -1,8 +1,16 @@
 import './RightBox.css';
+import { FaTimes } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const RightBox = () => {
+    const navigate = useNavigate();
+
+    const handleBack = () => {
+        navigate(-1); // Navigate to the previous page
+    };
     return (
-        <div className="right-box">
+        <div className="entity6-right-box">
+            <FaTimes className="entity6-close-icon" onClick={handleBack} />
             <form>
                 <label htmlFor="position">Enter Position*</label>
                 <input type="text" id="position" name="position" placeholder="Treasurer" />

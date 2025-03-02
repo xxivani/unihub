@@ -1,15 +1,14 @@
-
-
-
+import Title from "../../../components/committeeRO/Title";
+import ROtable from "../../../components/committeeRO/ROtable";
 
 const ViewRoles = () => {
-    return (
-      <div>
-        <h1>Welcome to Clubs</h1>
-        <p>Discover and follow university clubs.</p>
-      </div>
+  return (
+    <div>
+        <Title />
+        <ROtable />
+    </div>
     );
-  };
+};
   
 export default ViewRoles;
   

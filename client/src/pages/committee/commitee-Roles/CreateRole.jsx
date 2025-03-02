@@ -1,13 +1,14 @@
-
+import "./EditRole.css"
+import LeftBoxCreate from "../../../components/committeeRO/LeftBoxCreate";
+import RightBoxCreate from "../../../components/committeeRO/RightBoxCreate";
 
 const CreateRole = () => {
     return (
-      <div>
-        <h1>Welcome to Clubs</h1>
-        <p>Discover and follow university clubs.</p>
-      </div>
-    );
-  };
-  
-  export default CreateRole;
-  
+        <div className="edit-role-opening">
+            <LeftBoxCreate />
+            <RightBoxCreate />
+        </div>
+    ); 
+};
+
+export default CreateRole;

@@ -7,14 +7,9 @@ const CustomNavbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in (Example: using localStorage)
-    const user = localStorage.getItem("user");
-    if (user) {
-      setIsLoggedIn(true);
-    }
+    const user = sessionStorage.getItem("user"); // Use sessionStorage instead
+    setIsLoggedIn(!!user);
   }, []);
-
-
   return (
     <Navbar bg="dark" variant="dark" expand="lg" fixed="top"> 
       <Container>

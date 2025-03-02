@@ -48,6 +48,8 @@ function AppContent() {
         <Routes>
           {/* Default route should be Home */}
           <Route path="/" element={<Home />} />
+          {/* Auth Route */}
+          <Route path="/auth" element={<Auth />} />
 
           {/* Public Routes */}
           <Route path="/clubs" element={<Clubs />} />

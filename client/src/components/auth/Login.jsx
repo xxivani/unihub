@@ -27,7 +27,7 @@ function Login() {
     const adminPassword = "admin@123";
   
     if (email === adminEmail && password === adminPassword) {
-      localStorage.setItem("user", JSON.stringify({ email })); // Save user data
+      sessionStorage.setItem("user", JSON.stringify({ email }));
       alert("Admin login successful!");
       navigate("/"); // Redirect
     } else {

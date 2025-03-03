@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import roleTableData from './roleTableData';
 import { FaEye, FaPencilAlt } from 'react-icons/fa'; // Import icons
-import './ROTable.css';
+import './ROtable.css';
 
 const ROTable = () => {
   return (

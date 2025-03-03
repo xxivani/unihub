@@ -29,7 +29,7 @@ const CustomNavbar = () => {
               <NavDropdown.Item as={Link} to="/committee/events">Events</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/committee/roles">Role Openings</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/committee/budget-tracker">Budget Tracker</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/committee/calendar">Committee Calendar</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/committee/image-management">Image Management</NavDropdown.Item>
             </NavDropdown>
           </Nav>
 

@@ -14,8 +14,7 @@ import Footer from "./components/footer/footer";
 // Committee Pages
 import Dashboard from "./pages/committee/Dashboard";
 import BudgetTracker from "./pages/committee/BudgetTracker";
-import CommitteeCalendar from "./pages/committee/CommitteeCalendar";
-
+import MultiEventImages from "./pages/committee/ImageManagement"
 // Committee Events Pages
 import ViewEvents from "./pages/committee/committee-events/ViewEvents";
 import CreateEvent from "./pages/committee/committee-events/CreateEvent";
@@ -67,7 +66,7 @@ function AppContent() {
           {/* Committee Routes */}
           <Route path="/committee/dashboard" element={<Dashboard />} />
           <Route path="/committee/budget-tracker" element={<BudgetTracker />} />
-          <Route path="/committee/calendar" element={<CommitteeCalendar />} />
+          <Route path="/committee/image-management" element={<MultiEventImages />} />
 
           {/* Committee Events Routes */}
           <Route path="/committee/events" element={<ViewEvents />} />

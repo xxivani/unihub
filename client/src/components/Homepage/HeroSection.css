@@ -9,8 +9,7 @@
   background-size: cover;
   background-position: center;
   position: relative;
-  filter: saturate(1.6);
-  padding: 2rem; /* Add some spacing if needed */
+  padding: 2rem; 
 }
 
 

@@ -1,4 +1,4 @@
-.hero-container-landing {
+/* .hero-container-landing {
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -8,9 +8,8 @@
   background-size: cover;
   background-position: center;
   position: relative;
-  /* filter: saturate(1.6); */
   padding: 2rem;
-}
+} */
 
 
 .hero-overlay {

@@ -17,6 +17,10 @@ function AccountVerified() {
     navigate(-1); // Go back to the previous page
   };
 
+  const handleGoToDashboard = () => {
+    navigate('/');  // Redirect to homepage
+  };
+
   return (
     <div className="auth-page">
       {/* Background Shapes */}
@@ -49,7 +53,7 @@ function AccountVerified() {
               <form className="login-form">
                 <h5 className="verify-text">Your account has been verified, you are all set to explore!</h5>
                 
-                <button type="submit" className="login-button">Go to dashboard</button>
+                <button type="submit" className="login-button" onClick={handleGoToDashboard}>Go to dashboard</button>
               </form>
             </div>
 

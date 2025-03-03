@@ -1,0 +1,7 @@
+
+#root, .main-content {
+  min-height: 100vh; 
+  display: block;
+  flex: 1;
+  background: var(--bg-color, #fff);
+}

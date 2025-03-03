@@ -1,5 +1,5 @@
 
-import "./HeroSection.css?v=2"
+import "./HeroSection.css"
 
 
 const HeroSection = () => {

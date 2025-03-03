@@ -1,4 +1,4 @@
-import "./Aboutus.css?v=2"; 
+import "./Aboutus.css"
 
 
 

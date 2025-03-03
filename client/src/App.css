@@ -1,8 +1,0 @@
-
-#root, .main-content {
-  min-height: 100vh; 
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  background: var(--bg-color, #fff);
-}

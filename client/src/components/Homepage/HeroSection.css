@@ -1,17 +1,17 @@
 .hero-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  min-height: 80vh;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  min-height: 80vh !important;
   width: 100%;
+  background-image: url("/assets/images/hero.jpeg") !important;
   background-repeat: no-repeat;
-  position: relative;
+  position: relative !important;
   background-size: cover;
   background-position: center;
   filter: saturate(1.6);
 }
-
 
 
 .hero-overlay {

@@ -1,15 +1,11 @@
-import heroImage from "../../assets/hero.jpeg";
-import "./HeroSection.css";
+
+import "./HeroSection.css"
+
 
 const HeroSection = () => {
   return (
-    <div
-      className="hero-container"
-      style={{
-        backgroundImage: `url(${heroImage})`,
-      }}
-    >
-      <div className="hero-overlay"></div>
+    <div className="hero-container">
+      <div className="hero-overlay"></div> 
       <div className="text-container">
         <h1 className="hero-text">ENGAGE.</h1>
         <h1 className="hero-text explore-text">EXPLORE.</h1>
@@ -19,4 +15,6 @@ const HeroSection = () => {
   );
 };
 
+
 export default HeroSection;
+

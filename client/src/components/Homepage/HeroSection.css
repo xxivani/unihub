@@ -4,11 +4,11 @@
   align-items: center;
   min-height: 80vh;
   width: 100%;
-  background-image: url("/assets/images/hero.jpeg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   position: relative;
+  filter: saturate(1.6);
   padding: 2rem; 
 }
 

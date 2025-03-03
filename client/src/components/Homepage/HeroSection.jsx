@@ -1,10 +1,15 @@
 
 import "./HeroSection.css"
-
+import heroImage from "./hero.jpeg"
 
 const HeroSection = () => {
   return (
-    <div className="hero-container">
+    <div
+      className="hero-container"
+      style={{
+        backgroundImage: `url(${heroImage})`,
+      }}
+    >
       <div className="hero-overlay"></div> 
       <div className="text-container">
         <h1 className="hero-text">ENGAGE.</h1>

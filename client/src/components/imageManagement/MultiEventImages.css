@@ -1,0 +1,172 @@
+.imageM-card {
+    display: flex;
+    border-radius: 0;
+    background-color: rgb(251, 250, 250);
+    box-shadow: 0 2px 6px rgba(200, 200, 200, 0.4);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #fefefe;
+    width: 100%;
+    min-height: 100px;
+    max-height: 300px;
+}
+
+.imageM-image {
+    width: 250px;
+    min-height: 120px;
+    overflow: hidden;
+    flex-shrink:0;
+}
+
+.imageM-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.imageM-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    margin-left: 10px;
+    color: #333;
+}
+
+.imageM-add-image {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 10px;
+    position: relative;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    align-self: center;
+    margin-top: 10px;
+}
+
+.imageM-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding-left: 10px;
+  flex-grow: 1;
+}
+
+.imageM-box-button, .imageM-box-button.add {
+    width: 130px;
+    height: 130px;
+    font-size: 5rem;
+    color: white;
+    border: 3px solid;
+    cursor: pointer;
+    align-items: flex-end;
+}
+
+.imageM-box-button {
+    background-color: #d2e2e2;
+    color: #333;
+}
+
+.imageM-box-button.add {
+    background-color: #ffffff;
+    color: rgb(15, 15, 15);
+}
+
+.imageM-box-button.hide {
+  background-color: rgba(0,0,0,0);
+  color: rgba(0, 0, 0, 0);
+  border: none;
+}
+
+.imageM-main-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+}
+.imageM-header {
+    width: 100%;
+    display: flex;
+    height: 50px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    margin-bottom: 3rem;
+    margin-top: 100px;
+}
+
+.imageM-heading {
+    margin: 0;
+    text-align: left;
+    margin-left: 30px;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    flex-shrink: 0;
+}
+
+.imageM-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.imageM-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 2rem 0;
+    padding: 1rem 0;
+    background-color: transparent;
+}
+
+.imageM-pagination:a {
+    width: 80px;
+}
+
+.imageM-pagination-arrow, .imageM-pagination-number {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e0e0e0;
+    background-color: #cfcfcf;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #555;
+    transition: all 0.2s ease;
+}
+
+.imageM-pagination-arrow:hover, .imageM-pagination-number:hover {
+    border-color: #aaa;
+    background-color: #dbdbdb;
+}
+
+.imageM-pagination-number.active {
+    background-color: #000000;
+    color: rgb(255, 255, 255);
+    border-color: #707070;
+    font-weight: 500;
+}
+
+.imageM-pagination-ellipsis {
+    margin: 0 0.25rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    height: 40px;
+}
+
+.imageM-pagination-arrow.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

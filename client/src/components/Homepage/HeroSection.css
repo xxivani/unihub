@@ -5,7 +5,7 @@
   justify-content: flex-end;
   text-align: right;
   padding-right: 5vw;
-  background-image: url("/assets/images/hero.jpeg");
+  background-image: url("./assets/images/hero.jpeg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -20,7 +20,7 @@
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.4); 
-  z-index: 1; /* puts overlay between background and text */
+  z-index: 1;
 }
 
 .text-container {
@@ -29,7 +29,7 @@
   align-items: flex-start;
   text-align: left;
   padding-right: 5vw;
-  z-index: 2; /* makes sure text is above overlay */
+  z-index: 2; 
   position: relative; 
 }
 

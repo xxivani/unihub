@@ -5,13 +5,13 @@ import LatestEvents from "../components/Homepage/LatestNews";
 
 const Home = () => {
   return (
-    <div>
+    <>
       <HeroSection />
       <Aboutus />
       <EventCards />
       <LatestEvents />
     
-    </div>
+    </>
   );
 };
 

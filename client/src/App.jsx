@@ -5,6 +5,7 @@ import Auth from "./pages/Auth";
 import Home from "./pages/Home";
 import Clubs from "./pages/Clubs";
 import Events from "./pages/Events";
+import EventDetails from "./pages/EventDetails";
 import RoleOpenings from "./pages/RoleOpening/RoleOpenings";
 import NewsSection from "./pages/News";
 import ExternalEvents from "./pages/ExternalEvents";
@@ -54,6 +55,7 @@ function AppContent() {
           {/* Public Routes */}
           <Route path="/clubs" element={<Clubs />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/event-details" element={<EventDetails />} />
           <Route path="/roles" element={<RoleOpenings />} />
           <Route path="/roles/apply/:index" element={<ApplyRoleOpening />} />
           <Route path="/external-events" element={<ExternalEvents />} />

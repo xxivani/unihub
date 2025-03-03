@@ -3,7 +3,7 @@
 import TopSection from "../components/events/top-section";
 import BrowseEvents from "../components/events/browse-events";
 
-const Home = () => {
+const Event = () => {
   return (
     <div>
       <TopSection/>
@@ -12,4 +12,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Event;

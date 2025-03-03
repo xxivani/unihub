@@ -73,6 +73,7 @@ function AppContent() {
           <Route path="/committee/roles" element={<ViewRoles />} />
           <Route path="/committee/roles/create" element={<CreateRole />} />
           <Route path="/committee/roles/edit/:id" element={<EditRole />} />
+          {/* <Route path="/committee/roles/view/:id" element={<ViewRoleDetail />} /> */}
 
           {/* Student Route */}
           <Route path="/student" element={<Student />} /> {/* Add the new route for the Student page */}

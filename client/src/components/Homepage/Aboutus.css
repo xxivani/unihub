@@ -3,7 +3,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 80vh;
+  height: auto; 
+  margin-top: 100px; 
   width: 100%;
   margin-top: 400px;
 }
@@ -12,13 +13,12 @@
 .aboutus-card {
   background-color: #d9cdbe;
   width: 100%;
-  min-height: 570px;
+  min-height: 500px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  padding: 50px;
+  padding: 40px;
 }
 
 .aboutus-text-whole {

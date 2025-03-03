@@ -4,7 +4,17 @@ import "./Aboutus.css"
 
 const Aboutus = () =>{
     return (
-        <div className="aboutus">
+        <div className="aboutus"
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                height:"90vh",
+                marginTop: "300px",
+            }}
+        >
             <div className="aboutus-text-whole">
                 <svg xmlns="http://www.w3.org/2000/svg" width="72" height="6" viewBox="0 0 72 6" fill="none">
                     <path d="M0 2.99976H72" stroke="#1D2130" strokeWidth="5"/>

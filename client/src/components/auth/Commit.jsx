@@ -75,7 +75,7 @@ function CommitLogin() {
             </div>
 
             <div className="right-panel">
-                <button className="close-button" onClick={handleHomeClick}>x</button>
+                <button className="commitclose-button" onClick={handleHomeClick}>x</button>
                 <div className="form-container">
                     <h2 className="form-title">Create Account</h2>
 

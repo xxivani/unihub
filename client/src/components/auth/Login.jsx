@@ -57,7 +57,7 @@ function Login() {
           <button className="back-button">
             <i className="fas fa-arrow-left"></i>
           </button>
-          <button className="close-button" onClick={handleHomeClick}>
+          <button className="loginclose-button" onClick={handleHomeClick}>
             ×
           </button>
 
@@ -72,7 +72,7 @@ function Login() {
             </button>
             {/* Login Form Section */}
             <div className="login-section">
-              <h2>Login Your Account</h2>
+            <h2 style={{ marginBottom: '10px' }}>Login Your Account</h2>
 
               <form className="login-form" onSubmit={handleLogin}>
                 <div className="form-group">

@@ -88,7 +88,7 @@
   
   /* Navigation Buttons */
   .back-button,
-  .close-button {
+  .loginclose-button {
     position: absolute;
     top: 20px;
     background: none;
@@ -103,9 +103,9 @@
     left: 20px;
   }
   
-  .close-button {
-    right: 20px;
-    font-size: 24px;
+  .loginclose-button {
+    right: 20px !important;
+    font-size: 30px;
   }
   
   /* Card Content */
@@ -125,7 +125,7 @@
   .login-section h2 {
     font-size: 32px;
     color: #1A1F24;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     margin-top: 20px;
   }
   

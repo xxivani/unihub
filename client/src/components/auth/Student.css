@@ -42,7 +42,7 @@
     position: relative;
   }
   
-  .back-button, .close-button {
+  .back-button, .studentclose-button {
     position: absolute;
     background: none;
     border: none;
@@ -97,15 +97,15 @@
   }
 
   
-  .close-button {
+  .studentclose-button {
     position: absolute !important;
     top: 10px !important;
-    right: 16px !important;
+    right: 40px !important;
     background: none !important;
     border: none !important;
     color: #1A1F24 !important;
     cursor: pointer !important;
-    font-size: 25px !important;
+    font-size: 30px !important;
     z-index: 999 !important; /* Ensure it's above other elements */
   }
   

@@ -102,10 +102,10 @@
     transform: scale(1.05);
   }
   
-  .close-button {
+  .close-button.desktop {
     position: absolute;
     top: 0.5rem;
-    right: 0.5rem;
+    right: 2.5rem;
     color: rgb(0, 0, 0);
     font-size: 1.5rem;
     background: none;
@@ -115,7 +115,7 @@
   
   .close-button.desktop {
     top: 140px;
-    right: 140px;
+    right: 55px;
     font-size: 2rem;
   }
   

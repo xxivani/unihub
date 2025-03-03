@@ -88,7 +88,7 @@
   
   /* Navigation Buttons */
   .back-button,
-  .close-button {
+  .verifyclose-button {
     position: absolute;
     top: 20px;
     background: none;
@@ -103,9 +103,9 @@
     left: 20px;
   }
   
-  .close-button {
+  .verifyclose-button {
     right: 20px;
-    font-size: 24px;
+    font-size: 30px;
   }
   
   /* Card Content */

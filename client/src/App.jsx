@@ -37,6 +37,7 @@ import DetailsExt from "./components/externalevents/DetailsExt";
 function AppContent() {
   const location = useLocation();
   const isAuthPage = location.pathname === "/auth";
+  const isCommitteePage = location.pathname === "/commiteelogin";
   const isStudentPage = location.pathname === "/student";
   const isLoginPage = location.pathname === "/login";
   const isVerifyPage = location.pathname === "/verify";
@@ -44,7 +45,7 @@ function AppContent() {
 
   return (
     <>
-      {!isAuthPage &&  !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <CustomNavbar />} {/* Hide Navbar on Auth Page */}
+      {!isAuthPage && !isCommitteePage && !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <CustomNavbar />} {/* Hide Navbar on Auth Page */}
       <div className="main-content">
         <Routes>
           {/* Default route should be Home */}
@@ -87,7 +88,7 @@ function AppContent() {
           <Route path="/commiteelogin" element={<CommiteeLogin />} />
         </Routes>
       </div>
-      {!isAuthPage && !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <Footer />} {/* Hide Footer on Auth Page */}
+      {!isAuthPage && !isCommitteePage && !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <Footer />} {/* Hide Footer on Auth Page */}
     </>
   );
 }

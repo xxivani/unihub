@@ -42,7 +42,7 @@ function Verify() {
           <button className="back-button">
             <i className="fas fa-arrow-left"></i>
           </button>
-          <button className="close-button" onClick={handleHomeClick}>×</button>
+          <button className="verifyclose-button" onClick={handleHomeClick}>×</button>
 
           {/* Split Content */}
           <div className="card-content">

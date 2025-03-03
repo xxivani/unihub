@@ -1,15 +1,15 @@
 .hero-container {
-  height: 80vh;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   text-align: right;
   padding-right: 5vw;
   background-image: url("/assets/images/hero.jpeg") !important;
-  background-size: cover;
+  height: 80vh !important;
+  background-size: cover !important;
   background-position: center;
   background-repeat: no-repeat;
-  position: relative; /* Needed for overlay */
+  position: relative; 
   filter: saturate(1.6);
 }
 

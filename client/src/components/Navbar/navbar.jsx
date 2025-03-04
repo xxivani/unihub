@@ -1,8 +1,15 @@
-import "./navbar.css"
+import "./navbar.css";
 import { Navbar, Nav, NavDropdown, Container } from "react-bootstrap";
 import { Link } from "react-router-dom"; 
+import { useEffect, useState } from "react";
 
 const CustomNavbar = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const user = sessionStorage.getItem("user"); // Use sessionStorage instead
+    setIsLoggedIn(!!user);
+  }, []);
   return (
     <Navbar bg="dark" variant="dark" expand="lg" fixed="top"> 
       <Container>
@@ -22,16 +29,20 @@ const CustomNavbar = () => {
               <NavDropdown.Item as={Link} to="/committee/events">Events</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/committee/roles">Role Openings</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/committee/budget-tracker">Budget Tracker</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/committee/calendar">Committee Calendar</NavDropdown.Item>
-
+              <NavDropdown.Item as={Link} to="/committee/image-management">Image Management</NavDropdown.Item>
             </NavDropdown>
           </Nav>
 
           {/* Login & Notifications */}
           <Nav>
-            <Nav.Link as={Link} to="/auth">Register / Login</Nav.Link>
-            <Nav.Link><i className="bell-icon"></i></Nav.Link>
-            <Nav.Link><i className="user-icon"></i></Nav.Link>
+            {!isLoggedIn ? (
+              <Nav.Link as={Link} to="/auth">Register / Login</Nav.Link>
+            ) : (
+              <>
+                <Nav.Link><i className="bell-icon"></i></Nav.Link>
+                <Nav.Link><i className="user-icon"></i></Nav.Link>
+              </>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>

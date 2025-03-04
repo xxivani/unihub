@@ -1,0 +1,54 @@
+.entity6-right-box {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.entity6-right-box form {
+    display: flex;
+    flex-direction: column;
+}
+
+.entity6-right-box form label {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.entity6-right-box form input,
+.entity6-right-box form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.entity6-right-box form textarea {
+    resize: vertical;
+}
+
+.entity6-right-box button {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.entity6-right-box button:hover {
+    background-color: #333333;
+}
+
+.entity6-close-icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 20px;
+    color: #333;
+}

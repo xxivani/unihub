@@ -1,0 +1,54 @@
+.entity6-card-buttons {
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px; 
+    
+}
+
+.entity6-rocard {
+    display: flex;
+    flex-direction: row !important;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px;
+    text-align: left;
+    background-color: white;
+}
+
+.entity6-card-image {
+    width: 300px; /* Adjust size as needed */
+    height: 200px;
+    margin-right: 20px;
+    border-radius: 8px;
+}
+
+.entity6-card-content {
+    flex-grow: 1;
+}
+
+.entity6-view-button {
+    text-align: center;
+    color: #000;
+    font-weight: 500;
+    text-decoration: none;
+    margin-top: 59px;
+    width: 200px;
+    background-color: #dec585;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.entity6-apply-button {
+    text-align: center;
+    text-decoration: none;
+    font-weight: 500;
+    background-color: #101923;
+    color: white;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 8px;
+}

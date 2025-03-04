@@ -1,7 +1,7 @@
 import "./BudgetDashboard.css"
 import "../../charts/MonthlyExpenses"
 import MonthlyExpensesChart from "../../charts/MonthlyExpenses";
-import { FaMoneyBillWave, FaPlus } from "react-icons/fa";
+import { FaMoneyBillWave } from "react-icons/fa";
 import LatestEventsList from "../budget-tracker/LatestEventsList"
 import ExpenseBreakdownChart from "../../charts/ExpenseBreakdown";
 import BTCommitteeMembers from "../budget-tracker/BTCommitteeMembers";

@@ -1,23 +1,22 @@
-.aboutus {
-  width: 100%;
+/* .aboutus {
   display: flex;
   flex-direction: column;
-  margin-top: 300px; 
-  margin-bottom: 100px;
-  height: 360px;
-  
+  align-items: center;
+  justify-content: center;
+  height: auto; 
+  width: 100%;
+  margin-top: 250px; 
 }
 
 .aboutus-card {
   background-color: #d9cdbe;
   width: 100%;
-  min-height: 570px;
+  min-height: 500px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  padding: 50px;
+  padding: 40px;
 }
 
 .aboutus-text-whole {
@@ -70,4 +69,4 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-}
+} */

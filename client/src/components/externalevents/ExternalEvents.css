@@ -1,0 +1,373 @@
+/* Main Content Styles */
+.extevent-main-content {
+    background-color: white !important;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1; /* Ensure this container is above any background elements */
+}
+.extevent-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    margin-bottom: 2rem;
+    margin-top: 110px; /* Adjust as needed */
+    background-color: white;
+}
+
+.extevent-page-title {
+    margin: 0;
+    text-align: left;
+    margin-left: 20px;
+    font-size: 2rem;
+    color: #333;
+    flex-shrink: 0; /* Prevent title from shrinking */
+}
+
+.extevent-search-filter-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0; /* Remove bottom margin */
+    flex-grow: 1;
+    justify-content: flex-end; /* Align to the right */
+}
+
+.extevent-search-bar {
+    display: flex;
+    width: 50%;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 0 auto; /* Adjusted margin */
+    flex-grow: 1;
+    text-align: center;
+}
+
+.extevent-search-bar input {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    outline: none;
+    background-color: transparent;
+}
+
+.extevent-search-button {
+    background: none;
+    border: none;
+    padding: 0 1rem;
+    cursor: pointer;
+    color: black;
+}
+
+.extevent-action-buttons {
+    display: flex;
+    justify-content: flex-end; 
+    gap: 1rem;
+}
+
+.extevent-filter-button, .extevent-calendar-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    border: 2px solid rgb(160, 160, 160);
+    background-color: #fffcfc;
+    color: rgb(105, 97, 97);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    outline: none; 
+}
+
+.extevent-filter-button:hover, .extevent-calendar-button:hover {
+    border: 2px solid black; /* Border color change on hover */
+}
+
+/* Event Cards Styles - Updated to match image */
+.extevents-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.extevent-card {
+    display: flex;
+    border-radius: 0;
+    background-color: rgb(251, 250, 250);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #eee;
+    width: 100%; /* Make the card take full width */
+    max-width: 1400px;
+    min-height: 100px; /* Ensures it doesn't get too small */
+    max-height: 200px; 
+}
+
+.extevent-image {
+    width: 180px;
+    min-height: 120px;
+    overflow: hidden;
+}
+
+.extevent-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.extevent-content {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.extevent-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #333;
+}
+
+.extevent-description {
+    color: #666;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.extevent-details {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: black;
+}
+
+.extevent-notification-icon {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+    color: #333;
+}
+
+.extevent-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align to the right */
+    gap: 10px; /* Space between buttons */
+    position: relative; /* Changed from absolute to relative */
+    margin-right: 20px;
+    margin-bottom: 10px;
+    align-self: center;
+    margin-top: 10px;
+}
+
+.view-button, .apply-button {
+    width: 250px; /* Increase width */
+    height: 40px; /* Increase height */
+    font-size: 15px; /* Make text bigger */
+    padding: 10px 15px; /* Adjust padding */
+    color: white; /* Optional: text color */
+    border: none;
+    cursor: pointer;
+}
+
+.view-button {
+    background-color: #e6d69c;
+    color: #333;
+}
+
+.apply-button {
+    background-color: #1a1a1a;
+    color: white;
+}
+
+/* Improved Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 2rem 0;
+    padding: 1rem 0;
+    background-color: transparent; /* Remove the temporary background */
+}
+
+.pagination-arrow, .pagination-number {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #555;
+    transition: all 0.2s ease;
+}
+
+.pagination-arrow {
+    color: #333;
+}
+
+.pagination-arrow:hover, .pagination-number:hover {
+    border-color: #aaa;
+    background-color: #f9f9f9;
+}
+
+.pagination-number.active {
+    background-color: #333; /* Changed to match your apply button color */
+    color: white;
+    border-color: #333;
+    font-weight: 500;
+}
+
+.pagination-ellipsis {
+    margin: 0 0.25rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    height: 40px;
+}
+
+/* Disable styles for inactive arrows if needed */
+.pagination-arrow.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.event-form-overlay { 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .event-form-container {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; 
+    background-color: white;
+    padding: 20px;  /* Adjust padding */
+    width: 40% !important;
+    max-width: 800px; /* Increased width */
+    max-height: 440px; /* Set a maximum height for the form */
+    height: 500px; /* Let the height adjust based on content */
+    /* overflow-y: auto; Allows scrolling if the content exceeds max-height */
+    padding-bottom: 30px;
+}
+  
+  .event-signup-form {
+    gap: 2px !important;
+    height: 10px;
+    flex-direction: column;
+  }
+  
+  .event-form-group {
+    margin-bottom: 10px;
+  }
+  
+  
+  .event-form-group label {
+    font-weight: bold;
+    font-size: 14px; /* Smaller font size for labels */
+  }
+  
+  .event-form-group input {
+    padding: 8px;  /* Reduced padding for smaller input fields */
+    width: 500px !important;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px; /* Adjusted input font size */
+  }
+  
+  .event-form-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers the buttons horizontally */
+    align-items: center;     /* Centers the buttons vertically */
+    gap: 20px;               /* Adjusts the gap between buttons */
+    margin-bottom: 20px !important;   /* Space below the buttons */
+    margin-top: 20px;
+    
+  }
+  
+  .event-submit-button, .close-button {
+    padding: 8px 20px; /* Smaller button padding */
+    font-size: 14px; /* Adjusted button font size */
+    background-color:#e6d69c;
+    width: 250px; /* Increase width */
+    height: 40px;
+  }
+  
+  .event-form-actions button[type="submit"] {
+    margin-bottom: 20px;  /* Increase space between the submit button and the form */
+    border: none;
+}
+  
+.close-form-button {
+    position: absolute;
+    top: 16px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+  }
+  
+  .success-modal {
+    background-color: white;
+    border-radius: 8px;
+    padding: 30px;
+    position: relative;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+  }
+  
+  .success-modal h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+  
+  .success-modal p {
+    margin-bottom: 25px;
+    color: #555;
+  }
+  
+  .return-button {
+    background-color: #2A3B1C;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .return-button:hover {
+    transform: scale(1.05);
+  }
+  

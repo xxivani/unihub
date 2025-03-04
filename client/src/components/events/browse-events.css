@@ -1,7 +1,7 @@
 /*Main container of the browse events scetion*/
-.browse-events {
+.e4-browse-events {
     width: 100%;
-    min-width: 800px;
+    min-width: 1300px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -9,83 +9,88 @@
     position: relative;
     padding-bottom: 3vh;
     height: 100vh;
-    min-height: 850px;
-    max-height: 900px;
+    min-height: 1180px;
+    max-height: 1200px;
   }
 
-  .browse-events-list {
+  .e4-browse-events-list {
     width: 100%;
+    min-width: 1250px;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
     height: 85vh;
-    min-height: 750px;
+    min-height: 1050px;
+    max-height: 1100px;
+    gap: 20px;
   }
 
-  .events-list-a, .events-list-b {
-    min-width: 100%;
-    min-width: 800px;
-    min-height: 20%;
+  .e4-events-list {
+    width: 90%;
+    min-width: 1250px;
+    height: 20%;
     min-height: 150px;
+    background-color: #efeeec;
+    box-shadow: 2px 2px rgba(0, 0, 0, 0.2);
   }
 
-  .events-list-a {
-    background-color: #e3dfd9;
-  }
-
-  .event-format {
+  .e4-event-format {
     width: 100%;
     display: flex;
     flex-direction: row;
     height: 100%;
-    padding: 1vmin;
   }
 
-  .event-image {
-    min-width: 15%;
-    min-height: 90%;
+  .e4-event-image {
+    min-width: 20%;
+    height: 100%;
     background-image: url("./event_template.png");
     background-size: contain;
     background-repeat: no-repeat;
-    background-position: right;
+    background-position: center;
     display: inline-block;
     margin-left: 5vw;
-    margin-right: 20px;
   }
 
-  .event-image:hover {
-    margin-right: 40px;
+  .e4-event-image:hover {
+    margin-right: 30px;
   }
 
-  .event-info-container {
-    width: 40%;
+  .e4-event-info-container {
+    width: 50%;
     min-width: 100px;
     height: 100%;
+    column-gap: 2px;
+    padding-right: 10vw;
+    padding: 1vmin;
   }
 
-  .event-title {
+  .e4-event-title {
     width: 100%;
     text-align: left;
-    border: 5px solid rgba(0, 0, 0, 0);
-    color: #616161;
+    padding-top: 10px;
+    border: 3px solid rgba(0, 0, 0, 0);
+    color: #3f3f3f;
     font-size: 2rem;
     font-weight: bold;
     overflow: hidden;
   }
 
-  .event-description {
+  .e4-event-description {
     width: 100%;
-    max-height: 60%;
+    max-height: 50%;
     text-align: left;
-    border: 5px solid rgba(0, 0, 0, 0);
+    padding: 0px;
+    border: 3px solid rgba(0, 0, 0, 0);
     color: rgb(30, 30, 30);
     font-size: 1rem;
-    font-weight: bold;
     overflow: hidden;
   }
 
   /*Many containers for the right section of the events list*/
-  .event-button-container {
-    width: 35%;
+  .e4-event-button-container {
+    width: 30%;
     min-width: 200px;
     height: 100%;
     display: flex;
@@ -93,15 +98,21 @@
     align-items: flex-start;
     text-align: left;
     position: relative;
+    padding: 1vmin;
   }
 
-  .event-up-down-container {
+  .e4-event-up-down-container {
     width: 300px;
     height: 100%;
     padding: 1px;
+    display: grid;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    margin-left: 20px;
+    gap: 20px;
   }
 
-  .event-twin-button-container {
+  .e4-event-twin-button-container {
     width: 100%;
     height: 50%;
     padding-top: 20px;
@@ -113,40 +124,43 @@
     margin-bottom: 10px;
   }
 
-  .event-follow-button {
-    background-color: #003f1d;
-    border-radius: 10px;
+  .e4-event-follow-button {
+    background-color: #171717;
+    border-radius: 5px;
     border: 5px solid rgba(0, 0, 0, 0);
     color: white;
-    margin-right: 3vw;
     padding: 6px 20px 6px 20px;
-    width: 110px;
-    text-align: right;
+    width: 250px;
+    height: 45px;
+    text-align: center;
     text-decoration: none;
     display: inline-block;
+    align-items: flex-end;
     font-size: 18px;
     font-weight: bold;
     box-shadow: 2px 2px rgba(0, 0, 0, 0.2);
     user-select: none;
   }
 
-  .event-follow-button:hover {
-    background-color: #00693a;
+  .e4-event-follow-button:hover {
+    background-color: #343434;
   }
 
-  .event-follow-button:hover:active {
-    background-color: #005025;
+  .e4-event-follow-button:hover:active {
+    background-color: #232323;
     box-shadow: 2px 0px rgba(0, 0, 0, 0.2);
     margin-top: 2px;
+    margin-bottom: -2px;
   }
 
-  .event-detail-button {
-    background-color: #5c5c5c;
-    border-radius: 10px;
+  .e4-event-detail-button {
+    background-color: #d48f27;
+    border-radius: 5px;
     border: 5px solid rgba(0, 0, 0, 0);
-    color: white;
+    color: rgb(0, 0, 0);
     padding: 6px 20px 6px 20px;
-    width: 120px;
+    width: 250px;
+    height: 45px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -156,29 +170,29 @@
     user-select: none;
   }
 
-  .event-detail-button:hover {
-    background-color: #797979;
+  .e4-event-detail-button:hover {
+    background-color: #f4a32b;
   }
 
-  .event-detail-button:hover:active {
-    background-color: #6b6b6b;
+  .e4-event-detail-button:hover:active {
+    background-color: #e69926;
     box-shadow: 2px 0px rgba(0, 0, 0, 0.2);
     margin-top: 2px;
+    margin-bottom: -2px;
   }
 
-  .event-time {
+  .e4-event-time {
     width: 100%;
     text-align: left;
-    border: 5px solid rgba(0, 0, 0, 0);
+    border: 3px solid rgba(0, 0, 0, 0);
     color: rgb(30, 30, 30);
-    font-size: 12px;
+    font-size: 1rem;
     font-weight: bold;
-    margin: -2px;
     overflow: hidden;
   }
 
   /*Light bell*/
-  .event-notification {
+  .e4-event-notification {
     width: 10%;
     min-width: 50px;
     height: 70%;
@@ -193,44 +207,35 @@
   }
 
   /*Dark bell*/
-  .event-notification1 {
-    width: 60px;
-    height: 60px;
-    min-width: 50px;
-    min-height: 50px;
+  .e4-event-notification1 {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
     background-image: url("./bell.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: right;
     display: inline-block;
-    margin-top: 2vh;
-    margin-left: 20px;
-    margin-right: 1vw;
+    align-items: right;
+    margin-left: 0.8vw;
+    margin-right: 0.2vw;
   }
 
-  .event-notification1:hover{
-    width: 65px;
-    height: 65px;
-    margin-top: 1.8vh;
-    margin-left: 18px;
-    margin-right: 0.9vw;
-  }
-
-  .event-notification1:active{
-    width: 60px;
-    height: 60px;
-    margin-top: 2vh;
-    margin-left: 20px;
-    margin-right: 1vw;
+  .e4-event-notification1:hover {
     background-image: url("./bell3.png");
   }
 
+  .e4-event-notification1:active {
+    background-image: url("./bell2.png");
+  }
+
   /*Style the pagination at the bottom of the page*/
-  .event-pagination {
+  .e4-event-pagination {
     margin: 0 auto;
   }
 
-  .event-pagination a {
+  .e4-event-pagination a {
     border-radius: 15px;
     margin-top: 5vh;
     color: #313131;
@@ -242,50 +247,50 @@
     align-items: center;
   }
 
-  .event-pagination a.active {
+  .e4-event-pagination a.active {
     background-color: #b3b3b3;
     border-radius: 15px;
     color: white;
   }
   
-  .event-pagination a:hover:not(.active) {
+  .e4-event-pagination a:hover:not(.active) {
     background-color: #e3dfd9;
   }
 
-  @media only screen and (min-width: 1600px) and (max-width: 1650px) and (min-height: 650px) and (max-height: 700px) {
-    .event-image {
+  @media only screen and (min-width: 2300px) and (max-width: 2310px) and (min-height: 650px) and (max-height: 700px) {
+    .e4-event-image {
       border: 5px solid #13eda8;
       background-image: url("./event_template1.png");
     }
-    .event-title {
+    .e4-event-title {
       border: 5px solid #13eda8;
       font-family: 'Times New Roman', Times, serif;
       color: #13eda8
     }
-    .event-description {
+    .e4-event-description {
       border: 5px solid #13eda8;
       font-family: 'Times New Roman', Times, serif;
       color: #13eda8
     }
-    .event-follow-button {
+    .e4-event-follow-button {
       border: 5px solid #13eda8;
       font-family: 'Times New Roman', Times, serif;
       color: #13eda8
     }
-    .event-detail-button {
+    .e4-event-detail-button {
       border: 5px solid #13eda8;
       font-family: 'Times New Roman', Times, serif;
       color: #13eda8
     }
-    .event-time {
+    .e4-event-time {
       border: 5px solid #13eda8;
       font-family: 'Times New Roman', Times, serif;
       color: #13eda8
     }
-    .event-pagination a {
+    .e4-event-pagination a {
       font-family: 'Times New Roman', Times, serif;
     }
-    .event-pagination a.active {
+    .e4-event-pagination a.active {
       background-color: #13eda8;
     }
   }

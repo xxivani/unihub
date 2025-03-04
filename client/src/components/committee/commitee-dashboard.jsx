@@ -1,2 +1,0 @@
-import "./commitee-dashboard.css"
-

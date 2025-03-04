@@ -1,0 +1,8 @@
+.edit-role-opening {
+    padding-top: 100px;
+    padding-left: 40px;
+    padding-right: 40px;
+    display: flex;
+    flex-direction: row !important;
+    gap: 10px;
+}

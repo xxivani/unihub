@@ -1,8 +1,11 @@
-
-#root, .main-content {
-  min-height: 100vh; 
+#root {
+  min-height: 100vh;
   display: flex;
-  flex: 1;
   flex-direction: column;
-  background: var(--bg-color, #F4F1EC);
+  background: var(--bg-color, #fff);
+}
+
+.main-content {
+  flex-grow: 1;
+  width: 100%;
 }

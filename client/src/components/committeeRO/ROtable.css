@@ -1,0 +1,35 @@
+.ro-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px;
+  }
+  
+  .ro-table th, .ro-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .ro-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  .ro-table tr {
+    background-color: #fff;
+  }
+  
+  .ro-table tr:hover {
+    background-color: #ddd;
+  }
+  
+  .entity6-view-link, .entity6-edit-link {
+    margin-right: 8px;
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .entity6-view-link:hover, .entity6-edit-link:hover {
+    color: #000;
+  }
+  

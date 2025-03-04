@@ -1,10 +1,12 @@
+//Components ordering for the event page
 
+import TopSection from "../../../components/events/top-section";
+import BrowseEvents from "../../../components/events/browse-events";
 
 const CerateEvent = () => {
     return (
       <div>
-        <h1>Welcome to Clubs</h1>
-        <p>Discover and follow university clubs.</p>
+        
       </div>
     );
   };

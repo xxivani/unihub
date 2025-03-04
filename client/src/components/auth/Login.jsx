@@ -23,8 +23,8 @@ function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
   
-    const adminEmail = "admin@123";
-    const adminPassword = "admin@123";
+    const adminEmail = "admin@bham";
+    const adminPassword = "admin@bham";
   
     if (email === adminEmail && password === adminPassword) {
       sessionStorage.setItem("user", JSON.stringify({ email }));

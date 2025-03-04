@@ -5,16 +5,26 @@ import { plugins } from "chart.js";
 // const {  Avatar, List  } = antd;
 const data = [
     {
-      title: 'President',
+      title: "Jane Doe",
+      description: "President",
+      avatar: "https://api.dicebear.com/9.x/miniavs/svg?seed=Andrea",
+
     },
     {
-      title: 'Vice-President',
+      title: "John Doe",
+      description: "Vice-President",
+      avatar: "https://api.dicebear.com/9.x/miniavs/svg?seed=Nolan"
     },
     {
-      title: 'Secretary',
+      title: "Jane Doe",
+      description: "Secretary",
+      avatar: "https://api.dicebear.com/9.x/miniavs/svg?seed=Ryan"
+      
     },
     {
-      title: 'Treasurer',
+      title: "John Doe",
+      description: "Treasurer",
+      avatar: "https://api.dicebear.com/9.x/miniavs/svg?seed=Mason"
     },
 ];
 const BTCommitteeMembers = () => (
@@ -24,9 +34,9 @@ const BTCommitteeMembers = () => (
         renderItem={(item, index) => (
             <List.Item>
             <List.Item.Meta
-                avatar={<Avatar src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${index}`} />}
-                title={<a href="https://ant.design">{item.title}</a>}
-                description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                avatar={<Avatar src={item.avatar} />}
+                title={item.title}
+                description={item.description}
             />
             </List.Item>
         )}

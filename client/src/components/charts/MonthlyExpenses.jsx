@@ -26,7 +26,7 @@ const MonthlyExpensesChart = () => {
             },
             title: {
                 display: true,
-                text: "Monthly Expenses", 
+                text: "Monthly Expenses for Year 2024-25", 
                 font: {
                     size: 16,
                 },

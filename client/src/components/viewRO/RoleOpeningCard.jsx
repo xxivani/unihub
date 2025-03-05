@@ -1,4 +1,3 @@
-import React from 'react';
 import "./RoleOpeningCard.css";
 import { Link } from "react-router-dom";
 

@@ -1,4 +1,5 @@
 import "./news.css"
+import { Link } from "react-router-dom";
 
 const NewsSection = () => {
     const newsItems = [
@@ -22,8 +23,14 @@ const NewsSection = () => {
     
       return (
         <section className="latest-news">
-          <h2>Latest News</h2>
-          
+          <div className="title-button">
+            <h2>Latest News</h2>
+            <Link to="/news/create-news-post">
+              <button className="create-news-button">Create News Post</button>
+            </Link>
+
+          </div>
+            
           <div className="news-list">
             {newsItems.map((news, index) => (
               <div className="news-item" key={index}>

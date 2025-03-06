@@ -13,14 +13,30 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+
     
   }
+
+  .title-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+    margin-top: 30px;
+  }
   
+  .create-news-button{
+    background-color: black;
+    color: white;
+    padding: 10px 25px;
+
+  }
   .news-item {
     display: flex;
     border: 1px solid #ddd;
     padding: 20px;
-    border-radius: 8px;
     background-color: #f9f9f9;
   }
   
@@ -28,7 +44,6 @@
     width: 200px;
     height: 150px;
     object-fit: cover;
-    border-radius: 8px;
   }
   
   .news-info {
@@ -39,12 +54,12 @@
   }
   
   .news-info h3 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 600;
   }
   
   .news-info p {
-    font-size: 1rem;
+    font-size: 0.9rem;
     margin: 10px 0;
   }
   
@@ -65,9 +80,8 @@
     margin-right: 10px;
     padding: 10px 25px;
     text-decoration: none;
-    border-radius: 4px;
     transition: background-color 0.3s ease;
-    height: 50px;
+    height: 45px;
     width: 230px;
     text-align: center;
   }
@@ -84,4 +98,3 @@
   .view-newsletter:hover, .download-newsletter:hover {
 
   }
-  

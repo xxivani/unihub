@@ -1,5 +1,4 @@
 import News from "../components/news/news"
-
 const NewsSection = () => {
   return (
     <div>

@@ -96,7 +96,11 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "sleep 20"
 
-      - name: Deploy Reverse Proxy
+      - name: Remove Previous Reverse Proxy (if any)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker rm -f team77-nginx || true"
+
+      - name: Deploy Reverse Proxy (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"
 
@@ -152,6 +156,10 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "sleep 20"
 
-      - name: Deploy Reverse Proxy
+      - name: Remove Previous Reverse Proxy (if any)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker rm -f team77-nginx || true"
+
+      - name: Deploy Reverse Proxy (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"

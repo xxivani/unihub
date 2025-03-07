@@ -1,0 +1,61 @@
+.entity6-sidebar {
+    width: 45px; 
+    height: 400px;
+    background: #d8d8d3;  
+    border-radius: 35px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 0;
+    left: 10px; 
+    top: 10px;
+    bottom: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    margin-left: 20px;
+  }
+  
+
+  .sidebar-item {
+    position: relative;
+    margin: 20px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    transition: background 0.3s;
+  }
+  
+  .sidebar-item:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+  
+
+  .icon {
+    font-size: 18px;
+    color: #131212;
+  }
+  
+
+  .tooltip {
+    position: absolute;
+    left: 70px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    font-size: 14px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+
+  .sidebar-item:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+  }

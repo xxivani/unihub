@@ -49,6 +49,8 @@ services:
       - "443:443"
     volumes:
       - ./nginx-prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/nginx/ssl/prod:/etc/nginx/ssl/prod:ro
+      - /var/www/letsencrypt:/var/www/letsencrypt:ro
     depends_on:
       - team77-prd-server
     networks:

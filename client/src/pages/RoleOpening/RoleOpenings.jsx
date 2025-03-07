@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Title from "../../components/viewRO/Title";
 import RoleOpeningCard from "../../components/viewRO/RoleOpeningCard";
 import Pagination from "../../components/viewRO/Pagination";
@@ -6,7 +6,7 @@ import ongoingRoles from "../../components/viewRO/ongoing-roles";
 
 const RoleOpenings = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const rolesPerPage = 2; // Adjust the number of roles per page as needed
+  const rolesPerPage = 2;
 
   const totalPages = Math.ceil(ongoingRoles.length / rolesPerPage);
 

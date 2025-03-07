@@ -6,7 +6,7 @@ const RightBox = () => {
     const navigate = useNavigate();
 
     const handleBack = () => {
-        navigate(-1); // Navigate to the previous page
+        navigate(-1);
     };
     return (
         <div className="entity6-right-box">

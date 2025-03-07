@@ -5,7 +5,7 @@ const LeftBox = () => {
         <div className="entity6-left-box">
             <h2>Edit Role Opening</h2>
             <p>Saving changes will reflect for all students in the Role Opening page.</p>
-            <img src="../../../assets/images/edit_role.jpg" alt="Person working at a desk" />
+            <img src="/assets/images/edit_role.jpg" alt="Person working at a desk" />
         </div>
     );
 };

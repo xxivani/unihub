@@ -86,19 +86,19 @@ jobs:
 
       - name: Clean up old containers on VM (Dev)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/dev.yml down --remove-orphans || true && docker container prune -f"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/dev.yml -p team77-dev down --remove-orphans || true && docker container prune -f"
 
       - name: Deploy Development Environment
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/dev.yml up -d --remove-orphans && docker system prune --force --filter 'until=24h'"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/dev.yml -p team77-dev up -d --remove-orphans && docker system prune --force --filter 'until=24h'"
 
       - name: Wait for Dev Stack to be Ready
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "sleep 10"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "sleep 20"
 
       - name: Deploy Reverse Proxy
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project && docker compose -f reverse-proxy.yml up -d --remove-orphans"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"
 
   deploy-prod:
     name: Deploy Production
@@ -142,16 +142,16 @@ jobs:
 
       - name: Clean up old containers on VM (Prod)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/prd.yml down --remove-orphans || true && docker container prune -f"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/prd.yml -p team77-prod down --remove-orphans || true && docker container prune -f"
 
       - name: Deploy Production Environment
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/prd.yml up -d --remove-orphans && docker system prune --force --filter 'until=24h'"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/prd.yml -p team77-prod up -d --remove-orphans && docker system prune --force --filter 'until=24h'"
 
       - name: Wait for Prod Stack to be Ready
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "sleep 10"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "sleep 20"
 
       - name: Deploy Reverse Proxy
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project && docker compose -f reverse-proxy.yml up -d --remove-orphans"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"

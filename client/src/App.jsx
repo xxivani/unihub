@@ -26,6 +26,7 @@ import ViewRoles from "./pages/committee/commitee-Roles/ViewRoles";
 import CreateRole from "./pages/committee/commitee-Roles/CreateRole";
 import EditRole from "./pages/committee/commitee-Roles/EditRole";
 import ApplyRoleOpening from "./pages/RoleOpening/ApplyRoleOpening";
+import ViewRoleDetail from "./pages/committee/commitee-Roles/ViewRoleDetail";
 
 import Student from "./components/auth/Student";
 import Login from "./components/auth/Login";
@@ -79,7 +80,7 @@ function AppContent() {
           <Route path="/committee/roles" element={<ViewRoles />} />
           <Route path="/committee/roles/create" element={<CreateRole />} />
           <Route path="/committee/roles/edit/:id" element={<EditRole />} />
-          {/* <Route path="/committee/roles/view/:id" element={<ViewRoleDetail />} /> */}
+          <Route path="/committee/roles/view/:id" element={<ViewRoleDetail />} />
 
           {/* Student Route */}
           <Route path="/student" element={<Student />} /> {/* Add the new route for the Student page */}

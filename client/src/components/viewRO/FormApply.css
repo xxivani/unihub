@@ -42,3 +42,21 @@
 .entity6-right-box button:hover {
     background-color: #333333;
 }
+
+.disabled-btn {
+    background-color: gray !important;
+    cursor: not-allowed;
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}

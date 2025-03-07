@@ -101,6 +101,10 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
             "docker compose -f ~/team-project/dev.yml up -d --remove-orphans && docker system prune --force --filter 'until=24h'"
+      - name: Deploy Reverse Proxy
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
+            "cd ~/team-project && docker compose -f reverse-proxy.yml up -d --remove-orphans"
 
   deploy-prod:
     name: Deploy Production
@@ -152,3 +156,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
             "docker compose -f ~/team-project/prd.yml up -d --remove-orphans && docker system prune --force --filter 'until=24h'"
+      - name: Deploy Reverse Proxy
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
+            "cd ~/team-project && docker compose -f reverse-proxy.yml up -d --remove-orphans"

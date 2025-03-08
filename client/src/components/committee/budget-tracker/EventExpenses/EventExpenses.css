@@ -1,0 +1,102 @@
+.event-expenses-page {
+    display: flex;
+    margin-top: 90px;
+    margin-left: 20px;
+    height: 1000px;
+}
+
+.main-event-expenses {
+    flex: 3;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.event-expenses-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 20px;
+}
+.event-expenses-filter-bar {
+    flex: 1;
+    /* flex-direction: column; */
+    padding: 20px;
+    /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); */
+    /* width: 30px; */
+    height: 80px;
+    border-radius: 10px;
+    /* margin-left: 10px; */
+}
+.event-expenses-controls {
+    display: flex;
+    align-items: center; /* Align items vertically */
+    gap: 20px; /* Space between the two divs */
+    /* padding: 20px; */
+    width: 100%;
+}
+.event-expenses-header {
+    width: 200px;
+    height: 80px;
+    display: flex;
+    align-items:end;
+    /* justify-content: center; */
+    padding: 15px;
+    border-radius: 10px;
+    
+    /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); */
+}
+.event-expenses-header button{
+    background-color: #f5c13d !important;
+    color: black;
+    font-weight: 500;
+}
+.event-expenses-header button:hover {
+    background-color: #f5c13d !important;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+    color: black !important;
+}
+
+
+.event-expenses-search-bar {
+    /* flex: 1; */
+    display: flex;
+    /* flex-direction: row; */
+    padding: 5px 15px;
+    /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); */
+    border-radius: 20px;
+    width: 400px;
+    height: 40px;
+    margin-left: 30px;
+    margin-top: 20px;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+
+}
+
+.event-expenses-search-bar input{
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    align-items: center;
+} 
+.event-expenses-search-icon {
+    flex-direction: row;
+    size: 20px;
+    margin-left: 5px;
+    opacity: 80%;
+}
+
+.event-expenses-table {
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-left: 10px;
+    margin-top: 30px;
+    height: max-content;
+    /* height: 700px; */
+}

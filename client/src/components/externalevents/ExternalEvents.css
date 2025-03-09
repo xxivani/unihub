@@ -183,7 +183,7 @@
 }
 
 .view-button {
-    background-color: #e6d69c;
+    background-color: #dec585;
     color: #333;
 }
 
@@ -315,7 +315,7 @@
   .event-submit-button, .close-button {
     padding: 8px 20px; /* Smaller button padding */
     font-size: 14px; /* Adjusted button font size */
-    background-color:#e6d69c;
+    background-color:#dec585;
     width: 250px; /* Increase width */
     height: 40px;
   }
@@ -543,7 +543,7 @@
 
 .update-event-button {
   padding: 10px 20px;
-  background-color: #e6d69c;
+  background-color: #dec585;
   color: #000;
   border: none;
   border-radius: 4px;
@@ -553,7 +553,7 @@
 }
 
 .update-event-button:hover {
-  background-color: #d9c980;
+  background-color: #dec585;
 }
 
 /* Make sure the event category dropdown appears downward */

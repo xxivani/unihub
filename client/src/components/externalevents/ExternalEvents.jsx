@@ -167,7 +167,6 @@ const ExternalEvents = () => {
         const user = JSON.parse(userData);
         setIsAdmin(user.email === 'admin@bham');
       } else {
-        // For testing purposes, set to true
         setIsAdmin(true);
       }
     };
@@ -213,9 +212,7 @@ const ExternalEvents = () => {
   };
 
   const handleDeleteEvent = (id) => {
-    // Show confirmation dialog
     if (window.confirm('Are you sure you want to delete this event?')) {
-      // Filter out the event with the matching id
       setEvents(events.filter(event => event.id !== id));
     }
   };
@@ -253,19 +250,16 @@ const ExternalEvents = () => {
   const handleEditFormSubmit = (e) => {
   e.preventDefault();
   
-  // Update the event in the events array
   const updatedEvents = events.map(event => 
     event.id === currentEditEvent.id ? currentEditEvent : event
   );
   
   setEvents(updatedEvents);
-  // Store in localStorage
   localStorage.setItem('eventsList', JSON.stringify(updatedEvents));
   
   setIsEditFormVisible(false);
   setCurrentEditEvent(null);
   
-  // Show success message
   alert("Event updated successfully!");
 };
 

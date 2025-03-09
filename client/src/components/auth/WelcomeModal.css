@@ -36,6 +36,7 @@
     height: 32rem;
     max-width: 72rem;
     min-height: 30rem;
+    max-height: 50rem;
     background-color: #1A1F24;
     border-radius: 1rem;
     overflow: hidden;

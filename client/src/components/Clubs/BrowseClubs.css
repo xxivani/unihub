@@ -1,55 +1,44 @@
-.browse-clubs {
-    width: 100%;
-    min-width: 800px;
+/* Decreased margins/padding to reduce space between top section and clubs */
+.browse-clubs-container {
+    margin: 20px;   /* Reduced from 40px */
+    padding: 10px;  /* Reduced from 20px */
+  }
+  
+  /* The list of club cards */
+  .club-cards-list {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding-top: 2vh;
-}
-
-
-.browse-clubs-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-
-.browse-clubs-list {
+    gap: 20px;
+  }
+  
+  /* Pagination styling */
+  .event-pagination {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    padding: 0 20px;
-}
-
-/* 
-   The event-pagination classes 
-   to match your teammate’s styling 
-*/
-.event-pagination {
-    margin: 0 auto;
-}
-
-.event-pagination a {
-    border-radius: 15px;
-    margin-top: 5vh;
-    color: #313131;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 40px;
+    margin-bottom: 40px; /* If you need more/less space from footer, adjust here */
+  }
+  
+  .event-pagination a {
+    border-radius: 4px;
+    background-color: #f2f2f2;
+    color: #333;
     padding: 8px 16px;
     font-size: 16px;
     text-decoration: none;
     display: inline-block;
-    justify-content: center;
-    align-items: center;
-}
-
-.event-pagination a.active {
+    transition: background-color 0.3s ease;
+  }
+  
+  .event-pagination a:hover:not(.active) {
+    background-color: #ddd;
+  }
+  
+  .event-pagination a.active {
     background-color: #b3b3b3;
-    border-radius: 15px;
     color: white;
-}
+  }
 
-.event-pagination a:hover:not(.active) {
-    background-color: #e3dfd9;
-}
+  
+  

@@ -11,6 +11,9 @@ import NewsSection from "./pages/news/News";
 import CreateNewsPost from "./components/news/CreateNewsPost";
 import ExternalEvents from "./pages/ExternalEvents";
 import Footer from "./components/footer/footer";
+import ClubDetailsPage from "./pages/ClubDetailsPage"; 
+import CreateClub from "./pages/CreateClub"; 
+
 
 // Committee Pages
 import Dashboard from "./pages/committee/Dashboard";
@@ -56,6 +59,8 @@ function AppContent() {
 
           {/* Public Routes */}
           <Route path="/clubs" element={<Clubs />} />
+          <Route path="/club-details" element={<ClubDetailsPage />} />
+          <Route path="/create-club" element={<CreateClub />} />
           <Route path="/events" element={<Events />} />
           <Route path="/event-details" element={<EventDetails />} />
           <Route path="/roles" element={<RoleOpenings />} />

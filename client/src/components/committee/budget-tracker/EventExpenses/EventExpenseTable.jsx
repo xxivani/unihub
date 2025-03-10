@@ -2,6 +2,8 @@ import { Space, Table, Tag, Typography, Button } from 'antd';
 import Pagination from "../../../viewRO/Pagination";
 import { useState } from 'react';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Link } from "react-router-dom";
+
 
 
 const { Text } = Typography;
@@ -9,7 +11,7 @@ const { Text } = Typography;
 
 const EventExpensesTable = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 8; // Number of rows per page
+    const pageSize = 5; // Number of rows per page
 
 
     const columns = [
@@ -46,7 +48,15 @@ const EventExpensesTable = () => {
             render: (_, { categories }) => (
                 <>
                     {categories.map(({ name, amount }) => (
-                        <Tag color={categoryColors[name]} key={name}>
+                        <Tag
+                            color={categoryColors[name]}
+                            key={name}
+                            style={{
+                                marginBottom: '4px', // Adjust this value as needed
+                                marginRight: '4px', // Space between tags in the same row
+                                display: 'inline-block', // Ensure it stays inline with other tags
+                            }}
+                        >
                             AED {amount}
                         </Tag>
                     ))}
@@ -63,6 +73,17 @@ const EventExpensesTable = () => {
                 </Space>
             ),
         },
+        {
+            title: "View Students",
+            width: 150,
+            render: (_, record) => (
+                <Space size="middle">
+                    {/* <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>Edit</Button>
+                    <Button type="link" icon={<DeleteOutlined />} danger onClick={() => handleDelete(record)}>Delete</Button> */}
+                    <Link to="/committee/budget-tracker/registered-students" style={{color: "black"}}>View Registered Students</Link>
+                </Space>
+            ),
+        },
     ];
 
     const handleEdit = (record) => {
@@ -71,6 +92,10 @@ const EventExpensesTable = () => {
 
     const handleDelete = (record) => {
         console.log("Delete event expense:", record);
+    };
+    
+    const handleViewStudents = (record) => {
+        console.log("View Registered Students", record);
     };
 
 
@@ -227,7 +252,7 @@ const EventExpensesTable = () => {
 
         <>
             {/* <div> */}
-            <div style={{ marginBottom: 16, marginLeft: "10px" }}>
+            <div style={{ marginBottom: 16, marginLeft: "10px", justifyContent: "space-between" }}>
                 <Text strong>Category Legend: </Text>
                 <Space size="small">
                     {Object.entries(categoryColors).map(([category, color]) => (

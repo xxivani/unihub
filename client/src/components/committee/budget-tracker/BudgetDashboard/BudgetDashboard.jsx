@@ -6,6 +6,8 @@ import LatestEventsList from "./LatestEventsList"
 import ExpenseBreakdownChart from "../../../charts/ExpenseBreakdown";
 import BTCommitteeMembers from "../../budget-tracker/BudgetDashboard/BTCommitteeMembers";
 import AddExpenseButton from "./AddExpense";
+import { Link } from "react-router-dom";
+
 
 
 
@@ -103,8 +105,14 @@ const BudgetDashboard = () =>{
                 
                     <BTCommitteeMembers />
                 </div>
+                <div>
+                    {/* <p>back button</p> */}
+                    <Link to="/committee/budget-tracker/event-expenses" onClick={() => window.scrollTo(0, 0)} className="budget-next-button">Go Next</Link>
+
+                </div>
 
             </div>
+            
         </div>
 
     );

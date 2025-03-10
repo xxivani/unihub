@@ -21,7 +21,7 @@ const EventExpenses = () => {
                             <FilterBar />
                         </div>
                         <div className="event-expenses-header">
-                            <EventAddExpenseButton />
+                            {/* <EventAddExpenseButton /> */}
                         </div>
                     </div> 
                     <div className="event-expenses-search-bar">

@@ -1,38 +1,12 @@
 import React, { useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Button, Modal, Form, Input, InputNumber } from "antd";
-import { FaPlus } from "react-icons/fa";
-
+import AddExpenseButton from "../committee/budget-tracker/BudgetDashboard/AddExpense";
 
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const ExpenseBreakdownChart = () => {
-
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [form] = Form.useForm();
-
-    const showModal = () => {
-        setIsModalVisible(true);
-    };
-
-    const handleOk = () => {
-        form.validateFields()
-            .then(values => {
-                console.log("New Expense:", values);
-                setIsModalVisible(false);
-                form.resetFields();
-            })
-            .catch(errorInfo => {
-                console.log("Validation Failed:", errorInfo);
-            });
-    };
-
-    const handleCancel = () => {
-        setIsModalVisible(false);
-    };
-
 
     const data = {
         labels: ['Catering', 'Materials', 'Prize', 'Transportation', 'Venue'],
@@ -70,8 +44,9 @@ const ExpenseBreakdownChart = () => {
     };
 
     return (
-        <div style={{ height: "100%", width: "100%" }}>
+        <div style={{ height: "100%", width: "100%", alignItems: "center" }}>
             <Doughnut data={data} options={options}/>
+            <AddExpenseButton />
         </div>
         
     );

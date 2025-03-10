@@ -1,0 +1,20 @@
+.expense-form-modal-title {
+    text-align: center !important;
+    color: #203246 !important;
+}
+.expense-form-submit-button {
+    background-color: #182534 !important;
+    color: white;
+    align-items: center;
+    justify-content: center;
+    margin-left: 160px;
+}
+.expense-form-cancel-button {
+    background-color: #182534 !important;
+    color: white;
+    align-items: center;
+    justify-content: center;
+}
+.expense-form-cancel-button:hover {
+    color: white !important;
+}

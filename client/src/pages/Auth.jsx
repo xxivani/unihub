@@ -12,7 +12,7 @@
 //   export default Auth;
 
 import React from 'react';
-import WelcomeModal from '../components/auth/WelcomeModal';
+import WelcomeModal from '../components/auth/LoginRegister';
 
 const Auth = () => {
   return (

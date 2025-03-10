@@ -1,0 +1,178 @@
+.create-external-event-form * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.create-external-event-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 80px;
+}
+
+.create-external-event-container h1 {
+  text-align: center;
+  font-size: 29px;
+  margin-top: 20px; 
+  margin-bottom: 20px;
+}
+
+.form-box {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.create-external-event-form {
+  padding: 30px;
+}
+
+.extform-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.extform-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.extform-row .extform-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.extform-group label {
+  margin-bottom: 5px;
+}
+
+.extform-group input[type="text"],
+.extform-group input[type="date"],
+.extform-group input[type="time"],
+.extform-group input[type="number"],
+.extform-group textarea,
+.extform-group select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: white;
+}
+
+/* Styling for the event category dropdown */
+.event-category-select {
+  height: 42px;
+  cursor: pointer;
+}
+
+.extform-group textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.extform-group small {
+  align-self: flex-end;
+  color: #666;
+  margin-top: 5px;
+}
+
+.event-team-section, .budget-requirements-section {
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.event-team-section h3, .budget-requirements-section h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Budget section styles */
+.budget-toggle {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.budget-toggle input[type="checkbox"] {
+  margin-right: 10px;
+  width: 18px;
+  height: 18px;
+}
+
+.budget-categories {
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.budget-categories p {
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  min-width: 150px;
+}
+
+.checkbox-item input[type="checkbox"] {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+}
+
+.submit-event-button {
+  background-color: #e6d69c;
+  color: #000000;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  align-self: center;
+  font-size: 1.1rem;
+  margin-top: 20px; 
+  width: 180px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.submit-event-button:hover {
+  background-color: #dec585;
+}
+
+.extheader-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.go-back-button {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 23px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.02rem;
+}
+
+.go-back-button:hover {
+  background-color: #444;
+}

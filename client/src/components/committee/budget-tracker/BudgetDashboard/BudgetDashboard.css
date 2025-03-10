@@ -1,8 +1,12 @@
 .budget-dashboard {
     display: flex;
     margin-top: 90px;
-    margin-left: 100px;
     height: 1000px;
+}
+.budget-dashboard-sidebar {
+    margin-right: 15px;
+    /* margin-top: 150px; */
+    padding: 10px;
 }
 
 .main-budget-dash {

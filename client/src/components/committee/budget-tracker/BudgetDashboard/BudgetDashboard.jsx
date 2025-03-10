@@ -7,6 +7,7 @@ import ExpenseBreakdownChart from "../../../charts/ExpenseBreakdown";
 import BTCommitteeMembers from "../../budget-tracker/BudgetDashboard/BTCommitteeMembers";
 import AddExpenseButton from "./AddExpense";
 import { Link } from "react-router-dom";
+import Sidebar from "../../../committee-dashboard/Sidebar";
 
 
 
@@ -14,6 +15,9 @@ import { Link } from "react-router-dom";
 const BudgetDashboard = () =>{
     return (
         <div className="budget-dashboard">
+            <div className="budget-dashboard-sidebar">
+                <Sidebar />
+            </div>
 
             <div className="main-budget-dash">
 

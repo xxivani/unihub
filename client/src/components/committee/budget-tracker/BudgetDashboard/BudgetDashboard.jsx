@@ -11,7 +11,6 @@ import Sidebar from "../../../committee-dashboard/Sidebar";
 
 
 
-
 const BudgetDashboard = () =>{
     return (
         <div className="budget-dashboard">
@@ -110,7 +109,6 @@ const BudgetDashboard = () =>{
                     <BTCommitteeMembers />
                 </div>
                 <div>
-                    {/* <p>back button</p> */}
                     <Link to="/committee/budget-tracker/event-expenses" onClick={() => window.scrollTo(0, 0)} className="budget-next-button">Go Next</Link>
 
                 </div>

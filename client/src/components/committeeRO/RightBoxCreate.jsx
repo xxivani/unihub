@@ -16,7 +16,7 @@ const RightBoxCreate = () => {
                 <input type="text" id="position" name="position"/>
 
                 <label htmlFor="due-date">Enter Due Date*</label>
-                <input type="text" id="due-date" name="due-date" placeholder="DD/MM/YYYY" />
+                <input type="date" id="due-date" name="due-date" placeholder="DD/MM/YYYY" />
 
                 <label htmlFor="job-description">Enter Job Description*</label>
                 <textarea id="job-description" name="job-description"/>

@@ -17,16 +17,6 @@ const CreateExternalEvents = () => {
   // New event category state
   const [eventCategory, setEventCategory] = useState("");
   
-  // Budget requirements state
-  const [budgetRequired, setBudgetRequired] = useState(false);
-  const [budgetCategories, setBudgetCategories] = useState({
-    catering: false,
-    materials: false,
-    price: false,
-    transportation: false,
-    venue: false
-  });
-  
   const navigate = useNavigate();
 
   // Event categories
@@ -89,29 +79,6 @@ const CreateExternalEvents = () => {
   const handleEventCategoryChange = (e) => {
     setEventCategory(e.target.value);
   };
-  
-  // Handlers for budget requirements
-  const handleBudgetRequiredChange = (e) => {
-    setBudgetRequired(e.target.checked);
-    
-    // Reset all categories if budget is not required
-    if (!e.target.checked) {
-      setBudgetCategories({
-        catering: false,
-        materials: false,
-        price: false,
-        transportation: false,
-        venue: false
-      });
-    }
-  };
-  
-  const handleBudgetCategoryChange = (category) => (e) => {
-    setBudgetCategories({
-      ...budgetCategories,
-      [category]: e.target.checked
-    });
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -129,14 +96,6 @@ const CreateExternalEvents = () => {
     formData.append("speaker", speaker);
     formData.append("imageUrl", defaultImageUrl);
     formData.append("eventCategory", eventCategory);
-    
-    // Add budget requirement data
-    formData.append("budgetRequired", budgetRequired);
-    if (budgetRequired) {
-      Object.entries(budgetCategories).forEach(([category, isRequired]) => {
-        formData.append(`budget_${category}`, isRequired);
-      });
-    }
 
     console.log({ 
       eventName, 
@@ -150,9 +109,7 @@ const CreateExternalEvents = () => {
       coOrganizer,
       manager,
       speaker,
-      eventCategory,
-      budgetRequired,
-      budgetCategories
+      eventCategory
     });
     
     navigate("/external-events");
@@ -245,7 +202,7 @@ const CreateExternalEvents = () => {
             </div>
           </div>
           
-          {/* New Event Category Section */}
+          {/* Event Category Section */}
           <div className="extform-group">
             <label htmlFor="event-category">Event Category:</label>
             <select
@@ -274,78 +231,6 @@ const CreateExternalEvents = () => {
               required
             />
             <small>{description.length} / 1000</small>
-          </div>
-          
-          {/* Budget Requirements Section */}
-          <div className="budget-requirements-section">
-            <h3>Budget Requirements</h3>
-            
-            <div className="budget-toggle">
-              <input
-                type="checkbox"
-                id="budget-required"
-                checked={budgetRequired}
-                onChange={handleBudgetRequiredChange}
-              />
-              <label htmlFor="budget-required">Budget Required</label>
-            </div>
-            
-            {budgetRequired && (
-              <div className="budget-categories">
-                <p>Select required budget categories:</p>
-                <div className="checkbox-group">
-                  <div className="checkbox-item">
-                    <input
-                      type="checkbox"
-                      id="budget-catering"
-                      checked={budgetCategories.catering}
-                      onChange={handleBudgetCategoryChange('catering')}
-                    />
-                    <label htmlFor="budget-catering">Catering</label>
-                  </div>
-                  
-                  <div className="checkbox-item">
-                    <input
-                      type="checkbox"
-                      id="budget-materials"
-                      checked={budgetCategories.materials}
-                      onChange={handleBudgetCategoryChange('materials')}
-                    />
-                    <label htmlFor="budget-materials">Materials</label>
-                  </div>
-                  
-                  <div className="checkbox-item">
-                    <input
-                      type="checkbox"
-                      id="budget-price"
-                      checked={budgetCategories.price}
-                      onChange={handleBudgetCategoryChange('price')}
-                    />
-                    <label htmlFor="budget-price">Price</label>
-                  </div>
-                  
-                  <div className="checkbox-item">
-                    <input
-                      type="checkbox"
-                      id="budget-transportation"
-                      checked={budgetCategories.transportation}
-                      onChange={handleBudgetCategoryChange('transportation')}
-                    />
-                    <label htmlFor="budget-transportation">Transportation</label>
-                  </div>
-                  
-                  <div className="checkbox-item">
-                    <input
-                      type="checkbox"
-                      id="budget-venue"
-                      checked={budgetCategories.venue}
-                      onChange={handleBudgetCategoryChange('venue')}
-                    />
-                    <label htmlFor="budget-venue">Venue</label>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
           
           <div className="event-team-section">

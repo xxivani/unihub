@@ -12,7 +12,7 @@ const RoleOpeningCard = ({ role, index }) => {
                     <p><strong>Deadline:</strong> {role.deadline}</p>
                 </div>
                 <div className="entity6-card-buttons">
-                    <Link to="/clubs" className="entity6-view-button">View {role.title.split(' ')[2]}</Link>
+                    <Link to="/club-details" className="entity6-view-button">View {role.title.split(' ')[2]}</Link>
                     <Link to={`/roles/apply/${index}`} className="entity6-apply-button">Apply</Link>
                 </div>
             </div>

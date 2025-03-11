@@ -78,61 +78,17 @@
   margin-top: 5px;
 }
 
-.event-team-section, .budget-requirements-section {
+.event-team-section {
   border-top: 1px solid #eee;
   padding-top: 20px;
   margin-top: 10px;
   margin-bottom: 20px;
 }
 
-.event-team-section h3, .budget-requirements-section h3 {
+.event-team-section h3 {
   margin-bottom: 15px;
   font-size: 18px;
   color: #333;
-}
-
-/* Budget section styles */
-.budget-toggle {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.budget-toggle input[type="checkbox"] {
-  margin-right: 10px;
-  width: 18px;
-  height: 18px;
-}
-
-.budget-categories {
-  background-color: #f9f9f9;
-  border-radius: 5px;
-  padding: 15px;
-  margin-bottom: 15px;
-}
-
-.budget-categories p {
-  margin-bottom: 10px;
-  font-weight: 500;
-}
-
-.checkbox-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-top: 10px;
-}
-
-.checkbox-item {
-  display: flex;
-  align-items: center;
-  min-width: 150px;
-}
-
-.checkbox-item input[type="checkbox"] {
-  margin-right: 8px;
-  width: 16px;
-  height: 16px;
 }
 
 .submit-event-button {

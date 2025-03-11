@@ -41,7 +41,8 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
-      - REACT_APP_API_URL=http://team77-dev-server:8080
+      - REACT_APP_API_URL=https://team77.dev.bham.team/api
+      - VITE_API_URL=https://team77.dev.bham.team/api
     depends_on:
       - team77-dev-server
     networks:

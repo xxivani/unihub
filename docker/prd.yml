@@ -37,14 +37,15 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=80
-      - REACT_APP_API_URL=http://team77-prd-server:8080
+      - REACT_APP_API_URL=https://team77.bham.team/api
+      - VITE_API_URL=https://team77.bham.team/api
     depends_on:
       - team77-prd-server
     networks:
       - common-network
     expose:
       - "80"
-
+      
 networks:
   common-network:
     external: true

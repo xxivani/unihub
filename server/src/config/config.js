@@ -6,7 +6,7 @@ module.exports = {
     password: process.env.POSTGRES_PASSWORD || 'team77',
     database: process.env.POSTGRES_DB || 'UniHub',
     host: process.env.DB_HOST || '127.0.0.1',
-    port: process.env.DB_PORT || 5433,
+    port: process.env.DB_PORT || 5432,
     dialect: "postgres",
   },
   test: {

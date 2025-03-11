@@ -4,8 +4,22 @@
     padding-right: 30px;
 }
 
-.member {
+.members-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
+}
+
+.add-button-cdashboard {
+    background-color: #101923;
+    color: white;
+    border-radius: 5px;
+    padding: 18px;
+}
+
+.add-button-cdashboard:hover {
+    background-color: #101923 !important;
 }
 
 .member-item {
@@ -14,9 +28,21 @@
     justify-content: space-between;
 }
 
+.member-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
 .settings-icon {
     cursor: pointer;
     font-size: 18px;
+}
+
+.delete-icon {
+    cursor: pointer;
+    font-size: 18px;
+    color: red;
 }
 
 .permissions-menu {
@@ -42,4 +68,22 @@
 .checkmark {
     font-weight: bold;
     color: green;
-}   
+}
+
+.ant-modal-footer .ant-btn-primary {
+    background-color: black !important;
+    border-color: black !important;
+    color: white !important;
+}
+
+.ant-modal-footer .ant-btn-default:hover {
+    background-color: transparent !important;
+    border-color: black !important;
+    color: inherit !important;
+}
+
+.input:focus {
+    border-color: black;
+    border: 2px solid;
+    box-shadow: none;
+}

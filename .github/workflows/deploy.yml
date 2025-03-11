@@ -92,6 +92,10 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/dev.yml -p team77-dev up -d --remove-orphans && docker system prune --force --filter 'until=24h'"
 
+      - name: Run Migrations and Seeders (Dev)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker exec team77-dev-server npx sequelize-cli db:migrate && docker exec team77-dev-server npx sequelize-cli db:seed:all"
+
       - name: Wait for Dev Stack to be Ready
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "sleep 20"

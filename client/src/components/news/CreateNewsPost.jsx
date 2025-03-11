@@ -11,6 +11,8 @@ const CreateNewsPost = () => {
   const [pdfFiles, setPdfFiles] = useState([]);
   const navigate = useNavigate();
 
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
   };
@@ -58,7 +60,7 @@ const CreateNewsPost = () => {
     formData.append("pdf", pdfFiles[0]);
 
     try {
-      const response = await fetch("http://localhost:5000/api/news", {
+      const response = await fetch(`${apiUrl}/news`, {
         method: "POST",
         body: formData,
       });

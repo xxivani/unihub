@@ -4,8 +4,9 @@ import "./Login.css";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState(""); // Store email input
-  const [password, setPassword] = useState(""); // Store password input
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error] = useState("");
   const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
@@ -20,20 +21,30 @@ function Login() {
     navigate(-1);
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-  
-    const adminEmail = "admin@bham";
-    const adminPassword = "admin@bham";
-  
-    if (email === adminEmail && password === adminPassword) {
-      sessionStorage.setItem("user", JSON.stringify({ email }));
-      alert("Admin login successful!");
-      navigate("/"); // Redirect
-    } else {
-      alert("Invalid email or password");
+    try {
+      const response = await fetch("http://localhost:5000/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Save token, email, and role in sessionStorage
+        const userData = { email, token: data.token, role: data.role };
+        sessionStorage.setItem("user", JSON.stringify(userData));
+        alert("Login successful!");
+        navigate("/"); // Redirect as needed
+      } else {
+        alert(data.error || "Invalid email or password");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred while trying to login.");
     }
   };
+  
 
   return (
     <div className="auth-page">
@@ -53,27 +64,16 @@ function Login() {
       {/* Main Content */}
       <div className="content-container">
         <div className="auth-card">
-          {/* Navigation Buttons */}
-          <button className="back-button">
+          <button className="back-button" onClick={handleBackClick}>
             <i className="fas fa-arrow-left"></i>
           </button>
           <button className="loginclose-button" onClick={handleHomeClick}>
             ×
           </button>
-
-          {/* Split Content */}
           <div className="card-content">
-            <button
-              className="back-button"
-              style={{ color: "black", top: "8px", fontSize: "2rem" }}
-              onClick={handleBackClick}
-            >
-              {"<"}
-            </button>
-            {/* Login Form Section */}
             <div className="login-section">
-            <h2 style={{ marginBottom: '10px' }}>Login Your Account</h2>
-
+              <h2 style={{ marginBottom: "10px" }}>Login Your Account</h2>
+              {error && <p style={{ color: "red" }}>{error}</p>}
               <form className="login-form" onSubmit={handleLogin}>
                 <div className="form-group">
                   <label>University Email</label>
@@ -81,10 +81,10 @@ function Login() {
                     type="email"
                     placeholder="Enter your university email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)} // Update email state
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
                   />
                 </div>
-
                 <div className="form-group">
                   <label>Password</label>
                   <div className="password-input">
@@ -92,7 +92,8 @@ function Login() {
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)} // Update password state
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
                     />
                     <button
                       type="button"
@@ -106,7 +107,6 @@ function Login() {
                     Forgot Password?
                   </a>
                 </div>
-
                 <button type="submit" className="login-button">
                   Login
                 </button>
@@ -115,7 +115,10 @@ function Login() {
 
             {/* Image Section */}
             <div className="image-section">
-              <img src="/assets/images/student-casual.jpeg" alt="Students collaborating" />
+              <img
+                src="/assets/images/student-casual.jpeg"
+                alt="Students collaborating"
+              />
             </div>
           </div>
         </div>

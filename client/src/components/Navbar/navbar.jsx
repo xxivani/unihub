@@ -1,15 +1,29 @@
 import "./navbar.css";
 import { Navbar, Nav, NavDropdown, Container } from "react-bootstrap";
-import { Link } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom"; 
 import { useEffect, useState } from "react";
 
 const CustomNavbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const user = sessionStorage.getItem("user"); // Use sessionStorage instead
-    setIsLoggedIn(!!user);
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("user");
+    setUser(null);
+    navigate("/auth");
+  };
+
+  const handleSettings = () => {
+    navigate("/settings");
+  };
+
   return (
     <Navbar bg="dark" variant="dark" expand="lg" fixed="top"> 
       <Container>
@@ -22,26 +36,33 @@ const CustomNavbar = () => {
             <Nav.Link as={Link} to="/roles">Role Openings</Nav.Link>
             <Nav.Link as={Link} to="/news">News</Nav.Link>
             <Nav.Link as={Link} to="/external-events">External Events</Nav.Link>
-
-            {/* Committee Dropdown */}
+            
+            {/* Committee Dropdown: Only show if not a student */}
+            {/*user && user.role !== "student" && (
+           
+            )*/}
             <NavDropdown title="Committee" id="committee-dropdown" menuVariant="dark">
-              <NavDropdown.Item as={Link} to="/committee/dashboard">Dashboard</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/committee/events">Events</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/committee/roles">Role Openings</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/committee/budget-tracker">Budget Tracker</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/committee/image-management">Image Management</NavDropdown.Item>
-            </NavDropdown>
+            <NavDropdown.Item as={Link} to="/committee/dashboard">Dashboard</NavDropdown.Item>
+            <NavDropdown.Item as={Link} to="/committee/events">Events</NavDropdown.Item>
+            <NavDropdown.Item as={Link} to="/committee/roles">Role Openings</NavDropdown.Item>
+            <NavDropdown.Item as={Link} to="/committee/budget-tracker">Budget Tracker</NavDropdown.Item>
+            <NavDropdown.Item as={Link} to="/committee/image-management">Image Management</NavDropdown.Item>
+          </NavDropdown>
           </Nav>
 
-          {/* Login & Notifications */}
           <Nav>
-            {!isLoggedIn ? (
+            {!user ? (
               <Nav.Link as={Link} to="/auth">Register / Login</Nav.Link>
             ) : (
-              <>
-                <Nav.Link><i className="bell-icon"></i></Nav.Link>
-                <Nav.Link><i className="user-icon"></i></Nav.Link>
-              </>
+              <NavDropdown
+                title={<i className="user-icon"></i>}
+                id="user-dropdown"
+                align="end"
+              >
+                <NavDropdown.Item onClick={handleSettings}>Settings</NavDropdown.Item>
+                <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
+              </NavDropdown>
+              
             )}
           </Nav>
         </Navbar.Collapse>

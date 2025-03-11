@@ -1,0 +1,27 @@
+require('dotenv').config();
+
+module.exports = {
+  development: {
+    username: process.env.POSTGRES_USER || 'team77',
+    password: process.env.POSTGRES_PASSWORD || 'team77',
+    database: process.env.POSTGRES_DB || 'UniHub',
+    host: process.env.DB_HOST || '127.0.0.1',
+    port: process.env.DB_PORT || 5433,
+    dialect: "postgres",
+  },
+  test: {
+    username: process.env.POSTGRES_USER || 'team77',
+    password: process.env.POSTGRES_PASSWORD || 'team77',
+    database: process.env.POSTGRES_DB || 'UniHub',
+    host: process.env.DB_HOST || '127.0.0.1',
+    port: process.env.DB_PORT || 5433,
+    dialect: "postgres",
+  },
+  production: {
+    username: process.env.POSTGRES_USER,  
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB,
+    port: process.env.DB_PORT,           
+    dialect: "postgres",
+  },
+};

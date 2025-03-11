@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CreateNewsPost.css";
 
-const defaultImageUrl = "/assets/images/stock-news.jpeg";
+const defaultImageUrl = "/assets/images/img.jpeg";
 
 const CreateNewsPost = () => {
   const [title, setTitle] = useState("");
@@ -28,13 +28,25 @@ const CreateNewsPost = () => {
   };
 
   const handlePdfChange = (e) => {
-    if (e.target.files) {
-      setPdfFiles(Array.from(e.target.files));
+    if (e.target.files && e.target.files.length > 0) {
+      setPdfFiles([e.target.files[0]]);
+    } else {
+      setPdfFiles([]);
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!title.trim() || !body.trim()) {
+      alert("Title and Body are required.");
+      return;
+    }
+    if (pdfFiles.length === 0) {
+      alert("Please attach at least one PDF for the newsletter.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("body", body);
@@ -43,13 +55,24 @@ const CreateNewsPost = () => {
     } else {
       formData.append("imageUrl", defaultImageUrl);
     }
-    pdfFiles.forEach((file, idx) => {
-      formData.append(`pdf_${idx}`, file);
-    });
+    formData.append("pdf", pdfFiles[0]);
 
-    console.log({ title, body, imageFile, pdfFiles });
-    
-    navigate("/news");
+    try {
+      const response = await fetch("http://localhost:5000/api/news", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert("News post created successfully!");
+        navigate("/news");
+      } else {
+        alert(data.error || "Failed to create news post");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred while creating the news post.");
+    }
   };
 
   return (
@@ -87,7 +110,7 @@ const CreateNewsPost = () => {
           <small>{body.length} / 1000</small>
         </div>
         <div className="form-group">
-          <label htmlFor="news-image">Upload Newsletter Image:</label>
+          <label htmlFor="news-image">Upload Newsletter Image (Optional):</label>
           <input
             type="file"
             id="news-image"
@@ -101,13 +124,13 @@ const CreateNewsPost = () => {
           )}
         </div>
         <div className="form-group">
-          <label htmlFor="news-pdf">Attach PDF(s):</label>
+          <label htmlFor="news-pdf">Attach PDF (Required):</label>
           <input
             type="file"
             id="news-pdf"
             accept="application/pdf"
-            multiple
             onChange={handlePdfChange}
+            required
           />
           {pdfFiles.length > 0 && (
             <ul className="pdf-list">

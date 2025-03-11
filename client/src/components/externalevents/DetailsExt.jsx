@@ -11,7 +11,6 @@ function DetailsExt() {
   const eventData = {
     title: "Plant and Animal Social",
     description: "Join our Student Rep Social Event to connect, share ideas, and collaborate on making student life better. A great chance to meet reps and engage in meaningful discussions!",
-    organizer: "Nature & Ecosystem Society",
     location: "Second floor quiet room",
     date: "20/February/2025",
     time: "15:30 - 17:00",
@@ -83,10 +82,6 @@ function DetailsExt() {
             <p className="description-text-details-ext">{eventData.description}</p>
 
             <div className="detailext-details-details-ext">
-              <div className="detail-item-details-ext">
-                <FaUsers className="icon-green-details-ext" />
-                <span>Organized by: {eventData.organizer}</span>
-              </div>
               <div className="detail-item-details-ext">
                 <FaMapMarkerAlt className="icon-green-details-ext" />
                 <span>Location: {eventData.location}</span>

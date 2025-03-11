@@ -1,6 +1,3 @@
-import React, { useEffect, useState } from "react";
-import { Avatar, Divider, List, Skeleton } from "antd";
-import InfiniteScroll from "react-infinite-scroll-component";
 import "./LatestEventsList.css"
 import { Link } from "react-router-dom";
 
@@ -22,7 +19,7 @@ const LatestEventsList = () => {
                     </li>
                 ))}
             </ul>
-            <Link to="/committee/budget-tracker/event-expenses" className="budget-view-all-events-button">View All Events</Link>
+            <Link to="/committee/budget-tracker/event-expenses" onClick={() => window.scrollTo(0, 0)} className="budget-view-all-events-button">View All Events</Link>
     </div>
     
   );

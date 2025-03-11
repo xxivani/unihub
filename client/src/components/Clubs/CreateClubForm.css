@@ -1,0 +1,53 @@
+.create-club-form-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.create-club-form {
+    width: 60%;
+    margin: auto;
+    padding: 40px; 
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    min-height: 500px; 
+}
+
+.create-club-form label {
+    font-weight: bold;
+    margin-top: 15px;
+    display: block; 
+}
+
+
+.create-club-form input,
+.create-club-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px; 
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
+.create-club-form textarea {
+    resize: vertical;
+    height: 100px;
+}
+
+
+.submit-button {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.submit-button:hover {
+    background-color: #333;
+}

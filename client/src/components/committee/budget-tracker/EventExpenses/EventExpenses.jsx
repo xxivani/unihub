@@ -3,6 +3,7 @@ import EventExpensesTable from "./EventExpenseTable";
 import EventAddExpenseButton from "./EventExpensesForm";
 import FilterBar from "./FilterBar";
 import { FaSearch } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const EventExpenses = () => {
 
@@ -10,7 +11,7 @@ const EventExpenses = () => {
         <div className="event-expenses-page">
 
             <div className="main-event-expenses">
-                <div className="event-expenses">
+                <div>
                     <div className="event-expenses-title">
                         <h2>Event Expenses</h2>
                     </div>
@@ -20,17 +21,26 @@ const EventExpenses = () => {
                             <FilterBar />
                         </div>
                         <div className="event-expenses-header">
-                            <EventAddExpenseButton />
+                            {/* <EventAddExpenseButton /> */}
                         </div>
                     </div> 
                     <div className="event-expenses-search-bar">
                         <FaSearch className="event-expenses-search-icon"/>
-                        <input type="text" placeholder="Search" />
+                        <input type="text" placeholder="Search for events" />
                         
                     </div>
                     <div className="event-expenses-table">
                         <EventExpensesTable />
                     </div>
+                    <div className="event-expenses-button-container">
+                        <div>
+                            <Link to="/committee/budget-tracker" onClick={() => window.scrollTo(0, 0)} className="event-expenses-back-button">Go Back</Link>
+                        </div>
+                        <div>
+                            <Link to="/committee/budget-tracker/registered-students" onClick={() => window.scrollTo(0, 0)} className="event-expenses-next-button">Go Next</Link>
+                        </div>
+                    </div>
+                    
                     
                 </div>
                 

@@ -1,88 +1,73 @@
-/* Club card container */
 .club-card {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 20px; 
-  }
-  
-  
-  .club-image {
-    width: 120px;
-    height: 120px;
-    background-color: #e3e3e3;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 20px;
-  }
-  
-  
-  .club-info-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  
-  .club-name {
-    font-size: 1.6rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #000;
-  }
-  
-  
-  .club-description {
-    font-size: 1rem;
-    color: #616161;
-    margin-bottom: 20px;
-  }
-  
-  
-  .club-button-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  
-  .view-details-button {
-    background-color: #dec585;
-    color: white;
-    font-size: 1rem;
-    padding: 10px 20px;
-    border-radius: 8px;
-    width: 150px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    border: none;
-  }
-  
-  .view-details-button:hover {
-    background-color: #dec585;
-  }
-  
-  
-  .join-club-button {
-    background-color: #10141D;
-    color: white;
-    font-size: 1rem;
-    padding: 10px 20px;
-    border-radius: 8px;
-    width: 150px;
-    cursor: pointer;
-    border: none;
-  }
-  
-  .join-club-button:hover {
-    background-color: #10141D;
-  }
-  
+  display: flex;
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  gap: 20px;
+}
+
+.club-image img {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.club-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex: 1;
+}
+
+.club-details h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.club-details p {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.club-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+/* Buttons style consistent with your teammate’s “View / Download” pattern */
+.view-club-btn, .join-club-btn {
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  height: 50px;
+  width: 230px;
+  text-align: center;
+  padding: 10px 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+}
+
+.view-club-btn {
+  background-color: #dec585;
+  color: black;
+}
+
+.view-club-btn:hover {
+  background-color: #c9af74;
+}
+
+.join-club-btn {
+  background-color: black;
+  color: white;
+}
+
+.join-club-btn:hover {
+  background-color: #333;
+}

@@ -1,0 +1,213 @@
+.auth-modal-container {
+    height: 100vh; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    max-width: 100%;
+    background-color: #ffff;
+    padding: 1rem;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    overflow: hidden;
+  }
+  
+  .auth-modal-content {
+    flex-direction: row;
+    width: 100%;
+    height: 32rem;
+    max-width: 72rem;
+    min-height: 30rem;
+    max-height: 50rem;
+    background-color: #1A1F24;
+    border-radius: 1rem;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 2px solid red;
+    position: relative; 
+  }
+  
+  .auth-modal-left {
+    width: 40%;
+    height: 70%;
+    padding: 2rem;
+    display: flex;
+    border-radius: 16px 0 0 16px; 
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-color: #1A1F24;
+  }
+  
+  .auth-text-content {
+    text-align: center;
+  }
+  
+  .auth-title {
+    font-size: 2.5rem;
+    color: white;
+    margin-bottom: 1rem;
+  }
+  
+  .auth-subtitle {
+    font-size: 1.25rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  
+  .auth-button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 24rem;
+  }
+  
+  .auth-choice-button {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background-color: #D4C087;
+    color: #1A1F24;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: transform 0.2s;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .auth-choice-button:hover {
+    transform: scale(1.05);
+  }
+  
+  .auth-close-button.auth-desktop {
+    position: absolute;
+    top: 0.5rem;
+    right: 2.5rem;
+    color: rgb(0, 0, 0);
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .auth-close-button.auth-desktop {
+    top: 140px;
+    right: 145px;
+    font-size: 2rem;
+  }
+  
+  .auth-modal-right {
+    width: 45%;
+    height: 70%;
+    position: static;
+    overflow: hidden;
+    border-radius: 0 0 0 0; 
+  }
+  
+  .auth-cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .auth-circle {
+    width: 210px;
+    height: 210px;
+    background-color: #3A4224;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: -40px;
+  }
+  
+  .auth-triangle {
+    width: 0;
+    height: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: -30px;
+    border-left: 180px solid #3A4224;
+    border-top: 170px solid transparent;
+    border-bottom: 0 solid transparent;
+  }
+  
+  .auth-line {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-45deg);
+    width: 380px;
+    height: 1px;
+    background-color: rgb(0, 0, 0);
+  }
+  
+  .auth-circle1 {
+    width: 210px;
+    height: 210px;
+    background-color: #3A4224;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: -60px;
+  }
+  
+  .auth-circle2 {
+    width: 210px;
+    height: 210px;
+    background-color: #3A4224;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: -60px;
+  }
+  
+  .auth-line1 {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-45deg);
+    width: 290px;
+    height: 1px;
+    background-color: rgb(0, 0, 0);
+  }
+     
+  .auth-navbar {
+    width: 100%;
+    background: #222529;
+    color: white;
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-weight: bold;
+    z-index: 9999;
+    position: fixed;
+  }
+  
+  .auth-nav-logo {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  
+  .auth-back-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px;
+    transition: color 0.3s ease;
+    z-index: 1000;
+  }

@@ -10,12 +10,17 @@ import RoleOpenings from "./pages/RoleOpening/RoleOpenings";
 import NewsSection from "./pages/news/News";
 import CreateNewsPost from "./components/news/CreateNewsPost";
 import ExternalEvents from "./pages/ExternalEvents";
+import CreateExternalEvents from "./pages/CreateExtEvents";
 import Footer from "./components/footer/footer";
+import ClubDetailsPage from "./pages/ClubDetailsPage"; 
+import CreateClub from "./pages/CreateClub"; 
+
 
 // Committee Pages
 import Dashboard from "./pages/committee/Dashboard";
 import BudgetTracker from "./pages/committee/BudgetTracker/BudgetTracker";
 import EventExpensesPage from "./pages/committee/BudgetTracker/EventExpenses";
+import RegisteredStudentsPage from "./pages/committee/BudgetTracker/RegisteredStudents";
 import MultiEventImages from "./pages/committee/ImageManagement"
 // Committee Events Pages
 import ViewEvents from "./pages/committee/committee-events/ViewEvents";
@@ -30,6 +35,7 @@ import ApplyRoleOpening from "./pages/RoleOpening/ApplyRoleOpening";
 import ViewRoleDetail from "./pages/committee/commitee-Roles/ViewRoleDetail";
 
 import Student from "./components/auth/Student";
+import Welcome from "./components/auth/WelcomeModal";
 import Login from "./components/auth/Login";
 import Verify from "./components/auth/Verify";
 import AccountVerified from "./components/auth/AccountVerified";
@@ -43,11 +49,12 @@ function AppContent() {
   const isStudentPage = location.pathname === "/student";
   const isLoginPage = location.pathname === "/login";
   const isVerifyPage = location.pathname === "/verify";
-  const isAccountVerifyPage = location.pathname == "/accountverified"
+  const isAccountVerifyPage = location.pathname == "/accountverified";
+  const isWelcomePage = location.pathname == "/welcome"
 
   return (
     <>
-      {!isAuthPage && !isCommitteePage && !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <CustomNavbar />} {/* Hide Navbar on Auth Page */}
+      {!isAuthPage && !isWelcomePage && !isCommitteePage && !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <CustomNavbar />} {/* Hide Navbar on Auth Page */}
       <div className="main-content">
         <Routes>
           {/* Default route should be Home */}
@@ -57,11 +64,14 @@ function AppContent() {
 
           {/* Public Routes */}
           <Route path="/clubs" element={<Clubs />} />
+          <Route path="/club-details" element={<ClubDetailsPage />} />
+          <Route path="/create-club" element={<CreateClub />} />
           <Route path="/events" element={<Events />} />
           <Route path="/event-details" element={<EventDetails />} />
           <Route path="/roles" element={<RoleOpenings />} />
           <Route path="/roles/apply/:index" element={<ApplyRoleOpening />} />
           <Route path="/external-events" element={<ExternalEvents />} />
+          <Route path="/create-external-event" element={<CreateExternalEvents />} />
           <Route path="/details-ext" element={<DetailsExt />} />
           <Route path="/news" element={<NewsSection />} />
           <Route path="/news/create-news-post" element={<CreateNewsPost />} />
@@ -71,6 +81,7 @@ function AppContent() {
           <Route path="/committee/dashboard" element={<Dashboard />} />
           <Route path="/committee/budget-tracker" element={<BudgetTracker />} />
           <Route path="/committee/image-management" element={<MultiEventImages />} />
+          <Route path="/committee/budget-tracker/registered-students" element={<RegisteredStudentsPage />} />
 
           {/* Committee Events Routes */}
           <Route path="/committee/events" element={<ViewEvents />} />
@@ -86,14 +97,15 @@ function AppContent() {
           <Route path="/committee/roles/view/:id" element={<ViewRoleDetail />} />
 
           {/* Student Route */}
-          <Route path="/student" element={<Student />} /> {/* Add the new route for the Student page */}
-          <Route path="/login" element={<Login />} /> {/* Add the new route for the Student page */}
+          <Route path="/student" element={<Student />} />
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/verify" element={<Verify />} />
           <Route path="/accountverified" element={<AccountVerified />} />
           <Route path="/commiteelogin" element={<CommiteeLogin />} />
         </Routes>
       </div>
-      {!isAuthPage && !isCommitteePage && !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <Footer />} {/* Hide Footer on Auth Page */}
+      {!isAuthPage && !isWelcomePage && !isCommitteePage && !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <Footer />} {/* Hide Footer on Auth Page */}
     </>
   );
 }

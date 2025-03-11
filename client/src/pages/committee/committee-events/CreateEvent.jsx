@@ -1,14 +1,11 @@
-//Components ordering for the event page
+//Components ordering for the create event page
 
-import TopSection from "../../../components/events/top-section";
-import BrowseEvents from "../../../components/events/browse-events";
+import CreateEventsR from "../../../components/committee-event/create_event";
 
-const CerateEvent = () => {
+const CreateEvent = () => {
     return (
-      <div>
-        
-      </div>
+        <CreateEventsR/>
     );
   };
   
-export default CerateEvent;
+export default CreateEvent;

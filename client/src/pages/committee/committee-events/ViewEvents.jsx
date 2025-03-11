@@ -1,14 +1,13 @@
-//Components ordering for the event page
+//Components ordering for the committee event page
 
-import TopSection from "../../../components/events/top-section";
-import BrowseEvents from "../../../components/events/browse-events";
+import CommitteeEventPage from "../../../components/committee-event/committee-events";
 
-const ViewEvents = () => {
-    return (
-      <div>
-        
-      </div>
-    );
-  };
-  
-export default ViewEvents;
+const CommitteeEvent = () => {
+  return (
+    <div>
+      <CommitteeEventPage/>
+    </div>
+  );
+};
+
+export default CommitteeEvent;

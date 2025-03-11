@@ -86,7 +86,8 @@ jobs:
 
       - name: Clean up old containers on VM (Dev)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/dev.yml -p team77-dev down --remove-orphans || true && docker container prune -f"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/dev.yml -p team77-dev down --volumes --remove-orphans || true && docker container prune -f"
+
 
       - name: Deploy Development Environment
         run: |

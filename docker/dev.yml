@@ -11,6 +11,12 @@ services:
       - dev-db-data:/var/lib/postgresql/data
     networks:
       - common-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
   team77-dev-server:
     container_name: team77-dev-server

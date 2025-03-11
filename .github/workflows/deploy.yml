@@ -95,8 +95,22 @@ jobs:
 
       - name: Wait for DB readiness and Run Migrations and Seeders (Dev)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker exec team77-dev-server sh -c 'until nc -z db 5432; do echo \"waiting for db...\"; sleep 5; done; npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all'"
-
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker network create common-network || true"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            docker exec team77-dev-server sh -c '
+              for i in \$(seq 1 30); do 
+                echo \"Attempt \$i: Checking database connection...\"
+                if pg_isready -h db -p 5432 -U team77; then
+                  echo \"Database is ready!\"
+                  npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all
+                  exit 0
+                fi
+                echo \"Database not ready yet. Waiting...\"
+                sleep 5
+              done
+              echo \"Database connection failed after multiple attempts\"
+              exit 1'
+          "
 
       - name: Wait for Dev Stack to be Ready
         run: |

@@ -12,11 +12,10 @@ services:
     networks:
       - common-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-team77}"]
       interval: 10s
       timeout: 5s
       retries: 5
-
 
   team77-dev-server:
     container_name: team77-dev-server
@@ -29,13 +28,24 @@ services:
       - POSTGRES_DB=UniHub
       - DB_HOST=db
       - DB_PORT=5432
-      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - DATABASE_URL=postgres://team77:team77@db:5432/UniHub
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - common-network
     ports:
       - "8080:8080"
+    command: >
+      sh -c "
+        echo 'Waiting for database connection...' &&
+        until nc -z db 5432; do
+          echo 'Database is unavailable - sleeping'
+          sleep 2
+        done &&
+        echo 'Database is up - starting server' &&
+        npm start
+      "
 
   team77-dev-client:
     container_name: team77-dev-client
@@ -53,7 +63,8 @@ services:
 
 networks:
   common-network:
-    external: true
+    name: common-network
+    driver: bridge
 
 volumes:
   dev-db-data:

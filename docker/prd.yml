@@ -11,19 +11,26 @@ services:
       - db-data:/var/lib/postgresql/data
     networks:
       - common-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-team77}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   team77-prd-server:
     container_name: team77-prd-server
     image: ghcr.io/uob-team-project/team77-server:latest
+    restart: always
     environment:
       - NODE_ENV=production
       - PORT=8080
       - POSTGRES_USER=team77
-      - POSTGRES_PASSWORD=team77
+      - POSTGRES_PASSWORD=team77_production_password
       - POSTGRES_DB=UniHub
       - DB_HOST=db
       - DB_PORT=5432
-      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - JWT_SECRET=team77_production_secret
+      - DATABASE_URL=postgres://team77:team77_production_password@db:5432/UniHub
     depends_on:
       - db
     networks:
@@ -34,6 +41,7 @@ services:
   team77-prd-client:
     container_name: team77-prd-client
     image: ghcr.io/uob-team-project/team77-client:latest
+    restart: always
     environment:
       - NODE_ENV=production
       - PORT=80

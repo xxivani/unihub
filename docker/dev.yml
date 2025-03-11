@@ -19,6 +19,7 @@ services:
   team77-dev-server:
     container_name: team77-dev-server
     image: ghcr.io/uob-team-project/team77-server:latest
+    restart: always
     environment:
       - NODE_ENV=development
       - PORT=8080
@@ -28,6 +29,7 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - DATABASE_URL=postgres://team77:team77@db:5432/UniHub
+      - JWT_SECRET=team77_dev_secret  
     depends_on:
       - db
     networks:
@@ -38,6 +40,7 @@ services:
   team77-dev-client:
     container_name: team77-dev-client
     image: ghcr.io/uob-team-project/team77-client:latest
+    restart: always
     environment:
       - NODE_ENV=development
       - PORT=3000

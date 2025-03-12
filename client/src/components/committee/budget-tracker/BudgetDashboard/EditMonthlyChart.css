@@ -1,66 +1,68 @@
 .edit-chart-modal-title {
-    text-align: center !important;
-    color: #203246 !important;
+  text-align: center !important;
+  color: #203246 !important;
 }
 .edit-chart-submit-button {
-    background-color: #182534 !important;
-    color: white;
-    align-items: center;
-    justify-content: center;
-    margin-left: 160px;
+  background-color: #182534 !important;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  margin-left: 160px;
 }
 .edit-chart-cancel-button {
-    background-color: #182534 !important;
-    color: white;
-    align-items: center;
-    justify-content: center;
+  background-color: #182534 !important;
+  color: white;
+  align-items: center;
+  justify-content: center;
 }
 .edit-chart-cancel-button:hover {
-    color: white !important;
+  color: white !important;
 }
 .edit-expense-icon {
-    position: absolute; /* Position the icon absolutely */
-    top: 10px;
-    right: 10px; /* Adjust the distance from the right */
-    display: flex; /* Use flex to center the icon inside the button */
-    align-items: center; /* Center the icon vertically */
-    justify-content: center; /* Center the icon horizontally */
-    background-color: #e0b000;
-    width: 43px; /* Set a fixed width */
-    height: 43px; /* Set a fixed height to make it a perfect circle */
-    border: none; /* Ensure there's no border around the button */
-    border-radius: 50%; /* To make it a perfect circle */
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    font-size: 50px !important;
-    margin-bottom: 20px;
-    z-index: 100; /* Ensure it's above other elements */
-  }
+  position: absolute; /* Position the icon absolutely */
+  top: 10px;
+  right: 10px; /* Adjust the distance from the right */
+  display: flex; /* Use flex to center the icon inside the button */
+  align-items: center; /* Center the icon vertically */
+  justify-content: center; /* Center the icon horizontally */
+  /* background-color: #e0b000; */
+  background-color: #213347;
+  width: 43px; /* Set a fixed width */
+  height: 43px; /* Set a fixed height to make it a perfect circle */
+  border: none; /* Ensure there's no border around the button */
+  border-radius: 50%; /* To make it a perfect circle */
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  font-size: 50px !important;
+  margin-bottom: 20px;
+  z-index: 100; /* Ensure it's above other elements */
+}
   
-  .edit-expense-icon:hover {
-    background-color: #e0b000 !important;
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
-  }
+.edit-expense-icon:hover {
+  /* background-color: #e0b000 !important; */
+  background-color: #162230 !important;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
   
-  .edit-expense-icon::after {
-    position: absolute;
-    content: "Edit Expense";
-    right: 20%;
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    transform: translateX(-50%);
-    font-size: 14px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    white-space: nowrap;
-    font-size: 14px;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease-in-out;
-  }
+.edit-expense-icon::after {
+  position: absolute;
+  content: "Edit Expense";
+  right: 20%;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  transform: translateX(-50%);
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  font-size: 14px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out;
+}
   
-  .edit-expense-icon:hover::after {
-    opacity: 1;
-    visibility: visible;
-  }
+.edit-expense-icon:hover::after {
+  opacity: 1;
+  visibility: visible;
+}

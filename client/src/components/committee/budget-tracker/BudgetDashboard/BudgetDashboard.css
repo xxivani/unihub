@@ -173,7 +173,8 @@
     display: flex; /* Use flex to center the icon inside the button */
     align-items: center; /* Center the icon vertically */
     justify-content: center; /* Center the icon horizontally */
-    background-color: #e0b000;
+    /* background-color: #e0b000; */
+    background-color: #162230;
     width: 43px; /* Set a fixed width */
     height: 43px; /* Set a fixed height to make it a perfect circle */
     border: none; /* Ensure there's no border around the button */
@@ -185,7 +186,9 @@
 }
 
 .add-expense-icon:hover {
-    background-color: #e0b000 !important;
+    /* background-color: #e0b000 !important; */
+    background-color: #162230 !important;
+
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
 }
 .add-expense-icon::after {
@@ -227,7 +230,6 @@
 .budget-next-button {
     margin-left: 300px;
     padding: 10px 20px;
-    background-color: #4CAF50;
     color: white;
     border: none;
     cursor: pointer;
@@ -244,4 +246,8 @@
     transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     font-size: 15px;
+}
+.budget-next-button:hover {
+    background-color: #e0b000;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
 }

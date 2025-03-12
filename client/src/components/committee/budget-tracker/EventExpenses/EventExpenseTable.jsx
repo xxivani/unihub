@@ -1,9 +1,10 @@
-import { Space, Table, Tag, Typography, Button, Form, Input, Select, Modal, Checkbox, ConfigProvider } from 'antd';
+import { Space, Table, Tag, Typography, Button, Form, Input, Select, Modal, Checkbox, ConfigProvider, InputNumber } from 'antd';
 import Pagination from "../../../viewRO/Pagination";
 import { useState } from 'react';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
-
+import EventAddExpenseButton from './EventExpensesForm';
+import "./EventExpensesForm.css";
 
 
 const { Text } = Typography;
@@ -91,6 +92,11 @@ const EventExpensesTable = () => {
         },
     ];
 
+    // CHANGE: Added function to handle adding a new event from the form
+    const handleAddEvent = (newEvent) => {
+        setData([...data, newEvent]);
+    };
+
     const handleEdit = (record) => {
         setEditingEvent(record);
         
@@ -114,18 +120,19 @@ const EventExpensesTable = () => {
             // Convert selectedCategories object to the array format used in data
             const updatedCategories = Object.entries(selectedCategories).map(([name, amount]) => ({
                 name: name,
-                amount: amount
+                amount: Number(amount)
             }));
             
             // Calculate the new total expense
             const totalExpense = updatedCategories.reduce((sum, { amount }) => sum + Number(amount), 0);
             
-            // Update the data with the new values including categories
+            // Update the data with the new values including categories and expense
             const updatedData = data.map((item) =>
                 item.key === editingEvent.key 
                     ? { 
                         ...item, 
                         ...values,
+                        expense: `AED ${totalExpense}`, // Add the formatted expense string
                         categories: updatedCategories,
                     } 
                     : item
@@ -159,6 +166,34 @@ const EventExpensesTable = () => {
         // Optional: Add confirmation or notification here
         console.log("Deleted event expense:", record);
     };
+
+    const handleCheckboxChange = (category, checked) => {
+        setSelectedCategories((prev) => {
+            if (checked) {
+                return {
+                    ...prev,
+                    [category]: "", // When checked, show the input field with an empty value
+                };
+            } else {
+                const newCategories = { ...prev };
+                delete newCategories[category]; // Remove category when unchecked
+                return newCategories;
+            }
+        });
+    };
+    
+    const handleAmountChange = (category, value) => {
+        setSelectedCategories((prev) => ({
+            ...prev,
+            [category]: value, // Store input value
+        }));
+    };
+
+    // CHANGE: Added function to calculate total expense from all selected categories
+    const calculateTotalExpense = () => {
+        return Object.values(selectedCategories)
+            .reduce((sum, amount) => sum + (Number(amount) || 0), 0);
+    };
     
 
 
@@ -178,7 +213,7 @@ const EventExpensesTable = () => {
             name: 'Event 1',
             date: '02/11/2025',
             status: 'ONGOING',
-            expense: 'AED 400',
+            expense: 'AED 5000',
             // categories: ['catering', 'venue', 'prize', 'materials', 'transportation'],
             categories: [
                 { name: 'catering', amount: 1500 },
@@ -311,27 +346,6 @@ const EventExpensesTable = () => {
     const totalPages = Math.ceil(data.length / pageSize);
     const paginatedData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-    const handleCheckboxChange = (category, checked) => {
-        setSelectedCategories((prev) => {
-            if (checked) {
-                return {
-                    ...prev,
-                    [category]: "", // When checked, show the input field with an empty value
-                };
-            } else {
-                const newCategories = { ...prev };
-                delete newCategories[category]; // Remove category when unchecked
-                return newCategories;
-            }
-        });
-    };
-    
-    const handleAmountChange = (category, value) => {
-        setSelectedCategories((prev) => ({
-            ...prev,
-            [category]: value, // Store input value
-        }));
-    };
 
     return (
 
@@ -342,17 +356,30 @@ const EventExpensesTable = () => {
                     colorPrimaryHover: "#314521"
                 },
             }}
-        >            
-            <div style={{ marginBottom: 16, marginLeft: "10px", justifyContent: "space-between" }}>
-                <Text strong>Category Legend: </Text>
-                <Space size="small">
-                    {Object.entries(categoryColors).map(([category, color]) => (
-                        <Tag color={color} key={category}>
-                            {category.toUpperCase()}
-                        </Tag>
-                    ))}
-                </Space>
+        >       
+            
+            <div style={{ 
+                marginBottom: 16, 
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+            }}>
+                {/* Left side with legend */}
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Text strong style={{ marginRight: 8 }}>Category Legend: </Text>
+                    <Space size="small">
+                        {Object.entries(categoryColors).map(([category, color]) => (
+                            <Tag color={color} key={category}>
+                                {category.toUpperCase()}
+                            </Tag>
+                        ))}
+                    </Space>
+                </div>
+                
+                {/* Right side with button */}
+                <EventAddExpenseButton onAddEvent={handleAddEvent} />
             </div>
+
             <Table columns={columns} dataSource={paginatedData} pagination={false} />
             <Pagination
                 totalPages={totalPages}
@@ -360,7 +387,7 @@ const EventExpensesTable = () => {
                 onPageChange={setCurrentPage}
             />
             <Modal
-                title="Edit Event Expense"
+                title={<div className='event-expense-form-modal-title'>Edit Event</div>}
                 open={!!editingEvent}
                 onCancel={() => setEditingEvent(null)}
                 onOk={handleSave}
@@ -394,7 +421,7 @@ const EventExpensesTable = () => {
                                 </Checkbox>
 
                                 {/* Conditionally Render Amount Input */}
-                                {selectedCategories[category] !== undefined && (
+                                 {selectedCategories[category] !== undefined && (
                                     <Input
                                         type="number"
                                         placeholder="Enter amount"
@@ -406,6 +433,11 @@ const EventExpensesTable = () => {
                             </div>
                         ))}
                     </Form.Item>
+                   
+                    {/* CHANGE: Added automatic total calculation display to edit modal */}
+                    <div style={{ marginBottom: 16 }}>
+                        <strong>Total Expense: AED {calculateTotalExpense()}</strong>
+                    </div>
 
                 </Form>
             </Modal>

@@ -22,21 +22,31 @@ function Login() {
     const testApiConnection = async () => {
       setIsConnecting(true);
       try {
+        console.log("Attempting to connect to:", `${apiUrl}/health`);
         const response = await fetch(`${apiUrl}/health`);
-        const data = await response.json();
         
-        if (response.ok) {
-          setApiConnectionStatus("Connected successfully");
-          if (import.meta.env.DEV) {
-            console.log("API health check response:", data);
+        console.log("Response status:", response.status);
+        console.log("Response headers:", Object.fromEntries([...response.headers]));
+        
+        const responseText = await response.text();
+        console.log("Raw response:", responseText);
+        
+        try {
+          const data = JSON.parse(responseText);
+          console.log("Parsed response:", data);
+          
+          if (response.ok) {
+            setApiConnectionStatus("Connected successfully");
+          } else {
+            setApiConnectionStatus(`Error: ${data.error || 'Unknown error'}`);
           }
-        } else {
-          setApiConnectionStatus("Connected but received error");
-          console.error("API error:", data);
+        } catch (err) {
+          console.error("Error parsing response as JSON:", err);
+          setApiConnectionStatus(`Connected but received non-JSON response`);
         }
       } catch (err) {
-        setApiConnectionStatus("Connection failed");
         console.error("API health check failed:", err);
+        setApiConnectionStatus(`Connection failed: ${err.message}`);
       }
       setIsConnecting(false);
     };
@@ -59,6 +69,8 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     
+    console.log("Attempting login to:", `${apiUrl}/users/login`);
+    
     try {
       const response = await fetch(`${apiUrl}/users/login`, {
         method: "POST",
@@ -67,31 +79,33 @@ function Login() {
         credentials: "include" 
       });
       
-      let data;
+      console.log("Login response status:", response.status);
+      console.log("Login response headers:", Object.fromEntries([...response.headers]));
+      
       const responseText = await response.text();
+      console.log("Raw login response:", responseText);
       
       try {
-        data = JSON.parse(responseText);
+        const data = JSON.parse(responseText);
+        
+        if (response.ok) {
+          const userData = { email, token: data.token, role: data.role };
+          sessionStorage.setItem("user", JSON.stringify(userData));
+          alert("Login successful!");
+          navigate("/"); 
+        } else {
+          alert(data.error || "Invalid email or password");
+        }
       } catch (err) {
-        console.error("Error parsing JSON:", err);
-        alert("Server returned an invalid response format.");
-        return;
-      }
-      
-      if (response.ok) {
-        const userData = { email, token: data.token, role: data.role };
-        sessionStorage.setItem("user", JSON.stringify(userData));
-        alert("Login successful!");
-        navigate("/"); 
-      } else {
-        alert(data.error || "Invalid email or password");
+        console.error("Error parsing login response as JSON:", err);
+        alert("The server returned an invalid response. Please try again later.");
       }
     } catch (err) {
       console.error("Login error details:", err);
-      alert("An error occurred while trying to login.");
+      alert(`Login request failed: ${err.message}`);
     }
   };
-
+  
   return (
     <div className="auth-page">
       {import.meta.env.DEV && (

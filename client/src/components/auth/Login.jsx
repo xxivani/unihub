@@ -7,26 +7,41 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error] = useState("");
-  const [apiUrlDisplay, setApiUrlDisplay] = useState("");
+  const [isConnecting, setIsConnecting] = useState(true);
+  const [apiConnectionStatus, setApiConnectionStatus] = useState("Checking connection...");
   const navigate = useNavigate();
 
-  const apiUrl = import.meta.env.VITE_API_URL || "https://team77.dev.bham.team/api";
-  // "http://localhost:5000/api";
+  const apiUrl = import.meta.env.VITE_API_URL || 
+                (window.location.hostname.includes('dev') ? 
+                 "https://team77.dev.bham.team/api" : 
+                 "https://team77.bham.team/api");
 
   useEffect(() => {
-    console.log("Environment variables:", import.meta.env);
-    console.log("API URL being used:", apiUrl);
-    setApiUrlDisplay(apiUrl);
+    if (import.meta.env.DEV) {
+      console.log("Environment variables:", import.meta.env);
+      console.log("API URL being used:", apiUrl);
+    }
     
     const testApiConnection = async () => {
+      setIsConnecting(true);
       try {
-        console.log("Testing API connection to:", `${apiUrl}/health`);
         const response = await fetch(`${apiUrl}/health`);
         const data = await response.json();
-        console.log("API health check response:", data);
+        
+        if (response.ok) {
+          setApiConnectionStatus("Connected successfully");
+          if (import.meta.env.DEV) {
+            console.log("API health check response:", data);
+          }
+        } else {
+          setApiConnectionStatus("Connected but received error");
+          console.error("API error:", data);
+        }
       } catch (err) {
+        setApiConnectionStatus("Connection failed");
         console.error("API health check failed:", err);
       }
+      setIsConnecting(false);
     };
     
     testApiConnection();
@@ -46,8 +61,6 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Login attempt with API URL:", apiUrl);
-    console.log("Making request to:", `${apiUrl}/users/login`);
     
     try {
       const response = await fetch(`${apiUrl}/users/login`, {
@@ -57,14 +70,9 @@ function Login() {
         credentials: "include" 
       });
       
-      console.log("Login response status:", response.status);
-      
-      // Add this to debug the response
-      const responseText = await response.text();
-      console.log("Raw response:", responseText);
-      
-      // Try to parse as JSON only if it looks like JSON
       let data;
+      const responseText = await response.text();
+      
       try {
         data = JSON.parse(responseText);
       } catch (err) {
@@ -72,8 +80,6 @@ function Login() {
         alert("Server returned an invalid response format.");
         return;
       }
-      
-      console.log("Login response data:", data);
       
       if (response.ok) {
         const userData = { email, token: data.token, role: data.role };
@@ -91,10 +97,12 @@ function Login() {
 
   return (
     <div className="auth-page">
-      {/* Debug display - Remove in production */}
-      <div style={{position: 'fixed', bottom: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', color: 'white', padding: '5px', fontSize: '12px', zIndex: 9999}}>
-        API URL: {apiUrlDisplay}
-      </div>
+      {import.meta.env.DEV && (
+        <div style={{position: 'fixed', bottom: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', color: 'white', padding: '5px', fontSize: '12px', zIndex: 9999}}>
+          API URL: {apiUrl}<br/>
+          Status: {apiConnectionStatus}
+        </div>
+      )}
       
       {/* Background Shapes */}
       <div className="circle"></div>
@@ -155,8 +163,12 @@ function Login() {
                     Forgot Password?
                   </a>
                 </div>
-                <button type="submit" className="login-button">
-                  Login
+                <button 
+                  type="submit" 
+                  className="login-button"
+                  disabled={isConnecting}
+                >
+                  {isConnecting ? "Connecting..." : "Login"}
                 </button>
               </form>
             </div>

@@ -179,7 +179,36 @@ jobs:
 
       - name: Deploy Production Environment
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/prd.yml -p team77-prod up -d --remove-orphans && docker system prune --force --filter 'until=24h'"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Make sure the common-network exists but don't recreate it if it does
+            docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
+            
+            # Start the containers using the existing network
+            docker compose -f ~/team-project/prd.yml -p team77-prod up -d --remove-orphans && 
+            docker system prune --force --filter 'until=24h'
+          "
+
+      - name: Wait for DB readiness and Run Migrations and Seeders (Prod)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Wait a bit for containers to initialize
+            sleep 15
+            
+            # Run migrations
+            docker exec team77-prd-server sh -c '
+              for i in \$(seq 1 30); do 
+                echo \"Attempt \$i: Checking database connection...\"
+                if nc -z db 5432; then
+                  echo \"Database is ready!\"
+                  npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all
+                  exit 0
+                fi
+                echo \"Database not ready yet. Waiting...\"
+                sleep 5
+              done
+              echo \"Database connection failed after multiple attempts\"
+              exit 1'
+          "
 
       - name: Wait for Prod Stack to be Ready
         run: |

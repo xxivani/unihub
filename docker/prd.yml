@@ -41,6 +41,10 @@ services:
   team77-prd-client:
     container_name: team77-prd-client
     image: ghcr.io/uob-team-project/team77-client:latest
+    build:
+      context: ./client
+      args:
+        VITE_API_URL: "https://team77.bham.team/api"
     restart: always
     environment:
       - NODE_ENV=production

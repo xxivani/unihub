@@ -10,7 +10,7 @@ function Login() {
   const [apiUrlDisplay, setApiUrlDisplay] = useState("");
   const navigate = useNavigate();
 
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrl = import.meta.env.VITE_API_URL || "https://team77.dev.bham.team/api";
   // "http://localhost:5000/api";
 
   useEffect(() => {
@@ -59,7 +59,20 @@ function Login() {
       
       console.log("Login response status:", response.status);
       
-      const data = await response.json();
+      // Add this to debug the response
+      const responseText = await response.text();
+      console.log("Raw response:", responseText);
+      
+      // Try to parse as JSON only if it looks like JSON
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (err) {
+        console.error("Error parsing JSON:", err);
+        alert("Server returned an invalid response format.");
+        return;
+      }
+      
       console.log("Login response data:", data);
       
       if (response.ok) {

@@ -13,7 +13,7 @@ function Login() {
   const [apiConnectionStatus, setApiConnectionStatus] = useState("Checking connection...");
   const navigate = useNavigate();
 
-  const apiUrl = import.meta.env.VITE_API_URL|| '/api';
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (import.meta.env.DEV) {

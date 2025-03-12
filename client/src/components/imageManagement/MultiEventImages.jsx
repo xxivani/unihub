@@ -4,6 +4,8 @@ import {FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const imageM_events = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPreview, setCurrentPreview] = useState(null);
+  const [isPopupMode, setIsPopupMode] = useState(false);
   const [imageRow, setImageRow] = useState({
     1: 0,
     2: 0,
@@ -11,6 +13,7 @@ const imageM_events = () => {
     4: 0,
     5: 0
   });  
+  const position = [0, 1, 2, 3, 4, 5, 6, 7];
   const imageRow1 = 0;
   const imageRow2 = 0;
   const imageRow3 = 0;
@@ -48,12 +51,56 @@ const imageM_events = () => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+  const handleClose = () => {
+    setIsPopupMode(false);
+  };
+  const handlePopup = (event) => {
+    setIsPopupMode(true);
+    setCurrentPreview(event);
+  }
   return (
     <main className="imageM-main-container">
       <div className="imageM-header">
         <h1 className="imageM-heading">Events Image Management</h1>
       </div>
       <div className="imageM-container">
+        {isPopupMode && (
+          <div className="imageM-popup">
+            <button 
+              className="imageM-close-button"
+              onClick={handleClose}
+            >
+              Close
+            </button>
+            <div className="imageM-preview-image">
+              <img src={currentPreview.image} alt={currentPreview.title} />
+            </div>
+            <button 
+              className="imageM-popup-button"
+              onClick={undefined}
+            >
+              Import
+            </button>
+            <button 
+              className="imageM-popup-button"
+              onClick={undefined}
+            >
+              Edit
+            </button>
+            <button 
+              className="imageM-popup-button"
+              onClick={undefined}
+            >
+              Move
+            </button>
+            <button 
+              className="imageM-popup-button"
+              onClick={undefined}
+            >
+              Delete
+            </button>
+          </div>
+        )}
         {events.map(event => (
           <div className="imageM-card" key={event.id}>
             <div className="imageM-image">
@@ -62,16 +109,10 @@ const imageM_events = () => {
             <div>
               <h2 className="imageM-title">{event.title}</h2>
             <div className="imageM-actions">
-              <button className={`imageM-box-button ${imageRow[event.id] !== 0 ? "" : "add"}`} onClick={imageRow[event.id] !== 0 ? undefined : () => setImageRow(prev => ({ ...prev, [event.id]: (prev[event.id] || 0) + 1 }))}>{imageRow[event.id] !== 0 ? "" : "+"}</button>
-              <button className={`imageM-box-button ${imageRow[event.id] !== 1 ? (imageRow[event.id] < 1 ? "hide" : "") : "add"}`} onClick={imageRow[event.id] !== 1 ? undefined : () => setImageRow(prev => ({ ...prev, [event.id]: (prev[event.id] || 0) + 1 }))}>{imageRow[event.id] !== 1 ? "" : "+"}</button>
-              <button className={`imageM-box-button ${imageRow[event.id] !== 2 ? (imageRow[event.id] < 2 ? "hide" : "") : "add"}`} onClick={imageRow[event.id] !== 2 ? undefined : () => setImageRow(prev => ({ ...prev, [event.id]: (prev[event.id] || 0) + 1 }))}>{imageRow[event.id] !== 2 ? "" : "+"}</button>
-              <button className={`imageM-box-button ${imageRow[event.id] !== 3 ? (imageRow[event.id] < 3 ? "hide" : "") : "add"}`} onClick={imageRow[event.id] !== 3 ? undefined : () => setImageRow(prev => ({ ...prev, [event.id]: (prev[event.id] || 0) + 1 }))}>{imageRow[event.id] !== 3 ? "" : "+"}</button>
-              <button className={`imageM-box-button ${imageRow[event.id] !== 4 ? (imageRow[event.id] < 4 ? "hide" : "") : "add"}`} onClick={imageRow[event.id] !== 4 ? undefined : () => setImageRow(prev => ({ ...prev, [event.id]: (prev[event.id] || 0) + 1 }))}>{imageRow[event.id] !== 4 ? "" : "+"}</button>
-              <button className={`imageM-box-button ${imageRow[event.id] !== 5 ? (imageRow[event.id] < 5 ? "hide" : "") : "add"}`} onClick={imageRow[event.id] !== 5 ? undefined : () => setImageRow(prev => ({ ...prev, [event.id]: (prev[event.id] || 0) + 1 }))}>{imageRow[event.id] !== 5 ? "" : "+"}</button>
-              <button className={`imageM-box-button ${imageRow[event.id] !== 6 ? (imageRow[event.id] < 6 ? "hide" : "") : "add"}`} onClick={imageRow[event.id] !== 6 ? undefined : () => setImageRow(prev => ({ ...prev, [event.id]: (prev[event.id] || 0) + 1 }))}>{imageRow[event.id] !== 6 ? "" : "+"}</button>
-              <button className={`imageM-box-button ${imageRow[event.id] !== 7 ? (imageRow[event.id] < 7 ? "hide" : "") : "add"}`} onClick={imageRow[event.id] !== 7 ? undefined : () => setImageRow(prev => ({ ...prev, [event.id]: (prev[event.id] || 0) + 1 }))}>{imageRow[event.id] !== 7 ? "" : "+"}</button>
-              <button className={`imageM-box-button ${imageRow[event.id] !== 8 ? (imageRow[event.id] < 8 ? "hide" : "") : "add"}`} onClick={imageRow[event.id] !== 8 ? undefined : () => setImageRow(prev => ({ ...prev, [event.id]: (prev[event.id] || 0) + 1 }))}>{imageRow[event.id] !== 8 ? "" : "+"}</button>
-            </div>
+              {position.map(id => (
+              <button key={id} className={`imageM-box-button ${imageRow[event.id] !== id ? (imageRow[event.id] < id ? "hide" : "") : "add"}`} disabled={(imageRow[event.id] < id || isPopupMode == true)} onClick={imageRow[event.id] !== id ? () => ((isPopupMode == false) ? handlePopup(event) : undefined) : () => setImageRow(prev => ({ ...prev, [event.id]: (prev[event.id] || 0) + 1 }))}>{imageRow[event.id] !== id ? "" : "+"}</button>
+              ))}
+              </div>
             </div>
           </div>
         ))}

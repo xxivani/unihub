@@ -11,7 +11,11 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000/api',
+        url: process.env.NODE_ENV === 'production' 
+          ? 'https://team77.bham.team/api' 
+          : process.env.NODE_ENV === 'development'
+            ? 'https://team77.dev.bham.team/api'
+            : 'http://localhost:5000/api',
       },
     ],
   },

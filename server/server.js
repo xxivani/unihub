@@ -9,7 +9,18 @@ const path = require('path');
 // localhost:5000/api-docs
 
 app.use(express.json());
-app.use(cors());
+const corsOptions = {
+  origin: [
+    'https://team77.dev.bham.team',
+    'https://team77.bham.team',
+    'http://localhost:3000'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));

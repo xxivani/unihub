@@ -6,6 +6,8 @@ import {FaEdit, FaBell, FaTrash, FaPencilAlt, FaTimes } from 'react-icons/fa';
 const E4CommitteeEvents = () =>{
     const [isEditMode, setIsEditMode] = useState(false);
     const [isEditFormVisible, setIsEditFormVisible] = useState(false);
+    const [isFormVisible, setIsFormVisible] = useState(false);
+    const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
     const [currentEditEvent, setCurrentEditEvent] = useState(null);
     const [events, setEvents] = useState([
         {
@@ -106,6 +108,14 @@ const E4CommitteeEvents = () =>{
             setEvents(events.filter(event => event.id !== id));
           }
       };
+      const handleFormSubmit = (e) => {
+        e.preventDefault();
+        setIsFormVisible(false);
+        setIsSuccessModalVisible(true);
+      };
+      const handleCloseSuccessModal = () => {
+        setIsSuccessModalVisible(false);
+      };
       const handleEdit = (id) => {
         const eventToEdit = events.find(event => event.id === id);
         if (eventToEdit) {
@@ -154,6 +164,62 @@ const E4CommitteeEvents = () =>{
             </div>
         {/* Top and Bottom Section Splitter */}
         <div className="e4c-browse-events">
+          {isFormVisible && (
+                  <div className="e4c-event-form-overlay">
+                    <div className="e4c-event-form-container">
+                      <button 
+                        className="e4c-close-form-button" 
+                        onClick={() => setIsFormVisible(false)} 
+                        aria-label="Close form"
+                      >
+                        <FaTimes />
+                      </button>
+                      <h3>Sign Up to Follow Event</h3>
+                      <form className="e4c-event-signup-form" onSubmit={handleFormSubmit}>
+                        <div className="e4c-event-form-group">
+                          <label htmlFor="e4c-name">Name</label>
+                          <input type="text" id="name" name="name" required />
+                        </div>
+                        <div className="e4c-event-form-group">
+                          <label htmlFor="e4c-studentId">Student ID</label>
+                          <input type="text" id="studentId" name="studentId" required />
+                        </div>
+                        <div className="e4c-event-form-group">
+                          <label htmlFor="e4c-year">Year of Study</label>
+                          <input type="text" id="year" name="year" required />
+                        </div>
+                        <div className="e4c-event-form-group">
+                          <label htmlFor="e4c-email">Email</label>
+                          <input type="email" id="email" name="email" required />
+                        </div>
+                        <div className="e4c-event-form-actions">
+                          <button type="submit" className="e4c-event-submit-button">Submit</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
+                {isSuccessModalVisible && (
+                    <div className="e4c-event-form-overlay">
+                      <div className="e4c-success-modal">
+                        <button 
+                          className="e4c-close-form-button" 
+                          onClick={handleCloseSuccessModal}
+                          aria-label="Close modal"
+                        >
+                          <FaTimes />
+                        </button>
+                        <h2>Event followed successfully</h2>
+                        <p>Please make sure to unfollow it if you won't be able to make it to the event on time to give spot to someone else!</p>
+                        <button 
+                          className="e4c-return-button"
+                          onClick={handleCloseSuccessModal}
+                        >
+                          Return to Event List
+                        </button>
+                      </div>
+                    </div>
+                  )}
             <div className="e4c-browse-events-list">
             {events.map(event => (
                 <div className="e4c-events-list" key={event.id}><div className="e4c-event-format">
@@ -181,7 +247,7 @@ const E4CommitteeEvents = () =>{
                     <div className="e4-event-time">Location: {event.location}</div><div className="e4-event-time">Time: {event.time}</div><div className="e4-event-time">Date: {event.date}</div></div>
                     <div className="e4-event-button-container">
                     <div className="e4-event-up-down-container"><FaBell/>
-                    <button className="e4-event-follow-button">Follow</button>
+                    <button className="e4-event-follow-button" onClick={() => setIsFormVisible(true)}>Follow</button>
                     <button className="e4-event-detail-button" onClick={() => window.location.href='/event-details'}>Detail</button></div></div></div></div>
             ))}
             </div>

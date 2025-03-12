@@ -106,10 +106,11 @@
     height: 100%;
     padding: 1px;
     display: grid;
+    justify-items: end;
     padding-top: 30px;
     padding-bottom: 30px;
     margin-left: 20px;
-    gap: 20px;
+    gap: 10px;
   }
 
   .e4-event-twin-button-container {
@@ -125,10 +126,10 @@
   }
 
   .e4-event-follow-button {
-    background-color: #171717;
+    background-color: rgb(230, 214, 156);
     border-radius: 5px;
     border: 5px solid rgba(0, 0, 0, 0);
-    color: white;
+    color: black;
     padding: 6px 20px 6px 20px;
     width: 250px;
     height: 45px;
@@ -143,21 +144,21 @@
   }
 
   .e4-event-follow-button:hover {
-    background-color: #343434;
+    background-color: rgb(240, 224, 166);
   }
 
   .e4-event-follow-button:hover:active {
-    background-color: #232323;
+    background-color: rgb(235, 219, 161);
     box-shadow: 2px 0px rgba(0, 0, 0, 0.2);
     margin-top: 2px;
     margin-bottom: -2px;
   }
 
   .e4-event-detail-button {
-    background-color: #d48f27;
+    background-color: rgb(30, 30, 30);
     border-radius: 5px;
     border: 5px solid rgba(0, 0, 0, 0);
-    color: rgb(0, 0, 0);
+    color: white;
     padding: 6px 20px 6px 20px;
     width: 250px;
     height: 45px;
@@ -171,11 +172,11 @@
   }
 
   .e4-event-detail-button:hover {
-    background-color: #f4a32b;
+    background-color: rgb(50, 50, 50);
   }
 
   .e4-event-detail-button:hover:active {
-    background-color: #e69926;
+    background-color: rgb(40, 40, 40);
     box-shadow: 2px 0px rgba(0, 0, 0, 0.2);
     margin-top: 2px;
     margin-bottom: -2px;
@@ -191,6 +192,7 @@
     overflow: hidden;
   }
 
+  /* Unused abandoned custom notification bell */
   /*Light bell*/
   .e4-event-notification {
     width: 10%;

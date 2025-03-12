@@ -12,18 +12,15 @@ services:
     networks:
       - common-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-team77_prod}"]
+      interval: 10s
       timeout: 5s
-      retries: 10
-      start_period: 10s
+      retries: 5
 
   team77-prd-server:
     container_name: team77-prd-server
     image: ghcr.io/uob-team-project/team77-server:latest
     restart: always
-    env_file:
-      - ./db.env
     environment:
       - NODE_ENV=production
       - PORT=8080
@@ -35,18 +32,11 @@ services:
       - JWT_SECRET=team77_production_secret
       - DATABASE_URL=postgres://team77_prod:team77_production_password@db:5432/UniHub_Production
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     networks:
       - common-network
     ports:
       - "9090:8080"
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/health"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
 
   team77-prd-client:
     container_name: team77-prd-client
@@ -58,18 +48,11 @@ services:
       - REACT_APP_API_URL=https://team77.bham.team/api
       - VITE_API_URL=https://team77.bham.team/api
     depends_on:
-      team77-prd-server:
-        condition: service_healthy
+      - team77-prd-server
     networks:
       - common-network
     expose:
       - "80"
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
       
 networks:
   common-network:

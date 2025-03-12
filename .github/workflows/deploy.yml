@@ -164,106 +164,61 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "rm -rf ~/team-project || true"
 
-      - name: Create deployment directory on VM
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project"
-
       - name: Create db.env on VM (Prod)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "printf '%s' '${{ secrets.DB_ENV_PRD }}' > ~/team-project/db.env"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project && printf '%s' '${{ secrets.DB_ENV_PRD }}' > ~/team-project/db.env"
           
       - name: Transfer deployment files to VM (Prod)
         run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project"
           scp -o StrictHostKeyChecking=no -r ./docker/* $DEPLOY_USER@$DEPLOY_IP:~/team-project/
 
-      - name: Stop and remove existing containers
+      - name: Clean up old containers on VM (Prod)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            docker compose -f ~/team-project/prd.yml -p team77-prod down --volumes --remove-orphans || true
-            docker compose -f ~/team-project/reverse-proxy.yml -p team77-proxy down || true
-            docker rm -f team77-nginx team77-prd-server team77-prd-client || true
-          "
-
-      - name: Ensure database network exists
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
-          "
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
+            "docker compose -f ~/team-project/prd.yml -p team77-prod down --volumes --remove-orphans || true && docker container prune -f"
 
       - name: Deploy Production Environment
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            cd ~/team-project
-            docker compose -f prd.yml -p team77-prod up -d
+            # Make sure the common-network exists but don't recreate it if it does
+            docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
             
-            # Monitor for healthy containers
-            echo 'Waiting for containers to become healthy...'
-            for i in \$(seq 1 30); do
-              UNHEALTHY=\$(docker ps --filter 'name=team77-prd' --filter 'health=unhealthy' --format '{{.Names}}' | wc -l)
-              STARTING=\$(docker ps --filter 'name=team77-prd' --filter 'health=starting' --format '{{.Names}}' | wc -l)
-              
-              if [ \$UNHEALTHY -eq 0 ] && [ \$STARTING -eq 0 ]; then
-                echo 'All containers are healthy!'
-                break
-              fi
-              
-              echo \"Waiting for containers to become healthy (\$i/30)...\"
-              sleep 10
-            done
-            
-            # Clean up old images
+            # Start the containers using the existing network
+            docker compose -f ~/team-project/prd.yml -p team77-prod up -d --remove-orphans && 
             docker system prune --force --filter 'until=24h'
           "
 
-      - name: Run Migrations and Seeders with Retry (Prod)
+      - name: Wait for DB readiness and Run Migrations and Seeders (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Wait for server container to be up and running
-            echo 'Waiting for server container to be ready...'
-            for i in \$(seq 1 10); do
-              if docker ps | grep team77-prd-server > /dev/null; then
-                echo 'Server container is running!'
-                break
-              fi
-              echo \"Server container not ready yet. Waiting... (\$i/10)\"
-              sleep 10
-              
-              # If we've reached the last try and still not running, show container logs
-              if [ \$i -eq 10 ]; then
-                echo 'Container failed to start. Here are the logs:'
-                docker logs team77-prd-server
-              fi
-            done
+            # Wait a bit for containers to initialize
+            sleep 15
             
-            # Check if container is running before executing commands
-            if docker ps | grep team77-prd-server > /dev/null; then
-              # Run migrations with retry
-              docker exec team77-prd-server sh -c '
-                for i in \$(seq 1 5); do
-                  echo \"Attempt \$i: Running migrations and seeders...\"
-                  if npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all; then
-                    echo \"Migrations and seeders completed successfully!\"
-                    exit 0
-                  fi
-                  echo \"Migration/seeder attempt failed. Retrying in 5 seconds...\"
-                  sleep 5
-                done
-                echo \"Migrations failed after multiple attempts\"
-                exit 1
-              '
-            else
-              echo 'Server container is not running! Cannot run migrations.'
-              echo 'Container status:'
-              docker ps -a | grep team77-prd-server
-              exit 1
-            fi
+            # Run migrations
+            docker exec team77-prd-server sh -c '
+              for i in \$(seq 1 30); do 
+                echo \"Attempt \$i: Checking database connection...\"
+                if nc -z db 5432; then
+                  echo \"Database is ready!\"
+                  npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all
+                  exit 0
+                fi
+                echo \"Database not ready yet. Waiting...\"
+                sleep 5
+              done
+              echo \"Database connection failed after multiple attempts\"
+              exit 1'
           "
-      - name: Deploy Reverse Proxy
+
+      - name: Wait for Prod Stack to be Ready
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            cd ~/team-project
-            docker compose -f reverse-proxy.yml -p team77-proxy up -d
-            
-            # Check the state of the proxy
-            docker ps | grep team77-nginx
-          "
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "sleep 20"
+
+      - name: Remove Previous Reverse Proxy (if any)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker rm -f team77-nginx || true"
+
+      - name: Deploy Reverse Proxy (Prod)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"

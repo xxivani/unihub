@@ -10,7 +10,8 @@ function Login() {
   const [apiUrlDisplay, setApiUrlDisplay] = useState("");
   const navigate = useNavigate();
 
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const apiUrl = import.meta.env.VITE_API_URL;
+  // "http://localhost:5000/api";
 
   useEffect(() => {
     console.log("Environment variables:", import.meta.env);

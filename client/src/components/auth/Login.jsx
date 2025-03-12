@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
@@ -7,9 +7,29 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error] = useState("");
+  const [apiUrlDisplay, setApiUrlDisplay] = useState("");
   const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+  useEffect(() => {
+    console.log("Environment variables:", import.meta.env);
+    console.log("API URL being used:", apiUrl);
+    setApiUrlDisplay(apiUrl);
+    
+    const testApiConnection = async () => {
+      try {
+        console.log("Testing API connection to:", `${apiUrl}/health`);
+        const response = await fetch(`${apiUrl}/health`);
+        const data = await response.json();
+        console.log("API health check response:", data);
+      } catch (err) {
+        console.error("API health check failed:", err);
+      }
+    };
+    
+    testApiConnection();
+  }, [apiUrl]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -25,31 +45,43 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    console.log("Login attempt with API URL:", apiUrl);
+    console.log("Making request to:", `${apiUrl}/users/login`);
+    
     try {
       const response = await fetch(`${apiUrl}/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include" 
       });
+      
+      console.log("Login response status:", response.status);
+      
       const data = await response.json();
+      console.log("Login response data:", data);
+      
       if (response.ok) {
-        // Save token, email, and role in sessionStorage
         const userData = { email, token: data.token, role: data.role };
         sessionStorage.setItem("user", JSON.stringify(userData));
         alert("Login successful!");
-        navigate("/"); // Redirect as needed
+        navigate("/"); 
       } else {
         alert(data.error || "Invalid email or password");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Login error details:", err);
       alert("An error occurred while trying to login.");
     }
   };
-  
 
   return (
     <div className="auth-page">
+      {/* Debug display - Remove in production */}
+      <div style={{position: 'fixed', bottom: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', color: 'white', padding: '5px', fontSize: '12px', zIndex: 9999}}>
+        API URL: {apiUrlDisplay}
+      </div>
+      
       {/* Background Shapes */}
       <div className="circle"></div>
       <div className="line"></div>

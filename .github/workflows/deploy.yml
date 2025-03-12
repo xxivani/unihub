@@ -218,22 +218,46 @@ jobs:
       - name: Run Migrations and Seeders with Retry (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Run migrations with retry
-            docker exec team77-prd-server sh -c '
-              for i in \$(seq 1 5); do
-                echo \"Attempt \$i: Running migrations and seeders...\"
-                if npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all; then
-                  echo \"Migrations and seeders completed successfully!\"
-                  exit 0
-                fi
-                echo \"Migration/seeder attempt failed. Retrying in 5 seconds...\"
-                sleep 5
-              done
-              echo \"Migrations failed after multiple attempts\"
+            # Wait for server container to be up and running
+            echo 'Waiting for server container to be ready...'
+            for i in \$(seq 1 10); do
+              if docker ps | grep team77-prd-server > /dev/null; then
+                echo 'Server container is running!'
+                break
+              fi
+              echo \"Server container not ready yet. Waiting... (\$i/10)\"
+              sleep 10
+              
+              # If we've reached the last try and still not running, show container logs
+              if [ \$i -eq 10 ]; then
+                echo 'Container failed to start. Here are the logs:'
+                docker logs team77-prd-server
+              fi
+            done
+            
+            # Check if container is running before executing commands
+            if docker ps | grep team77-prd-server > /dev/null; then
+              # Run migrations with retry
+              docker exec team77-prd-server sh -c '
+                for i in \$(seq 1 5); do
+                  echo \"Attempt \$i: Running migrations and seeders...\"
+                  if npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all; then
+                    echo \"Migrations and seeders completed successfully!\"
+                    exit 0
+                  fi
+                  echo \"Migration/seeder attempt failed. Retrying in 5 seconds...\"
+                  sleep 5
+                done
+                echo \"Migrations failed after multiple attempts\"
+                exit 1
+              '
+            else
+              echo 'Server container is not running! Cannot run migrations.'
+              echo 'Container status:'
+              docker ps -a | grep team77-prd-server
               exit 1
-            '
+            fi
           "
-
       - name: Deploy Reverse Proxy
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "

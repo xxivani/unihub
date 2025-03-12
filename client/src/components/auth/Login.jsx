@@ -11,10 +11,7 @@ function Login() {
   const [apiConnectionStatus, setApiConnectionStatus] = useState("Checking connection...");
   const navigate = useNavigate();
 
-  const apiUrl = import.meta.env.VITE_API_URL || 
-                (window.location.hostname.includes('dev') ? 
-                 "https://team77.dev.bham.team/api" : 
-                 "https://team77.bham.team/api");
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (import.meta.env.DEV) {

@@ -68,45 +68,46 @@ function Login() {
     navigate(-1);
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+const handleLogin = async (e) => {
+  e.preventDefault();
+  
+  const apiUrl = import.meta.env.VITE_API_URL;
+  console.log("Using API URL:", apiUrl);
+  
+  try {
+    const response = await fetch(`${apiUrl}/users/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+      credentials: "include" 
+    });
     
-    console.log("Attempting login to:", `${apiUrl}/users/login`);
+    console.log("Login response status:", response.status);
+    const contentType = response.headers.get("content-type");
+    console.log("Content-Type:", contentType);
     
-    try {
-      const response = await fetch(`${apiUrl}/users/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include" 
-      });
+    if (contentType && contentType.includes("application/json")) {
+      const data = await response.json();
       
-      console.log("Login response status:", response.status);
-      console.log("Login response headers:", Object.fromEntries([...response.headers]));
-      
-      const responseText = await response.text();
-      console.log("Raw login response:", responseText);
-      
-      try {
-        const data = JSON.parse(responseText);
-        
-        if (response.ok) {
-          const userData = { email, token: data.token, role: data.role };
-          sessionStorage.setItem("user", JSON.stringify(userData));
-          alert("Login successful!");
-          navigate("/"); 
-        } else {
-          alert(data.error || "Invalid email or password");
-        }
-      } catch (err) {
-        console.error("Error parsing login response as JSON:", err);
-        alert("The server returned an invalid response. Please try again later.");
+      if (response.ok) {
+        const userData = { email, token: data.token, role: data.role };
+        sessionStorage.setItem("user", JSON.stringify(userData));
+        alert("Login successful!");
+        navigate("/"); 
+      } else {
+        alert(data.error || "Invalid email or password");
       }
-    } catch (err) {
-      console.error("Login error details:", err);
-      alert(`Login request failed: ${err.message}`);
+    } else {
+      console.error("Received non-JSON response");
+      const text = await response.text();
+      console.log("Response text:", text.substring(0, 500)); // Log the first 500 chars
+      alert("The server returned an invalid response format. Please try again later.");
     }
-  };
+  } catch (err) {
+    console.error("Login error details:", err);
+    alert(`Login request failed: ${err.message}`);
+  }
+};
   
   return (
     <div className="auth-page">

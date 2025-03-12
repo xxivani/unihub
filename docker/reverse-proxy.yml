@@ -15,9 +15,6 @@ services:
       - /etc/nginx/ssl/prod:/etc/nginx/ssl/prod:ro
     networks:
       - common-network
-    depends_on:
-      - team77-prd-client
-      - team77-prd-server
 
 networks:
   common-network:

@@ -88,42 +88,70 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project"
           scp -o StrictHostKeyChecking=no -r ./docker/* $DEPLOY_USER@$DEPLOY_IP:~/team-project/
+          # Also transfer migration helpers
+          scp -o StrictHostKeyChecking=no -r ./server/src/migrations $DEPLOY_USER@$DEPLOY_IP:~/team-project/migrations
+          scp -o StrictHostKeyChecking=no -r ./server/src/seeders $DEPLOY_USER@$DEPLOY_IP:~/team-project/seeders
+          scp -o StrictHostKeyChecking=no ./server/src/models $DEPLOY_USER@$DEPLOY_IP:~/team-project/models
 
       - name: Clean up old containers on VM (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project/dev.yml -p team77-dev down --volumes --remove-orphans || true && docker container prune -f"
 
-      - name: Deploy Development Environment
+      # First, start only the database container
+      - name: Start Database Container (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
             # Make sure the common-network exists but don't recreate it if it does
             docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
             
-            # Start the containers using the existing network
-            docker compose -f ~/team-project/dev.yml -p team77-dev up -d --remove-orphans && 
-            docker system prune --force --filter 'until=24h'
+            # Start just the database container
+            docker compose -f ~/team-project/dev.yml -p team77-dev up -d db
           "
 
-      - name: Wait for DB readiness and Run Migrations and Seeders (Dev)
+      # Wait for database to be fully ready
+      - name: Wait for Database to be fully ready (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Wait a bit for containers to initialize
-            sleep 15
-            
-            # Run migrations
-            docker exec team77-dev-server sh -c '
-              for i in \$(seq 1 30); do 
-                echo \"Attempt \$i: Checking database connection...\"
-                if nc -z db 5432; then
-                  echo \"Database is ready!\"
-                  npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all
-                  exit 0
-                fi
-                echo \"Database not ready yet. Waiting...\"
-                sleep 5
-              done
-              echo \"Database connection failed after multiple attempts\"
-              exit 1'
+            # Wait for the database to be properly initialized
+            for i in \$(seq 1 60); do
+              echo \"Attempt \$i: Checking database readiness...\"
+              if docker exec team77-dev-db pg_isready -U team77 -d UniHub; then
+                echo \"Database is ready!\"
+                sleep 5  # Give it a little extra time to be fully initialized
+                break
+              fi
+              echo \"Database not ready yet. Waiting...\"
+              sleep 5
+            done
+          "
+
+      # Run migrations directly in a separate container
+      - name: Run Migrations and Seeders (Dev)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Create a temporary container to run migrations
+            docker run --rm --name team77-migrations \
+              --network common-network \
+              -e NODE_ENV=development \
+              -e DATABASE_URL=postgres://team77:team77@team77-dev-db:5432/UniHub \
+              -e POSTGRES_USER=team77 \
+              -e POSTGRES_PASSWORD=team77 \
+              -e POSTGRES_DB=UniHub \
+              -e DB_HOST=team77-dev-db \
+              -e DB_PORT=5432 \
+              -v ~/team-project/migrations:/app/migrations \
+              -v ~/team-project/seeders:/app/seeders \
+              -v ~/team-project/models:/app/models \
+              ghcr.io/uob-team-project/team77-server:latest \
+              sh -c 'cd /app && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all'
+          "
+
+      # Now start the rest of the containers
+      - name: Start Remaining Services (Dev)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            docker compose -f ~/team-project/dev.yml -p team77-dev up -d && 
+            docker system prune --force --filter 'until=24h'
           "
 
       - name: Wait for Dev Stack to be Ready
@@ -177,43 +205,71 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project"
           scp -o StrictHostKeyChecking=no -r ./docker/* $DEPLOY_USER@$DEPLOY_IP:~/team-project/
+          # Also transfer migration helpers
+          scp -o StrictHostKeyChecking=no -r ./server/src/migrations $DEPLOY_USER@$DEPLOY_IP:~/team-project/migrations
+          scp -o StrictHostKeyChecking=no -r ./server/src/seeders $DEPLOY_USER@$DEPLOY_IP:~/team-project/seeders
+          scp -o StrictHostKeyChecking=no -r ./server/src/models $DEPLOY_USER@$DEPLOY_IP:~/team-project/models
 
       - name: Clean up old containers on VM (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
             "docker compose -f ~/team-project/prd.yml -p team77-prod down --volumes --remove-orphans || true && docker container prune -f"
 
-      - name: Deploy Production Environment
+      # First, start only the database container
+      - name: Start Database Container (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
             # Make sure the common-network exists but don't recreate it if it does
             docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
             
-            # Start the containers using the existing network
-            docker compose -f ~/team-project/prd.yml -p team77-prod up -d --remove-orphans && 
-            docker system prune --force --filter 'until=24h'
+            # Start just the database container
+            docker compose -f ~/team-project/prd.yml -p team77-prod up -d db
           "
 
-      - name: Wait for DB readiness and Run Migrations and Seeders (Prod)
+      # Wait for database to be fully ready
+      - name: Wait for Database to be fully ready (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Wait a bit for containers to initialize
-            sleep 15
-            
-            # Run migrations
-            docker exec team77-prd-server sh -c '
-              for i in \$(seq 1 30); do 
-                echo \"Attempt \$i: Checking database connection...\"
-                if nc -z db 5432; then
-                  echo \"Database is ready!\"
-                  npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all
-                  exit 0
-                fi
-                echo \"Database not ready yet. Waiting...\"
-                sleep 5
-              done
-              echo \"Database connection failed after multiple attempts\"
-              exit 1'
+            # Wait for the database to be properly initialized
+            for i in \$(seq 1 60); do
+              echo \"Attempt \$i: Checking database readiness...\"
+              if docker exec team77-db pg_isready -U team77 -d UniHub; then
+                echo \"Database is ready!\"
+                sleep 5  # Give it a little extra time to be fully initialized
+                break
+              fi
+              echo \"Database not ready yet. Waiting...\"
+              sleep 5
+            done
+          "
+
+      # Run migrations directly in a separate container
+      - name: Run Migrations and Seeders (Prod)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Create a temporary container to run migrations
+            docker run --rm --name team77-migrations \
+              --network common-network \
+              -e NODE_ENV=production \
+              -e DATABASE_URL=postgres://team77:team77@team77-db:5432/UniHub \
+              -e POSTGRES_USER=team77 \
+              -e POSTGRES_PASSWORD=team77 \
+              -e POSTGRES_DB=UniHub \
+              -e DB_HOST=team77-db \
+              -e DB_PORT=5432 \
+              -v ~/team-project/migrations:/app/migrations \
+              -v ~/team-project/seeders:/app/seeders \
+              -v ~/team-project/models:/app/models \
+              ghcr.io/uob-team-project/team77-server:latest \
+              sh -c 'cd /app && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all'
+          "
+
+      # Now start the rest of the containers
+      - name: Start Remaining Services (Prod)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            docker compose -f ~/team-project/prd.yml -p team77-prod up -d && 
+            docker system prune --force --filter 'until=24h'
           "
 
       - name: Wait for Prod Stack to be Ready

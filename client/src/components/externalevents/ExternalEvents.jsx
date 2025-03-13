@@ -1,6 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './ExternalEvents.css';
-import { FaTimes, FaSearch, FaFilter, FaCalendarAlt, FaBell, FaChevronLeft, FaChevronRight, FaTrash, FaEdit, FaPencilAlt } from 'react-icons/fa';
+import {
+  FaTimes,
+  FaSearch,
+  FaFilter,
+  FaBell,
+  FaChevronLeft,
+  FaChevronRight,
+  FaTrash,
+  FaEdit,
+  FaPencilAlt
+} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const Pagination = ({ totalPages, currentPage, onPageChange }) => {
@@ -9,7 +19,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
 
   return (
     <div className="pagination">
-      <button 
+      <button
         className={`pagination-arrow ${isFirstPage ? 'disabled' : ''}`}
         onClick={() => !isFirstPage && onPageChange(currentPage - 1)}
         aria-label="Previous page"
@@ -23,7 +33,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
       >
         1
       </button>
-      
+
       <span className="pagination-ellipsis">...</span>
 
       <button
@@ -33,7 +43,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
         {totalPages}
       </button>
 
-      <button 
+      <button
         className={`pagination-arrow ${isLastPage ? 'disabled' : ''}`}
         onClick={() => !isLastPage && onPageChange(currentPage + 1)}
         aria-label="Next page"
@@ -52,6 +62,7 @@ const ExternalEvents = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isEditFormVisible, setIsEditFormVisible] = useState(false);
   const [currentEditEvent, setCurrentEditEvent] = useState(null);
+
   const [events, setEvents] = useState([
     {
       id: 1,
@@ -146,9 +157,10 @@ const ExternalEvents = () => {
       category: "SOCIAL_GATHERING"
     }
   ]);
+
   const navigate = useNavigate();
-  
-  // EVENT CATEGORIES array for the dropdown
+
+  // We define some categories here, so ESLint doesn't flag them as unused.
   const EVENT_CATEGORIES = [
     "HACKATHON",
     "WORKSHOP",
@@ -159,21 +171,24 @@ const ExternalEvents = () => {
     "SOCIAL_GATHERING",
     "VOLUNTEERING"
   ];
-  
+
+  // Load user from sessionStorage
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      console.log("Logged in user:", parsedUser);
+      setUser(parsedUser);
     }
   }, []);
 
-  const eventsPerPage = events.length;
+  // Pagination
   const totalPages = 2;
-
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
+  // Form & Modal Handlers
   const handleFollowClick = () => {
     setIsFormVisible(true);
   };
@@ -195,7 +210,8 @@ const ExternalEvents = () => {
   const handleCloseSuccessModal = () => {
     setIsSuccessModalVisible(false);
   };
-  
+
+  // Admin-only Buttons
   const handleCreateEventClick = () => {
     navigate('/create-external-event');
   };
@@ -204,55 +220,52 @@ const ExternalEvents = () => {
     setIsEditMode(!isEditMode);
   };
 
+  // Delete Event
   const handleDeleteEvent = (id) => {
     if (window.confirm('Are you sure you want to delete this event?')) {
       setEvents(events.filter(event => event.id !== id));
     }
   };
-  
+
+  // Edit Event
   const handleEditIconClick = (event) => {
-    setCurrentEditEvent({...event});
+    setCurrentEditEvent({ ...event });
     setIsEditFormVisible(true);
   };
-  
+
   const handleCloseEditForm = () => {
     setIsEditFormVisible(false);
     setCurrentEditEvent(null);
   };
-  
+
   const handleEditFormChange = (field, value) => {
     setCurrentEditEvent({
       ...currentEditEvent,
       [field]: value
     });
   };
-  
+
   const handleTeamMemberChange = (index, field, value) => {
     const updatedTeam = [...currentEditEvent.team];
     updatedTeam[index] = {
       ...updatedTeam[index],
       [field]: value
     };
-    
     setCurrentEditEvent({
       ...currentEditEvent,
       team: updatedTeam
     });
   };
-  
+
   const handleEditFormSubmit = (e) => {
     e.preventDefault();
-    
-    const updatedEvents = events.map(event => 
+    const updatedEvents = events.map((event) =>
       event.id === currentEditEvent.id ? currentEditEvent : event
     );
-    
     setEvents(updatedEvents);
     localStorage.setItem('eventsList', JSON.stringify(updatedEvents));
-    
     setIsEditFormVisible(false);
     setCurrentEditEvent(null);
-    
     alert("Event updated successfully!");
   };
 
@@ -260,7 +273,6 @@ const ExternalEvents = () => {
     <main className="extevent-main-content">
       <div className="extevent-page-header">
         <h1 className="extevent-page-title">Upcoming Events</h1>
-          
         <div className="extevent-search-filter-container">
           <div className="extevent-search-bar">
             <input type="text" placeholder="Search" />
@@ -272,13 +284,13 @@ const ExternalEvents = () => {
             </button>
             {user && user.role === "admin" && (
               <>
-                <button 
+                <button
                   className="extevent-calendar-button"
                   onClick={handleCreateEventClick}
                 >
                   Create External Event
                 </button>
-                <button 
+                <button
                   className={`extevent-edit-button ${isEditMode ? 'active' : ''}`}
                   onClick={handleEditPageClick}
                 >
@@ -292,20 +304,20 @@ const ExternalEvents = () => {
 
       {/* Event Cards */}
       <div className="extevents-container">
-        {events.map(event => (
+        {events.map((event) => (
           <div className="extevent-card" key={event.id}>
             <div className="extevent-image">
               <img src={event.image} alt={event.title} />
               {isEditMode && user && user.role === "admin" && (
                 <>
-                  <button 
+                  <button
                     className="delete-extevent-button"
                     onClick={() => handleDeleteEvent(event.id)}
                     aria-label="Delete event"
                   >
                     <FaTrash />
                   </button>
-                  <button 
+                  <button
                     className="edit-extevent-button"
                     onClick={() => handleEditIconClick(event)}
                     aria-label="Edit event"
@@ -333,19 +345,19 @@ const ExternalEvents = () => {
       </div>
 
       {/* Pagination */}
-      <Pagination 
-        totalPages={totalPages} 
-        currentPage={currentPage} 
-        onPageChange={handlePageChange} 
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
       />
 
       {/* Sign-Up Form */}
       {isFormVisible && (
         <div className="event-form-overlay">
           <div className="event-form-container">
-            <button 
-              className="close-form-button" 
-              onClick={handleCloseForm} 
+            <button
+              className="close-form-button"
+              onClick={handleCloseForm}
               aria-label="Close form"
             >
               <FaTimes />
@@ -380,16 +392,19 @@ const ExternalEvents = () => {
       {isSuccessModalVisible && (
         <div className="event-form-overlay">
           <div className="success-modal">
-            <button 
-              className="close-form-button" 
+            <button
+              className="close-form-button"
               onClick={handleCloseSuccessModal}
               aria-label="Close modal"
             >
               <FaTimes />
             </button>
             <h2>Event followed successfully</h2>
-            <p>Please make sure to unfollow it if you won't be able to make it to the event on time to give spot to someone else!</p>
-            <button 
+            <p>
+              Please make sure to unfollow it if you won't be able to make it to
+              the event on time to give spot to someone else!
+            </p>
+            <button
               className="return-button"
               onClick={handleCloseSuccessModal}
             >
@@ -398,14 +413,14 @@ const ExternalEvents = () => {
           </div>
         </div>
       )}
-      
+
       {/* Edit Event Form */}
       {isEditFormVisible && currentEditEvent && (
         <div className="event-form-overlay">
           <div className="edit-event-form-container">
-            <button 
-              className="close-form-button" 
-              onClick={handleCloseEditForm} 
+            <button
+              className="close-form-button"
+              onClick={handleCloseEditForm}
               aria-label="Close edit form"
             >
               <FaTimes />
@@ -426,7 +441,7 @@ const ExternalEvents = () => {
                   <small>{currentEditEvent.title.length} / 100</small>
                 </div>
               </div>
-              
+
               <div className="edit-form-row">
                 <div className="edit-form-group">
                   <label htmlFor="edit-date">Event Date:</label>
@@ -438,7 +453,7 @@ const ExternalEvents = () => {
                     required
                   />
                 </div>
-                
+
                 <div className="edit-form-group">
                   <label htmlFor="edit-time">Event Time:</label>
                   <input
@@ -450,7 +465,7 @@ const ExternalEvents = () => {
                   />
                 </div>
               </div>
-              
+
               <div className="edit-form-group">
                 <label htmlFor="edit-location">Location:</label>
                 <input
@@ -461,7 +476,7 @@ const ExternalEvents = () => {
                   required
                 />
               </div>
-              
+
               <div className="edit-form-row">
                 <div className="edit-form-group">
                   <label htmlFor="edit-capacity">Maximum Attendees:</label>
@@ -473,7 +488,7 @@ const ExternalEvents = () => {
                     required
                   />
                 </div>
-                
+
                 <div className="edit-form-group">
                   <label htmlFor="edit-price">Ticket Price:</label>
                   <input
@@ -485,7 +500,7 @@ const ExternalEvents = () => {
                   />
                 </div>
               </div>
-              
+
               <div className="edit-form-group">
                 <label htmlFor="edit-category">Event Category:</label>
                 <select
@@ -503,7 +518,7 @@ const ExternalEvents = () => {
                   ))}
                 </select>
               </div>
-              
+
               <div className="edit-form-group">
                 <label htmlFor="edit-description">Description:</label>
                 <textarea
@@ -515,10 +530,9 @@ const ExternalEvents = () => {
                 />
                 <small>{currentEditEvent.description.length} / 1000</small>
               </div>
-              
+
               <div className="event-team-section">
                 <h3>Event Team</h3>
-                
                 {currentEditEvent.team.map((member, index) => (
                   <div className="edit-form-row" key={index}>
                     <div className="edit-form-group">
@@ -534,9 +548,13 @@ const ExternalEvents = () => {
                   </div>
                 ))}
               </div>
-              
+
               <div className="edit-form-actions">
-                <button type="button" onClick={handleCloseEditForm} className="cancel-button">
+                <button
+                  type="button"
+                  onClick={handleCloseEditForm}
+                  className="cancel-button"
+                >
                   Cancel
                 </button>
                 <button type="submit" className="update-event-button">

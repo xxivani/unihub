@@ -100,7 +100,7 @@ const handleLogin = async (e) => {
     } else {
       console.error("Received non-JSON response");
       const text = await response.text();
-      console.log("Response text:", text.substring(0, 500)); // Log the first 500 chars
+      console.log("Response text:", text.substring(0, 500));
       alert("The server returned an invalid response format. Please try again later.");
     }
   } catch (err) {

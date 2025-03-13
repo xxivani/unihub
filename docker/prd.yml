@@ -24,13 +24,13 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8080
-      - POSTGRES_USER=team77_prod
-      - POSTGRES_PASSWORD=team77_production_password
-      - POSTGRES_DB=UniHub_Production
+      - POSTGRES_USER=team77
+      - POSTGRES_PASSWORD=team77
+      - POSTGRES_DB=UniHub
       - DB_HOST=db
       - DB_PORT=5432
-      - JWT_SECRET=team77_production_secret
-      - DATABASE_URL=postgres://team77_prod:team77_production_password@db:5432/UniHub_Production
+      - JWT_SECRET=team77_secret
+      - DATABASE_URL=postgres://team77:team77@db:5432/UniHub
     depends_on:
       - db
     networks:

@@ -29,7 +29,7 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - DATABASE_URL=postgres://team77:team77@db:5432/UniHub
-      - JWT_SECRET=team77_dev_secret  
+      - JWT_SECRET=team77_secret  
     depends_on:
       - db
     networks:

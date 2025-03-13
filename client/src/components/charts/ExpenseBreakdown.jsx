@@ -12,11 +12,11 @@ const ExpenseBreakdownChart = () => {
         label: 'Amount Spent',
         data: [600, 400, 250, 300, 450],
         backgroundColor: [
-          '#bdd6a8',
-          '#a3c686',
-          '#88b663',
-          '#6f9c49',
-          '#567939',
+          '#2d4526',
+          '#1C2833',
+          '#6b6969',
+          '#d98248',
+          '#8C5E3C',
         ],
         borderColor: [
           'grey',

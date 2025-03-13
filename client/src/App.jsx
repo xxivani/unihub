@@ -14,6 +14,14 @@ import CreateExternalEvents from "./pages/CreateExtEvents";
 import Footer from "./components/footer/footer";
 import ClubDetailsPage from "./pages/ClubDetailsPage"; 
 import CreateClub from "./pages/CreateClub"; 
+import GDPRPolicy from "./pages/GDPRPolicy";
+
+
+
+
+
+
+
 
 
 // Committee Pages
@@ -75,6 +83,28 @@ function AppContent() {
           <Route path="/details-ext" element={<DetailsExt />} />
           <Route path="/news" element={<NewsSection />} />
           <Route path="/news/create-news-post" element={<CreateNewsPost />} />
+
+          <Route path="/gdpr-policy" element={<GDPRPolicy />} />
+
+
+          
+
+
+          
+
+          
+
+
+
+          
+
+
+
+         
+          
+          
+
+
 
 
           {/* Committee Routes */}

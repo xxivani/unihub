@@ -90,9 +90,11 @@ function AddExpenseButton({ onUpdateExpenses, chartData }) {
       }}
     >
       {/* Edit Button to open Modal */}
-      <Button className='add-expense-icon' type="primary" onClick={showModal}>
-        <FaEdit style={{ color: "black" }}/>
-      </Button>
+      {/* {user && user.role === "admin" && ( */}
+        <Button className='add-expense-icon' type="primary" onClick={showModal}>
+          <FaEdit style={{ color: "white" }}/>
+        </Button>
+      {/* )} */}
       
       {/* Modal */}
       <Modal

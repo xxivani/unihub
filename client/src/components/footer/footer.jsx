@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="text-container-1">
           <h1 className="heading">Our team</h1>
           <a href="/about" className="normal-text">About us</a>
-          <a href="/team" className="normal-text">Team</a>
+          <a href="/gdpr-policy" className="normal-text">Our GDPR Policy</a>
           <a href="/feedback" className="normal-text">Give us feedback!</a>
           <a href="/contact" className="normal-text">Contact us</a>
         </div>

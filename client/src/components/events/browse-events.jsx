@@ -1,9 +1,11 @@
 import "./browse-events.css"
 import React, { useState, useEffect } from 'react';
-import { FaBell } from 'react-icons/fa';
+import { FaBell, FaTimes } from 'react-icons/fa';
 
 
 const BrowseEvents = () =>{
+    const [isFormVisible, setIsFormVisible] = useState(false);
+    const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
     const [events, setEvents] = useState([
             {
               id: 1,
@@ -98,20 +100,84 @@ const BrowseEvents = () =>{
               club: "SOCIAL_GATHERING"
             }
           ]);
+          const handleFormSubmit = (e) => {
+            e.preventDefault();
+            setIsFormVisible(false);
+            setIsSuccessModalVisible(true);
+          };
+          const handleCloseSuccessModal = () => {
+            setIsSuccessModalVisible(false);
+          };
     return (
         <div className="e4-browse-events">
+          {isFormVisible && (
+            <div className="e4-event-form-overlay">
+              <div className="e4-event-form-container">
+                <button 
+                  className="e4-close-form-button" 
+                  onClick={() => setIsFormVisible(false)} 
+                  aria-label="Close form"
+                >
+                  <FaTimes />
+                </button>
+                <h3>Sign Up to Follow Event</h3>
+                <form className="e4-event-signup-form" onSubmit={handleFormSubmit}>
+                  <div className="e4-event-form-group">
+                    <label htmlFor="e4-name">Name</label>
+                    <input type="text" id="name" name="name" required />
+                  </div>
+                  <div className="e4-event-form-group">
+                    <label htmlFor="e4-studentId">Student ID</label>
+                    <input type="text" id="studentId" name="studentId" required />
+                  </div>
+                  <div className="e4-event-form-group">
+                    <label htmlFor="e4-year">Year of Study</label>
+                    <input type="text" id="year" name="year" required />
+                  </div>
+                  <div className="e4-event-form-group">
+                    <label htmlFor="e4-email">Email</label>
+                    <input type="email" id="email" name="email" required />
+                  </div>
+                  <div className="e4-event-form-actions">
+                    <button type="submit" className="e4-event-submit-button">Submit</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+          {isSuccessModalVisible && (
+            <div className="e4-event-form-overlay">
+              <div className="e4-success-modal">
+                <button 
+                  className="e4-close-form-button" 
+                  onClick={handleCloseSuccessModal}
+                  aria-label="Close modal"
+                >
+                  <FaTimes />
+                </button>
+                <h2>Event followed successfully</h2>
+                <p>Please make sure to unfollow it if you won't be able to make it to the event on time to give spot to someone else!</p>
+                <button 
+                  className="e4-return-button"
+                  onClick={handleCloseSuccessModal}
+                >
+                  Return to Event List
+                </button>
+              </div>
+            </div>
+          )}
             <div className="e4-browse-events-list">
                 {events.map(event => (
-                                <div className="e4c-events-list" key={event.id}><div className="e4c-event-format">
-                                    <div className="e4c-event-image"><img src={event.image} alt={event.title} /></div>
-                                    <div className="e4-event-info-container"><div className="e4-event-title">{event.title}</div>
-                                    <div className="e4-event-description">{event.description}{/*Super duper trooper looper uper awesome jaw-dropping eye-popping lung-exploding cool event description*/}</div>
-                                    <div className="e4-event-time">Location: {event.location}</div><div className="e4-event-time">Time: {event.time}</div><div className="e4-event-time">Date: {event.date}</div></div>
-                                    <div className="e4-event-button-container">
-                                    <div className="e4-event-up-down-container"><FaBell/>
-                                    <button className="e4-event-follow-button">Follow</button>
-                                    <button className="e4-event-detail-button" onClick={() => window.location.href='/event-details'}>Detail</button></div></div></div></div>
-                            ))}
+                    <div className="e4c-events-list" key={event.id}><div className="e4c-event-format">
+                        <div className="e4c-event-image"><img src={event.image} alt={event.title} /></div>
+                        <div className="e4-event-info-container"><div className="e4-event-title">{event.title}</div>
+                        <div className="e4-event-description">{event.description}{/*Super duper trooper looper uper awesome jaw-dropping eye-popping lung-exploding cool event description*/}</div>
+                        <div className="e4-event-time">Location: {event.location}</div><div className="e4-event-time">Time: {event.time}</div><div className="e4-event-time">Date: {event.date}</div></div>
+                        <div className="e4-event-button-container">
+                        <div className="e4-event-up-down-container"><FaBell/>
+                        <button className="e4-event-follow-button" onClick={() => setIsFormVisible(true)}>Follow</button>
+                        <button className="e4-event-detail-button" onClick={() => window.location.href='/event-details'}>Detail</button></div></div></div></div>
+                ))}
             </div>
             <div className="e4-event-pagination">
             <a href="#">&laquo;</a>

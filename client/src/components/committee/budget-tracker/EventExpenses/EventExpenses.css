@@ -146,3 +146,11 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     font-size: 15px;
 }
+.event-expenses-next-button:hover {
+    background-color: #e0b000;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+.event-expenses-back-button:hover {
+    background-color: #e0b000;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}

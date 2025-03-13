@@ -102,7 +102,7 @@ function EditMonthlyChart({ chartData1, chartData2, onUpdateChartData }) {
     >
       {/* Edit Button to open Modal */}
       <Button className='edit-expense-icon' type="primary" onClick={showModal} style={{ position: 'absolute', top: '10px', right: '10px' }}>
-        <FaEdit style={{ color: "black" }}/>
+        <FaEdit style={{ color: "white" }}/>
       </Button>
       
       {/* Modal */}

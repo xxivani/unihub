@@ -1,10 +1,10 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom"; 
 import "./ClubCard.css"; 
 
 const ClubCard = ({ club }) => {
   const { name, description, image } = club;
-  const navigate = useNavigate(); // Hook to handle navigation
+  const navigate = useNavigate(); 
 
   return (
     <div className="club-card">
@@ -18,7 +18,7 @@ const ClubCard = ({ club }) => {
       </div>
 
       <div className="club-buttons">
-        {/* Navigate to club details page when clicked */}
+        
         <button className="view-club-btn" onClick={() => navigate("/club-details")}>
           View Club Details
         </button>

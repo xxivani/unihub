@@ -73,7 +73,7 @@
 
 .member-role {
     font-size: 0.9rem;
-    font-weight: bold;
+    font-weight: bold; 
     color: #333;
 }
 
@@ -81,3 +81,41 @@
     font-size: 0.9rem;
     color: #555;
 }
+
+.team-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+
+
+.team-avatar {
+    font-size: 2rem;
+    margin-right: 15px; 
+    color: #555;
+}
+
+.team-info {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.club-info-title {
+    margin-bottom: 20px; 
+}
+
+
+.team-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+}
+
+
+.team-list p {
+    margin-top: 5px;
+    margin-bottom: 10px; 
+}
+

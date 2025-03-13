@@ -1,44 +1,105 @@
-/* Decreased margins/padding to reduce space between top section and clubs */
-.browse-clubs-container {
-    margin: 20px;   /* Reduced from 40px */
-    padding: 10px;  /* Reduced from 20px */
-  }
-  
-  /* The list of club cards */
-  .club-cards-list {
+/* Main container to match External Events layout */
+.browse-clubs-main {
+    background-color: white;
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-  }
-  
-  /* Pagination styling */
-  .event-pagination {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-    margin-top: 40px;
-    margin-bottom: 40px; /* If you need more/less space from footer, adjust here */
-  }
-  
-  .event-pagination a {
-    border-radius: 4px;
-    background-color: #f2f2f2;
-    color: #333;
-    padding: 8px 16px;
-    font-size: 16px;
-    text-decoration: none;
-    display: inline-block;
-    transition: background-color 0.3s ease;
-  }
-  
-  .event-pagination a:hover:not(.active) {
-    background-color: #ddd;
-  }
-  
-  .event-pagination a.active {
-    background-color: #b3b3b3;
-    color: white;
-  }
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+}
 
-  
-  
+/* Header container */
+.browse-clubs-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    margin-bottom: 2rem;
+    margin-top: 110px; /* Matches External Events */
+    background-color: white;
+}
+
+/* Title styling */
+.browse-clubs-title {
+    font-size: 2rem;
+    margin: 0;
+    color: #333;
+    flex-shrink: 0;
+}
+
+/* Search + Filter Container */
+.browse-clubs-search-filter {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-grow: 1;
+    width: 100%;
+    justify-content: space-between; /* Keeps buttons aligned */
+}
+
+/* Move only the search bar to the left */
+.browse-clubs-search {
+    display: flex;
+    width: 50%;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    overflow: hidden;
+    text-align: center;
+    margin-right: auto; /* Move search bar left or right */
+    margin-left: 180px; /* Adjust this value to shift right */
+}
+
+
+.browse-clubs-search input {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    outline: none;
+    background-color: transparent;
+}
+
+.search-button {
+    background: none;
+    border: none;
+    padding: 0 1rem;
+    cursor: pointer;
+    color: black;
+}
+
+/* Filter & Create Club Buttons */
+.browse-clubs-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.filter-button, .create-club-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    border: 2px solid rgb(160, 160, 160);
+    background-color: #fffcfc;
+    color: rgb(105, 97, 97);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    outline: none;
+}
+
+.filter-button:hover, .create-club-button:hover {
+    border: 2px solid black;
+}
+
+/* Clubs List */
+.club-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-left: 20px;
+    padding-right: 20px;
+}

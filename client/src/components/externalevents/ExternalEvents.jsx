@@ -48,7 +48,7 @@ const ExternalEvents = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isEditFormVisible, setIsEditFormVisible] = useState(false);
   const [currentEditEvent, setCurrentEditEvent] = useState(null);
@@ -161,17 +161,10 @@ const ExternalEvents = () => {
   ];
   
   useEffect(() => {
-    const checkAdminStatus = () => {
-      const userData = sessionStorage.getItem('user');
-      if (userData) {
-        const user = JSON.parse(userData);
-        setIsAdmin(user.email === 'admin@bham');
-      } else {
-        setIsAdmin(true);
-      }
-    };
-    
-    checkAdminStatus();
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
 
   const eventsPerPage = events.length;
@@ -248,20 +241,20 @@ const ExternalEvents = () => {
   };
   
   const handleEditFormSubmit = (e) => {
-  e.preventDefault();
-  
-  const updatedEvents = events.map(event => 
-    event.id === currentEditEvent.id ? currentEditEvent : event
-  );
-  
-  setEvents(updatedEvents);
-  localStorage.setItem('eventsList', JSON.stringify(updatedEvents));
-  
-  setIsEditFormVisible(false);
-  setCurrentEditEvent(null);
-  
-  alert("Event updated successfully!");
-};
+    e.preventDefault();
+    
+    const updatedEvents = events.map(event => 
+      event.id === currentEditEvent.id ? currentEditEvent : event
+    );
+    
+    setEvents(updatedEvents);
+    localStorage.setItem('eventsList', JSON.stringify(updatedEvents));
+    
+    setIsEditFormVisible(false);
+    setCurrentEditEvent(null);
+    
+    alert("Event updated successfully!");
+  };
 
   return (
     <main className="extevent-main-content">
@@ -277,7 +270,7 @@ const ExternalEvents = () => {
             <button className="extevent-filter-button">
               Filter <FaFilter />
             </button>
-            {isAdmin && (
+            {user && user.role === "admin" && (
               <>
                 <button 
                   className="extevent-calendar-button"
@@ -303,7 +296,7 @@ const ExternalEvents = () => {
           <div className="extevent-card" key={event.id}>
             <div className="extevent-image">
               <img src={event.image} alt={event.title} />
-              {isEditMode && isAdmin && (
+              {isEditMode && user && user.role === "admin" && (
                 <>
                   <button 
                     className="delete-extevent-button"
@@ -339,7 +332,7 @@ const ExternalEvents = () => {
         ))}
       </div>
 
-      {/* Dummy Pagination */}
+      {/* Pagination */}
       <Pagination 
         totalPages={totalPages} 
         currentPage={currentPage} 

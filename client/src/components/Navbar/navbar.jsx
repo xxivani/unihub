@@ -38,16 +38,15 @@ const CustomNavbar = () => {
             <Nav.Link as={Link} to="/external-events">External Events</Nav.Link>
             
             {/* Committee Dropdown: Only show if not a student */}
-            {/*user && user.role !== "student" && (
-           
-            )*/}
-            <NavDropdown title="Committee" id="committee-dropdown" menuVariant="dark">
-            <NavDropdown.Item as={Link} to="/committee/dashboard">Dashboard</NavDropdown.Item>
-            <NavDropdown.Item as={Link} to="/committee/events">Events</NavDropdown.Item>
-            <NavDropdown.Item as={Link} to="/committee/roles">Role Openings</NavDropdown.Item>
-            <NavDropdown.Item as={Link} to="/committee/budget-tracker">Budget Tracker</NavDropdown.Item>
-            <NavDropdown.Item as={Link} to="/committee/image-management">Image Management</NavDropdown.Item>
-          </NavDropdown>
+            {user && user.role !== "student" && (
+              <NavDropdown title="Committee" id="committee-dropdown" menuVariant="dark">
+                <NavDropdown.Item as={Link} to="/committee/dashboard">Dashboard</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/committee/events">Events</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/committee/roles">Role Openings</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/committee/budget-tracker">Budget Tracker</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/committee/image-management">Image Management</NavDropdown.Item>
+              </NavDropdown>
+            )}
           </Nav>
 
           <Nav>

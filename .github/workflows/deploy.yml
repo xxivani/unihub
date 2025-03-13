@@ -206,6 +206,22 @@ jobs:
                 echo \"Attempt \$i: Checking database connection...\"
                 if nc -z db 5432; then
                   echo \"Database is ready!\"
+                  # Force sync to create tables
+                  node -e \"
+                    const { sequelize } = require('./src/models');
+                    (async () => {
+                      try {
+                        console.log('Syncing database...');
+                        await sequelize.sync({ force: true });
+                        console.log('Database synced successfully');
+                        process.exit(0);
+                      } catch (error) {
+                        console.error('Error syncing database:', error);
+                        process.exit(1);
+                      }
+                    })();
+                  \"
+                  # Then run migrations and seeders
                   npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all
                   exit 0
                 fi
@@ -215,7 +231,7 @@ jobs:
               echo \"Database connection failed after multiple attempts\"
               exit 1'
           "
-
+          
       - name: Wait for Prod Stack to be Ready
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "sleep 20"

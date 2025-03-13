@@ -12,7 +12,7 @@ services:
     networks:
       - common-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-team77_prod}"]
+      test: ["CMD-SHELL", "pg_isready -U team77"]  
       interval: 10s
       timeout: 5s
       retries: 5

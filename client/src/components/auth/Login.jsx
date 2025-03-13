@@ -68,47 +68,61 @@ function Login() {
     navigate(-1);
   };
 
-const handleLogin = async (e) => {
-  e.preventDefault();
-  
-  const apiUrl = import.meta.env.VITE_API_URL;
-  console.log("Using API URL:", apiUrl);
-  
-  try {
-    const response = await fetch(`${apiUrl}/users/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-      credentials: "include" 
-    });
+  const handleLogin = async (e) => {
+    e.preventDefault();
     
-    console.log("Login response status:", response.status);
-    const contentType = response.headers.get("content-type");
-    console.log("Content-Type:", contentType);
+    const apiUrl = import.meta.env.VITE_API_URL;
+    console.log("Using API URL:", apiUrl);
     
-    if (contentType && contentType.includes("application/json")) {
-      const data = await response.json();
+    try {
+      // Show loading state
+      setIsConnecting(true);
       
-      if (response.ok) {
-        const userData = { email, token: data.token, role: data.role };
-        sessionStorage.setItem("user", JSON.stringify(userData));
-        alert("Login successful!");
-        navigate("/"); 
+      const response = await fetch(`${apiUrl}/users/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        credentials: "include" 
+      });
+      
+      console.log("Login response status:", response.status);
+      
+      // Handle all response types
+      if (response.status === 500) {
+        console.error("Server error");
+        alert("Server error occurred. Please try again later.");
+      } else if (response.status === 404) {
+        console.error("API endpoint not found");
+        alert("API endpoint not found. Check server configuration.");
       } else {
-        alert(data.error || "Invalid email or password");
+        const contentType = response.headers.get("content-type");
+        console.log("Content-Type:", contentType);
+        
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          
+          if (response.ok) {
+            const userData = { email, token: data.token, role: data.role };
+            sessionStorage.setItem("user", JSON.stringify(userData));
+            alert("Login successful!");
+            navigate("/"); 
+          } else {
+            alert(data.error || "Invalid email or password");
+          }
+        } else {
+          console.error("Received non-JSON response");
+          const text = await response.text();
+          console.log("Response text:", text.substring(0, 500));
+          alert("The server returned an invalid response format. Please try again later.");
+        }
       }
-    } else {
-      console.error("Received non-JSON response");
-      const text = await response.text();
-      console.log("Response text:", text.substring(0, 500));
-      alert("The server returned an invalid response format. Please try again later.");
+    } catch (err) {
+      console.error("Login error details:", err);
+      alert(`Login request failed: ${err.message}`);
+    } finally {
+      setIsConnecting(false);
     }
-  } catch (err) {
-    console.error("Login error details:", err);
-    alert(`Login request failed: ${err.message}`);
-  }
-};
-  
+  };
   return (
     <div className="auth-page">
       {import.meta.env.DEV && (

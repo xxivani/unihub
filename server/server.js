@@ -6,15 +6,16 @@ const swaggerSpecs = require('./swaggerOptions');
 const cors = require("cors");
 const path = require('path');
 
-// localhost:5000/api-docs
-
+process.env.NODE_ENV = process.env.NODE_ENV || 'test';
+console.log(`Running in ${process.env.NODE_ENV} environment`);
 
 app.use(express.json());
 const corsOptions = {
   origin: [
     'https://team77.dev.bham.team',
     'https://team77.bham.team',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'http://localhost:5173'  
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -26,6 +27,14 @@ app.use(cors(corsOptions));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+app.get('/health', (req, res) => {  
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
+  });
+});
+
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
@@ -34,17 +43,16 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-
-//user routes
 const userRoutes = require('./src/routes/users');
 app.use('/api/users', userRoutes);
+app.use('/users', userRoutes);
 
-//news routes
 const newsRoutes = require('./src/routes/news');
 app.use('/api/news', newsRoutes);
-
+app.use('/news', newsRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`API Documentation available at http://localhost:${PORT}/api-docs`);
 });

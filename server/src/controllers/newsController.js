@@ -8,11 +8,10 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     let uploadPath;
     if (file.fieldname === 'image') {
-      uploadPath = path.join(__dirname, '../uploads/images/');
+      uploadPath = path.join(__dirname, '../../uploads/images/');
     } else if (file.fieldname === 'pdf') {
-      uploadPath = path.join(__dirname, '../uploads/pdfs/');
+      uploadPath = path.join(__dirname, '../../uploads/pdfs/');
     }
-    
     
     fs.mkdirSync(uploadPath, { recursive: true });
     
@@ -164,7 +163,20 @@ const deleteNewsPost = async (req, res) => {
       return res.status(404).json({ message: 'News post not found' });
     }
     
-    // Come back to this for deleting the pdf/images associated with a news post when you delete a news post
+    // Delete the associated files
+    if (newsPost.news_pdf_url) {
+      const pdfPath = path.join(__dirname, '../../', newsPost.news_pdf_url);
+      if (fs.existsSync(pdfPath)) {
+        fs.unlinkSync(pdfPath);
+      }
+    }
+    
+    if (newsPost.news_thumbnail_url) {
+      const imagePath = path.join(__dirname, '../../', newsPost.news_thumbnail_url);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+    }
 
     await newsPost.destroy();
     

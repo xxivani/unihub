@@ -1,41 +1,42 @@
 'use strict';
+
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('NewsPosts', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('news', {
+      news_id: {
+        type: Sequelize.BIGINT,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        autoIncrement: true
       },
-      title: {
-        type: Sequelize.STRING,
-        allowNull: false,
+      news_title: {
+        type: Sequelize.STRING(100),
+        allowNull: false
       },
-      body: {
+      news_content: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: false
       },
-      thumbnailImage: {
-        type: Sequelize.STRING,
-        allowNull: true,
-        defaultValue: '/assets/images/img.jpeg' 
-      },
-      newsletterPdf: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      createdAt: {
-        allowNull: false,
+      news_created_at: {
         type: Sequelize.DATE,
-      },
-      updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW
       },
+      news_thumbnail_url: {
+        type: Sequelize.STRING(255),
+        allowNull: true
+      },
+      news_author: {
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      news_pdf_url: {
+        type: Sequelize.STRING(255),
+        allowNull: true
+      }
     });
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('NewsPosts');
+
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable('news');
   }
 };

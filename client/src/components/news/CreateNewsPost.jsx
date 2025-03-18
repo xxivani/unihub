@@ -4,11 +4,13 @@ import "./CreateNewsPost.css";
 
 const defaultImageUrl = "/assets/images/img.jpeg";
 
-const CreateNewsPost = () => {
+const CreateNewsForm = () => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [imageFile, setImageFile] = useState(null);
-  const [pdfFiles, setPdfFiles] = useState([]);
+  const [pdfFile, setPdfFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -30,63 +32,77 @@ const CreateNewsPost = () => {
   };
 
   const handlePdfChange = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setPdfFiles([e.target.files[0]]);
+    if (e.target.files && e.target.files[0]) {
+      setPdfFile(e.target.files[0]);
     } else {
-      setPdfFiles([]);
+      setPdfFile(null);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     if (!title.trim() || !body.trim()) {
-      alert("Title and Body are required.");
+      setError("Title and Body are required.");
+      setLoading(false);
       return;
     }
-    if (pdfFiles.length === 0) {
-      alert("Please attach at least one PDF for the newsletter.");
+    
+    if (!pdfFile) {
+      setError("Please attach a PDF for the newsletter.");
+      setLoading(false);
       return;
     }
 
     const formData = new FormData();
     formData.append("title", title);
     formData.append("body", body);
+    
     if (imageFile) {
       formData.append("image", imageFile);
     } else {
       formData.append("imageUrl", defaultImageUrl);
     }
-    formData.append("pdf", pdfFiles[0]);
+    
+    formData.append("pdf", pdfFile);
 
     try {
       const response = await fetch(`${apiUrl}/news`, {
         method: "POST",
         body: formData,
       });
+      
       const data = await response.json();
+      
       if (response.ok) {
         alert("News post created successfully!");
         navigate("/news");
       } else {
-        alert(data.error || "Failed to create news post");
+        setError(data.error || "Failed to create news post");
       }
     } catch (err) {
       console.error(err);
-      alert("An error occurred while creating the news post.");
+      setError("An error occurred while creating the news post.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="create-news-container">
       <div className="header-row">
-        <h1>Create News Post</h1>
+        <h2>Create News Post</h2>
         <button 
-          className="go-back-button"
+          className="cancel-button"
           onClick={() => navigate("/news")}>
           Go Back
         </button>
       </div>
+      
+      {error && <div className="error-message">{error}</div>}
+      
       <form onSubmit={handleSubmit} className="create-news-form">
         <div className="form-group">
           <label htmlFor="news-title">Title (max 100 characters):</label>
@@ -100,6 +116,7 @@ const CreateNewsPost = () => {
           />
           <small>{title.length} / 100</small>
         </div>
+        
         <div className="form-group">
           <label htmlFor="news-body">Body (max 1000 characters):</label>
           <textarea
@@ -107,10 +124,12 @@ const CreateNewsPost = () => {
             maxLength="1000"
             value={body}
             onChange={handleBodyChange}
+            rows="10"
             required
           />
           <small>{body.length} / 1000</small>
         </div>
+        
         <div className="form-group">
           <label htmlFor="news-image">Upload Newsletter Image (Optional):</label>
           <input
@@ -125,6 +144,7 @@ const CreateNewsPost = () => {
             </p>
           )}
         </div>
+        
         <div className="form-group">
           <label htmlFor="news-pdf">Attach PDF (Required):</label>
           <input
@@ -134,20 +154,25 @@ const CreateNewsPost = () => {
             onChange={handlePdfChange}
             required
           />
-          {pdfFiles.length > 0 && (
+          {pdfFile && (
             <ul className="pdf-list">
-              {pdfFiles.map((file, idx) => (
-                <li key={idx}>{file.name}</li>
-              ))}
+              <li>{pdfFile.name}</li>
             </ul>
           )}
         </div>
-        <button type="submit" className="submit-news-button">
-          Submit
-        </button>
+        
+        <div className="form-actions">
+          <button 
+            type="submit" 
+            className="submit-button"
+            disabled={loading}
+          >
+            {loading ? "Creating..." : "Submit"}
+          </button>
+        </div>
       </form>
     </div>
   );
 };
 
-export default CreateNewsPost;
+export default CreateNewsForm;

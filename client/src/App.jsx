@@ -49,6 +49,7 @@ import Verify from "./components/auth/Verify";
 import AccountVerified from "./components/auth/AccountVerified";
 import CommiteeLogin from "./components/auth/Commit";
 import DetailsExt from "./components/externalevents/DetailsExt";
+import EditNewsForm from "./components/news/EditNewsPost";
 
 function AppContent() {
   const location = useLocation();
@@ -81,31 +82,11 @@ function AppContent() {
           <Route path="/external-events" element={<ExternalEvents />} />
           <Route path="/create-external-event" element={<CreateExternalEvents />} />
           <Route path="/details-ext" element={<DetailsExt />} />
+          {/* news routes */}
           <Route path="/news" element={<NewsSection />} />
           <Route path="/news/create-news-post" element={<CreateNewsPost />} />
-
+          <Route path="/news/edit/:id" element={<EditNewsForm />} /> {/* Add this route */}
           <Route path="/gdpr-policy" element={<GDPRPolicy />} />
-
-
-          
-
-
-          
-
-          
-
-
-
-          
-
-
-
-         
-          
-          
-
-
-
 
           {/* Committee Routes */}
           <Route path="/committee/dashboard" element={<Dashboard />} />

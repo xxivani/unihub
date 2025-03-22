@@ -1,0 +1,47 @@
+/* ✅ GDPR Policy Styling */
+.gdpr-container {
+    max-width: 800px;
+    margin: 80px auto 40px; /* 🔥 Adds top margin to push content below navbar */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    line-height: 1.6;
+  }
+  
+  .gdpr-container h1 {
+    font-size: 2rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .gdpr-container h2 {
+    font-size: 1.5rem;
+    color: #444;
+    margin-top: 30px;
+  }
+  
+  .gdpr-container p,
+  .gdpr-container ul {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .gdpr-container ul {
+    padding-left: 20px;
+  }
+  
+  .gdpr-container ul li {
+    margin-bottom: 10px;
+  }
+  
+  .gdpr-container a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .gdpr-container a:hover {
+    text-decoration: underline;
+  }
+  

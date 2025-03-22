@@ -1,3 +1,4 @@
+/* ✅ Club Card - Main Styling */
 .club-card {
   display: flex;
   border: 1px solid #ddd;
@@ -5,6 +6,15 @@
   border-radius: 8px;
   background-color: #f9f9f9;
   gap: 20px;
+  position: relative;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ✅ Club Image - Ensures icons are inside the image */
+.club-image {
+  position: relative; /* Ensures buttons are positioned relative to the image */
+  display: inline-block;
 }
 
 .club-image img {
@@ -12,8 +22,58 @@
   height: 150px;
   object-fit: cover;
   border-radius: 8px;
+  display: block;
 }
 
+/* ✅ Delete Button (🗑️ Top Right inside the image) */
+.delete-club-button {
+  position: absolute;
+  top: 25px;  /* 🔥 Adjusted for better alignment */
+  left: 170px;
+  background-color: rgba(220, 53, 69, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px; /* 🔥 Slightly reduced size */
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.delete-club-button:hover {
+  background-color: rgb(220, 53, 69);
+  transform: scale(1.1);
+}
+
+/* ✅ Edit Button (✏️ Bottom Right inside the image) */
+.edit-club-button {
+  position: absolute;
+  bottom: 100px; /* 🔥 Adjusted for better alignment */
+  left: 170px;
+  background-color: #f8d030;
+  color: black;
+  border: none;
+  border-radius: 50%;
+  width: 32px; /* 🔥 Slightly reduced size */
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.edit-club-button:hover {
+  background-color: #e6c121;
+  transform: scale(1.1);
+}
+
+/* ✅ Club Details */
 .club-details {
   display: flex;
   flex-direction: column;
@@ -33,13 +93,13 @@
   color: #333;
 }
 
+/* ✅ Club Buttons */
 .club-buttons {
   display: flex;
   flex-direction: column;
   gap: 10px;
   justify-content: flex-start;
 }
-
 
 .view-club-btn, .join-club-btn {
   text-decoration: none;
@@ -54,6 +114,7 @@
   border: none;
 }
 
+/* 🏷️ Restoring Correct Button Styling */
 .view-club-btn {
   background-color: #dec585;
   color: black;
@@ -71,3 +132,95 @@
 .join-club-btn:hover {
   background-color: #333;
 }
+
+.edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* 🔥 Updated Modal Box - Same Style as External Events */
+.edit-modal {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 90%;
+  text-align: left;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.close-modal-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #333;
+}
+
+.close-modal-button:hover {
+  color: black;
+}
+
+/* ✅ Edit Form Fields (Same Layout as External Events) */
+.edit-form-group {
+  margin-bottom: 15px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.edit-form-group label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+.edit-form-group input,
+.edit-form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #fafafa;
+}
+
+.edit-form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* ✅ Save Changes Button */
+.save-changes-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #dec585;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.save-changes-btn:hover {
+  background-color: #c9af74
+}
+
+

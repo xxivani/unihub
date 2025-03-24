@@ -53,7 +53,7 @@ const loginUser = async (req, res) => {
       );
       
       // Return the token and role in the response
-      res.json({ message: 'Logged in successfully', token, role: user.role });
+      res.json({ message: 'Logged in successfully', token, role: user.role, id: user.id });
     } catch (jwtError) {
       console.error('JWT signing error:', jwtError);
       res.status(500).json({ error: 'Authentication error' });

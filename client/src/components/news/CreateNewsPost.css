@@ -1,47 +1,111 @@
-.create-news-form * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --error-bg: #fee;
+  --error-text: #d32f2f;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --input-bg: #ffffff;
+  --success-color: #4caf50;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --border-color: #333333;
+  --accent-color: #6d8eff;
+  --error-bg: rgba(211, 47, 47, 0.2);
+  --error-text: #ff6b6b;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --input-bg: #2a2a2a;
+  --success-color: #66bb6a;
 }
 
 .create-news-container {
   max-width: 800px;
-  margin: 0 auto;
-  padding: 80px;
-  font-family: Arial, sans-serif;
+  margin: 2rem auto;
+  padding: 2rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px var(--shadow);
+  transition: all 0.3s ease;
+  margin-top: 80px;
 }
 
-.create-news-container h2 {
-  text-align: center;
-  font-size: 29px;
-  font-weight: bold;
-  margin-top: 20px; 
-  margin-bottom: 20px;
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.header-row h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
 }
 
 .create-news-form {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-  padding: 30px;
-  border-radius: 20px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+[data-theme="dark"] .form-group label {
+  color: #e0e0e0 !important;
 }
 
 .form-group input[type="text"],
 .form-group textarea {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  border: 0.1px solid var(--border-color);
+  border-radius: 8px;
   font-size: 1rem;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.form-group input[type="file"] {
+  padding: 0.75rem;
+  border: 0.1px dashed var(--border-color);
+  border-radius: 8px;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
 }
 
 .form-group textarea {
@@ -51,68 +115,199 @@
 
 .form-group small {
   align-self: flex-end;
-  color: #666;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
 }
 
 .error-message {
-  color: #a00;
-  background-color: #fee;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 20px;
+  color: var(--error-text);
+  background-color: var(--error-bg);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
   text-align: center;
+  font-weight: 500;
+  border-left: 4px solid var(--error-text);
+}
+
+.stock-image-warning {
+  color: var(--error-text);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.stock-image-warning::before {
+  content: "⚠️";
+  margin-right: 0.5rem;
 }
 
 .form-actions {
   display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
 .submit-button {
-  background-color: #000;
-  color: #fff;
-  padding: 12px 20px;
+  background-color: black;
+  color: white;
+  min-width: 160px;
+  min-height: 50px;
+  padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
-  font-size: 1.1rem;
-  width: 180px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .submit-button {
+  background-color: black;
+  color: white;
+  border: 0.1px solid grey;
 }
 
 .submit-button:hover {
-  background-color: #333;
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .submit-button:disabled {
-  background-color: #666;
+  background-color: var(--text-secondary);
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .cancel-button {
-  background-color: #000;
-  color: #fff;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 4px;
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
 .cancel-button:hover {
-  background-color: #444;
+  background-color: var(--bg-primary);
+  color: black;
+  border-color: black;
+  transform: translateY(-2px);
 }
 
-.form-group input[type="file"] {
-  padding: 10px 0;
+[data-theme="dark"] .cancel-button:hover {
+  color: white;
+  border-color: white;
 }
 
 .pdf-list {
   list-style: none;
-  margin-top: 5px;
+  margin: 0.5rem 0 0 0;
+  padding: 0.5rem;
+  background-color: var(--input-bg);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
 }
 
 .pdf-list li {
-  font-size: 0.95rem;
-  color: #333;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0;
+}
+
+.pdf-list li::before {
+  content: "📄";
+  margin-right: 0.5rem;
+}
+
+.form-group input[type="file"] {
+  position: relative;
+}
+
+.form-group input[type="file"]::file-selector-button {
+  background-color: black;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 1rem;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .form-group input[type="file"]::file-selector-button {
+  background-color: black;
+  color: white;
+  border: 1px solid white;
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+  filter: brightness(1.1);
+}
+
+.submit-button.loading {
+  position: relative;
+  color: transparent;
+}
+
+.submit-button.loading::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: calc(50% - 10px);
+  left: calc(50% - 10px);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success-message {
+  color: var(--success-color);
+  background-color: rgba(76, 175, 80, 0.1);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 500;
+  border-left: 4px solid var(--success-color);
+  animation: fadeIn 0.3s ease forwards;
 }

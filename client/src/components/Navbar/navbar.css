@@ -1,6 +1,6 @@
 
 .navbar {
-    background: #111;
+    background: #111 !important;
     color: white;
     padding: 10px 20px;
     display: flex;
@@ -126,4 +126,12 @@
     width: 24px;          
     height: 24px;  
   }
+
+  .navbar,
+.navbar-dark,
+body[data-theme="light"] .navbar,
+body[data-theme="light"] .navbar-dark {
+  background-color: #111 !important;
+  color: white !important;
+}
   

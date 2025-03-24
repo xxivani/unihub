@@ -103,3 +103,32 @@
     padding-left: 20px;
     padding-right: 20px;
 }
+
+/* Edit Page Button */
+.edit-clubs-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #6c757d;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+  
+  .edit-clubs-button:hover {
+    background-color: #5a6268;
+  }
+  
+  .edit-clubs-button.active {
+    background-color: #dc3545;
+  }
+  
+  .edit-clubs-button.active:hover {
+    background-color: #c82333;
+  }
+  
+  
+  

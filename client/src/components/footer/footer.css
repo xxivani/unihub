@@ -9,7 +9,7 @@
   }
   
   .UniHub-text {
-    color: #fff;
+    color: #fff !important;
     font-size: 40px;
     font-weight: 700;
     line-height: 160%;
@@ -27,7 +27,7 @@
   }
 
   .heading {
-    color: #fff;
+    color: #fff !important;
     font-size: 20px;
     font-weight: 700;
     margin-top: 34px;

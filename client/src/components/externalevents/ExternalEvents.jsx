@@ -13,6 +13,47 @@ import {
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
+const formatTimestamp = (timestamp) => {
+	if (!timestamp) return "";
+	
+	try {
+	  const date = new Date(timestamp);
+	  
+	  if (isNaN(date.getTime())) {
+		return timestamp;
+	  }
+	  const hours = date.getHours();
+	  const minutes = date.getMinutes();
+	  const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+	  
+	  return formattedTime;
+	} catch (error) {
+	  console.error("Error formatting timestamp:", error);
+	  return timestamp;
+	}
+  };
+  
+  const formatDate = (timestamp) => {
+	if (!timestamp) return "";
+	
+	try {
+	  const date = new Date(timestamp);
+	  
+	  if (isNaN(date.getTime())) {
+		return timestamp;
+	  }
+	  
+	  const day = date.getDate();
+	  const month = date.toLocaleString('default', { month: 'long' });
+	  const year = date.getFullYear();
+	  
+	  return `${day} ${month} ${year}`;
+	} catch (error) {
+	  console.error("Error formatting date:", error);
+	  return timestamp;
+	}
+  };
+
 const Pagination = ({ totalPages, currentPage, onPageChange }) => {
   const isFirstPage = currentPage === 1;
   const isLastPage = currentPage === totalPages;
@@ -62,8 +103,13 @@ const ExternalEvents = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isEditFormVisible, setIsEditFormVisible] = useState(false);
   const [currentEditEvent, setCurrentEditEvent] = useState(null);
+  const [events, setEvents] = useState([]);
+  const [refresh, setRefresh] = useState(false);
+ 
 
-  const [events, setEvents] = useState([
+  const navigate = useNavigate();
+  
+  const dummyEvents = [
     {
       id: 1,
       title: "Student Rep Social",
@@ -156,9 +202,19 @@ const ExternalEvents = () => {
       ],
       category: "SOCIAL_GATHERING"
     }
-  ]);
-
-  const navigate = useNavigate();
+  ];
+  
+  
+	// const handleFollowClick = () => {
+	// 	if (!user) {
+	// 	  promptLogin();
+	// 	  return;
+	// 	}
+	  
+	// 	setIsFormVisible(true);
+	//   };
+	  
+	  
 
   // We define some categories here, so ESLint doesn't flag them as unused.
   const EVENT_CATEGORIES = [
@@ -172,6 +228,34 @@ const ExternalEvents = () => {
     "VOLUNTEERING"
   ];
 
+  // Fetch events from API
+  const fetchEvents = async () => {
+	try {
+	  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+	  const response = await fetch(`${apiUrl}/external-events`);
+	  if (!response.ok) {
+		throw new Error('Failed to fetch external events');
+	  }
+	  const data = await response.json();
+	  console.log("Fetched Events:", data);
+	  setEvents(data);
+	} catch (error) {
+	  console.error('Error fetching events:', error);
+	  setEvents(dummyEvents);
+	}
+  };
+  
+  useEffect(() => {
+	fetchEvents();
+  }, [refresh]); 
+  
+  const promptLogin = () => {
+	alert("Please log in to follow or view event details.");
+	// Alternatively, redirect to login page:
+	// navigate("/login");
+  };
+  
+  
   // Load user from sessionStorage
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
@@ -207,6 +291,20 @@ const ExternalEvents = () => {
     setIsSuccessModalVisible(true);
   };
 
+//   const handleFormSubmit = () => {
+// 	const storageKey = `followedEvents_${user.id}`;
+// 	const followedEvents = JSON.parse(localStorage.getItem(storageKey)) || [];
+  
+// 	if (!followedEvents.includes(selectedEventId)) {
+// 	  followedEvents.push(selectedEventId);
+// 	  localStorage.setItem(storageKey, JSON.stringify(followedEvents));
+// 	}
+  
+// 	setIsFollowing((prev) => [...prev, selectedEventId]); // Update state
+// 	setIsFormVisible(false); // Hide form after submission
+//   };
+  
+
   const handleCloseSuccessModal = () => {
     setIsSuccessModalVisible(false);
   };
@@ -220,18 +318,48 @@ const ExternalEvents = () => {
     setIsEditMode(!isEditMode);
   };
 
-  // Delete Event
-  const handleDeleteEvent = (id) => {
+  const handleDeleteEvent = async (id) => {
     if (window.confirm('Are you sure you want to delete this event?')) {
-      setEvents(events.filter(event => event.id !== id));
+      try {
+        console.log("Deleting event with ID:", id);
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        const response = await fetch(`${apiUrl}/external-events/${id}`, {
+          method: 'DELETE',
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to delete event');
+        }
+  
+        setEvents(prevEvents => {
+          const updatedEvents = prevEvents.filter(event => event.external_event_id !== id);
+          console.log("Updated events list:", updatedEvents);
+          return updatedEvents;
+        });
+  
+  
+        alert('Event deleted successfully');
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        alert('Failed to delete event. Please try again.');
+      }
     }
   };
 
-  // Edit Event
   const handleEditIconClick = (event) => {
-    setCurrentEditEvent({ ...event });
+    console.log("Editing event:", event);
+    
+    // Create a copy of the event with formatted time if it's a timestamp
+    const formattedEvent = {
+      ...event,
+      time: event.external_event_time ? formatTimestamp(event.external_event_time) : event.time,
+      date: event.external_event_date ? formatDate(event.external_event_date) : event.date
+    };
+    
+    setCurrentEditEvent(formattedEvent);
     setIsEditFormVisible(true);
   };
+  
 
   const handleCloseEditForm = () => {
     setIsEditFormVisible(false);
@@ -257,16 +385,92 @@ const ExternalEvents = () => {
     });
   };
 
-  const handleEditFormSubmit = (e) => {
-    e.preventDefault();
-    const updatedEvents = events.map((event) =>
-      event.id === currentEditEvent.id ? currentEditEvent : event
-    );
-    setEvents(updatedEvents);
-    localStorage.setItem('eventsList', JSON.stringify(updatedEvents));
-    setIsEditFormVisible(false);
-    setCurrentEditEvent(null);
-    alert("Event updated successfully!");
+  const handleEditFormSubmit = async (e) => {
+	e.preventDefault();
+  
+	const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+	
+	// Create a copy of the current edit event
+	const updatedEvent = { ...currentEditEvent };
+	
+	try {
+	  // Handle time conversion - convert "12:30" format to ISO string
+	  if (updatedEvent.external_event_time && typeof updatedEvent.external_event_time === 'string') {
+		// Check if it's in "HH:MM" format
+		if (/^\d{1,2}:\d{2}$/.test(updatedEvent.external_event_time)) {
+		  // Parse time parts
+		  const [hours, minutes] = updatedEvent.external_event_time.split(':').map(Number);
+		  
+		  // Create a new Date object for today
+		  const timeDate = new Date();
+		  
+		  // Set hours and minutes
+		  timeDate.setHours(hours, minutes, 0, 0);
+		  
+		  // Convert to ISO string
+		  updatedEvent.external_event_time = timeDate.toISOString();
+		}
+	  }
+	  
+	  // Handle date conversion if needed
+	  if (updatedEvent.external_event_date && typeof updatedEvent.external_event_date === 'string') {
+		// Try to parse a date like "20 February 2025" back to a Date object
+		const dateParts = updatedEvent.external_event_date.split(' ');
+		if (dateParts.length === 3) {
+		  const day = parseInt(dateParts[0], 10);
+		  const month = dateParts[1]; // February
+		  const year = parseInt(dateParts[2], 10);
+		  
+		  // Get month number (0-based)
+		  const monthNames = ["January", "February", "March", "April", "May", "June",
+							 "July", "August", "September", "October", "November", "December"];
+		  const monthIndex = monthNames.findIndex(m => m === month);
+		  
+		  if (monthIndex !== -1 && !isNaN(day) && !isNaN(year)) {
+			// Create a new date object
+			const dateObj = new Date(year, monthIndex, day);
+			// Convert to ISO string
+			updatedEvent.external_event_date = dateObj.toISOString();
+		  }
+		}
+	  }
+  
+	  console.log("Sending updated event data:", updatedEvent);
+  
+	  const response = await fetch(`${apiUrl}/external-events/${currentEditEvent.external_event_id}`, {
+		method: "PUT",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(updatedEvent),
+	  });
+  
+	  if (!response.ok) throw new Error("Failed to update event");
+	  
+	  // Get the updated event data from the response
+	  const updatedEventData = await response.json();
+	  console.log("Event updated (from backend):", updatedEventData);
+	  
+	  // Update the events state with the new data
+	  setEvents(prevEvents => 
+		prevEvents.map(event => 
+		  event.external_event_id === updatedEventData.external_event_id 
+			? updatedEventData 
+			: event
+		)
+	  );
+	  
+	  // Force a UI refresh
+	  setRefresh(prev => !prev);
+	  
+	  // Close edit form
+	  setIsEditFormVisible(false);
+	  setCurrentEditEvent(null);
+	  
+	  alert("Event updated successfully!");
+  
+	} catch (error) {
+	  console.error("Error updating event:", error);
+	  alert("Failed to update event. Please try again.");
+	}
   };
 
   return (
@@ -312,7 +516,7 @@ const ExternalEvents = () => {
                 <>
                   <button
                     className="delete-extevent-button"
-                    onClick={() => handleDeleteEvent(event.id)}
+                    onClick={() => handleDeleteEvent(event.external_event_id)}
                     aria-label="Delete event"
                   >
                     <FaTrash />
@@ -328,16 +532,25 @@ const ExternalEvents = () => {
               )}
             </div>
             <div className="extevent-content">
-              <h2 className="extevent-title">{event.title}</h2>
-              <p className="extevent-description">{event.description}</p>
+              <h2 className="extevent-title">{event.external_event_name}</h2>
+              <p className="extevent-description">{event.external_event_description}</p>
               <div className="extevent-details">
-                <p><strong>Location:</strong> {event.location}</p>
-                <p><strong>Time:</strong> {event.time}</p>
+                <p><strong>Location:</strong> {event.external_event_location}</p>
+				<p><strong>Date:</strong> {
+    			event.external_event_date 
+      			? formatDate(event.external_event_date) 
+      			: event.date
+  				}</p>
+                <p><strong>Time:</strong> {
+                  event.external_event_time 
+                    ? formatTimestamp(event.external_event_time) 
+                    : event.time
+                }</p>
               </div>
             </div>
             <div className="extevent-actions">
-              <button className="view-button" onClick={handleFollowClick}>Follow</button>
-              <button className="apply-button" onClick={handleDetailClick}>Details</button>
+              <button className="view-button" onClick={() => user ? handleFollowClick() : promptLogin()}>Follow</button>
+              <button className="apply-button"  onClick={() => user ? handleDetailClick() : promptLogin()}>Details</button>
             </div>
             <div className="extevent-notification-icon"><FaBell /></div>
           </div>
@@ -434,11 +647,16 @@ const ExternalEvents = () => {
                     type="text"
                     id="edit-title"
                     value={currentEditEvent.title}
-                    onChange={(e) => handleEditFormChange('title', e.target.value)}
+					onChange={(e) =>
+						setCurrentEditEvent({ 
+						  ...currentEditEvent, 
+						  external_event_name: e.target.value,
+						  title: e.target.value // Keep both for compatibility
+						})
+					}
                     maxLength="100"
-                    required
                   />
-                  <small>{currentEditEvent.title.length} / 100</small>
+                  {/* <small>{currentEditEvent.title.length} / 100</small> */}
                 </div>
               </div>
 
@@ -449,8 +667,13 @@ const ExternalEvents = () => {
                     type="text"
                     id="edit-date"
                     value={currentEditEvent.date}
-                    onChange={(e) => handleEditFormChange('date', e.target.value)}
-                    required
+                    onChange={(e) =>
+						setCurrentEditEvent({ 
+						  ...currentEditEvent, 
+						  external_event_date: e.target.value,
+						  date: e.target.value // Keep both for compatibility
+						})
+					}
                   />
                 </div>
 
@@ -460,8 +683,13 @@ const ExternalEvents = () => {
                     type="text"
                     id="edit-time"
                     value={currentEditEvent.time}
-                    onChange={(e) => handleEditFormChange('time', e.target.value)}
-                    required
+					onChange={(e) => 
+						setCurrentEditEvent({ 
+						  ...currentEditEvent, 
+						  external_event_time: e.target.value,
+						  time: e.target.value // Keep both for compatibility
+						})
+					}
                   />
                 </div>
               </div>
@@ -472,8 +700,13 @@ const ExternalEvents = () => {
                   type="text"
                   id="edit-location"
                   value={currentEditEvent.location}
-                  onChange={(e) => handleEditFormChange('location', e.target.value)}
-                  required
+                  onChange={(e) =>
+					setCurrentEditEvent({ 
+					  ...currentEditEvent, 
+					  external_event_location: e.target.value,
+					  location: e.target.value // Keep both for compatibility
+					})
+				  }
                 />
               </div>
 
@@ -484,8 +717,13 @@ const ExternalEvents = () => {
                     type="text"
                     id="edit-capacity"
                     value={currentEditEvent.capacity}
-                    onChange={(e) => handleEditFormChange('capacity', e.target.value)}
-                    required
+					onChange={(e) => 
+						setCurrentEditEvent({ 
+						  ...currentEditEvent, 
+						  external_event_capacity: e.target.value,
+						  capacity: e.target.value // Keep both for compatibility
+						})
+					}
                   />
                 </div>
 
@@ -495,8 +733,13 @@ const ExternalEvents = () => {
                     type="text"
                     id="edit-price"
                     value={currentEditEvent.price}
-                    onChange={(e) => handleEditFormChange('price', e.target.value)}
-                    required
+					onChange={(e) => 
+						setCurrentEditEvent({ 
+						  ...currentEditEvent, 
+						  external_event_price: e.target.value,
+						  price: e.target.value // Keep both for compatibility
+						})
+					}
                   />
                 </div>
               </div>
@@ -506,8 +749,13 @@ const ExternalEvents = () => {
                 <select
                   id="edit-category"
                   value={currentEditEvent.category}
-                  onChange={(e) => handleEditFormChange('category', e.target.value)}
-                  required
+				  onChange={(e) => 
+					setCurrentEditEvent({ 
+					  ...currentEditEvent, 
+					  external_event_category: e.target.value,
+					  category: e.target.value // Keep both for compatibility
+					})
+				}
                   className="event-category-select"
                 >
                   <option value="">Select Event Category</option>
@@ -524,17 +772,23 @@ const ExternalEvents = () => {
                 <textarea
                   id="edit-description"
                   value={currentEditEvent.description}
-                  onChange={(e) => handleEditFormChange('description', e.target.value)}
+                  onChange={(e) =>
+					setCurrentEditEvent({ 
+					  ...currentEditEvent, 
+					  external_event_description: e.target.value,
+					  description: e.target.value // Keep both for compatibility
+					})
+				  }
                   maxLength="1000"
-                  required
                 />
-                <small>{currentEditEvent.description.length} / 1000</small>
               </div>
 
               <div className="event-team-section">
-                <h3>Event Team</h3>
-                {currentEditEvent.team.map((member, index) => (
-                  <div className="edit-form-row" key={index}>
+              <div className="event-team-section">
+              <h3>Event Team</h3>
+              {currentEditEvent.team?.map((member, index) => (
+                <div key={member.id || index}>
+                  <div className="edit-form-row">
                     <div className="edit-form-group">
                       <label htmlFor={`team-role-${index}`}>{member.role}:</label>
                       <input
@@ -542,12 +796,13 @@ const ExternalEvents = () => {
                         id={`team-name-${index}`}
                         value={member.name}
                         onChange={(e) => handleTeamMemberChange(index, 'name', e.target.value)}
-                        required={member.role === 'Organizer'}
                       />
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
+            </div>
 
               <div className="edit-form-actions">
                 <button

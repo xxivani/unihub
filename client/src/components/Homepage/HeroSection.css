@@ -33,6 +33,14 @@
 }
 
 .hero-text {
+  color: white !important;
+  font-size: 5rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  margin: 15px 0;
+}
+
+.hero-text1 {
   color: #F4BE37 !important;
   font-size: 5rem;
   font-weight: bold;

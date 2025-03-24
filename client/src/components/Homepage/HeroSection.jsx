@@ -6,7 +6,7 @@ const HeroSection = () => {
       <div className="hero-overlay"></div>
       <div className="hero-text-container">
         <h1 className="hero-text">ENGAGE.</h1>
-        <h1 className="hero-text">EXPLORE.</h1>
+        <h1 className="hero-text1">EXPLORE.</h1>
         <h1 className="hero-text">UNWIND.</h1>
       </div>
     </div>

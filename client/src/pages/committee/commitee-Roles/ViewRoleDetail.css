@@ -6,4 +6,10 @@
     padding-left: 40px;
     padding-right: 40px;
     gap: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body[data-theme="dark"] .entity6-apply-role-opening {
+    background-color: #000000;
+    color: #ffffff;
 }

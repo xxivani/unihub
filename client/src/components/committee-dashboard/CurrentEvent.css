@@ -9,6 +9,10 @@
     margin-top: 20px;
 }
 
+body[data-theme="dark"] .entity6-event-statistics{
+    background-color: #1b2c40;
+}
+
 .entity6-stats-info {
     flex: 1;
 }
@@ -48,6 +52,11 @@
     transform: translateX(-50%);
     text-align: center;
     margin-top: 8px;
+}
+
+body[data-theme="dark"] .entity6-chart-legend 
+body[data-theme="dark"] .entity6-chart-label span{
+    color: white !important;
 }
 
 .entity6-chart-legend p {

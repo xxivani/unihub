@@ -9,6 +9,10 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+body[data-theme="dark"] .entity6-cs{
+    background-color: #605547;
+}  
+
 .entity6-cs-header {
     display: flex;
     justify-content: space-between;
@@ -21,6 +25,10 @@
     cursor: pointer;
     color: #333;
     transition: color 0.3s ease;
+}
+
+body[data-theme="dark"] .entity6-arrow-btn{
+    color: white;
 }
 
 .charts-container {
@@ -69,4 +77,15 @@
 .entity6-doughnut-chart-label span {
     font-size: 12px;
     color: gray;
+}
+
+body[data-theme="dark"] .entity6-cs h3,
+body[data-theme="dark"] .entity6-cs h5,
+body[data-theme="dark"] .entity6-doughnut-chart-label p,
+body[data-theme="dark"] .entity6-doughnut-chart-label span {
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .entity6-doughnut-chart-label span {
+  color: #ddd;
 }

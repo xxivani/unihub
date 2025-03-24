@@ -3,7 +3,7 @@
     justify-content: space-between;
     align-items: center;
     text-align: left;
-    margin-top: 80px;
+    margin-top: 100px;
     margin-left: 18px;
     font-style: bold;
 }
@@ -19,4 +19,12 @@
     cursor: pointer;
     font-size: 16px;
     margin-right: 10px;
+    border: none;
+    outline: none;
+    box-shadow: none;
 }
+
+body[data-theme="dark"] .create-role-btn{
+    background-color: #1c3047;
+    color: #fff;
+}  

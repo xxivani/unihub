@@ -34,6 +34,26 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        email: 'committee1@example.com',
+        password: hashedCommitteePassword,
+        role: 'committee',
+        committeeName: 'Ava Thompson',
+        club: 'Chess Club',
+        committeeRole: 'PRESIDENT',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        email: 'committee2@example.com',
+        password: hashedCommitteePassword,
+        role: 'committee',
+        committeeName: 'Liam Patel',
+        club: 'Chess Club',
+        committeeRole: 'TREASURER',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ], {});
   },
 

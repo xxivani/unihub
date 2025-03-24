@@ -7,6 +7,11 @@
     margin-bottom: 20px;
 }
 
+body[data-theme="dark"] .entity6-left-box {
+    background-color: #c0aa74;
+    color: #fff;
+}  
+
 .entity6-left-box h2 {
     font-size: 40px;
     font-style: bold;

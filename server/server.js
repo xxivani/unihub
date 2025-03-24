@@ -56,6 +56,19 @@ app.use('/api/external-events', externalEventsRoutes);
 app.use('/external-events', externalEventsRoutes);
 
 
+//Newly added.
+const roleOpeningRoutes = require('./src/routes/roleOpening');
+app.use('/api/role-openings', roleOpeningRoutes);
+
+const roleOpeningRegistrationRoutes = require('./src/routes/roleOpeningRegistration');
+app.use('/api/role-opening-registrations', roleOpeningRegistrationRoutes);
+
+const committeeMemberRoutes = require('./src/routes/committeeMember');
+app.use('/api/committee-members', committeeMemberRoutes);
+
+const committeeMemberPermissionRoutes = require('./src/routes/committeeMemberPermission');
+app.use('/api/committee-member-permissions', committeeMemberPermissionRoutes);
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

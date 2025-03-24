@@ -16,7 +16,7 @@ import ClubDetailsPage from "./pages/ClubDetailsPage";
 import CreateClub from "./pages/CreateClub"; 
 import GDPRPolicy from "./pages/GDPRPolicy";
 
-
+import { ThemeProvider } from "./ThemeContext"
 
 
 
@@ -123,9 +123,14 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    // <Router>
+    //   <AppContent />
+    // </Router>
+    <ThemeProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </ThemeProvider>
   );
 }
 

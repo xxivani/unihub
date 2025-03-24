@@ -1,5 +1,6 @@
 const { ExternalEvent } = require('../models');
 
+
 // Create an event
 const createExternalEvent = async (req, res) => {
   try {
@@ -34,15 +35,33 @@ const getExternalEventById = async (req, res) => {
 // Update an event
 const updateExternalEvent = async (req, res) => {
   try {
-    const event = await ExternalEvent.findByPk(req.params.id);
-    if (!event) return res.status(404).json({ message: 'Event not found' });
+      const { id } = req.params;
+      const updateData = req.body;
 
-    await event.update(req.body);
-    res.json(event);
+      console.log("Incoming ID:", id);
+      console.log("Incoming update data:", updateData);
+
+      if (!Object.keys(updateData).length) {
+          return res.status(400).json({ message: "No update data provided." });
+      }
+
+      const [updatedRows] = await ExternalEvent.update(updateData, {
+          where: { external_event_id: id },
+      });
+
+      if (updatedRows === 0) {
+          return res.status(404).json({ message: "Event not found." });
+      }
+
+      const updatedEvent = await ExternalEvent.findByPk(id);
+      res.status(200).json(updatedEvent);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+      console.error("Error updating event:", error);
+      res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };
+
+
 
 // Delete an event
 const deleteExternalEvent = async (req, res) => {

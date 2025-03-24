@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('external_events', {
       external_event_id: {
         type: Sequelize.BIGINT,
@@ -44,7 +44,7 @@ module.exports = {
       },
       external_event_max_number_of_attendees: {
         type: Sequelize.INTEGER,
-        allowNull: true,
+        allowNull: true, // Adjust if needed
         validate: {
           min: 1
         }
@@ -68,7 +68,7 @@ module.exports = {
     });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('external_events');
   }
 };

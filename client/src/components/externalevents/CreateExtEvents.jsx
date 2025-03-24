@@ -80,40 +80,88 @@ const CreateExternalEvents = () => {
     setEventCategory(e.target.value);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("eventName", eventName);
-    formData.append("description", description);
-    formData.append("eventDate", eventDate);
-    formData.append("eventTime", eventTime);
-    formData.append("location", location);
-    formData.append("price", price);
-    formData.append("maxAttendees", maxAttendees);
-    formData.append("organizer", organizer);
-    formData.append("coOrganizer", coOrganizer);
-    formData.append("manager", manager);
-    formData.append("speaker", speaker);
-    formData.append("imageUrl", defaultImageUrl);
-    formData.append("eventCategory", eventCategory);
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   const formData = new FormData();
+  //   formData.append("eventName", eventName);
+  //   formData.append("description", description);
+  //   formData.append("eventDate", eventDate);
+  //   formData.append("eventTime", eventTime);
+  //   formData.append("location", location);
+  //   formData.append("price", price);
+  //   formData.append("maxAttendees", maxAttendees);
+  //   formData.append("organizer", organizer);
+  //   formData.append("coOrganizer", coOrganizer);
+  //   formData.append("manager", manager);
+  //   formData.append("speaker", speaker);
+  //   formData.append("imageUrl", defaultImageUrl);
+  //   formData.append("eventCategory", eventCategory);
 
-    console.log({ 
-      eventName, 
-      description, 
-      eventDate, 
-      eventTime, 
-      location, 
-      price,
-      maxAttendees,
-      organizer,
-      coOrganizer,
-      manager,
-      speaker,
-      eventCategory
-    });
+  //   console.log({ 
+  //     eventName, 
+  //     description, 
+  //     eventDate, 
+  //     eventTime, 
+  //     location, 
+  //     price,
+  //     maxAttendees,
+  //     organizer,
+  //     coOrganizer,
+  //     manager,
+  //     speaker,
+  //     eventCategory
+  //   });
     
-    navigate("/external-events");
+  //   navigate("/external-events");
+  // };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    const userId = "admin"; 
+    const eventDateTime = `${eventDate} ${eventTime}`;
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    
+    const eventData = {
+      external_event_name: eventName,
+      external_event_description: description,
+      external_event_date: eventDate,
+      external_event_time: eventDateTime,
+      external_event_location: location,
+      external_event_ticket_amount: price,
+      external_event_max_number_of_attendees: maxAttendees,
+      external_event_organizer: organizer,
+      external_event_corganizer: coOrganizer,
+      external_event_manager: manager,
+      external_event_speaker: speaker,
+      external_event_category: eventCategory,
+      external_event_created_by: userId
+    };
+  
+    try {
+      const response = await fetch(`${apiUrl}/external-events`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(eventData),
+      });
+    
+      console.log("Response Status:", response.status);
+    
+      if (!response.ok) {
+        const errorText = await response.text(); // Get error message from the backend
+        throw new Error(`Failed to create event. Status: ${response.status}, Server says: ${errorText}`);
+      }
+    
+      const result = await response.json();
+      console.log("Event Created Successfully:", result);
+    
+      alert("Event created successfully!");
+      navigate("/external-events");
+    } catch (error) {
+      console.error("Error creating event:", error);
+      alert(error.message);
+    }    
   };
+  
 
   return (
     <div className="create-external-event-container">

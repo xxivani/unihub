@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       external_event_created_by: {
         type: DataTypes.STRING(255),
-        allowNull: false,
+        allowNull: true,
       },
       external_event_created_at: {
         type: DataTypes.DATE,

@@ -68,7 +68,7 @@ router.get('/', getAllExternalEvents);
 router.get('/:id', getExternalEventById);
 
 /**
- * @swagger
+  * @swagger
  * /external-events/{id}:
  *   put:
  *     summary: Update an external event
@@ -79,9 +79,53 @@ router.get('/:id', getExternalEventById);
  *         required: true
  *         schema:
  *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               external_event_name:
+ *                 type: string
+ *                 description: Name of the event
+ *               external_event_date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Date of the event (ISO 8601 format)
+ *               external_event_location:
+ *                 type: string
+ *                 description: Location of the event
+ *               external_event_description:
+ *                 type: string
+ *                 description: Description of the event
+ *               external_event_ticket_amount:
+ *                 type: integer
+ *                 description: Ticket price or amount
+ *               external_event_max_number_of_attendees:
+ *                 type: integer
+ *                 description: Maximum number of attendees
+ *               external_event_organizer:
+ *                 type: string
+ *                 description: Organizer of the event
+ *               external_event_corganizer:
+ *                 type: string
+ *                 description: Co-organizer of the event
+ *               external_event_manager:
+ *                 type: string
+ *                 description: Event manager
+ *               external_event_speaker:
+ *                 type: string
+ *                 description: Speaker at the event
  *     responses:
  *       200:
  *         description: Event updated successfully
+ *       400:
+ *         description: Bad request (invalid input)
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Internal Server Error
  */
 router.put('/:id', updateExternalEvent);
 

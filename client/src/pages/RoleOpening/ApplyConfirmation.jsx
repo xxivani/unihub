@@ -11,7 +11,7 @@ const ApplyConfirmation = () => {
 
     return (
         <div className="thankyou">
-            <FaTimes className="entity6-close-icon" onClick={handleBack} />
+            <FaTimes className="entity6-close-icon1" onClick={handleBack} />
             <h3>Thank you for applying!</h3>
             <p>You will hear back from us soon.</p>
         </div>

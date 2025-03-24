@@ -1,6 +1,7 @@
 .entity6-dashboard{
     display: flex;
     flex-direction: column;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .entity6-dashboard-part2{
@@ -11,4 +12,9 @@
 .entity6-dashboard-part3{
     display: flex;
     flex-direction: column;
+}
+
+body[data-theme="dark"] .entity6-dashboard {
+    background-color: #000000;
+    color: #ffffff;
 }

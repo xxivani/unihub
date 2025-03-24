@@ -10,7 +10,7 @@ const CurrentEvent = () => {
         datasets: [
             {
                 data: [40, 21], // Paid: 40, Not Paid: 21
-                backgroundColor: ["#2c3e50", "#b0bec5"],
+                backgroundColor: ["#1f5387", "#b0bec5"],
                 hoverBackgroundColor: ["#1a252f", "#90a4ae"],
                 borderWidth: 0,
             },
@@ -46,7 +46,7 @@ const CurrentEvent = () => {
                 </div>
 
                 <div className="entity6-chart-legend">
-                    <p style={{ color: "#2c3e50" }}><strong>40</strong> Paid</p>
+                    <p><strong>40</strong> Paid</p>
                     {/* <p style={{ color: "#b0bec5" }}><strong>21</strong> Not Paid Yet</p> */}
                 </div>
             </div>

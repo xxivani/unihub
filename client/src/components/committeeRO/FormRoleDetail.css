@@ -9,6 +9,11 @@
     position: relative;
 }
 
+body[data-theme="dark"] .entity6-role-detail{
+    background-color: #453c33;
+    color: #fff;
+}  
+
 .entity6-role-detail form {
     display: flex;
     flex-direction: column;

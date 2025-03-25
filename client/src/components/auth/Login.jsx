@@ -104,7 +104,7 @@ function Login() {
           const data = await response.json();
           
           if (response.ok) {
-            const userData = { email, token: data.token, role: data.role };
+            const userData = { email, token: data.token, role: data.role, id: data.id };
             sessionStorage.setItem("user", JSON.stringify(userData));
             alert("Login successful!");
             navigate("/"); 

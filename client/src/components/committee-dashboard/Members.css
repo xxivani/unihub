@@ -18,9 +18,10 @@
     padding: 18px;
 }
 
-.add-button-cdashboard:hover {
-    background-color: #101923 !important;
-}
+body[data-theme="dark"] .add-button-cdashboard{
+    background-color: #1c3047;
+    color: #fff;
+}  
 
 .member-item {
     display: flex;
@@ -38,6 +39,10 @@
     cursor: pointer;
     font-size: 18px;
 }
+
+body[data-theme="dark"] .settings-icon{
+    color: #fff;
+}  
 
 .delete-icon {
     cursor: pointer;
@@ -87,3 +92,11 @@
     border: 2px solid;
     box-shadow: none;
 }
+
+body[data-theme="dark"] .ant-list-item-meta-description {
+    color: #ffffff !important;
+  }
+
+  body[data-theme="dark"] .ant-list-item {
+    border-bottom: 1px solid #ffffff33;
+}  

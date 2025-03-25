@@ -7,6 +7,10 @@
     margin-top: 20px;
 }
 
+body[data-theme="dark"] .update-links{
+    background-color: #292929; 
+}
+
 .ul-header {
     display: flex;
     justify-content: space-between;
@@ -40,7 +44,12 @@ h3 {
 
 .ul-icon {
     font-size: 18px;
-    color: #333;/
+    color: #333;
+}
+
+body[data-theme="dark"] .ul-icon, 
+body[data-theme="dark"] .ul-edit-btn{
+    color: white;
 }
 
 input {

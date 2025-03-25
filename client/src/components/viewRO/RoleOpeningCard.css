@@ -2,7 +2,6 @@
     display: flex;
     flex-direction: column;
     margin-right: 10px; 
-    
 }
 
 .entity6-rocard {
@@ -14,6 +13,11 @@
     margin: 16px;
     text-align: left;
     background-color: white;
+}
+
+body[data-theme="dark"] .entity6-rocard {
+    background-color: black;
+    color: #ffffff;
 }
 
 .entity6-card-image {
@@ -51,4 +55,17 @@
     padding: 8px 16px;
     cursor: pointer;
     border-radius: 8px;
+    border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+body[data-theme="dark"] .entity6-apply-button {
+  color: #fff;
+  background-color: #1c3047;
+}
+
+body[data-theme="dark"] .entity6-view-button {
+  background-color: #C0AA74; 
+  color: #000;
 }

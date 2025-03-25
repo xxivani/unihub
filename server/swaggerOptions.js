@@ -10,7 +10,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5050/api' // 🔥 hardcoded for testing
+        url: 'http://localhost:5000/api' // 🔥 hardcoded for testing
       }
     ]
   },

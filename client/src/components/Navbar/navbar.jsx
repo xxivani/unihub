@@ -2,10 +2,14 @@ import "./navbar.css";
 import { Navbar, Nav, NavDropdown, Container } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom"; 
 import { useEffect, useState } from "react";
+import { useTheme } from "../../ThemeContext";
+import { FaMoon, FaSun } from "react-icons/fa";
+import { Button } from "react-bootstrap";
 
 const CustomNavbar = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
@@ -25,7 +29,7 @@ const CustomNavbar = () => {
   };
 
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" fixed="top"> 
+    <Navbar bg="dark" className="navbar navbar-dark" expand="lg" fixed="top"> 
       <Container>
         <Navbar.Brand as={Link} to="/">UniHub</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -50,6 +54,9 @@ const CustomNavbar = () => {
           </Nav>
 
           <Nav>
+            <Button variant="outline-light" onClick={toggleTheme} className="me-2">
+              {theme === "light" ? <FaMoon /> : <FaSun />}
+            </Button>
             {!user ? (
               <Nav.Link as={Link} to="/auth">Register / Login</Nav.Link>
             ) : (

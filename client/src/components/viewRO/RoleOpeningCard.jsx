@@ -1,7 +1,34 @@
 import "./RoleOpeningCard.css";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import Error from "./Error";
+import LoginError from "./LoginError";
+
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const RoleOpeningCard = ({ role, index }) => {
+    const [user, setUser] = useState(null);
+    const [showError, setShowError] = useState(false);
+    const [showLoginError, setShowLoginError] = useState(false);
+
+    useEffect(() => {
+        const storedUser = sessionStorage.getItem("user");
+        if (storedUser) {
+            // setUser(JSON.parse(storedUser));
+            const parsedUser = JSON.parse(storedUser);
+            setUser(parsedUser);
+            console.log("Logged in user ID:", parsedUser.id);
+        }
+    }, []);
+
+    const handleApplyClick = () => {
+        if (!user) {
+            setShowLoginError(true); 
+        } else if (user.role === "committee") {
+            setShowError(true); 
+        }
+    };
+
     return (
         <div className="entity6-cards-container">
             <div className="entity6-rocard">
@@ -12,10 +39,28 @@ const RoleOpeningCard = ({ role, index }) => {
                     <p><strong>Deadline:</strong> {role.deadline}</p>
                 </div>
                 <div className="entity6-card-buttons">
-                    <Link to="/club-details" className="entity6-view-button">View {role.title.split(' ')[2]}</Link>
-                    <Link to={`/roles/apply/${index}`} className="entity6-apply-button">Apply</Link>
+                    <Link to="/club-details" className="entity6-view-button">
+                        View {role.title.split(" ")[2]}
+                    </Link>
+
+                    {!user ? (
+                        <button className="entity6-apply-button" onClick={handleApplyClick}>
+                            Apply
+                        </button>
+                    ) : user.role === "committee" ? (
+                        <button className="entity6-apply-button" onClick={handleApplyClick}>
+                            Apply
+                        </button>
+                    ) : (
+                        <Link to={`/roles/apply/${index}`} className="entity6-apply-button">
+                            Apply
+                        </Link>
+                    )}
                 </div>
             </div>
+
+            {showError && <Error onClose={() => setShowError(false)} />}
+            {showLoginError && <LoginError onClose={() => setShowLoginError(false)} />}
         </div>
     );
 };

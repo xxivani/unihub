@@ -1,5 +1,6 @@
 /* Main Content Styles */
-.extevent-main-content {
+
+.extevent-main-content [dark-theme="dark"] {
     background-color: white !important;
     flex: 1;
     display: flex;
@@ -8,6 +9,7 @@
     position: relative;
     z-index: 1; /* Ensure this container is above any background elements */
 }
+
 .extevent-page-header {
     display: flex;
     align-items: center;
@@ -17,6 +19,10 @@
     margin-top: 110px; /* Adjust as needed */
     background-color: white;
 }
+
+[data-theme="dark"] .extevent-page-header {
+	background-color: var(--bg-secondary, #000000);
+  }
 
 .extevent-page-title {
     margin: 0;
@@ -48,6 +54,11 @@
     text-align: center;
 }
 
+[data-theme="dark"] .extevent-search-bar {
+	background-color: var(--bg-secondary, #12110f);
+	color: var(--text-primary, #f5f2f2) !important;
+  }
+
 .extevent-search-bar input {
     flex: 1;
     padding: 0.5rem 1rem;
@@ -55,6 +66,10 @@
     outline: none;
     background-color: transparent;
 }
+
+[data-theme="dark"] .extevent-search-bar input {
+	color: var(--text-primary, #f5f2f2) !important;
+  }
 
 .extevent-search-button {
     background: none;
@@ -64,6 +79,9 @@
     color: black;
 }
 
+[data-theme="dark"] .extevent-search-button {
+	color: var(--text-primary, #f5f2f2) !important;
+  }
 .extevent-action-buttons {
     display: flex;
     justify-content: flex-end; 
@@ -84,6 +102,11 @@
     flex-shrink: 0;
     outline: none; 
 }
+
+[data-theme="dark"] .extevent-filter-button {
+	background-color: var(--bg-secondary, #1e1e1e);
+	color: var(--text-primary, #f5f2f2) !important;
+  }
 
 .extevent-filter-button:hover, .extevent-calendar-button:hover {
     border: 2px solid black; /* Border color change on hover */
@@ -113,6 +136,9 @@
     max-height: 200px; 
 }
 
+[data-theme="dark"] .extevent-card {
+	background-color: var(--bg-secondary, #453c33);
+  }
 .extevent-image {
     width: 180px;
     min-height: 120px;
@@ -146,11 +172,19 @@
     font-size: 0.9rem;
 }
 
+[data-theme="dark"] .extevent-description {
+	color: var(--text-primary, #fffcfc);
+  }
+
 .extevent-details {
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
     color: black;
 }
+
+[data-theme="dark"] .extevent-details {
+	color: var(--text-primary, #fffcfc);
+  }
 
 .extevent-notification-icon {
     position: absolute;
@@ -159,6 +193,10 @@
     cursor: pointer;
     color: #333;
 }
+
+[data-theme="dark"] .extevent-notification-icon {
+	color: var(--text-primary, #fffcfc);
+  }
 
 .extevent-actions {
     display: flex;
@@ -191,6 +229,14 @@
     background-color: #1a1a1a;
     color: white;
 }
+
+[data-theme="dark"] .view-button {
+	background-color: var(--bg, #C0AA74); !important
+  }
+
+  [data-theme="dark"] .apply-button {
+	background-color: var(--bg, #1c3047); !important
+  }
 
 /* Improved Pagination Styles */
 .pagination {
@@ -276,6 +322,10 @@
     /* overflow-y: auto; Allows scrolling if the content exceeds max-height */
     padding-bottom: 30px;
 }
+
+[data-theme="dark"] .event-form-container {
+	background-color: var(--bg, #1e1e1e);
+  }
   
   .event-signup-form {
     gap: 2px !important;
@@ -292,7 +342,12 @@
     font-weight: bold;
     font-size: 14px; /* Smaller font size for labels */
   }
+
+  [data-theme="dark"] .event-form-container {
+	color: var(--text-primary, #f5f2f2) !important;
   
+  }
+
   .event-form-group input {
     padding: 8px;  /* Reduced padding for smaller input fields */
     width: 500px !important;
@@ -335,6 +390,10 @@
     color: #333;
     cursor: pointer;
   }
+
+  [data-theme="dark"] .close-form-button {
+	color: var(--text-primary, #e0e0e0) !important;
+  }
   
   .success-modal {
     background-color: white;
@@ -346,6 +405,9 @@
     text-align: center;
   }
   
+  [data-theme="dark"] .success-modal {
+	background-color: var(--bg, #1e1e1e);
+  }
   .success-modal h2 {
     font-size: 24px;
     margin-bottom: 15px;
@@ -354,6 +416,10 @@
   .success-modal p {
     margin-bottom: 25px;
     color: #555;
+  }
+
+  [data-theme="dark"] .success-modal p {
+	color: var(--text-primary, #e0e0e0) !important;
   }
   
   .return-button {
@@ -465,6 +531,10 @@
   overflow-y: auto;
 }
 
+[data-theme="dark"] .edit-event-form-container {
+	background-color: var(--bg, #1e1e1e);
+  }
+
 .edit-form-row {
   display: flex;
   gap: 20px;
@@ -484,6 +554,10 @@
   margin-bottom: 5px;
   font-weight: 500;
 }
+
+[data-theme="dark"] .edit-form-group label {
+	color: var(--text-primary, #f0f0f0) !important;
+  }
 
 .edit-form-group input,
 .edit-form-group textarea,

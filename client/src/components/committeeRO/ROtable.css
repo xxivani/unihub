@@ -1,35 +1,48 @@
 .ro-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px;
-  }
-  
-  .ro-table th, .ro-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-  }
-  
-  .ro-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-  }
-  
-  .ro-table tr {
-    background-color: #fff;
-  }
-  
-  .ro-table tr:hover {
-    background-color: #ddd;
-  }
-  
-  .entity6-view-link, .entity6-edit-link {
-    margin-right: 8px;
-    color: #333;
-    text-decoration: none;
-  }
-  
-  .entity6-view-link:hover, .entity6-edit-link:hover {
-    color: #000;
-  }
-  
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 1em;
+  font-family: Arial, sans-serif;
+  text-align: left;
+}
+
+.ro-table th, .ro-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.ro-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+body[data-theme="dark"] .ro-table{
+  background-color: black !important;
+  color: #fff !important;
+}  
+
+.ro-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Add margin around the whole table */
+.ant-table-wrapper {
+  margin: 32px 40px;
+}
+
+/* Align "Edit" and "Delete" properly in the Actions column */
+.ant-table-cell a.ro-action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+}
+
+/* Style for consistent link spacing */
+.entity6-view-link,
+.entity6-edit-link {
+  color: #1890ff;
+  margin-right: 10px;
+  font-size: 14px;
+}

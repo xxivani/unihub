@@ -96,7 +96,8 @@ const CreateNewsForm = () => {
         <h2>Create News Post</h2>
         <button 
           className="cancel-button"
-          onClick={() => navigate("/news")}>
+          onClick={() => navigate("/news")}
+        >
           Go Back
         </button>
       </div>

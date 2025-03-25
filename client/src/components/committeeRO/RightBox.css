@@ -1,11 +1,16 @@
 .entity6-right-box {
-    background-color: #ffffff;
     padding: 20px;
     border-radius: 8px;
     width: 100%;
     box-sizing: border-box;
     position: relative;
+    margin-bottom: 20px;
 }
+
+body[data-theme="dark"] .entity6-right-box {
+    background-color: black;
+    color: #fff;
+}  
 
 .entity6-right-box form {
     display: flex;
@@ -40,9 +45,20 @@
     cursor: pointer;
 }
 
-.entity6-right-box button:hover {
-    background-color: #333333;
+body[data-theme="dark"] .entity6-right-box form input, 
+body[data-theme="dark"] .entity6-right-box form textarea{
+    background-color: black;
+    color: #fff;
 }
+
+body[data-theme="dark"] .entity6-right-box button{
+    background-color: #1c3047;
+    color: #fff;
+}  
+
+body[data-theme="dark"] .entity6-close-icon{
+    color: #fff;
+}  
 
 .entity6-close-icon {
     position: absolute;

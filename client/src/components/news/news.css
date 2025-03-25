@@ -1,126 +1,165 @@
 .latest-news {
-    margin: 40px;
-    padding: 20px;
-  }
-  
-  .latest-news h2 {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-top: 20px;
-  }
-  
-  .news-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  margin: 40px;
+  padding: 20px;
+  color: var(--text-primary, #333);
+}
 
-    
-  }
+.latest-news h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 20px;
+  color: var(--text-primary, #333);
+}
 
-  .title-button {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 20px;
-    margin-top: 30px;
-  }
-  
-  .create-news-button{
-    background-color: black;
-    color: white;
-    padding: 10px 25px;
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-  }
-  .news-item {
-    display: flex;
-    border: 1px solid #ddd;
-    padding: 20px;
-    background-color: #f9f9f9;
-  }
-  .news-image-container {
-    width: 200px;
-    height: 150px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .news-image {
-    width: 200px;
-    height: 150px;
-    object-fit: cover;
-  }
-  
-  .news-info {
-    display: flex;
-    flex-direction: row;
-    gap: 30px;
-    align-items: flex-start;
-    width: 100%;
-  }
-  .news-td {
-    flex: 1; 
-  }
-  .news-info h3 {
-    font-size: 1.3rem;
-    font-weight: 600;
-  }
-  
-  .news-info p {
-    font-size: 0.9rem;
-    margin: 10px 0;
-  }
-  
-  .deadline {
-    font-size: 0.9rem;
-    color: #555;
-  }
-  
-  .buttons {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 230px;
-  }
-  
-  .view-newsletter, .download-newsletter {
-    display: inline-block;
-    margin-right: 10px;
-    padding: 10px 25px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-    height: 45px;
-    width: 230px;
-    text-align: center;
-  }
-  
-  .view-newsletter{
-    background-color: #dec585;
-    color: black;
-  }
+.title-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  margin-top: 30px;
+}
 
-  .download-newsletter{
-    color: white;
-    background-color: black;
-  }
-  .view-newsletter:hover, .download-newsletter:hover {
+.create-news-button {
+  background-color: black;
+  color: white;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
-  }
+[data-theme="dark"] .create-news-button {
+  background-color: black;
+  color: white;
+  border: 0.1px solid grey;
+}
 
-  .delete-news-link {
-    color: #ff3333;
-  }
-  
-  .admin-actions {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-  }
+.create-news-button:hover {
+  filter: brightness(1.1);
+}
 
+.news-item {
+  display: flex;
+  border: 0.1px solid var(--border-color, #ddd);
+  padding: 20px;
+  background-color: var(--bg-primary, #f9f9f9);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.news-image-container {
+  width: 200px;
+  height: 150px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.news-image {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.news-info {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.news-td {
+  flex: 1;
+}
+
+.news-info h3 {
+  font-size: 1.3rem;
+  color: var(--text-primary, #333) !important;
+  font-weight: 600;
+}
+
+.news-info p {
+  font-size: 0.9rem;
+  margin: 10px 0;
+  color: var(--text-secondary, #555);
+}
+
+.deadline {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #555);
+}
+
+.buttons {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 230px;
+}
+
+.view-newsletter, .download-newsletter {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 10px 25px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  height: 45px;
+  width: 230px;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.view-newsletter {
+  background-color: #dec585;
+  color: black;
+}
+
+.download-newsletter {
+  color: white;
+  background-color: black;
+}
+
+[data-theme="dark"] .download-newsletter {
+  background-color: black;
+  border: 0.1px solid grey;
+}
+
+.delete-news-link {
+  color: #ff3333;
+  text-decoration: none;
+}
+
+.delete-news-link:hover {
+  text-decoration: underline;
+}
+
+.edit-news-link {
+  color: var(--accent-color, #4a6cf7);
+  text-decoration: none;
+}
+
+.edit-news-link:hover {
+  text-decoration: underline;
+}
+
+.admin-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  margin-top: 10px;
+}
 
 .pagination {
   display: flex;
@@ -137,14 +176,17 @@
 
 .pagination-button {
   padding: 8px 16px;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
+  background-color: var(--bg-secondary, #f0f0f0);
+  border: 1px solid var(--border-color, #ddd);
+  color: var(--text-primary, #333);
   cursor: pointer;
   transition: background-color 0.3s;
+  border-radius: 4px;
 }
 
 .pagination-button:hover {
-  background-color: #e0e0e0;
+  background-color: var(--bg-secondary, #e0e0e0);
+  filter: brightness(0.95);
 }
 
 .pagination-button.active {
@@ -154,7 +196,30 @@
 }
 
 .pagination-button:disabled {
-  background-color: #f0f0f0;
-  color: #999;
+  background-color: var(--bg-secondary, #f0f0f0);
+  color: var(--text-secondary, #999);
   cursor: not-allowed;
+}
+
+[data-theme="dark"] .news-item {
+  background-color: var(--bg-secondary, #1e1e1e);
+}
+
+[data-theme="dark"] .news-info h3 {
+  color: var(--text-primary, #e0e0e0) !important;
+}
+
+[data-theme="dark"] .news-info p {
+  color: var(--text-secondary, #a0a0a0);
+}
+
+.error-message {
+  color: var(--error-text, #d32f2f);
+  background-color: var(--error-bg, #fee);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 500;
+  border-left: 4px solid var(--error-text, #d32f2f);
 }

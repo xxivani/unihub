@@ -2,42 +2,59 @@
     display: flex;
     justify-content: center;
     margin-top: 20px;
-}
-
-.create-club-form {
+  }
+  
+  .create-club-form {
     width: 60%;
     margin: auto;
-    padding: 40px; 
+    padding: 40px;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    min-height: 500px; 
-}
-
-.create-club-form label {
+    min-height: 500px;
+  }
+  
+  body[data-theme="dark"] .create-club-form {
+    background-color: #1e1e1e;
+    color: #fff;
+    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.05);
+  }
+  
+  .create-club-form label {
     margin-top: 15px;
-    display: block; 
-}
-
-
-.create-club-form input,
-.create-club-form textarea {
+    display: block;
+    color: #333;
+  }
+  
+  body[data-theme="dark"] .create-club-form label {
+    color: #ccc;
+  }
+  
+  .create-club-form input,
+  .create-club-form textarea {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
-    margin-bottom: 15px; 
+    margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 5px;
-}
-
-
-.create-club-form textarea {
+    background-color: white;
+    color: #000;
+  }
+  
+  body[data-theme="dark"] .create-club-form input,
+  body[data-theme="dark"] .create-club-form textarea {
+    background-color: #2a2a2a;
+    color: #fff;
+    border: 1px solid #555;
+  }
+  
+  .create-club-form textarea {
     resize: vertical;
     height: 100px;
-}
-
-
-.submit-button {
+  }
+  
+  .submit-button {
     background-color: black;
     color: white;
     border: none;
@@ -45,13 +62,22 @@
     border-radius: 5px;
     margin-top: 20px;
     cursor: pointer;
-    display: block;  
-    margin-left: auto; 
-    margin-right: auto; 
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
-}
-
-.create-club-form select.dropdown {
+  }
+  
+  body[data-theme="dark"] .submit-button {
+    background-color: #dec585;
+    color: black;
+  }
+  
+  body[data-theme="dark"] .submit-button:hover {
+    background-color: #c9af74;
+  }
+  
+  .create-club-form select.dropdown {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
@@ -61,5 +87,11 @@
     background-color: white;
     color: #333;
     font-size: 14px;
-}
-
+  }
+  
+  body[data-theme="dark"] .create-club-form select.dropdown {
+    background-color: #2a2a2a;
+    color: #fff;
+    border: 1px solid #555;
+  }
+  

@@ -51,6 +51,9 @@ const newsRoutes = require('./src/routes/news');
 app.use('/api/news', newsRoutes);
 app.use('/news', newsRoutes);
 
+const clubRoutes = require('./src/routes/clubs');
+app.use('/api/clubs', clubRoutes); 
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

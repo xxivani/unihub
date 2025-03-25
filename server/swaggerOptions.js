@@ -1,4 +1,3 @@
-// swaggerOptions.js
 const swaggerJsdoc = require('swagger-jsdoc');
 
 const options = {
@@ -11,15 +10,9 @@ const options = {
     },
     servers: [
       {
-        url: process.env.NODE_ENV === 'production' 
-          ? 'https://team77.bham.team/api' 
-          : process.env.NODE_ENV === 'development'
-            ? 'https://team77.dev.bham.team/api'
-            : process.env.NODE_ENV === 'test'
-              ? 'http://localhost:5000/api'
-              : 'http://localhost:5000/api',
-      },
-    ],
+        url: 'http://localhost:5050/api' // 🔥 hardcoded for testing
+      }
+    ]
   },
   apis: ['./src/routes/*.js'], 
 };

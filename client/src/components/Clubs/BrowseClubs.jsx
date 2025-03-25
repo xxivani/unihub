@@ -4,35 +4,65 @@ import ClubCard from "./ClubCard";
 import "./BrowseClubs.css";
 import { FaSearch, FaFilter, FaEdit } from "react-icons/fa";
 
-const initialClubs = [
-  { id: 1, name: "WiSTEM Society", description: "A club for women in STEM", image: "https://picsum.photos/200/150?random=1" },
-  { id: 2, name: "PAWS", description: "Animal lover's club", image: "https://picsum.photos/200/150?random=2" },
-  { id: 3, name: "ACM", description: "Association for Computing Machinery", image: "https://picsum.photos/200/150?random=3" },
-  { id: 4, name: "Robotics Club", description: "Build robots!", image: "https://picsum.photos/200/150?random=4" },
-  { id: 5, name: "Music Club", description: "For music lovers", image: "https://picsum.photos/200/150?random=5" },
-];
-
 function BrowseClubs() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null); // 🧼 No longer forcing admin
+  const [user, setUser] = useState(null);
+  //const [user, setUser] = useState({ role: "admin" }); //  Temporarily force admin
   const [isEditMode, setIsEditMode] = useState(false);
-  const [clubs, setClubs] = useState(initialClubs);
+  const [clubs, setClubs] = useState([]);
 
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+
+    // Fetch clubs from backend API
+    fetch("http://localhost:5000/api/clubs") 
+      .then((res) => res.json())
+      .then((data) => setClubs(data))
+      .catch((error) => {
+        console.error("Error fetching clubs:", error);
+      });
   }, []);
 
-  const handleDeleteClub = (id) => {
+  const handleDeleteClub = async (id) => {
     if (window.confirm("Are you sure you want to delete this club?")) {
-      setClubs(clubs.filter(club => club.id !== id));
+      try {
+        const response = await fetch(`http://localhost:5000/api/clubs/${id}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          setClubs(clubs.filter(club => club.club_id !== id));
+        } else {
+          console.error("Failed to delete club");
+        }
+      } catch (error) {
+        console.error("Error deleting club:", error);
+      }
     }
   };
 
-  const handleUpdateClub = (id, updatedClub) => {
-    setClubs(clubs.map(club => (club.id === id ? { ...club, ...updatedClub } : club)));
+  const handleUpdateClub = async (id, updatedClub) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/clubs/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updatedClub)
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update club");
+      }
+
+      const data = await response.json();
+      setClubs(clubs.map(club => (club.club_id === id ? data.club : club)));
+    } catch (error) {
+      console.error("Error updating club:", error);
+    }
   };
 
   return (
@@ -71,7 +101,7 @@ function BrowseClubs() {
       <div className="club-cards-list">
         {clubs.map((club) => (
           <ClubCard 
-            key={club.id} 
+            key={club.club_id} 
             club={club} 
             isEditMode={isEditMode}
             onDelete={handleDeleteClub} 

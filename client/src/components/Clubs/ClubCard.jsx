@@ -4,10 +4,20 @@ import "./ClubCard.css";
 import { FaTrash, FaPencilAlt, FaTimes } from "react-icons/fa"; 
 
 const ClubCard = ({ club, isEditMode, onDelete, onUpdate }) => {
-  const { id, name, description, image } = club;
+  const {
+    club_id,
+    club_name,
+    club_description,
+    club_thumbnail_url
+  } = club;
+
   const navigate = useNavigate(); 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editedClub, setEditedClub] = useState({ name, description, image });
+  const [editedClub, setEditedClub] = useState({
+    club_name,
+    club_description,
+    club_thumbnail_url
+  });
 
   const handleEditClick = () => {
     setIsEditModalOpen(true);
@@ -18,20 +28,20 @@ const ClubCard = ({ club, isEditMode, onDelete, onUpdate }) => {
   };
 
   const handleSaveChanges = () => {
-    onUpdate(id, editedClub); // ✅ Update club details
-    setIsEditModalOpen(false); // ✅ Close modal
+    onUpdate(club_id, editedClub); // 🛠 Send updated club data to parent
+    setIsEditModalOpen(false);
   };
 
   return (
     <>
       <div className="club-card">
         <div className="club-image">
-          <img src={image} alt={name} />
+          <img src={club_thumbnail_url} alt={club_name} />
         </div>
 
         <div className="club-details">
-          <h3>{name}</h3>
-          <p>{description}</p>
+          <h3>{club_name}</h3>
+          <p>{club_description}</p>
         </div>
 
         <div className="club-buttons">
@@ -43,7 +53,7 @@ const ClubCard = ({ club, isEditMode, onDelete, onUpdate }) => {
 
         {isEditMode && (
           <>
-            <button className="delete-club-button" onClick={() => onDelete(id)}>
+            <button className="delete-club-button" onClick={() => onDelete(club_id)}>
               <FaTrash />
             </button>
             <button className="edit-club-button" onClick={handleEditClick}>
@@ -61,24 +71,25 @@ const ClubCard = ({ club, isEditMode, onDelete, onUpdate }) => {
               <FaTimes />
             </button>
             <h2>Edit Club Details</h2>
+
             <label>Club Name:</label>
             <input 
               type="text" 
-              value={editedClub.name} 
-              onChange={(e) => setEditedClub({ ...editedClub, name: e.target.value })} 
+              value={editedClub.club_name} 
+              onChange={(e) => setEditedClub({ ...editedClub, club_name: e.target.value })} 
             />
 
             <label>Club Logo (Image URL):</label>
             <input 
               type="text" 
-              value={editedClub.image} 
-              onChange={(e) => setEditedClub({ ...editedClub, image: e.target.value })} 
+              value={editedClub.club_thumbnail_url} 
+              onChange={(e) => setEditedClub({ ...editedClub, club_thumbnail_url: e.target.value })} 
             />
 
             <label>Club Description:</label>
             <textarea 
-              value={editedClub.description} 
-              onChange={(e) => setEditedClub({ ...editedClub, description: e.target.value })} 
+              value={editedClub.club_description} 
+              onChange={(e) => setEditedClub({ ...editedClub, club_description: e.target.value })} 
             />
 
             <button onClick={handleSaveChanges} className="save-changes-btn">Save Changes</button>

@@ -2,60 +2,111 @@ import React, { useState } from "react";
 import "./CreateClubForm.css";
 
 const CreateClubForm = () => {
-    const [clubName, setClubName] = useState("");
-    const [presidentName, setPresidentName] = useState("");
-    const [description, setDescription] = useState("");
-    const [image, setImage] = useState(null);
+  const [clubName, setClubName] = useState("");
+  const [presidentName, setPresidentName] = useState("");
+  const [description, setDescription] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [category, setCategory] = useState("");
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Club Created:", { clubName, presidentName, description, image });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!category) {
+      alert("Please select a category for the club.");
+      return;
+    }
+
+    const formData = {
+      club_name: clubName,
+      club_description: description,
+      club_thumbnail_url: imageUrl,
+      club_category: category,
     };
 
-    return (
-        <div className="create-club-form-container">
-            <form className="create-club-form" onSubmit={handleSubmit}>
-                <label>Club Name:</label>
-                <input
-                    type="text"
-                    value={clubName}
-                    onChange={(e) => setClubName(e.target.value)}
-                    placeholder="Enter club name..."
-                    required
-                />
+    try {
+      const response = await fetch("http://localhost:5050/api/clubs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
 
-               
-                <label>Club President Name:</label>
-                <input
-                    type="text"
-                    value={presidentName}
-                    onChange={(e) => setPresidentName(e.target.value)}
-                    placeholder="Enter club president name..."
-                    required
-                />
+      const result = await response.json();
 
-                
-                <label>Description:</label>
-                <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Enter club description..."
-                    required
-                ></textarea>
+      if (response.ok) {
+        alert("Club created successfully!");
+        console.log(result);
+        setClubName("");
+        setPresidentName("");
+        setDescription("");
+        setImageUrl("");
+        setCategory("");
+      } else {
+        alert("Error: " + result.message);
+      }
+    } catch (error) {
+      console.error("Error creating club:", error);
+      alert("Something went wrong.");
+    }
+  };
 
-                
-                <label>Upload Club Logo:</label>
-                <input
-                    type="file"
-                    onChange={(e) => setImage(e.target.files[0])}
-                    accept="image/*"
-                />
+  return (
+    <div className="create-club-form-container">
+      <form className="create-club-form" onSubmit={handleSubmit}>
+        <label>Club Name:</label>
+        <input
+          type="text"
+          value={clubName}
+          onChange={(e) => setClubName(e.target.value)}
+          placeholder="Enter club name..."
+          required
+        />
 
-                
-                <button type="submit" className="submit-button">Create Club</button>
-            </form>
-        </div>
-    );
+        <label>Club President Name:</label>
+        <input
+          type="text"
+          value={presidentName}
+          onChange={(e) => setPresidentName(e.target.value)}
+          placeholder="Enter club president name..."
+        />
+
+        <label>Description:</label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter club description..."
+          required
+        ></textarea>
+
+        <label>Club Logo (Image URL):</label>
+        <input
+          type="text"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          placeholder="Enter image URL..."
+        />
+
+        <label>Club Category:</label>
+        <select
+          className="dropdown"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          required
+        >
+          <option value="">-- Select a category --</option>
+          <option value="Social">Social</option>
+          <option value="STEM">STEM</option>
+          <option value="Tech">Tech</option>
+          <option value="Arts">Arts</option>
+          <option value="Sports">Sports</option>
+          <option value="Cultural">Cultural</option>
+        </select>
+
+        <button type="submit" className="submit-button">Create Club</button>
+      </form>
+    </div>
+  );
 };
 
 export default CreateClubForm;

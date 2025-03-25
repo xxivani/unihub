@@ -51,6 +51,10 @@ const newsRoutes = require('./src/routes/news');
 app.use('/api/news', newsRoutes);
 app.use('/news', newsRoutes);
 
+const eventRoutes = require('./src/routes/event');
+app.use('/api/event', eventRoutes);
+app.use('/events', eventRoutes);
+
 const externalEventsRoutes = require('./src/routes/externalEvents');
 app.use('/api/external-events', externalEventsRoutes);
 app.use('/external-events', externalEventsRoutes);

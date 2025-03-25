@@ -6,7 +6,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const menuItems = [
-    { icon: <FaPlus />, label: "Create Event", path: null },
+    { icon: <FaPlus />, label: "Create Event", path: "/committee/events/create" },
     { icon: <FaUsers />, label: "Roles", path: "/committee/roles" },
     { icon: <FaBriefcase />, label: "Budget Tracker", path: "/committee/budget-tracker" },
     { icon: <FaRegImage />, label: "Image Management", path: "/committee/image-management" }

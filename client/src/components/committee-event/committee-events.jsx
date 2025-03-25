@@ -8,12 +8,13 @@ const E4CommitteeEvents = () =>{
     const [isEditFormVisible, setIsEditFormVisible] = useState(false);
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [currentEditEvent, setCurrentEditEvent] = useState(null);
     const [events, setEvents] = useState([
         {
           id: 1,
           title: "Student Rep Social",
-          image: "/assets/images/social.jpeg",
+          image: {"thumbnail": "/assets/images/social.jpeg", "prev": "/assets/images/picnic.webp"},
           description: "Join our Student Rep Social Event to connect, share ideas, and collaborate on making student life better.",
           location: "Second floor quiet room",
           time: "15:30-17:00",
@@ -32,7 +33,7 @@ const E4CommitteeEvents = () =>{
         {
           id: 2,
           title: "UoBDMUN'25 Conference",
-          image: "/assets/images/mun.jpg",
+          image: {"thumbnail": "/assets/images/mun.jpg", "prev": "/assets/images/picnic.webp"},
           description: "A dynamic conference where delegates engage in impactful debates, tackle global issues, and refine their diplomacy skills.",
           location: "Main auditorium",
           time: "12:00-14:00",
@@ -51,7 +52,7 @@ const E4CommitteeEvents = () =>{
         {
           id: 3,
           title: "Intra-Uni Dance Competition",
-          image: "/assets/images/dance.jpeg",
+          image: {"thumbnail": "/assets/images/dance.jpeg", "prev": "/assets/images/picnic.webp"},
           description: "Show off your moves, compete with the best, and set the stage on fire! Open to all university students.",
           location: "Second floor quiet room",
           time: "17:00-18:00",
@@ -69,7 +70,7 @@ const E4CommitteeEvents = () =>{
         {
           id: 4,
           title: "Matcha Morning",
-          image: "/assets/images/matcha.webp",
+          image: {"thumbnail": "/assets/images/matcha.webp", "prev": "/assets/images/picnic.webp"},
           description: "Have a cup of matcha and join together for a discussion of your new year plan and meet new friends.",
           location: "First floor meeting room",
           time: "9:00-10:00",
@@ -86,7 +87,7 @@ const E4CommitteeEvents = () =>{
         {
           id: 5,
           title: "Plant and Animal Social",
-          image: "/assets/images/paws.jpeg",
+          image: {"thumbnail": "/assets/images/paws.jpeg", "prev": "/assets/images/picnic.webp"},
           description: "Come join us at the PAWS social to unwind with some games, connect with fellow students, and learn more about our society!",
           location: "Room 120B",
           time: "14:00-15:30",
@@ -103,10 +104,23 @@ const E4CommitteeEvents = () =>{
           club: "SOCIAL_GATHERING"
         }
       ]);
-      const handleDelete = (id) => {
+      const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this event?\nThis action is irreversible')) {
-            setEvents(events.filter(event => event.id !== id));
-          }
+          console.log("ID DELETED:", id);
+          try {
+            const response = await fetch(`http://localhost:5000/events/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            localStorage.setItem('eventsList', JSON.stringify(events.filter(event => event.id !== id)));
+            setEvents((prevEvents) => prevEvents.filter(event => event.id !== id));
+        } catch (error) {
+            console.error('Error deleting event:', error);
+            alert('An error occured when deleting the event.');
+        }
+      }
       };
       const handleFormSubmit = (e) => {
         e.preventDefault();
@@ -127,23 +141,86 @@ const E4CommitteeEvents = () =>{
         setIsEditFormVisible(false);
         setCurrentEditEvent(null);
       };
-      const handleEditFormChange = (field, value) => {
+      const handleTeamMemberChange = (index, field, value) => {
+        const updatedTeam = [...currentEditEvent.team];
+        updatedTeam[index] = {
+          ...updatedTeam[index],
+          [field]: value
+        };
+        setCurrentEditEvent({
+          ...currentEditEvent,
+          team: updatedTeam
+        });
+      };
+      const applyChange = (field, value) => {
+        /*if (field == "date") {
+          const date = new Date(value);
+          if (isNaN(date)) {
+            alert("Incorrect date format!\nUse: (YYYY_MM_DD)");
+            return;
+          }};
+        if (field == "time") {
+          const darkTime = /^(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})$/;
+          if (value && typeof value === 'string') {
+            const format = value.match(darkTime);
+          const start_time = new Date(`2000-04-01T${format[1]}:${format[2]}`);
+          const end_time = new Date(`2000-04-01T${format[3]}:${format[4]}`);
+          console.log("star:" + start_time);
+          console.log("end:" + end_time);
+            if (isNaN(start_time) || isNaN(end_time)) {
+              alert("Incorrect time format!\nUse: (HH:MM - HH:MM)");
+              return;
+            }
+            setCurrentEditEvent({
+              ...currentEditEvent,
+              [field]: [
+                {value: start_time},
+                {value: end_time}]
+            })
+          } else {
+            alert("Incorrect time format!\nUse: (HH:MM - HH:MM)");
+            return;
+          }
+        };*/
         setCurrentEditEvent({
           ...currentEditEvent,
           [field]: value
-        });
+        })
       };
-      const handleEditFormSubmit = (e) => {
+      const handleEditFormSubmit = async (e) => {
         e.preventDefault();
+        const response = await fetch(`http://localhost:5000/events/${currentEditEvent.id}`, {
+          method: 'PUT',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(currentEditEvent),
+      });
         const updatedEvents = events.map(event => 
             event.id === currentEditEvent.id ? currentEditEvent : event
           );
           setEvents(updatedEvents);
           localStorage.setItem('eventsList', JSON.stringify(updatedEvents));
-          
           setIsEditFormVisible(false);
           setCurrentEditEvent(null);
     };
+    useEffect(() => {
+      try {
+      fetch("http://localhost:5000/events")
+        .then((response) => response.json())
+        .then((data) => {
+          setEvents(JSON.parse(JSON.stringify(data, null, 2)));
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching events:", error);
+          setLoading(false);
+        });
+      } catch (error) {
+        /*offline template data*/
+      }
+    }, []);
+      if (loading) return <h3>Loading events...</h3>;
     return (
         <div>
             <div className="e4c-top-container">
@@ -221,9 +298,9 @@ const E4CommitteeEvents = () =>{
                     </div>
                   )}
             <div className="e4c-browse-events-list">
-            {events.map(event => (
+            {events.slice(0,5).map(event => (
                 <div className="e4c-events-list" key={event.id}><div className="e4c-event-format">
-                    <div className="e4c-event-image"><img src={event.image} alt={event.title} />
+                    <div className="e4c-event-image"><img src={event.image.thumbnail} alt={event.title} />
                     {isEditMode && (
                                     <>
                                       <button 
@@ -248,7 +325,7 @@ const E4CommitteeEvents = () =>{
                     <div className="e4-event-button-container">
                     <div className="e4-event-up-down-container"><FaBell/>
                     <button className="e4-event-follow-button" onClick={() => setIsFormVisible(true)}>Follow</button>
-                    <button className="e4-event-detail-button" onClick={() => window.location.href='/event-details'}>Detail</button></div></div></div></div>
+                    <button className="e4-event-detail-button" onClick={() => window.location.href=`/event-details?eventid=${event.id}`}>Detail</button></div></div></div></div>
             ))}
             </div>
             {isEditFormVisible && currentEditEvent && (
@@ -270,7 +347,7 @@ const E4CommitteeEvents = () =>{
                                 type="text"
                                 id="edit-title"
                                 value={currentEditEvent.title}
-                                onChange={(e) => handleEditFormChange('title', e.target.value)}
+                                onChange={(e) => applyChange('title', e.target.value)}
                                 maxLength="100"
                                 required
                               />
@@ -285,7 +362,7 @@ const E4CommitteeEvents = () =>{
                                 type="text"
                                 id="edit-date"
                                 value={currentEditEvent.date}
-                                onChange={(e) => handleEditFormChange('date', e.target.value)}
+                                onChange={(e) => applyChange('date', e.target.value)}
                                 required
                               />
                             </div>
@@ -296,7 +373,7 @@ const E4CommitteeEvents = () =>{
                                 type="text"
                                 id="edit-time"
                                 value={currentEditEvent.time}
-                                onChange={(e) => handleEditFormChange('time', e.target.value)}
+                                onChange={(e) => applyChange('time', e.target.value)}
                                 required
                               />
                             </div>
@@ -308,7 +385,7 @@ const E4CommitteeEvents = () =>{
                               type="text"
                               id="edit-location"
                               value={currentEditEvent.location}
-                              onChange={(e) => handleEditFormChange('location', e.target.value)}
+                              onChange={(e) => applyChange('location', e.target.value)}
                               required
                             />
                           </div>
@@ -320,7 +397,7 @@ const E4CommitteeEvents = () =>{
                                 type="text"
                                 id="edit-capacity"
                                 value={currentEditEvent.capacity}
-                                onChange={(e) => handleEditFormChange('capacity', e.target.value)}
+                                onChange={(e) => applyChange('capacity', e.target.value)}
                                 required
                               />
                             </div>
@@ -331,7 +408,7 @@ const E4CommitteeEvents = () =>{
                                 type="text"
                                 id="edit-price"
                                 value={currentEditEvent.price}
-                                onChange={(e) => handleEditFormChange('price', e.target.value)}
+                                onChange={(e) => applyChange('price', e.target.value)}
                                 required
                               />
                             </div>
@@ -342,7 +419,7 @@ const E4CommitteeEvents = () =>{
                             <textarea
                               id="edit-description"
                               value={currentEditEvent.description}
-                              onChange={(e) => handleEditFormChange('description', e.target.value)}
+                              onChange={(e) => applyChange('description', e.target.value)}
                               maxLength="1000"
                               required
                             />

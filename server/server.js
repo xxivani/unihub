@@ -59,6 +59,10 @@ const externalEventsRoutes = require('./src/routes/externalEvents');
 app.use('/api/external-events', externalEventsRoutes);
 app.use('/external-events', externalEventsRoutes);
 
+const imageRoutes = require('./src/routes/imageRoute');
+app.use('/api/image-management', imageRoutes);
+app.use('/image-management', imageRoutes);
+
 const clubRoutes = require('./src/routes/clubs');
 app.use('/api/clubs', clubRoutes); 
 

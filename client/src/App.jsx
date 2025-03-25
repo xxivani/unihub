@@ -33,7 +33,6 @@ import MultiEventImages from "./pages/committee/ImageManagement"
 // Committee Events Pages
 import ViewEvents from "./pages/committee/committee-events/ViewEvents";
 import CreateEvent from "./pages/committee/committee-events/CreateEvent";
-import EditEvent from "./pages/committee/committee-events/EditEvent";
 
 // Committee Roles Pages
 import ViewRoles from "./pages/committee/commitee-Roles/ViewRoles";
@@ -97,7 +96,6 @@ function AppContent() {
           {/* Committee Events Routes */}
           <Route path="/committee/events" element={<ViewEvents />} />
           <Route path="/committee/events/create" element={<CreateEvent />} />
-          <Route path="/committee/events/edit/:id" element={<EditEvent />} />
           <Route path="/committee/budget-tracker/event-expenses" element={<EventExpensesPage />} />
 
 

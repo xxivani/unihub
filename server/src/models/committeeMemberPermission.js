@@ -25,7 +25,6 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       validate: {
         isIn: [[
-          'NONE',
           'CreateEvent',
           'ListRoleOpening',
           'UpdateLink',

@@ -17,7 +17,7 @@ module.exports = {
       { committee_member_id: 2, permission: 'UpdateBudget' },
 
       // TREASURER
-      { committee_member_id: 3, permission: 'UpdateBudget' }
+      // { committee_member_id: 10, permission: 'UpdateBudget' }
 
     ], {});
   },

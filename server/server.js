@@ -62,7 +62,24 @@ app.use('/external-events', externalEventsRoutes);
 const clubRoutes = require('./src/routes/clubs');
 app.use('/api/clubs', clubRoutes); 
 
+const budgetRoutes = require('./src/routes/budgetRoute');
+app.use('/api/budgetRoute', budgetRoutes);
+app.use('/budgetRoute', budgetRoutes);
+
+const BTdashboardRoutes = require('./src/routes/bt_dashboardRoute');
+app.use('/api/bt_dashboardRoute', BTdashboardRoutes);
+app.use('/bt_dashboardRoute', BTdashboardRoutes);
+
+const expenseUpdateRoutes = require('./src/routes/update_expRoute');
+app.use('/api/update_expRoute', expenseUpdateRoutes);
+app.use('/update_expRoute', expenseUpdateRoutes);
+
+const eventExpenseRoutes = require('./src/routes/event_expensesRoute');
+app.use('/api/bt_eventRoute', eventExpenseRoutes);
+app.use('/bt_eventRoute', eventExpenseRoutes);
+
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`API Documentation available at http://localhost:${PORT}/api-docs`);

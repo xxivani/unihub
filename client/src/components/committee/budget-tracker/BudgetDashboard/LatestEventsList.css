@@ -13,6 +13,9 @@
     margin-bottom: 5px;
     width: 100%;
 }
+body[data-theme="dark"] .event-item {
+    background: #f1aa74;
+}
 
 .event-name {
     font-weight: bold;
@@ -21,10 +24,12 @@
 .event-amount {
     color: #888;
 }
+body[data-theme="dark"] .event-amount {
+    color: #4f4230;
+}
 
 .budget-view-all-events-button {
     padding: 10px 20px;
-    background-color: #4CAF50;
     color: white;
     border: none;
     cursor: pointer;
@@ -48,4 +53,9 @@
 .budget-view-all-events-button:hover {
     background-color: #e0b000;
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="dark"] .budget-view-all-events-button {
+    background-color: #659254;
+    color: white;
 }

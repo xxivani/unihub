@@ -41,6 +41,7 @@
     padding: 15px;
     overflow: hidden;
     position: relative;
+    /* color: var(--text-color); */
     
 }
 
@@ -88,20 +89,32 @@
     flex-direction: column;
     position: relative;
     height: 100%;
+    /* color: var(--text-color); */
 }
 
 .budget-box1 {
     background-color: #88b663;
 
 }
+/* body[data-theme="dark"] .budget-box1 {
+    background-color: #3a4d2a;
+} */
+
 .budget-box2 {
     background-color: #d9cdbe;
     
 }
+/* body[data-theme="dark"] .budget-box2 {
+    background-color: #4e4538;
+} */
+
 .budget-box3 {
     background-color: #f6c955;
    
 }
+/* body[data-theme="dark"] .budget-box3 {
+    background-color: #8a7221;
+} */
 
 .monthly-expense{
     background-color: white;
@@ -113,6 +126,10 @@
     margin-top: 20px;
     padding: 20px;
     border-radius: 10px;
+}
+body[data-theme="dark"] .monthly-expense {
+    /* background-color: #404040; */
+    background-color: #9abdf5;
 }
 
 .monthly-expense-title {
@@ -142,6 +159,9 @@
     border-radius: 10px;
 
 }
+body[data-theme = "dark"] .latest-event-expense {
+    background-color: #F5C29A;
+}
 
 .expense-breakdown {
     flex: 1;
@@ -160,6 +180,9 @@
     margin-left: 10px;
     margin-right: 10px;
     position: relative;
+}
+body[data-theme="dark"] .expense-breakdown-chart {
+    background-color: #9abdf5;
 }
 
 .expense-breakdown-title {
@@ -222,6 +245,9 @@
     margin-left: 10px;
     margin-right: 10px;
 }
+body[data-theme="dark"] .budget-committee-members {
+    background-color: #3e5629;
+}
 
 .budget-committee-members-title {
     margin-top: 10px;
@@ -250,4 +276,39 @@
 .budget-next-button:hover {
     background-color: #e0b000;
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="dark"] .budget-next-button {
+    background-color: #557A46;
+    color: white;
+}
+
+/* Add to your BudgetDashboard.css */
+.edit-budget-button .edit-budget-spent-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #314521;
+    font-size: 16px;
+}
+  
+.edit-budget-button:hover .edit-budget-spent-button:hover {
+    color: #000;
+}
+  
+.updating-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    z-index: 10;
 }

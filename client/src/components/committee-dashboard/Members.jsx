@@ -31,6 +31,10 @@ const Members = () => {
     club_id: 1,
   });
 
+  const getPresidentCount = () => {
+    return members.filter(member => member.description === "PRESIDENT").length;
+  };  
+
   const fetchPermissions = async () => {
     try {
       const res = await fetch(`${apiUrl}/committee-member-permissions/all-permissions`);
@@ -132,6 +136,13 @@ const Members = () => {
       return;
     }
 
+    const duplicate = members.some(member => parseInt(member.user_id) === parseInt(newMember.user_id));
+    if (duplicate) {
+      console.log("Duplicate user_id detected");
+      message.error("A committee member with this User ID already exists.");
+      return;
+    }
+
     const newEntry = {
       ...newMember,
       user_id: parseInt(newMember.user_id),
@@ -216,34 +227,35 @@ const Members = () => {
           <List.Item className="member-item">
             <List.Item.Meta avatar={<Avatar src={item.avatar} />} title={item.title} description={item.description} />
             <div className="member-actions">
-              {hasAssignPermission && (
-                <>
-                  <Popover
-                    content={
-                      <div className="permissions-menu">
-                        <h6>Manage Permissions</h6>
-                        {permissionsList.map((perm, i) => (
-                          <div
-                            key={i}
-                            className="permission-item"
-                            onClick={() => togglePermission(index, perm)}
-                          >
-                            <span>{perm}</span>
-                            {item.permissions.includes(perm) && <span className="checkmark">✔</span>}
-                          </div>
-                        ))}
-                      </div>
-                    }
-                    trigger="click"
-                    placement="bottomRight"
-                    open={activeMember === index}
-                    onOpenChange={(visible) => setActiveMember(visible ? index : null)}
-                  >
-                    <FaCog className="settings-icon" />
-                  </Popover>
-                  <FaTrash className="delete-icon" onClick={() => deleteMember(index)} />
-                </>
-              )}
+            {hasAssignPermission && (item.description !== "PRESIDENT" || getPresidentCount() > 1) && (
+              <>
+                <Popover  
+                  content={
+                    <div className="permissions-menu">
+                      <h6>Manage Permissions</h6>
+                      {permissionsList.map((perm, i) => (
+                        <div
+                          key={i}
+                          className="permission-item"
+                          onClick={() => togglePermission(index, perm)}
+                        >
+                          <span>{perm}</span>
+                          {item.permissions.includes(perm) && <span className="checkmark">✔</span>}
+                        </div>
+                      ))} 
+                    </div>
+                  }
+      trigger="click"
+      placement="bottomRight"
+      open={activeMember === index}
+      onOpenChange={(visible) => setActiveMember(visible ? index : null)}
+    >
+      <FaCog className="settings-icon" />
+    </Popover>
+    <FaTrash className="delete-icon" onClick={() => deleteMember(index)} />
+  </>
+)}
+
             </div>
           </List.Item>
         )}

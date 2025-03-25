@@ -1,6 +1,5 @@
 import './create_event.css';
 import { useState } from 'react';
-import { FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const E4EventCreate = () => {
@@ -14,13 +13,14 @@ const E4EventCreate = () => {
     });
     const [eventData, setEventData] = useState({
         eventName: "",
-        eventDate: "",
-        eventTime: "",
-        eventLocation: "",
-        eventMaxAttendees: "",
-        eventPrice: "",
-        eventImage: "",
+        eventImage: JSON.stringify({"thumbnail": "/assets/images/social.jpeg", "prev": "/assets/images/picnic.webp"}),
         eventDescription: "",
+        eventLocation: "",
+        eventTime: "",
+        eventClub: "Temp Club",
+        eventDate: "",
+        eventCapacity: "",
+        eventPrice: "",
         eventBudgetRequired: false,
         eventBudgetCategories: budgetCategories,
         eventOrganizer: "",
@@ -34,13 +34,11 @@ const E4EventCreate = () => {
     };
 
     const handleChange = (e) => {
-      console.log("updating...");
         const { id, value, type, checked, files} = e.target;
         setEventData({
             ...eventData,
             [id]: type === "checkbox" ? checked : files ? files[0] : value
         });
-        console.log(eventData);
         return eventData
     };
 
@@ -59,8 +57,50 @@ const E4EventCreate = () => {
     return updatedCategories;
     })};
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!eventData.eventName || !eventData.eventImage || !eventData.eventLocation || !eventData.eventTime || !eventData.eventClub || !eventData.eventDate || !eventData.eventCapacity || !eventData.eventOrganizer) {
+          alert("Required fields missing.");
+          return;
+        }
+        try {
+          const formData = new FormData();
+          formData.append("title", eventData.eventName);
+          formData.append("image", eventData.eventImage);
+          formData.append("description", eventData.eventDescription);
+          formData.append("location", eventData.eventLocation);
+          formData.append("time", eventData.eventTime);
+          formData.append("club", eventData.eventClub);
+          formData.append("date", eventData.eventDate);
+          formData.append("deadline", (new Date(eventData.eventDate).toDateString() === new Date().toDateString() ? eventData.eventDate/*(`${new Date()}T${eventData.eventTime}`)*/ : new Date(eventData.eventDate).setDate(new Date(eventData.eventDate).getDate() - 1)));
+          formData.append("capacity", eventData.eventCapacity);
+          formData.append("followed", 0);
+          formData.append("waiting", 0);
+          formData.append("price", eventData.eventPrice);
+          formData.append("budget_required", eventData.eventBudgetRequired);
+          formData.append("budget", JSON.stringify({
+            catering: budgetCategories.catering,
+            materials: budgetCategories.materials,
+            price: budgetCategories.price,
+            transportation: budgetCategories.transportation,
+            venue: budgetCategories.venue
+          }));
+          formData.append("team", JSON.stringify([
+              {role: "organizer", name: eventData.eventOrganizer || ""},
+              {role: "coOrganizer", name: eventData.eventCoOrganizer || ""},
+              {role: "manager", name: eventData.eventManager || ""},
+              {role: "speaker", name: eventData.eventSpeaker || ""}
+          ]));
+          const response = await fetch("http://localhost:5000/events", {
+              method: "POST",
+              body: formData
+          });
+          const result = await response.json();
+          console.log(result);
+          navigate("/committee/events");
+        } catch (error) {
+          alert("Wrong format in some fields.");
+      }
     }
 
     return (
@@ -128,9 +168,9 @@ const E4EventCreate = () => {
               <label htmlFor="e4-event-max-attendees">Maximum Attendees:</label>
               <input
                 type="number"
-                id="eventMaxAttendees"
+                id="eventCapacity"
                 min="1"
-                value={eventData.eventMaxAttendees}
+                value={eventData.eventCapacity}
                 onChange={handleChange}
                 required
               />
@@ -145,7 +185,6 @@ const E4EventCreate = () => {
                 step="0.1"
                 value={eventData.eventPrice}
                 onChange={handleChange}
-                required
               />
             </div>
           </div>
@@ -170,7 +209,6 @@ const E4EventCreate = () => {
               maxLength="1000"
               value={eventData.eventDescription}
               onChange={handleChange}
-              required
             />
             <small>{eventData.eventDescription.length} / 1000</small>
           </div>

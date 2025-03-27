@@ -10,9 +10,18 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000/api' // 🔥 hardcoded for testing
-      }
-    ]
+//         url: 'http://localhost:5000/api' // 🔥 hardcoded for testing
+//       }
+//     ]
+        url: process.env.NODE_ENV === 'production' 
+          ? 'https://team77.bham.team/api' 
+          : process.env.NODE_ENV === 'development'
+            ? 'https://team77.dev.bham.team/api'
+            : process.env.NODE_ENV === 'test'
+              ? 'http://localhost:5000/api'
+              : 'http://localhost:5000/api',
+      },
+    ],
   },
   apis: ['./src/routes/*.js'], 
 };

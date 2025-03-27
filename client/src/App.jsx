@@ -30,10 +30,11 @@ import BudgetTracker from "./pages/committee/BudgetTracker/BudgetTracker";
 import EventExpensesPage from "./pages/committee/BudgetTracker/EventExpenses";
 import RegisteredStudentsPage from "./pages/committee/BudgetTracker/RegisteredStudents";
 import MultiEventImages from "./pages/committee/ImageManagement"
+import SingleEventImages from "./pages/committee/ImageM-SingleEvent";
+import EditEventImages from "./pages/committee/ImageM-EditEvent";
 // Committee Events Pages
 import ViewEvents from "./pages/committee/committee-events/ViewEvents";
 import CreateEvent from "./pages/committee/committee-events/CreateEvent";
-import EditEvent from "./pages/committee/committee-events/EditEvent";
 
 // Committee Roles Pages
 import ViewRoles from "./pages/committee/commitee-Roles/ViewRoles";
@@ -92,12 +93,13 @@ function AppContent() {
           <Route path="/committee/dashboard" element={<Dashboard />} />
           <Route path="/committee/budget-tracker" element={<BudgetTracker />} />
           <Route path="/committee/image-management" element={<MultiEventImages />} />
+          <Route path="/committee/image-management-single" element={<SingleEventImages />} />
+          <Route path="/committee/image-management-edit" element={<EditEventImages />} />   
           <Route path="/committee/budget-tracker/registered-students" element={<RegisteredStudentsPage />} />
 
           {/* Committee Events Routes */}
           <Route path="/committee/events" element={<ViewEvents />} />
           <Route path="/committee/events/create" element={<CreateEvent />} />
-          <Route path="/committee/events/edit/:id" element={<EditEvent />} />
           <Route path="/committee/budget-tracker/event-expenses" element={<EventExpensesPage />} />
 
 

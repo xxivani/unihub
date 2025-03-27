@@ -1,6 +1,6 @@
 import { Space, Table, Tag, Typography, Button, Form, Input, Select, Modal, Checkbox, ConfigProvider, InputNumber } from 'antd';
 import Pagination from "../../../viewRO/Pagination";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
 import EventAddExpenseButton from './EventExpensesForm';
@@ -17,6 +17,76 @@ const EventExpensesTable = () => {
     const [editingEvent, setEditingEvent] = useState(null);
     const [form] = Form.useForm();
     const [selectedCategories, setSelectedCategories] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Track current theme
+    const getInitialTheme = () => document.body.getAttribute("data-theme") || "light";
+    const [currentTheme, setCurrentTheme] = useState(getInitialTheme());
+    const isDarkTheme = currentTheme === "dark";
+
+    // Watch for theme changes
+    useEffect(() => {
+        const observer = new MutationObserver(() => {
+            const newTheme = document.body.getAttribute("data-theme");
+            setCurrentTheme(newTheme);
+        });
+
+        observer.observe(document.body, { attributes: true, attributeFilter: ["data-theme"] });
+        return () => observer.disconnect();
+    }, []);
+
+
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+    
+
+    useEffect(() => {
+    const fetchEvents = async () => {
+        try {
+        setLoading(true);
+        const response = await fetch(`${apiUrl}/bt_eventRoute`);
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch events');
+        }
+        
+        const events = await response.json();
+        setData(events);
+        setError(null);
+        } catch (err) {
+        console.error('Error fetching events:', err);
+        setError('Failed to load events');
+        } finally {
+        setLoading(false);
+        }
+    };
+  
+    fetchEvents();
+    }, []);
+
+    // handle delete
+    const handleDelete = async (record) => {
+        try {
+            const response = await fetch(`${apiUrl}/bt_eventRoute/${record.id}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                throw new Error ("Failed to delete event");
+            }
+
+            // update local state after deletion
+            const updatedData =  data.filter(item => item.key !== record.key);
+            setData(updatedData);
+
+            alert("Event deleted successfully!");
+
+        } catch (error) {
+            console.error ("Error deleting event:", error);
+            alert ("Failed to delete event");
+        }
+    };
     
 
 
@@ -115,56 +185,55 @@ const EventExpensesTable = () => {
         setSelectedCategories(initialSelectedCategories);
     };
 
-    const handleSave = () => {
-        form.validateFields().then((values) => {
-            // Convert selectedCategories object to the array format used in data
+    const handleSave = async () => {
+        form.validateFields().then(async (values) => {
+          try {
+            // Convert selected categories to array format
             const updatedCategories = Object.entries(selectedCategories).map(([name, amount]) => ({
-                name: name,
-                amount: Number(amount)
+              name,
+              amount: Number(amount)
             }));
             
-            // Calculate the new total expense
-            const totalExpense = updatedCategories.reduce((sum, { amount }) => sum + Number(amount), 0);
+            // Prepare update data
+            const updateData = {
+              name: values.name,
+              date: values.date,
+              status: values.status,
+              description: values.description || '',
+              categories: updatedCategories
+            };
             
-            // Update the data with the new values including categories and expense
+            // Send PUT request to API
+            const response = await fetch(`${apiUrl}/bt_eventRoute/${editingEvent.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(updateData)
+            });
+            
+            if (!response.ok) {
+              throw new Error('Failed to update event');
+            }
+            
+            const updatedEvent = await response.json();
+            
+            // Update local state with the returned data
             const updatedData = data.map((item) =>
-                item.key === editingEvent.key 
-                    ? { 
-                        ...item, 
-                        ...values,
-                        expense: `AED ${totalExpense}`, // Add the formatted expense string
-                        categories: updatedCategories,
-                    } 
-                    : item
+              item.key === editingEvent.key ? updatedEvent : item
             );
             
             setData(updatedData);
             setEditingEvent(null);
             setSelectedCategories({});
-        });
-    };
+            
+            alert('Event updated successfully');
+            } catch (error) {
+                console.error('Error updating event:', error);
+                alert(`Failed to update event: ${error.message}`);
+            }
 
-    // const handleDelete = (record) => {
-    //     Modal.confirm({
-    //         title: 'Confirm Deletion',
-    //         content: `Are you sure you want to delete ${record.name}?`,
-    //         okText: 'Yes, Delete',
-    //         okType: 'danger',
-    //         cancelText: 'Cancel',
-    //         onOk() {
-    //             const updatedData = data.filter(item => item.key !== record.key);
-    //             setData(updatedData);
-    //             console.log("Deleted event expense:", record);
-    //         },
-    //     });
-    // };
-    const handleDelete = (record) => {
-        // Filter out the record with the matching key
-        const updatedData = data.filter(item => item.key !== record.key);
-        setData(updatedData);
-        
-        // Optional: Add confirmation or notification here
-        console.log("Deleted event expense:", record);
+        });
     };
 
     const handleCheckboxChange = (category, checked) => {
@@ -207,142 +276,8 @@ const EventExpensesTable = () => {
         transportation: "red",
     };
 
-    const [data, setData] = useState([
-        {
-            key: '1',
-            name: 'Event 1',
-            date: '02/11/2025',
-            status: 'ONGOING',
-            expense: 'AED 5000',
-            // categories: ['catering', 'venue', 'prize', 'materials', 'transportation'],
-            categories: [
-                { name: 'catering', amount: 1500 },
-                { name: 'venue', amount: 3500 },
-            ],
-        },
-        {
-            key: '2',
-            name: 'Event 2',
-            date: '15/03/2025',
-            status: 'COMPLETED',
-            expense: 'AED 6200',
-            categories: [
-                { name: 'materials', amount: 2200 },
-                { name: 'prize', amount: 1800 },
-                { name: 'transportation', amount: 2200 },
-            ],
-        },
-        {
-            key: '3',
-            name: 'Event 3',
-            date: '28/07/2025',
-            status: 'ONGOING',
-            expense: 'AED 5300',
-            categories: [
-                { name: 'catering', amount: 2000 },
-                { name: 'transportation', amount: 1700 },
-                { name: 'venue', amount: 1600 },
-            ],
-        },
-        {
-            key: '4',
-            name: 'Event 4',
-            date: '10/10/2025',
-            status: 'COMPLETED',
-            expense: 'AED 7500',
-            categories: [
-                { name: 'prize', amount: 3000 },
-                { name: 'materials', amount: 2500 },
-                { name: 'venue', amount: 2000 },
-                { name: 'transportation', amount: 1700 },
-                { name: 'catering', amount: 2000 },
-            ],
-        },
-        {
-            key: '5',
-            name: 'Event 5',
-            date: '05/12/2025',
-            status: 'ONGOING',
-            expense: 'AED 2800',
-            categories: [
-                { name: 'catering', amount: 1000 },
-                { name: 'materials', amount: 800 },
-                { name: 'transportation', amount: 1000 },
-            ],
-        },
-        {
-            key: '6',
-            name: 'Event 6',
-            date: '20/08/2025',
-            status: 'COMPLETED',
-            expense: 'AED 4100',
-            categories: [
-                { name: 'venue', amount: 1800 },
-                { name: 'prize', amount: 1200 },
-                { name: 'catering', amount: 1100 },
-            ],
-        },
-        {
-            key: '7',
-            name: 'Event 7',
-            date: '12/01/2026',
-            status: 'ONGOING',
-            expense: 'AED 3300',
-            categories: [
-                { name: 'materials', amount: 1200 },
-                { name: 'catering', amount: 1100 },
-                { name: 'prize', amount: 1000 },
-            ],
-        },
-        {
-            key: '8',
-            name: 'Event 8',
-            date: '22/04/2026',
-            status: 'COMPLETED',
-            expense: 'AED 5400',
-            categories: [
-                { name: 'venue', amount: 2500 },
-                { name: 'transportation', amount: 1700 },
-                { name: 'prize', amount: 1200 },
-            ],
-        },
-        {
-            key: '9',
-            name: 'Event 9',
-            date: '09/06/2026',
-            status: 'ONGOING',
-            expense: 'AED 4900',
-            categories: [
-                { name: 'catering', amount: 2000 },
-                { name: 'venue', amount: 1500 },
-                { name: 'materials', amount: 1400 },
-            ],
-        },
-        {
-            key: '10',
-            name: 'Event 10',
-            date: '30/09/2026',
-            status: 'COMPLETED',
-            expense: 'AED 7100',
-            categories: [
-                { name: 'prize', amount: 3200 },
-                { name: 'catering', amount: 1900 },
-                { name: 'transportation', amount: 2000 },
-            ],
-        },
-        {
-            key: '11',
-            name: 'Event 11',
-            date: '18/12/2026',
-            status: 'ONGOING',
-            expense: 'AED 5800',
-            categories: [
-                { name: 'venue', amount: 2600 },
-                { name: 'materials', amount: 1700 },
-                { name: 'catering', amount: 1500 },
-            ],
-        },
-    ]);
+    const [data, setData] = useState([]);
+
     const totalPages = Math.ceil(data.length / pageSize);
     const paginatedData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
@@ -352,8 +287,15 @@ const EventExpensesTable = () => {
         <ConfigProvider
             theme={{
                 token: {
-                    colorPrimary: "#314521", // Change primary button color (Green)
-                    colorPrimaryHover: "#314521"
+                    // colorPrimary: "#314521", // Change primary button color (Green)
+                    // colorPrimaryHover: "#314521"
+
+                    colorPrimary: "#314521",
+                    colorPrimaryHover: "#4a6831",
+                    // colorText: isDarkTheme ? "#ffffff" : "#000000",
+                    colorBgContainer: isDarkTheme ? "#ebebed" : "#ffffff",
+                    colorBorderSecondary: isDarkTheme ? "#555555" : "#f0f0f0",
+
                 },
             }}
         >       

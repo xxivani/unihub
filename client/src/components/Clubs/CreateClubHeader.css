@@ -2,20 +2,27 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 60%; 
-    margin: 80px auto 20px auto; 
-    padding: 0; 
-    background-color: white; 
-}
-
-
-.create-club-title {
+    width: 60%;
+    margin: 80px auto 20px auto;
+    padding: 0;
+    background-color: white;
+  }
+  
+  body[data-theme="dark"] .create-club-header {
+    background-color: #1e1e1e;
+  }
+  
+  .create-club-title {
     font-size: 2rem;
-    margin: 0; 
-}
-
-
-.go-back-button {
+    margin: 0;
+    color: #000;
+  }
+  
+  body[data-theme="dark"] .create-club-title {
+    color: #fff;
+  }
+  
+  .go-back-button {
     background-color: black;
     color: white;
     border: none;
@@ -23,8 +30,18 @@
     padding: 10px 15px;
     font-size: 1rem;
     cursor: pointer;
-}
-
-.go-back-button:hover {
+  }
+  
+  .go-back-button:hover {
     background-color: #333;
-}
+  }
+  
+  body[data-theme="dark"] .go-back-button {
+    background-color: #dec585;
+    color: black;
+  }
+  
+  body[data-theme="dark"] .go-back-button:hover {
+    background-color: #c9af74;
+  }
+  

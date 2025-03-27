@@ -511,7 +511,19 @@ const ExternalEvents = () => {
         {events.map((event) => (
           <div className="extevent-card" key={event.id}>
             <div className="extevent-image">
-              <img src={event.image} alt={event.title} />
+              {/* <img src={event.image} alt={event.title} /> */}
+			  <img
+    		src={
+				event.image && event.image.startsWith('/uploads') 
+					? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${event.image}` 
+					: event.image || "https://picsum.photos/200/150?random=1"
+				}
+				alt={event.title}
+				onError={(e) => {
+				e.target.src = "https://picsum.photos/200/150?random=1"; // Fallback image
+				e.target.onerror = null; // Disable further error handling
+				}}
+			/>
               {isEditMode && user && user.role === "admin" && (
                 <>
                   <button

@@ -11,6 +11,9 @@ function EventAddExpenseButton({ onAddEvent }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState({});
 
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+
   // Category colors for visual consistency with the table
   const categoryColors = {
       catering: "blue",
@@ -68,40 +71,53 @@ function EventAddExpenseButton({ onAddEvent }) {
   };
 
   // Handle Form Submission
-  const handleSubmit = (values) => {
-    // Convert selectedCategories to the format needed for the table
-    const categoriesArray = Object.entries(selectedCategories)
-      .filter(([_, amount]) => amount !== "")
-      .map(([name, amount]) => ({
-        name,
-        amount: Number(amount)
-      }));
-
-    // Calculate total expense from category amounts
-    const totalExpense = Object.values(selectedCategories)
-      .reduce((sum, amount) => sum + (Number(amount) || 0), 0);
-    
-    // Create the new event object
-    const newEvent = {
-      key: Date.now().toString(), // Generate a unique key
-      name: values.eventName,
-      date: values.eventDate.format('DD/MM/YYYY'),
-      status: values.eventStatus,
-      expense: `AED ${totalExpense}`,
-      categories: categoriesArray,
-    };
-
-    // Call the parent function to add this to the table
-    if (onAddEvent) {
-      onAddEvent(newEvent);
+  const handleSubmit = async (values) => {
+    try {
+      // Convert categories to the format expected by the API
+      const categoriesData = Object.entries(selectedCategories)
+        .filter(([_, amount]) => amount !== "")
+        .map(([name, amount]) => ({
+          name,
+          amount: Number(amount)
+        }));
+      
+      // Create request body
+      const eventData = {
+        name: values.eventName,
+        date: values.eventDate.format('YYYY-MM-DD'),
+        status: values.eventStatus,
+        description: values.description || '',
+        categories: categoriesData
+      };
+      
+      // Send POST request to API
+      const response = await fetch(`${apiUrl}/bt_eventRoute`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(eventData)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create event');
+      }
+      
+      const createdEvent = await response.json();
+      
+      // Call the parent function to refresh data
+      if (onAddEvent) {
+        onAddEvent(createdEvent);
+      }
+      
+      alert('Event added successfully');
+      form.resetFields();
+      setSelectedCategories({});
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Error creating event:', error);
+      alert(`Failed to create event: ${error.message}`);
     }
-
-    console.log('New Event Added:', newEvent);
-    
-    // Reset and close
-    form.resetFields();
-    setSelectedCategories({});
-    setIsModalOpen(false);
   };
 
   return (
@@ -138,6 +154,14 @@ function EventAddExpenseButton({ onAddEvent }) {
             rules={[{ required: true, message: 'Please select a date' }]}
           >
             <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+
+          <Form.Item 
+            label="Event Description" 
+            name="eventDesc" 
+            // rules={[{ required: true, message: 'Please select a date' }]}
+          >
+            <Input />
           </Form.Item>
 
           <Form.Item 

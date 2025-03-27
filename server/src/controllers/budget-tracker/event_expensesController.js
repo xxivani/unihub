@@ -1,10 +1,10 @@
-const { Event, Expense, Category, sequelize } = require('../../models');
+const { BTevent, Expense, Category, sequelize } = require('../../models');
 const { Op } = require('sequelize');
 
 // Get all events with expenses and categories
-const getAllEvents = async (req, res) => {
+const getAllEventsBT = async (req, res) => {
   try {
-    const events = await Event.findAll({
+    const events = await BTevent.findAll({
       include: [
         {
           model: Expense,
@@ -60,11 +60,11 @@ const getAllEvents = async (req, res) => {
 };
 
 // Get event by ID
-const getEventById = async (req, res) => {
+const getBTeventById = async (req, res) => {
   try {
     const { id } = req.params;
     
-    const event = await Event.findByPk(id, {
+    const event = await BTevent.findByPk(id, {
       include: [
         {
           model: Expense,
@@ -75,7 +75,7 @@ const getEventById = async (req, res) => {
     });
 
     if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
+      return res.status(404).json({ message: 'BTevent not found' });
     }
 
     // Format similar to getAllEvents
@@ -118,7 +118,7 @@ const getEventById = async (req, res) => {
 };
 
 // Create a new event with expenses
-const createEvent = async (req, res) => {
+const createEventBT = async (req, res) => {
   const transaction = await sequelize.transaction();
   
   try {
@@ -141,7 +141,7 @@ const createEvent = async (req, res) => {
     }
     
     // Create the event
-    const newEvent = await Event.create({
+    const newEvent = await BTevent.create({
       name,
       date: formattedDate,
       status,
@@ -180,7 +180,7 @@ const createEvent = async (req, res) => {
     await transaction.commit();
     
     // Get the created event with all its relations
-    const createdEvent = await Event.findByPk(newEvent.id, {
+    const createdEvent = await BTevent.findByPk(newEvent.id, {
       include: [
         {
           model: Expense,
@@ -223,7 +223,7 @@ const createEvent = async (req, res) => {
 };
 
 // Update an existing event
-const updateEvent = async (req, res) => {
+const updateEventBT = async (req, res) => {
   const transaction = await sequelize.transaction();
   
   try {
@@ -231,19 +231,27 @@ const updateEvent = async (req, res) => {
     const { name, date, status, description, categories } = req.body;
     
     // Find the event
-    const event = await Event.findByPk(id);
+    const event = await BTevent.findByPk(id);
     
     if (!event) {
       await transaction.rollback();
       return res.status(404).json({ message: 'Event not found' });
     }
+
+    //parse date
+    let formattedDate = date;
+    if (date && date.includes('/')) {
+      const [day, month, year] = date.split('/');
+      formattedDate = `${year}-${month}-${day}`;
+    }
     
     // Update event details
     await event.update({
       name: name || event.name,
-      date: date || event.date,
+      date: formattedDate || event.date,
       status: status || event.status,
       description: description !== undefined ? description : event.description
+      // description: description || event.description,
     }, { transaction });
     
     // If categories are provided, update the expenses
@@ -274,7 +282,7 @@ const updateEvent = async (req, res) => {
         return Expense.create({
           amount,
           description: `${categoryName} expense for ${name || event.name}`,
-          date: date || event.date,
+          date: formattedDate || event.date,
           categoryId: category.id,
           eventId: id
         }, { transaction });
@@ -287,7 +295,7 @@ const updateEvent = async (req, res) => {
     await transaction.commit();
     
     // Get the updated event with all its relations
-    const updatedEvent = await Event.findByPk(id, {
+    const updatedEvent = await BTevent.findByPk(id, {
       include: [
         {
           model: Expense,
@@ -340,18 +348,18 @@ const updateEvent = async (req, res) => {
 };
 
 // Delete an event
-const deleteEvent = async (req, res) => {
+const deleteEventBT = async (req, res) => {
   const transaction = await sequelize.transaction();
   
   try {
     const { id } = req.params;
     
     // Find the event
-    const event = await Event.findByPk(id);
+    const event = await BTevent.findByPk(id);
     
     if (!event) {
       await transaction.rollback();
-      return res.status(404).json({ message: 'Event not found' });
+      return res.status(404).json({ message: 'BTevent not found' });
     }
     
     // Delete all associated expenses first
@@ -366,7 +374,7 @@ const deleteEvent = async (req, res) => {
     // Commit the transaction
     await transaction.commit();
     
-    return res.status(200).json({ message: 'Event deleted successfully' });
+    return res.status(200).json({ message: 'BTevent deleted successfully' });
   } catch (error) {
     // Rollback the transaction on error
     await transaction.rollback();
@@ -376,7 +384,7 @@ const deleteEvent = async (req, res) => {
 };
 
 // Search events by name
-const searchEvents = async (req, res) => {
+const searchEventsBT = async (req, res) => {
   try {
     const { query } = req.query;
     
@@ -384,7 +392,7 @@ const searchEvents = async (req, res) => {
       return res.status(400).json({ message: 'Search query is required' });
     }
     
-    const events = await Event.findAll({
+    const events = await BTevent.findAll({
       where: {
         name: {
           [Op.iLike]: `%${query}%`  // Case-insensitive search
@@ -442,7 +450,7 @@ const searchEvents = async (req, res) => {
 };
 
 // Filter events by status
-const filterEventsByStatus = async (req, res) => {
+const filterEventsByStatusBT = async (req, res) => {
   try {
     const { status } = req.params;
     
@@ -454,7 +462,7 @@ const filterEventsByStatus = async (req, res) => {
     // Prepare where clause based on status
     const whereClause = status === 'all' ? {} : { status };
     
-    const events = await Event.findAll({
+    const events = await BTevent.findAll({
       where: whereClause,
       include: [
         {
@@ -508,11 +516,11 @@ const filterEventsByStatus = async (req, res) => {
 };
 
 module.exports = {
-  getAllEvents,
-  getEventById,
-  createEvent,
-  updateEvent,
-  deleteEvent,
-  searchEvents,
-  filterEventsByStatus
+  getAllEventsBT,
+  getBTeventById,
+  createEventBT,
+  updateEventBT,
+  deleteEventBT,
+  searchEventsBT,
+  filterEventsByStatusBT
 };

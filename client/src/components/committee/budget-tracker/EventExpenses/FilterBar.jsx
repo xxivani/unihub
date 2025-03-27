@@ -40,7 +40,7 @@ const FilterBar = ({ onFilterChange }) => {
           Menu: {
             // itemHoverColor: "#4a6831", // Hover text color
             horizontalItemBorderRadius: 10, // Rounded corners
-            horizontalItemSelectedColor: "#314521",
+            // horizontalItemSelectedColor: "#314521",
 
             colorPrimary: "#4a6831",
             colorBgContainer: isDarkTheme ? "#121212" : "#ffffff", // Critical: Set background to match theme

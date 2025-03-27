@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       });
       
       // An expense can belong to an event (optional)
-      Expense.belongsTo(models.Event, {
+      Expense.belongsTo(models.BTevent, {
         foreignKey: 'eventId',
         as: 'event'
       });

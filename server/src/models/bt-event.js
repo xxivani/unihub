@@ -1,17 +1,17 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Event extends Model {
+  class BTevent extends Model {
     static associate(models) {
       // An event can have many expenses
-      Event.hasMany(models.Expense, {
+      BTevent.hasMany(models.Expense, {
         foreignKey: 'eventId',
         as: 'expenses'
       });
     }
   }
   
-  Event.init({
+  BTevent.init({
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -40,8 +40,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'Event',
+    modelName: 'BTevent',
+    tableName: "Events"
   });
   
-  return Event;
+  return BTevent;
 };

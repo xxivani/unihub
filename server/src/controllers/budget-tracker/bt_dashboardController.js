@@ -1,10 +1,10 @@
-// const { Budget, Expense, Category, Event, sequelize } = require('../../models');
+// const { Budget, Expense, Category, BTevent, sequelize } = require('../../models');
 
 const db = require('../../models');
 const Budget = db.Budget;
 const Expense = db.Expense;
 const Category = db.Category;
-const Event = db.Event;
+const BTevent = db.BTevent;
 const sequelize = db.sequelize;
 
 console.log('Available models:', Object.keys(db));
@@ -109,7 +109,7 @@ const getDashboardData = async (req, res) => {
     };
 
     // Get latest events
-    const latestEvents = await Event.findAll({
+    const latestEvents = await BTevent.findAll({
       include: [
         {
           model: Expense,

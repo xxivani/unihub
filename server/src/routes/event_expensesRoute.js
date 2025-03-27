@@ -1,13 +1,13 @@
 const express = require ('express');
 const router = express.Router();
 const {
-    getAllEvents,
-    getEventById,
-    createEvent,
-    updateEvent,
-    deleteEvent,
-    searchEvents,
-    filterEventsByStatus
+    getAllEventsBT,
+    getBTeventById,
+    createEventBT,
+    updateEventBT,
+    deleteEventBT,
+    searchEventsBT,
+    filterEventsByStatusBT
 } = require('../controllers/budget-tracker/event_expensesController');
 
 /**
@@ -22,7 +22,7 @@ const {
  *       500:
  *         description: Server error.
  */
-router.get('/', getAllEvents);
+router.get('/', getAllEventsBT);
 
 /**
  * @swagger
@@ -45,7 +45,7 @@ router.get('/', getAllEvents);
  *       500:
  *         description: Server error.
  */
-router.get('/search', searchEvents);
+router.get('/search', searchEventsBT);
 
 /**
  * @swagger
@@ -69,7 +69,7 @@ router.get('/search', searchEvents);
  *       500:
  *         description: Server error.
  */
-router.get('/filter/:status', filterEventsByStatus);
+router.get('/filter/:status', filterEventsByStatusBT);
 
 /**
  * @swagger
@@ -92,7 +92,7 @@ router.get('/filter/:status', filterEventsByStatus);
  *       500:
  *         description: Server error.
  */
-router.get('/:id', getEventById);
+router.get('/:id', getBTeventById);
 
 /**
  * @swagger
@@ -139,7 +139,7 @@ router.get('/:id', getEventById);
  *       500:
  *         description: Server error.
  */
-router.post('/', createEvent);
+router.post('/', createEventBT);
 
 /**
  * @swagger
@@ -188,7 +188,7 @@ router.post('/', createEvent);
  *       500:
  *         description: Server error.
  */
-router.put('/:id', updateEvent);
+router.put('/:id', updateEventBT);
 
 /**
  * @swagger
@@ -211,6 +211,6 @@ router.put('/:id', updateEvent);
  *       500:
  *         description: Server error.
  */
-router.delete('/:id', deleteEvent);
+router.delete('/:id', deleteEventBT);
 
 module.exports = router;

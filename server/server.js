@@ -51,6 +51,18 @@ const newsRoutes = require('./src/routes/news');
 app.use('/api/news', newsRoutes);
 app.use('/news', newsRoutes);
 
+const roleOpeningRoutes = require('./src/routes/roleOpening');
+app.use('/api/role-openings', roleOpeningRoutes);
+
+const roleOpeningRegistrationRoutes = require('./src/routes/roleOpeningRegistration');
+app.use('/api/role-opening-registrations', roleOpeningRegistrationRoutes);
+
+const committeeMemberRoutes = require('./src/routes/committeeMember');
+app.use('/api/committee-members', committeeMemberRoutes);
+
+const committeeMemberPermissionRoutes = require('./src/routes/committeeMemberPermission');
+app.use('/api/committee-member-permissions', committeeMemberPermissionRoutes);
+
 const clubRoutes = require('./src/routes/clubs');
 app.use('/api/clubs', clubRoutes); 
 

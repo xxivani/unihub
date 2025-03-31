@@ -50,17 +50,28 @@ const ROTable = () => {
 
   const fetchRoles = async () => {
     try {
+      const userData = JSON.parse(sessionStorage.getItem("user"));
+      if (!userData || !userData.id) return;
+
+      // Step 1: Get the committee member info using user ID
+      const cmRes = await fetch(`${apiUrl}/committee-members/by-user/${userData.id}`);
+      if (!cmRes.ok) throw new Error("Failed to fetch committee member");
+      const committeeMember = await cmRes.json();
+      const userClubId = committeeMember.club_id;
+      
       const response = await fetch(`${apiUrl}/role-openings`);
       if (!response.ok) throw new Error('Failed to fetch role openings');
 
       const result = await response.json();
-      if (!Array.isArray(result) || result.length === 0) {
-        console.warn("No data returned from API, using fallback data");
-        setData(roleTableData);
-        return;
-      }
+      const filtered = result.filter(role => role.club_id === userClubId);
 
-      const formattedData = result.map((role) => ({
+      // if (!Array.isArray(result) || result.length === 0) {
+      //   console.warn("No data returned from API, using fallback data");
+      //   setData(roleTableData);
+      //   return;
+      // }
+
+      const formattedData = filtered.map((role) => ({
         key: role.role_opening_id,
         roleName: role.position,
         applications: role.number_of_registrations,
@@ -157,9 +168,11 @@ const ROTable = () => {
       title: "View Students",
       width: 180,
       render: (_, record) => (
-        <Link to={`/committee/roles/view/${record.key}`} style={{ color: "black" }}>
-          View Registered Students
-        </Link>
+        <div className="view-students-link">
+          <Link to={`/committee/roles/view/${record.key}`} style={{ color: "black" }}>
+            View Registered Students
+          </Link>
+        </div>
       ),
     },
   ];

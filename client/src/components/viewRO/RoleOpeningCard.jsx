@@ -40,6 +40,7 @@ const RoleOpeningCard = ({ role, index }) => {
                 </div>
                 <div className="entity6-card-buttons">
                     <Link to="/club-details" className="entity6-view-button">
+                    {/* <Link to={`/club-details/${role.club_id}`} className="entity6-view-button"></Link> */}
                         View {role.title.split(" ")[2]}
                     </Link>
 

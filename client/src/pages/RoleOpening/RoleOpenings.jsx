@@ -15,19 +15,29 @@ const RoleOpenings = () => {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await fetch(`${apiUrl}/role-openings`);
-        if (!response.ok) throw new Error("Failed to fetch role openings");
+        const [rolesResponse, clubsResponse] = await Promise.all([
+          fetch(`${apiUrl}/role-openings`),
+          fetch(`${apiUrl}/clubs`)
+        ]);
+  
+        if (!rolesResponse.ok || !clubsResponse.ok) {
+          throw new Error("Failed to fetch role openings or clubs");
+        }
 
-        const data = await response.json();
-        const ongoingRoles = data.filter(role => role.status === "ONGOING");
+        // const data = await response.json();
+        const rolesData = await rolesResponse.json();
+        const clubsData = await clubsResponse.json();
+        const clubMap = Object.fromEntries(clubsData.map(club => [club.club_id, club.club_name]));
+        const ongoingRoles = rolesData.filter(role => role.status === "ONGOING");
 
         if (ongoingRoles.length > 0) {
           setRoles(ongoingRoles.map(role => ({
-            title: role.position,
+            title: `${role.position} for ${clubMap[role.club_id] || "Unknown Club"}`,
             description: role.description,
             deadline: new Date(role.due_date).toLocaleDateString(),
             imageSrc: "https://picsum.photos/200/150",
-            id: role.role_opening_id
+            id: role.role_opening_id,
+            club_id: role.club_id
           })));
         } else {
           console.log("No ongoing roles from API. Using fallback.");

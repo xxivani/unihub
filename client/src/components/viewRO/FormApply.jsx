@@ -1,5 +1,5 @@
 import './FormApply.css';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import ApplyConfirmation from '../../pages/RoleOpening/ApplyConfirmation';
 
@@ -18,6 +18,23 @@ const FormApply = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [eligibility, setEligibility] = useState("");
+
+  useEffect(() => {
+    const fetchEligibility = async () => {
+      try {
+        const res = await fetch(`${apiUrl}/role-openings/${role_opening_id}`);
+        if (!res.ok) throw new Error("Failed to fetch role opening");
+
+        const data = await res.json();
+        setEligibility(data.eligibility_criteria || "");
+      } catch (err) {
+        console.warn("Could not load eligibility criteria:", err.message);
+      }
+    };
+
+    fetchEligibility();
+  }, [role_opening_id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -76,6 +93,12 @@ const FormApply = () => {
 
   return (
     <div className="entity6-right-box">
+      {eligibility && (
+        <div className="eligibility-box">
+          <h4>Eligibility Criteria</h4>
+          <p>{eligibility}</p>
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="apply-form">
         <label htmlFor="name">Enter Name*</label>
         <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required />

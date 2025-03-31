@@ -23,6 +23,7 @@ const Members = () => {
   const [hasAssignPermission, setHasAssignPermission] = useState(false);
   const [newMember, setNewMember] = useState({
     title: "",
+    position: "",
     description: "",
     avatar: "",
     permissions: [],
@@ -48,11 +49,25 @@ const Members = () => {
   };
 
   const fetchMembers = async () => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (!userData || !userData.id) {
+      console.warn("User not logged in or missing ID.");
+      return;
+    }
     try {
       const res = await fetch(`${apiUrl}/committee-members`);
       if (!res.ok) throw new Error("Failed to fetch committee members");
-      const data = await res.json();
-      const formatted = data.map((member) => ({
+
+      const cmRes = await fetch(`${apiUrl}/committee-members/by-user/${userData.id}`);
+      if (!cmRes.ok) throw new Error("Failed to fetch logged-in committee member");
+
+      const loggedInCommitteeMember = await cmRes.json();
+      const userClubId = loggedInCommitteeMember.club_id;
+
+      const allMembers = await res.json();
+      const filtered = allMembers.filter(member => member.club_id === userClubId);
+
+      const formatted = filtered.map((member) => ({
         id: member.committee_member_id,
         title: member.committee_member_name,
         description: member.committee_member_position,
@@ -130,32 +145,41 @@ const Members = () => {
 
   const addMember = async () => {
     if (!hasAssignPermission) return message.error("You do not have permission to add members");
-
-    if (!newMember.title || !newMember.description || !newMember.email || !newMember.user_id) {
+  
+    const { title, position, description, email, avatar, permissions, club_id } = newMember;
+  
+    if (!title || !position || !description || !email) {
       message.error("All required fields must be filled");
       return;
     }
-
-    const duplicate = members.some(member => parseInt(member.user_id) === parseInt(newMember.user_id));
-    if (duplicate) {
-      console.log("Duplicate user_id detected");
-      message.error("A committee member with this User ID already exists.");
+  
+    let user_id;
+  
+    try {
+      const userRes = await fetch(`${apiUrl}/users/by-email/${email}`);
+      if (!userRes.ok) throw new Error("User not found");
+  
+      const user = await userRes.json();
+      user_id = user.id;
+    } catch (err) {
+      console.error("Error fetching user by email:", err.message);
+      message.error("No user found with that email.");
       return;
     }
-
+  
+    const duplicate = members.some(member => parseInt(member.user_id) === parseInt(user_id));
+    if (duplicate) {
+      message.error("A committee member with this user already exists.");
+      return;
+    }
+  
     const newEntry = {
       ...newMember,
-      user_id: parseInt(newMember.user_id),
-      club_id: parseInt(newMember.club_id),
-      avatar: newMember.avatar || "https://api.dicebear.com/9.x/miniavs/svg?seed=Default",
+      user_id,
+      club_id: parseInt(club_id),
+      avatar: avatar || `https://api.dicebear.com/9.x/miniavs/svg?seed=${title}`,
     };
-
-    if (isFallback) {
-      setMembers([...members, newEntry]);
-      setIsModalOpen(false);
-      return;
-    }
-
+  
     try {
       const res = await fetch(`${apiUrl}/committee-members`, {
         method: "POST",
@@ -164,23 +188,23 @@ const Members = () => {
           committee_member_name: newEntry.title,
           committee_member_email: newEntry.email,
           committee_member_description: newEntry.description,
-          committee_member_position: newEntry.description,
+          committee_member_position: newEntry.position,
           user_id: newEntry.user_id,
           club_id: newEntry.club_id,
         }),
       });
-
+  
       if (!res.ok) throw new Error("Failed to add committee member");
       const data = await res.json();
-
-      if (newEntry.permissions.length > 0) {
+  
+      if (permissions.length > 0) {
         await fetch(`${apiUrl}/committee-member-permissions/${data.data.committee_member_id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ permissions: newEntry.permissions }),
+          body: JSON.stringify({ permissions }),
         });
       }
-
+  
       fetchMembers();
       setIsModalOpen(false);
       message.success("Committee member added!");
@@ -188,7 +212,7 @@ const Members = () => {
       console.error(err);
       message.error("Failed to add committee member");
     }
-  };
+  };  
 
   const deleteMember = async (index) => {
     if (!hasAssignPermission) return message.error("You do not have permission to delete members");
@@ -270,10 +294,18 @@ const Members = () => {
         cancelText="Cancel"
       >
         <Input placeholder="Name" name="title" className="input" value={newMember.title} onChange={handleInputChange} />
+        <Input
+          placeholder="Description"
+          name="description"
+          className="input"
+          value={newMember.description}
+          onChange={handleInputChange}
+          style={{ marginTop: 10 }}
+        />
         <Select
           placeholder="Select Role"
-          value={newMember.description}
-          onChange={(value) => setNewMember((prev) => ({ ...prev, description: value }))}
+          value={newMember.position}
+          onChange={(value) => setNewMember((prev) => ({ ...prev, position: value }))}
           style={{ width: "100%", marginTop: 10 }}
         >
           {[
@@ -298,14 +330,14 @@ const Members = () => {
           onChange={handleInputChange}
           style={{ marginTop: 10 }}
         />
-        <Input
+        {/* <Input
           placeholder="User ID"
           name="user_id"
           className="input"
           value={newMember.user_id}
           onChange={handleInputChange}
           style={{ marginTop: 10 }}
-        />
+        /> */}
         <Input
           placeholder="Email"
           name="email"

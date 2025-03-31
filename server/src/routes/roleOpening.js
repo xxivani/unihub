@@ -4,7 +4,8 @@ const {
     createRoleOpening,
     getAllRoleOpenings,
     updateRoleOpening,
-    deleteRoleOpening
+    deleteRoleOpening,
+    getRoleOpeningById
 } = require('../controllers/roleOpeningController');
 
 /**
@@ -119,5 +120,7 @@ router.put('/:id', updateRoleOpening);
  *         description: Server error.
  */
 router.delete('/:id', deleteRoleOpening);
+
+router.get('/:id', getRoleOpeningById);
 
 module.exports = router;

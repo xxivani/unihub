@@ -123,9 +123,23 @@ const deleteRoleOpening = async (req, res) => {
   }
 };
 
+const getRoleOpeningById = async (req, res) => {
+  try {
+    const roleOpening = await RoleOpening.findByPk(req.params.id);
+    if (!roleOpening) return res.status(404).json({ error: "Role opening not found" });
+
+    res.status(200).json(roleOpening);
+  } catch (err) {
+    console.error("Error fetching role opening by ID:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
 module.exports = {
   createRoleOpening,
   getAllRoleOpenings,
   updateRoleOpening,
   deleteRoleOpening,
+  getRoleOpeningById
 };

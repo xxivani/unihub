@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   class RoleOpening extends Model {
     static associate(models) {
       // Example: if you want to associate RoleOpening with the Club model
-      // RoleOpening.belongsTo(models.Club, { foreignKey: 'club_id' });
+      RoleOpening.belongsTo(models.Club, { foreignKey: 'club_id' });
     }
   }
   RoleOpening.init({
@@ -16,10 +16,10 @@ module.exports = (sequelize, DataTypes) => {
     club_id: {
       type: DataTypes.BIGINT,
       allowNull: false,
-    //   references: {
-    //     model: 'clubs', // Assuming the table is named 'clubs'
-    //     key: 'club_id'
-    //   }
+      references: {
+        model: 'clubs',
+        key: 'club_id'
+      }
     },
     role_opening_created_at: {
       type: DataTypes.DATE,
@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(20),
       allowNull: false,
       validate: {
-        isIn: [['ONGOING', 'COMPLETED']] // Restricts values to these options
+        isIn: [['ONGOING', 'COMPLETED']]
       }
     //   type: DataTypes.ENUM('ONGOING', 'COMPLETED'),
     }

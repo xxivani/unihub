@@ -1,5 +1,5 @@
 import './FormRoleDetail.css';
-import formSubmissions from './formSubmissions.js';
+// import formSubmissions from './formSubmissions.js';
 import Pagination from '../viewRO/Pagination';
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -33,10 +33,11 @@ const FormRoleDetail = () => {
 
         if (filtered.length > 0) {
             setSubmissions(filtered);
-        } else {
-            console.warn("No filtered data found, falling back to formSubmissions.js");
-            setSubmissions(formSubmissions); // fallback
-        }
+        } 
+        // else {
+        //     console.warn("No filtered data found, falling back to formSubmissions.js");
+        //     setSubmissions(formSubmissions); // fallback
+        // }
       } catch (error) {
             console.error("Error fetching registrations:", error);
             setSubmissions(formSubmissions); // fallback
@@ -53,16 +54,16 @@ const FormRoleDetail = () => {
     setCurrentPage(pageNumber);
   };
 
-  const handleDownload = () => {
-    if (currentSubmission.applicant_cv_url) {
-      const link = document.createElement("a");
-      link.href = `${apiUrl}${currentSubmission.applicant_cv_url}`;
-      link.download = "CV.pdf";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
+  // const handleDownload = () => {
+  //   if (currentSubmission.applicant_cv_url) {
+  //     const link = document.createElement("a");
+  //     link.href = `${apiUrl}${currentSubmission.applicant_cv_url}`;
+  //     link.download = "CV.pdf";
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //   }
+  // };
 
   return (
     <div className="entity6-role-detail">
@@ -83,13 +84,28 @@ const FormRoleDetail = () => {
           <textarea id="why" name="why" value={currentSubmission.applicant_suitability || currentSubmission.why} readOnly />
 
           <label htmlFor="cv">Attach CV</label>
-          {currentSubmission.applicant_cv_url || currentSubmission.cv ? (
+          {/* {currentSubmission.applicant_cv_url || currentSubmission.cv ? (
             <button type="button" className="download-btn" onClick={handleDownload}>
               Download CV
             </button>
           ) : (
             <p>No file uploaded</p>
+          )} */}
+
+          {currentSubmission.applicant_cv_url ? (
+            <a
+              href={`${(import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/api\/?$/, '')}${currentSubmission.applicant_cv_url}`}
+              className="download-btn"
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Download CV
+            </a>
+          ) : (
+            <p>No file uploaded</p>
           )}
+
         </form>
       ) : (
         <p>No submissions available.</p>

@@ -5,7 +5,8 @@ const {
   createClub,
   getAllClubs,
   updateClub,
-  deleteClub
+  deleteClub,
+  getClubById
 } = require('../controllers/clubController');
 
 /**
@@ -120,5 +121,7 @@ router.put('/:id', updateClub);
  *         description: Server error
  */
 router.delete('/:id', deleteClub);
+
+router.get('/:id', getClubById);
 
 module.exports = router;

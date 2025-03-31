@@ -78,9 +78,26 @@ const deleteClub = async (req, res) => {
   }
 };
 
+const getClubById = async (req, res) => {
+  try {
+      const clubId = req.params.id;
+      const club = await Club.findByPk(clubId);
+
+      if (!club) {
+          return res.status(404).json({ error: "Club not found" });
+      }
+
+      res.status(200).json(club);
+  } catch (error) {
+      console.error("Error fetching club by ID:", error);
+      res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   createClub,
   getAllClubs,
   updateClub,
-  deleteClub
+  deleteClub,
+  getClubById
 };

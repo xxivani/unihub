@@ -64,4 +64,24 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+const getUserByEmail = async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const user = await User.findOne({
+      where: { email },
+      attributes: ['id', 'email', 'role'], // only return safe/public fields
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error('Error fetching user by email:', err);
+    res.status(500).json({ error: 'Server error while retrieving user' });
+  }
+};
+
+module.exports = { registerUser, loginUser, getUserByEmail };

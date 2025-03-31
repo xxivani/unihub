@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, loginUser } = require('../controllers/userController');
+const { registerUser, loginUser, getUserByEmail } = require('../controllers/userController');
 
 /**
  * @swagger
@@ -63,5 +63,7 @@ router.post('/register', registerUser);
  *         description: Server error.
  */
 router.post('/login', loginUser);
+
+router.get('/by-email/:email', getUserByEmail);
 
 module.exports = router;

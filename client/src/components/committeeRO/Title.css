@@ -10,6 +10,7 @@
 
 .entity6-title h1 {
     font-size: 2em;
+    margin-left: 20px;
 }
 
 .create-role-btn {
@@ -18,10 +19,11 @@
     color: white;
     cursor: pointer;
     font-size: 16px;
-    margin-right: 10px;
+    margin-right: 40px;
     border: none;
     outline: none;
     box-shadow: none;
+    border-radius: 5%;
 }
 
 body[data-theme="dark"] .create-role-btn{

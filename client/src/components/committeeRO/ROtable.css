@@ -17,21 +17,14 @@
   font-weight: bold;
 }
 
-body[data-theme="dark"] .ro-table{
-  background-color: black !important;
-  color: #fff !important;
-}  
-
 .ro-table tbody tr:hover {
   background-color: #f1f1f1;
 }
 
-/* Add margin around the whole table */
 .ant-table-wrapper {
   margin: 32px 40px;
 }
 
-/* Align "Edit" and "Delete" properly in the Actions column */
 .ant-table-cell a.ro-action-link {
   display: inline-flex;
   align-items: center;
@@ -39,10 +32,28 @@ body[data-theme="dark"] .ro-table{
   font-size: 14px;
 }
 
-/* Style for consistent link spacing */
 .entity6-view-link,
 .entity6-edit-link {
   color: #1890ff;
   margin-right: 10px;
   font-size: 14px;
+}
+
+body[data-theme="dark"] .ant-table-thead > tr > th {
+  background-color: #1a1a1a !important;
+  color: white !important;
+}
+
+body[data-theme="dark"] .ant-table-tbody > tr > td {
+  background-color: black !important;
+  color: white !important;
+}
+
+body[data-theme="dark"] .ant-table-tbody > tr:hover > td {
+  background-color: #222 !important;
+  color: white !important;
+}
+
+body[data-theme="dark"] .view-students-link a {
+  color: white !important;
 }

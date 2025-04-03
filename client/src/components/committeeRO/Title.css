@@ -23,10 +23,33 @@
     border: none;
     outline: none;
     box-shadow: none;
-    border-radius: 5%;
+    border-radius: 4px;
 }
 
 body[data-theme="dark"] .create-role-btn{
+    background-color: #1c3047;
+    color: #fff;
+}  
+
+.admin-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    margin-right: 5px;
+}
+  
+.select-club-dropdown {
+    background-color: #101923;
+    color: #fff;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 3px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+body[data-theme="dark"] .select-club-dropdown{
     background-color: #1c3047;
     color: #fff;
 }  

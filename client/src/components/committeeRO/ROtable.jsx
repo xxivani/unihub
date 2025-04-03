@@ -21,16 +21,23 @@ import './ROTable.css';
 const { Option } = Select;
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-const ROTable = () => {
+const ROTable = ({ selectedClubId }) => {
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hasPermission, setHasPermission] = useState(false);
+  const [userRole, setUserRole] = useState("");
 
   const checkPermission = async () => {
     try {
       const userData = JSON.parse(sessionStorage.getItem("user"));
       if (!userData || !userData.id) return;
+
+      setUserRole(userData.role);
+      if (userData.role === "admin") {
+        setHasPermission(true);
+        return;
+      }
 
       const userId = userData.id;
       const cmRes = await fetch(`${apiUrl}/committee-members/by-user/${userId}`);
@@ -50,26 +57,23 @@ const ROTable = () => {
 
   const fetchRoles = async () => {
     try {
+      const response = await fetch(`${apiUrl}/role-openings`);
+      const result = await response.json();
+
       const userData = JSON.parse(sessionStorage.getItem("user"));
       if (!userData || !userData.id) return;
 
-      // Step 1: Get the committee member info using user ID
-      const cmRes = await fetch(`${apiUrl}/committee-members/by-user/${userData.id}`);
-      if (!cmRes.ok) throw new Error("Failed to fetch committee member");
-      const committeeMember = await cmRes.json();
-      const userClubId = committeeMember.club_id;
-      
-      const response = await fetch(`${apiUrl}/role-openings`);
-      if (!response.ok) throw new Error('Failed to fetch role openings');
+      let clubIdToUse = selectedClubId;
 
-      const result = await response.json();
-      const filtered = result.filter(role => role.club_id === userClubId);
+      // If not admin, find committee member club
+      if (userData.role !== "admin") {
+        const cmRes = await fetch(`${apiUrl}/committee-members/by-user/${userData.id}`);
+        const cm = await cmRes.json();
+        if (!cm || !cm.club_id) return;
+        clubIdToUse = cm.club_id;
+      }
 
-      // if (!Array.isArray(result) || result.length === 0) {
-      //   console.warn("No data returned from API, using fallback data");
-      //   setData(roleTableData);
-      //   return;
-      // }
+      const filtered = result.filter(role => role.club_id == clubIdToUse);
 
       const formattedData = filtered.map((role) => ({
         key: role.role_opening_id,
@@ -91,8 +95,12 @@ const ROTable = () => {
 
   useEffect(() => {
     checkPermission();
-    fetchRoles();
+    // fetchRoles();
   }, []);
+
+  useEffect(() => {
+    if (selectedClubId || userRole === "committee") fetchRoles();
+  }, [selectedClubId]);
 
   const handleDelete = async (id) => {
     try {

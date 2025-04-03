@@ -1,12 +1,15 @@
 import './RightBox.css';
 import { FaTimes } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const RightBoxCreate = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const club_id_from_query = queryParams.get("club_id");
 
   const [formData, setFormData] = useState({
     position: '',
@@ -16,6 +19,25 @@ const RightBoxCreate = () => {
   });
 
   const [error, setError] = useState('');
+  const [clubId, setClubId] = useState(club_id_from_query ? parseInt(club_id_from_query) : null);
+
+  useEffect(() => {
+    if (!clubId) {
+      const userData = JSON.parse(sessionStorage.getItem("user"));
+      if (userData?.role === "committee" && userData.id) {
+        fetch(`${apiUrl}/committee-members/by-user/${userData.id}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.club_id) {
+              setClubId(data.club_id);
+            }
+          })
+          .catch(err => {
+            console.error("Failed to fetch committee member's club:", err);
+          });
+      }
+    }
+  }, [clubId]);
 
   const handleBack = () => {
     navigate(-1);
@@ -54,10 +76,9 @@ const RightBoxCreate = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        // body: JSON.stringify(formData)
         body: JSON.stringify({
-            ...formData,
-            club_id: 1 // ✅ TEMP FIX: Replace with actual club_id
+          ...formData,
+          club_id: clubId
         })
       });
 

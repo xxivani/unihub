@@ -76,10 +76,66 @@ const deleteExternalEvent = async (req, res) => {
   }
 };
 
+const signupForExternalEvent = async (req, res) => {
+	const { id } = req.params;
+	const { name, studentId, year, email, userId } = req.body;
+  
+	try {
+	  // Find the event
+	  const event = await ExternalEvent.findByPk(id);
+	  if (!event) {
+		return res.status(404).json({ error: 'Event not found' });
+	  }
+  
+	  // Check if capacity is reached
+	  if (event.external_event_number_of_attendees >= event.external_event_max_number_of_attendees) {
+		return res.status(400).json({ error: 'Event is full' });
+	  }
+  
+	  // Increment the number of attendees
+	  event.external_event_number_of_attendees = (event.external_event_number_of_attendees || 0) + 1;
+	  await event.save();
+  
+	  // Optionally, save signup details to a separate table (e.g., EventSignups)
+	  // await EventSignup.create({ eventId: id, userId, name, studentId, year, email });
+  
+	  res.status(200).json(event);
+	} catch (error) {
+	  console.error('Error signing up for event:', error);
+	  res.status(500).json({ error: 'Internal server error' });
+	}
+  };
+
+  const unfollowExternalEvent = async (req, res) => {
+	const { eventId, userId } = req.body;
+  
+	try {
+	  const event = await ExternalEvent.findByPk(eventId);
+	  if (!event) {
+		return res.status(404).json({ error: 'Event not found' });
+	  }
+  
+	  // For simplicity, decrease attendees if > 0
+	  if (event.external_event_number_of_attendees > 0) {
+		event.external_event_number_of_attendees -= 1;
+		await event.save();
+	  } else {
+		return res.status(400).json({ error: 'No attendees to remove' });
+	  }
+  
+	  res.status(200).json(event);
+	} catch (error) {
+	  console.error('Error unfollowing event:', error);
+	  res.status(500).json({ error: 'Internal server error' });
+	}
+  };
+
 module.exports = {
   createExternalEvent,
   getAllExternalEvents,
   getExternalEventById,
   updateExternalEvent,
-  deleteExternalEvent
+  deleteExternalEvent,
+  signupForExternalEvent,
+  unfollowExternalEvent,
 };

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Sidebar from './sidebarSettings';
 import './account-settings.css';
 
-
+// To be checked - if notification settings should go on the account settings page itself **
 // Fake data, replace once connected to backend
 const AccountSettings = () => {
   const [activeTab, setActiveTab] = useState('personal');
@@ -224,18 +224,10 @@ const AccountSettings = () => {
         {activeTab === 'security' && (
           <div className="settings-section">
             <h2>Security Settings</h2>
-            <p>Password change and security settings will go here.</p>
-            {/* Add your security form or components */}
+            {/* We'll add the pwd change, delete account here */}
           </div>
         )}
 
-        {activeTab === 'integrations' && (
-          <div className="settings-section">
-            <h2>Integration Settings</h2>
-            <p>Third-party integrations will go here.</p>
-            {/* Add your integrations form or components */}
-          </div>
-        )}
       </div>
     </div>
   );

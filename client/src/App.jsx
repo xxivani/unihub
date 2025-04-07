@@ -15,13 +15,13 @@ import Footer from "./components/footer/footer";
 import ClubDetailsPage from "./pages/ClubDetailsPage"; 
 import CreateClub from "./pages/CreateClub"; 
 import GDPRPolicy from "./pages/GDPRPolicy";
-
 import { ThemeProvider } from "./ThemeContext"
 
+import AccountSettingsPage from "./pages/settings/AccountSettingsPage";
 
 
 
-
+// Settings Pages
 
 
 // Committee Pages
@@ -71,6 +71,9 @@ function AppContent() {
           <Route path="/" element={<Home />} />
           {/* Auth Route */}
           <Route path="/auth" element={<Auth />} />
+
+          {/*Settings */}
+          <Route path="/settings" element={<AccountSettingsPage />} />
 
           {/* Public Routes */}
           <Route path="/clubs" element={<Clubs />} />

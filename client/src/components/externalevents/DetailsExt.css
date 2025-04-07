@@ -6,9 +6,16 @@
     background-color: #f4f4f4;
 }
 
+[data-theme="dark"] .page-container-details-ext {
+	background-color: var(--bg, #000000);
+  }
 .content-wrapper-details-ext {
     width: 100%;
     max-width: 1200px;
+}
+
+[data-theme="dark"] .page-container-details-ext {
+	background-color: var(--bg, #000000);
 }
 
 /* Header */
@@ -17,6 +24,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+	margin-top: 2rem;
 }
 
 .detail-title-details-ext {
@@ -85,6 +93,10 @@
                 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
+[data-theme="dark"] .detail-description-details-ext {
+	background-color: var(--bg-secondary, #453c33);
+}
+
 .description-image-details-ext {
     margin-bottom: 1.5rem;
     text-align: center;
@@ -99,10 +111,16 @@
     
 }
 
+
+
 .description-text-details-ext {
-    font-size: 1rem;
+	font-size: 1rem;
     line-height: 1.5;
     color: #555;
+}
+
+[data-theme="dark"] .description-text-details-ext {
+	color: var(--text-primary, #fffcfc);
 }
 
 .detailext-details-details-ext {
@@ -118,9 +136,17 @@
     color: #333;
 }
 
+[data-theme="dark"] .detail-item-details-ext {
+	color: var(--text-primary, #fffcfc);
+  }
+
 .icon-green-details-ext {
     color: #000000;
 }
+
+[data-theme="dark"] .icon-green-details-ext {
+	color: var(--text-primary, #fffcfc);
+  }
 
 /* Ticket Section */
 .ticket-section-details-ext {
@@ -139,14 +165,21 @@
     width: 100%;
 }
 
+[data-theme="dark"] .ticket-box-details-ext {
+	background-color: var(--bg-secondary, #453c33);
+}
+
 /* Ticket Price */
 .ticket-price-details-ext {
-    font-size: 1.5rem;
+	font-size: 1.5rem;
     font-weight: bold;
     color: #333;
     margin-bottom: 1rem;
 }
 
+[data-theme="dark"] .ticket-price-details-ext {
+	color: var(--text-primary, #ffffff);
+  }
 .ticket-availability-details-ext {
     margin-bottom: 1rem;
 }
@@ -169,13 +202,20 @@
                 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
+[data-theme="dark"] .event-team-box-details-ext {
+	background-color: var(--bg-secondary, #453c33);
+}
+
 .section-title-details-ext {
-    font-size: 1.5rem;
+	font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 1.5rem;
     color: #333;
 }
 
+[data-theme="dark"] .section-title-details-ext {
+	color: var(--text-primary, #ffffff);
+}
 .event-team-grid-details-ext {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -186,6 +226,10 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+}
+
+[data-theme="dark"] .team-member-details-ext {
+	color: var(--text-primary, #ffffff);
 }
 
 .member-avatar-details-ext {
@@ -203,9 +247,18 @@
     color: #555;
 }
 
+
+[data-theme="dark"] .member-role-details-ext {
+	color: var(--text-primary, #ffffff);
+}
+
 .member-name-details-ext {
     font-size: 0.9rem;
     color: #333;
+}
+
+[data-theme="dark"] .member-name-details-ext {
+	color: var(--text-primary, #ffffff);
 }
 
 /* Form Overlay - with specific class names */
@@ -337,3 +390,33 @@
 .details-ext-return-button:hover {
     background-color: #2A3B1C;
 }
+
+.event-full-popup {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
+	padding: 30px;
+	border-radius: 10px;
+	text-align: center;
+  }
+  
+  .event-full-popup p {
+	margin-bottom: 20px;
+	font-size: 18px;
+  }
+  
+  .close-popup {
+	background-color: #ff4d4d;
+	color: white;
+	border: none;
+	padding: 10px 20px;
+	cursor: pointer;
+	border-radius: 5px;
+  }
+  
+  .close-popup:hover {
+	background-color: #cc0000;
+  }

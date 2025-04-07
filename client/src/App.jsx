@@ -82,7 +82,7 @@ function AppContent() {
           <Route path="/roles/apply/:index" element={<ApplyRoleOpening />} />
           <Route path="/external-events" element={<ExternalEvents />} />
           <Route path="/create-external-event" element={<CreateExternalEvents />} />
-          <Route path="/details-ext" element={<DetailsExt />} />
+		  <Route path="/external-events/:id" element={<DetailsExt />} />
           {/* news routes */}
           <Route path="/news" element={<NewsSection />} />
           <Route path="/news/create-news-post" element={<CreateNewsPost />} />

@@ -231,12 +231,12 @@
 }
 
 [data-theme="dark"] .view-button {
-	background-color: var(--bg, #C0AA74); !important
-  }
+    background-color: var(--bg, #C0AA74) !important;
+}
 
-  [data-theme="dark"] .apply-button {
-	background-color: var(--bg, #1c3047); !important
-  }
+[data-theme="dark"] .apply-button {
+    background-color: var(--bg, #1c3047) !important;
+}
 
 /* Improved Pagination Styles */
 .pagination {
@@ -644,3 +644,26 @@
   position: relative;
   z-index: 5;
 }
+
+.extevent-filter-dropdown {
+	padding: 0.5rem;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	background: white;
+	font-size: 1rem;
+  }
+
+  .clear-filter-button {
+	background: none;
+	border: none;
+	color: #000000;
+	font-size: 14px;
+	cursor: pointer;
+	text-decoration: underline;
+  }
+  
+  .clear-filter-button:hover {
+	color: #000000;
+  }
+  
+  

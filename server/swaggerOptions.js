@@ -10,7 +10,7 @@ const options = {
     },
     servers: [
       {
-//         url: 'http://localhost:5000/api' // 🔥 hardcoded for testing
+//         url: 'http://localhost:5000/api' // Below code should now work instead, if it doesn't uncomment this, only for testing purposes
 //       }
 //     ]
         url: process.env.NODE_ENV === 'production' 

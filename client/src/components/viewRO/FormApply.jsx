@@ -7,6 +7,9 @@ const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const FormApply = () => {
   const { index: role_opening_id } = useParams();
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  const user_id = user?.id;
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -64,6 +67,7 @@ const FormApply = () => {
 
     const payload = new FormData();
     payload.append("role_opening_id", role_opening_id);
+    payload.append("user_id", user_id);
     payload.append("user_name", name);
     payload.append("user_phone", phone);
     payload.append("user_email", email);

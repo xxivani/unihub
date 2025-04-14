@@ -1,18 +1,21 @@
 .entity6-sidebar {
     width: 45px; 
     height: 400px;
+    /* height: auto; */
+    /* min-height: 100vh; */
+    flex-shrink: 0;
     background: #d8d8d3;  
     border-radius: 35px; 
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 15px 0;
+    /* align-items: center; */
+    padding: 1.5rem 0;
     left: 10px; 
     top: 10px;
     bottom: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
-    margin-left: 20px;
+    /* margin-left: 20px; */
   }
 
   body[data-theme="dark"] .entity6-sidebar{

@@ -5,108 +5,127 @@ import "./UpdateLinks.css";
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-const UpdateLinks = () => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [links, setLinks] = useState({
-        phone: "",
-        email: "",
-        instagram: "",
-        whatsapp: "",
-    });
-    const [hasPermission, setHasPermission] = useState(false);
-    const [loading, setLoading] = useState(true);
+const UpdateLinks = ({ selectedClubId }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [links, setLinks] = useState({
+    phone: "",
+    email: "",
+    instagram: "",
+    whatsapp: "",
+  });
+  const [hasPermission, setHasPermission] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-    const handleEdit = () => {
-        setIsEditing(!isEditing);
-    };
+  const handleEdit = () => setIsEditing(true);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setLinks((prev) => ({ ...prev, [name]: value }));
-    };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setLinks((prev) => ({ ...prev, [name]: value }));
+  };
 
-    const fetchLinksAndPermissions = async () => {
-        try {
-            const userData = JSON.parse(sessionStorage.getItem("user"));
-            if (!userData || !userData.id) {
-                throw new Error("User not logged in or ID missing.");
-            }
+  const handleSave = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/club-contacts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          club_id: selectedClubId,
+          ...links
+        }),
+      });
 
-            const userId = userData.id;
-            console.log("Logged-in User ID: ", userId);
+      if (!response.ok) throw new Error("Failed to save contact info");
 
-            const cmResponse = await fetch(`${apiUrl}/committee-members/by-user/${userId}`);
-            const committeeMember = await cmResponse.json();
+      setIsEditing(false);
+    } catch (err) {
+      console.error("Error saving contact info:", err);
+    }
+  };
 
-            if (!committeeMember || !committeeMember.committee_member_id) {
-                throw new Error("Committee member not found.");
-            }
+  const fetchLinksAndPermissions = async () => {
+    try {
+      const userData = JSON.parse(sessionStorage.getItem("user"));
+      if (!userData || !userData.id) throw new Error("User not logged in");
 
-            const committeeMemberId = committeeMember.committee_member_id;
-            console.log("Logged-in committee ID: ", committeeMemberId);
+      // Admins automatically get permission to edit
+      if (userData.role === "admin") {
+        setHasPermission(true);
+      } else {
+        // Committee member: check permission
+        const cmRes = await fetch(`${apiUrl}/committee-members/by-user/${userData.id}`);
+        const cm = await cmRes.json();
 
-            const permissionResponse = await fetch(`${apiUrl}/committee-member-permissions/${committeeMemberId}`);
-            const permissions = await permissionResponse.json();
+        if (!cm || !cm.committee_member_id) throw new Error("Committee member not found");
 
-            const hasUpdateLink = permissions.some(p => p.permission === "UpdateLink");
-            setHasPermission(hasUpdateLink);
+        const permRes = await fetch(`${apiUrl}/committee-member-permissions/${cm.committee_member_id}`);
+        const perms = await permRes.json();
 
-            console.log("Logged-in user permissions: ", permissions);
+        const hasUpdate = Array.isArray(perms) && perms.some(p => p.permission === "UpdateLink");
+        setHasPermission(hasUpdate);
+      }
 
-            // Replace with actual API call to fetch links if needed
-            setLinks({
-                phone: "+971 999999999",
-                email: "abcdefg@gmail.com",
-                instagram: "instagram.com/xyz-society",
-                whatsapp: "chat.whatsapp.com/xyz-society"
-            });
+      // Fetch existing contact info
+      const contactRes = await fetch(`${apiUrl}/club-contacts/${selectedClubId}`);
+      const contact = contactRes.ok ? await contactRes.json() : {};
+      setLinks({
+        phone: contact.phone || "",
+        email: contact.email || "",
+        instagram: contact.instagram || "",
+        whatsapp: contact.whatsapp || ""
+      });
+    } catch (err) {
+      console.error("Error fetching links/permissions:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+  useEffect(() => {
+    if (selectedClubId) {
+      fetchLinksAndPermissions();
+    }
+  }, [selectedClubId]);
 
-    useEffect(() => {
-        fetchLinksAndPermissions();
-    }, []);
+  if (loading) return <p>Loading...</p>;
 
-    if (loading) return <p>Loading...</p>;
+  return (
+    <div className="update-links">
+      <div className="ul-header">
+        <h3>Contact Information</h3>
+        {hasPermission && !isEditing && (
+          <button className="ul-edit-btn" onClick={handleEdit}>
+            <FiEdit2 size={18} />
+          </button>
+        )}
+        {hasPermission && isEditing && (
+          <button className="ul-save-btn" onClick={handleSave}>
+            Save
+          </button>
+        )}
+      </div>
 
-    return (
-        <div className="update-links">
-            <div className="ul-header">
-                <h3>Contact Information</h3>
-                {hasPermission && (
-                    <button className="ul-edit-btn" onClick={handleEdit}>
-                        <FiEdit2 size={18} />
-                    </button>
-                )}
+      <div className="ul-links">
+        {["phone", "email", "instagram", "whatsapp"].map((field, i) => {
+          const Icon = [FaPhone, FaEnvelope, FaInstagram, FaWhatsapp][i];
+          return (
+            <div className="ul-link-item" key={field}>
+              <Icon className="ul-icon" />
+              {hasPermission && isEditing ? (
+                <input
+                  type="text"
+                  name={field}
+                  value={links[field]}
+                  onChange={handleChange}
+                />
+              ) : (
+                <span>{links[field] || "Not provided"}</span>
+              )}
             </div>
-
-            <div className="ul-links">
-                {["phone", "email", "instagram", "whatsapp"].map((field, i) => {
-                    const Icon = [FaPhone, FaEnvelope, FaInstagram, FaWhatsapp][i];
-                    return (
-                        <div className="ul-link-item" key={field}>
-                            <Icon className="ul-icon" />
-                            {hasPermission && isEditing ? (
-                                <input
-                                    type="text"
-                                    name={field}
-                                    value={links[field]}
-                                    onChange={handleChange}
-                                />
-                            ) : (
-                                <span>{links[field]}</span>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
-        </div>
-    );
+          );
+        })}
+      </div>
+    </div>
+  );
 };
 
 export default UpdateLinks;

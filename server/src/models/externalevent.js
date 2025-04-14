@@ -54,6 +54,14 @@ module.exports = (sequelize, DataTypes) => {
           min: 1,
         },
       },
+	  external_event_number_of_attendees: {
+		type: DataTypes.INTEGER,
+		allowNull: true,
+	  },	  
+	  external_event_category: {
+		type: DataTypes.STRING,
+		allowNull: false,
+	  },
       external_event_organizer: {
         type: DataTypes.STRING(255),
         allowNull: true,

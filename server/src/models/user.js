@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 'student',
     },
-    // Fields specific to students
+    // CHECK- if studentname and committeename should be joined into one field entirely
     studentName: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    // Fields specific to committee members
+    // needs to be checked with saachi if the field is neccessary 
     committeeName: {
       type: DataTypes.STRING,
       allowNull: true,

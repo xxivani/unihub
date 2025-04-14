@@ -5,7 +5,9 @@ const {
   getAllExternalEvents,
   getExternalEventById,
   updateExternalEvent,
-  deleteExternalEvent
+  deleteExternalEvent,
+  signupForExternalEvent,
+  unfollowExternalEvent,
 } = require('../controllers/externalEventsController'); // Import controllers
 
 /**
@@ -146,5 +148,130 @@ router.put('/:id', updateExternalEvent);
  *         description: Event deleted successfully
  */
 router.delete('/:id', deleteExternalEvent);
+
+/**
+ * @swagger
+ * /external-events/{id}/signup:
+ *   post:
+ *     summary: Sign up for an external event
+ *     tags: [ExternalEvents]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the event to sign up for
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - studentId
+ *               - year
+ *               - email
+ *               - userId
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "John Doe"
+ *                 description: The name of the student signing up
+ *               studentId:
+ *                 type: string
+ *                 example: "12345"
+ *                 description: The student’s ID
+ *               year:
+ *                 type: string
+ *                 example: "2"
+ *                 description: The student’s year of study
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "john.doe@example.com"
+ *                 description: The student’s email address
+ *               userId:
+ *                 type: integer
+ *                 example: 1
+ *                 description: The ID of the user signing up
+ *     responses:
+ *       200:
+ *         description: Successfully signed up for the event
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 external_event_id:
+ *                   type: integer
+ *                 external_event_name:
+ *                   type: string
+ *                 external_event_number_of_attendees:
+ *                   type: integer
+ *       400:
+ *         description: Event is full or invalid request
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Internal Server Error
+ */
+router.post('/:id/signup', signupForExternalEvent);
+
+/**
+ * @swagger
+ * /external-events/{id}/unfollow:
+ *   post:
+ *     summary: Unfollow an external event
+ *     tags: [ExternalEvents]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the event to unfollow
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - eventId
+ *               - userId
+ *             properties:
+ *               eventId:
+ *                 type: integer
+ *                 example: 1
+ *                 description: The ID of the event
+ *               userId:
+ *                 type: integer
+ *                 example: 1
+ *                 description: The ID of the user unfollowing
+ *     responses:
+ *       200:
+ *         description: Successfully unfollowed the event
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 external_event_id:
+ *                   type: integer
+ *                 external_event_name:
+ *                   type: string
+ *                 external_event_number_of_attendees:
+ *                   type: integer
+ *       400:
+ *         description: No attendees to remove or invalid request
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Internal Server Error
+ */
+router.post('/:id/unfollow', unfollowExternalEvent);
+
 
 module.exports = router;

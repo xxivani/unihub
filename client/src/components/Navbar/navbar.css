@@ -1,4 +1,5 @@
 
+/* to be fixed- the user profile and the notif icon which needs to be added */
 .navbar {
     background: #111 !important;
     color: white;
@@ -73,7 +74,7 @@
 }
 
 #user-dropdown .dropdown-toggle::after {
-  margin-left: 8px; /* adjust as needed */
+  margin-left: 8px;
   vertical-align: middle;
 }
 

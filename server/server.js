@@ -94,6 +94,9 @@ const eventExpenseRoutes = require('./src/routes/event_expensesRoute');
 app.use('/api/bt_eventRoute', eventExpenseRoutes);
 app.use('/bt_eventRoute', eventExpenseRoutes);
 
+const clubContactRoutes = require('./src/routes/clubContact');
+app.use('/api/club-contacts', clubContactRoutes);
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

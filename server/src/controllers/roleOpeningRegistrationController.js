@@ -24,6 +24,7 @@ const createRoleOpeningRegistration = async (req, res) => {
   try {
     const {
       role_opening_id: rawRoleOpeningId,
+      user_id: rawUserId,
       user_name,
       user_phone,
       user_email,
@@ -31,13 +32,19 @@ const createRoleOpeningRegistration = async (req, res) => {
     } = req.body;
 
     const role_opening_id = parseInt(rawRoleOpeningId, 10);
+    const user_id = parseInt(rawUserId, 10);
 
     console.log('Parsed role_opening_id:', role_opening_id);
+    console.log('Parsed user_id:', user_id);
     console.log('Full req.body:', req.body);
     console.log('Uploaded file info:', req.files?.pdf?.[0]);
 
     if (isNaN(role_opening_id)) {
       return res.status(400).json({ message: 'Invalid role_opening_id' });
+    }
+
+    if (isNaN(user_id)) {
+      return res.status(400).json({ message: 'Invalid user_id' });
     }
 
     // Validate required fields
@@ -66,6 +73,7 @@ const createRoleOpeningRegistration = async (req, res) => {
 
     const roleOpeningRegistration = await RoleOpeningRegistration.create({
       role_opening_id,
+      user_id,
       user_name,
       user_phone,
       user_email,
@@ -96,8 +104,26 @@ const createRoleOpeningRegistration = async (req, res) => {
   }
 };
 
+const updateRegistrationStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    const registration = await RoleOpeningRegistration.findByPk(id);
+    if (!registration) return res.status(404).json({ message: 'Registration not found' });
+
+    registration.status = status;
+    await registration.save();
+
+    res.status(200).json(registration);
+  } catch (err) {
+    console.error("Status update failed:", err);
+    res.status(500).json({ message: 'Error updating status' });
+  }
+};
 
 module.exports = {
   getAllRoleOpeningRegistrations,
-  createRoleOpeningRegistration
+  createRoleOpeningRegistration,
+  updateRegistrationStatus
 };

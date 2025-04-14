@@ -26,14 +26,14 @@ module.exports = (sequelize, DataTypes) => {
         key: 'role_opening_id'
       }
     },
-    // user_id: {
-    //   type: DataTypes.BIGINT,
-    //   allowNull: false,
-    //   references: {
-    //     model: 'users',
-    //     key: 'user_id'
-    //   }
-    // },
+    user_id: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'user_id'
+      }
+    },
     role_opening_registration_application_date: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -58,6 +58,11 @@ module.exports = (sequelize, DataTypes) => {
     applicant_cv_url: {
       type: DataTypes.STRING(255),
       allowNull: false
+    },
+    status: {
+      type: DataTypes.ENUM('UNDER_REVIEW', 'SELECTED', 'REJECTED'),
+      allowNull: false,
+      defaultValue: 'UNDER_REVIEW'
     }
   }, {
     sequelize,

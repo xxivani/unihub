@@ -22,7 +22,7 @@ import AccountSettingsPage from "./pages/settings/AccountSettingsPage";
 
 
 // Settings Pages
-
+import Followed from "./components/settings/followed";
 
 // Committee Pages
 import Dashboard from "./pages/committee/Dashboard";
@@ -74,6 +74,7 @@ function AppContent() {
 
           {/*Settings */}
           <Route path="/settings" element={<AccountSettingsPage />} />
+          <Route path="/settings/followed" element={<Followed />} />
 
           {/* Public Routes */}
           <Route path="/clubs" element={<Clubs />} />

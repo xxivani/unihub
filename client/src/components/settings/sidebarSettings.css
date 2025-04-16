@@ -51,9 +51,10 @@
 }
 
 .sidebar-header-settings h3 {
-  color: #fff;
-  font-size: 18px;
-  margin: 0;
+  color: #fff !important;
+  font-size: 20px;
+  margin-left: 10px;
+  text-align: left;
 }
 
 @media (max-width: 768px) {

@@ -3,7 +3,6 @@
     flex-direction: column;
     transition: background-color 0.3s ease, color 0.3s ease;
     padding: 2rem;
-    /* gap: 2rem; */
     box-sizing: border-box;
     position: relative;
 }
@@ -14,13 +13,15 @@
     width: 100%;
     height: 100%;
     align-items: stretch;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .entity6-dashboard-part3{
     display: flex;
     flex-direction: column;
     flex: 1;
-    /* gap: 2rem; */
+    min-width: 300px;
 }
 
 body[data-theme="dark"] .entity6-dashboard {
@@ -42,4 +43,26 @@ body[data-theme="dark"] .entity6-dashboard {
     border: 1px solid #ccc;
     background-color: white;
     cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+    .entity6-dashboard {
+      padding: 1rem;
+    }
+  
+    .entity6-dashboard-part2 {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+  
+    .select-club-container {
+      position: static;
+      text-align: right;
+      width: 100%;
+      margin-top: 50px;
+    }
+  
+    .select-club-dropdown {
+      width: 100%;
+    }
 }

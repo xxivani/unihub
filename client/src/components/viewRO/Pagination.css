@@ -1,0 +1,33 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  
+  .pagination button {
+    padding: 8px 12px;
+    margin: 4px;
+    border: none;
+    background-color: #eee;
+    color: #333;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  
+  .pagination button.active {
+    background-color: #333;
+    color: white;
+  }
+  
+  .pagination button:hover {
+    background-color: #ddd;
+  }
+  
+  /* 📱 Responsive behavior */
+  @media screen and (max-width: 600px) {
+    .pagination {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }  

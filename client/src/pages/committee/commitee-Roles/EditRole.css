@@ -1,8 +1,33 @@
 .edit-role-opening {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     padding-top: 100px;
     padding-left: 40px;
     padding-right: 40px;
-    display: flex;
-    flex-direction: row !important;
-    gap: 10px;
-}
+    flex-wrap: nowrap;
+  }
+  
+  .entity6-left-box,
+  .entity6-right-box {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  @media (max-width: 768px) {
+    .edit-role-opening {
+      flex-direction: column;
+      margin-top: 50px;
+      padding: 20px;
+    }
+  
+    .entity6-left-box,
+    .entity6-right-box {
+      width: 100%;
+    }
+  
+    .entity6-close-icon {
+      top: 10px;
+      right: 10px;
+    }
+  }  

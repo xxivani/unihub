@@ -23,6 +23,7 @@
 
 .ant-table-wrapper {
   margin: 32px 40px;
+  overflow-x: auto;
 }
 
 .ant-table-cell a.ro-action-link {
@@ -56,4 +57,47 @@ body[data-theme="dark"] .ant-table-tbody > tr:hover > td {
 
 body[data-theme="dark"] .view-students-link a {
   color: white !important;
+}
+
+@media (max-width: 768px) {
+  .ant-table-wrapper {
+    margin: 16px 10px;
+  }
+
+  .ant-table {
+    font-size: 13px;
+  }
+
+  .ant-table-cell {
+    padding: 8px !important;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    white-space: nowrap;
+  }
+
+  .entity6-title {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 12px;
+    margin-top: 80px;
+  }
+
+  .create-role-btn {
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .admin-controls {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 10px;
+    margin: 10px 0;
+  }
+
+  .select-club-dropdown {
+    width: 100%;
+  }
 }

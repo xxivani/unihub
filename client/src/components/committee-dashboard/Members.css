@@ -149,4 +149,11 @@ body[data-theme="dark"] .ant-modal-content {
   
   body[data-theme="dark"] .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
     background-color: #555 !important;
-  }  
+  }
+
+@media screen and (max-width: 768px) {
+  .members-container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}

@@ -13,6 +13,8 @@
     margin: 16px;
     text-align: left;
     background-color: white;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
 body[data-theme="dark"] .entity6-rocard {
@@ -26,10 +28,18 @@ body[data-theme="dark"] .entity6-rocard {
     height: 200px;
     margin-right: 20px;
     border-radius: 8px;
+    object-fit: cover;
 }
 
 .entity6-card-content {
     flex-grow: 1;
+    min-width: 200px;
+}
+
+.entity6-view-button,
+.entity6-apply-button {
+    width: 100%;
+    max-width: 200px;
 }
 
 .entity6-view-button {
@@ -38,7 +48,7 @@ body[data-theme="dark"] .entity6-rocard {
     font-weight: 500;
     text-decoration: none;
     margin-top: 59px;
-    width: 200px;
+    /* width: 200px; */
     background-color: #dec585;
     border: none;
     padding: 8px 16px;
@@ -57,8 +67,8 @@ body[data-theme="dark"] .entity6-rocard {
     cursor: pointer;
     border-radius: 8px;
     border: none;
-  outline: none;
-  box-shadow: none;
+    outline: none;
+    box-shadow: none;
 }
 
 body[data-theme="dark"] .entity6-apply-button {
@@ -69,4 +79,30 @@ body[data-theme="dark"] .entity6-apply-button {
 body[data-theme="dark"] .entity6-view-button {
   background-color: #C0AA74; 
   color: #000;
+}
+
+@media screen and (max-width: 768px) {
+    .entity6-rocard {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .entity6-card-image {
+        width: 100%;
+        height: auto;
+        margin: 0 0 16px 0;
+    }
+
+    .entity6-card-content {
+        text-align: center;
+    }
+
+    .entity6-card-buttons {
+        width: 100%;
+        align-items: center;
+    }
+
+    .entity6-view-button {
+        margin-top: 10px;
+    }
 }

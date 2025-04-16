@@ -6,8 +6,8 @@
     display: flex;
     align-items: center;
     /* max-width: 750px; */
-    flex: 1;
-    margin-top: 20px;
+        flex: 1;
+        /* margin-top: 20px; */
 }
 
 body[data-theme="dark"] .entity6-event-statistics{

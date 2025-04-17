@@ -143,6 +143,20 @@ jobs:
               sh -c 'cd /app && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all'
           "
 
+      - name: Clean and Init Upload Directory (Dev)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Remove the old volumes if they exist
+            docker volume rm team77-dev_dev-uploads || true
+            
+            # Create temporary container to initialize upload directories
+            docker run --rm \
+              --name upload-init-dev \
+              -v team77-dev_dev-uploads:/app/uploads \
+              alpine:latest \
+              sh -c 'mkdir -p /app/uploads/{images,pdfs,misc} && chmod -R 777 /app/uploads'
+          "
+
       - name: Start Remaining Services (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
@@ -211,7 +225,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
             "docker compose -f ~/team-project/prd.yml -p team77-prod down --volumes --remove-orphans || true && docker container prune -f"
 
-      # First, start only the database container
       - name: Start Database Container (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
@@ -222,7 +235,6 @@ jobs:
             docker compose -f ~/team-project/prd.yml -p team77-prod up -d db
           "
 
-      # Wait for database to be fully ready
       - name: Wait for Database to be fully ready (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
@@ -239,7 +251,6 @@ jobs:
             done
           "
 
-      # Run migrations directly in a separate container
       - name: Run Migrations and Seeders (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
@@ -260,7 +271,20 @@ jobs:
               sh -c 'cd /app && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all'
           "
 
-      # Now start the rest of the containers
+      - name: Clean and Init Upload Directory (Prod)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Remove the old volumes if they exist
+            docker volume rm team77-prod_uploads || true
+            
+            # Create temporary container to initialize upload directories
+            docker run --rm \
+              --name upload-init \
+              -v team77-prod_uploads:/app/uploads \
+              alpine:latest \
+              sh -c 'mkdir -p /app/uploads/{images,pdfs,misc} && chmod -R 777 /app/uploads'
+          "
+
       - name: Start Remaining Services (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "

@@ -33,6 +33,8 @@ services:
       - DATABASE_URL=postgres://team77:team77@db:5432/UniHub
     depends_on:
       - db
+    volumes:
+      - uploads:/app/uploads
     networks:
       - common-network
     ports:
@@ -60,3 +62,4 @@ networks:
 
 volumes:
   db-data:
+  uploads:

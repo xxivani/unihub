@@ -25,7 +25,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+app.use('/uploads', express.static('/app/uploads'));
 
 app.get('/health', (req, res) => {  
   res.status(200).json({

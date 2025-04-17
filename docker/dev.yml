@@ -32,6 +32,8 @@ services:
       - JWT_SECRET=team77_secret  
     depends_on:
       - db
+    volumes:
+      - dev-uploads:/app/uploads
     networks:
       - common-network
     ports:
@@ -59,3 +61,4 @@ networks:
 
 volumes:
   dev-db-data:
+  dev-uploads:

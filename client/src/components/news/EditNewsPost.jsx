@@ -14,7 +14,10 @@ const EditNewsForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const apiUrl = import.meta.env.VITE_API_URL || 
+  (window.location.hostname === 'localhost' ? 
+    `http://localhost:${import.meta.env.VITE_DEV_PORT || '8080'}/api` :
+    `https://${window.location.hostname}/api`);
 
   useEffect(() => {
     const fetchNewsPost = async () => {

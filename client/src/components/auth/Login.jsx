@@ -79,14 +79,14 @@ function Login() {
     
 
     // const loginApiUrl = "http://localhost:5000";
-    const loginApiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const loginApiUrl = import.meta.env.VITE_API_URL;
     console.log("Using API URL:", loginApiUrl);
     
     try {
       // Show loading state
       setIsConnecting(true);
       
-      const response = await fetch(`${loginApiUrl}/api/users/login`, {
+      const response = await fetch(`${loginApiUrl}/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

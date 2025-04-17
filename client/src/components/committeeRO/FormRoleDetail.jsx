@@ -54,6 +54,36 @@ const FormRoleDetail = () => {
     setCurrentPage(pageNumber);
   };
 
+  const handleStatusUpdate = async (newStatus) => {
+    try {
+      console.log("Calling PUT for ID:", currentSubmission.role_opening_registration_id);
+      const res = await fetch(`${apiUrl}/role-opening-registrations/${currentSubmission.role_opening_registration_id}`, {
+        method: 'PUT', // or PATCH depending on your API
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      console.log("PUT URL:", `${apiUrl}/role-opening-registrations/${currentSubmission.role_opening_registration_id}`);
+  
+      if (!res.ok) {
+        throw new Error('Failed to update status');
+      }
+  
+      const updated = await res.json();
+      alert(`Status updated to ${newStatus}`);
+  
+      // Refresh submissions (optional)
+      setSubmissions(prev => prev.map((sub, idx) =>
+        idx === currentPage - 1 ? { ...sub, status: newStatus } : sub
+      ));
+    } catch (error) {
+      console.error("Status update failed:", error.message);
+      alert("Status update failed");
+    }
+  };  
+
   // const handleDownload = () => {
   //   if (currentSubmission.applicant_cv_url) {
   //     const link = document.createElement("a");
@@ -69,8 +99,20 @@ const FormRoleDetail = () => {
     <div className="entity6-role-detail">
       {currentSubmission ? (
         <form>
+          <div className="role-detail-header">
           <h3>Response #{currentPage}</h3>
-
+          <div className="status-action-buttons">
+            <button
+              type="button"
+              className="approve-btn"
+              onClick={() => handleStatusUpdate('SELECTED')}
+            >✅</button>
+            <button
+              type="button"
+              className="reject-btn"
+              onClick={() => handleStatusUpdate('REJECTED')}
+            >❌</button>
+          </div></div>
           <label htmlFor="name">Enter Name</label>
           <input type="text" id="name" name="name" value={currentSubmission.user_name || currentSubmission.name} readOnly />
 

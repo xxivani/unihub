@@ -665,5 +665,14 @@
   .clear-filter-button:hover {
 	color: #000000;
   }
+
+  .follow-button-details-ext.unfollow {
+	background-color: #ff4444; /* Red for unfollow */
+	color: white;
+  }
+  
+  .follow-button-details-ext.unfollow:hover {
+	background-color: #cc0000;
+  }
   
   

@@ -14,7 +14,7 @@ const fallbackPermissions = [
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-const Members = () => {
+const Members = ({ selectedClubId }) => {
   const [members, setMembers] = useState([]);
   const [permissionsList, setPermissionsList] = useState(fallbackPermissions);
   const [activeMember, setActiveMember] = useState(null);
@@ -54,18 +54,14 @@ const Members = () => {
       console.warn("User not logged in or missing ID.");
       return;
     }
+    console.log("SelectedClubId: ", selectedClubId);
+
     try {
       const res = await fetch(`${apiUrl}/committee-members`);
       if (!res.ok) throw new Error("Failed to fetch committee members");
 
-      const cmRes = await fetch(`${apiUrl}/committee-members/by-user/${userData.id}`);
-      if (!cmRes.ok) throw new Error("Failed to fetch logged-in committee member");
-
-      const loggedInCommitteeMember = await cmRes.json();
-      const userClubId = loggedInCommitteeMember.club_id;
-
       const allMembers = await res.json();
-      const filtered = allMembers.filter(member => member.club_id === userClubId);
+      const filtered = allMembers.filter(member => member.club_id === selectedClubId);
 
       const formatted = filtered.map((member) => ({
         id: member.committee_member_id,
@@ -78,6 +74,8 @@ const Members = () => {
         permissions: member.permissions?.map((p) => p.permission) || [],
       }));
       setMembers(formatted);
+      console.log("✅ Final formatted members:", formatted);
+
     } catch (error) {
       console.warn("Using fallback committee members:", error.message);
       setMembers(committeeMembersFallback);
@@ -89,9 +87,16 @@ const Members = () => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
     if (!userData || !userData.id) return;
 
+    if (userData.role === "admin") {
+      setHasAssignPermission(true);
+      return;
+    }
+
     try {
       const cmRes = await fetch(`${apiUrl}/committee-members/by-user/${userData.id}`);
       const cm = await cmRes.json();
+      if (!cm.committee_member_id) throw new Error("No committee_member_id");
+  
       const permissionRes = await fetch(`${apiUrl}/committee-member-permissions/${cm.committee_member_id}`);
       const perms = await permissionRes.json();
       const hasPermission = perms.some(p => p.permission === "AssignPosition");
@@ -102,10 +107,16 @@ const Members = () => {
   };
 
   useEffect(() => {
-    fetchPermissions();
-    fetchMembers();
-    checkAssignPermission();
-  }, []);
+    if (selectedClubId) {
+      console.log("Hi");
+      fetchPermissions();
+      fetchMembers();
+      checkAssignPermission();
+    }
+    // fetchPermissions();
+    // fetchMembers();
+    // checkAssignPermission();
+  }, [selectedClubId]);
 
   const togglePermission = async (index, permission) => {
     if (!hasAssignPermission) return message.error("You do not have permission to manage roles");
@@ -152,13 +163,13 @@ const Members = () => {
       message.error("All required fields must be filled");
       return;
     }
-  
+
     let user_id;
-  
+
     try {
       const userRes = await fetch(`${apiUrl}/users/by-email/${email}`);
       if (!userRes.ok) throw new Error("User not found");
-  
+
       const user = await userRes.json();
       user_id = user.id;
     } catch (err) {
@@ -166,20 +177,20 @@ const Members = () => {
       message.error("No user found with that email.");
       return;
     }
-  
+
     const duplicate = members.some(member => parseInt(member.user_id) === parseInt(user_id));
     if (duplicate) {
       message.error("A committee member with this user already exists.");
       return;
     }
-  
+
     const newEntry = {
       ...newMember,
       user_id,
       club_id: parseInt(club_id),
       avatar: avatar || `https://api.dicebear.com/9.x/miniavs/svg?seed=${title}`,
     };
-  
+
     try {
       const res = await fetch(`${apiUrl}/committee-members`, {
         method: "POST",
@@ -193,10 +204,10 @@ const Members = () => {
           club_id: newEntry.club_id,
         }),
       });
-  
+
       if (!res.ok) throw new Error("Failed to add committee member");
       const data = await res.json();
-  
+
       if (permissions.length > 0) {
         await fetch(`${apiUrl}/committee-member-permissions/${data.data.committee_member_id}`, {
           method: "PUT",
@@ -204,7 +215,7 @@ const Members = () => {
           body: JSON.stringify({ permissions }),
         });
       }
-  
+
       fetchMembers();
       setIsModalOpen(false);
       message.success("Committee member added!");
@@ -212,7 +223,7 @@ const Members = () => {
       console.error(err);
       message.error("Failed to add committee member");
     }
-  };  
+  };
 
   const deleteMember = async (index) => {
     if (!hasAssignPermission) return message.error("You do not have permission to delete members");
@@ -249,7 +260,7 @@ const Members = () => {
         dataSource={members}
         renderItem={(item, index) => (
           <List.Item className="member-item">
-            <List.Item.Meta avatar={<Avatar src={item.avatar} />} title={item.title} description={item.description} />
+            <List.Item.Meta avatar={<Avatar src={item.avatar} />} title={item.title} description={item.description.replace(/_/g, " ")} />
             <div className="member-actions">
             {hasAssignPermission && (item.description !== "PRESIDENT" || getPresidentCount() > 1) && (
               <>
@@ -330,14 +341,6 @@ const Members = () => {
           onChange={handleInputChange}
           style={{ marginTop: 10 }}
         />
-        {/* <Input
-          placeholder="User ID"
-          name="user_id"
-          className="input"
-          value={newMember.user_id}
-          onChange={handleInputChange}
-          style={{ marginTop: 10 }}
-        /> */}
         <Input
           placeholder="Email"
           name="email"

@@ -10,21 +10,23 @@ function DetailsExt() {
   const { id } = useParams(); // <-- grabs the event ID from URL
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+  const [isEventFullModalVisible, setIsEventFullModalVisible] = useState(false); // New state for "Event is full" modal
+  const [user, setUser] = useState(null); // Added user state
   const navigate = useNavigate();
   const [detailEventData, setdetailEventData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [remainingSlots, setRemainingSlots] = useState(null);
-  const [isFull, setIsFull] = useState(false); // To manage the popup visibility
+  const [isUnfollowModalVisible, setIsUnfollowModalVisible] = useState(false);
+  const [followedEvents, setFollowedEvents] = useState([]);
 
-	useEffect(() => {
+  useEffect(() => {
 	const fetchEvent = async () => {
 		try {
 		const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 		const response = await fetch(`${apiUrl}/external-events/${id}`);
 		const data = await response.json();
 		setdetailEventData(data);
-		const remaining =
-        data.external_event_max_number_of_attendees - data.number_of_attendees;
+		const remaining = data.external_event_max_number_of_attendees - (data.external_event_number_of_attendees || 0);
       	setRemainingSlots(remaining);
 		setLoading(false);
 		} catch (error) {
@@ -34,32 +36,137 @@ function DetailsExt() {
 	fetchEvent();
 }, [id]);
 
-const handleFollowClick = () => {
-	if (remainingSlots > 0) {
-	  // Reduce the remaining slots by 1
-	  setRemainingSlots(prev => prev - 1);
-	  setIsFormVisible(true); // Show the form or confirmation
-	} else {
-	  // Show the full event pop-up if no slots are available
-	  setIsFull(true);
-	}
+useEffect(() => {
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      const followed = JSON.parse(localStorage.getItem(`followedEvents_${parsedUser.id}`)) || [];
+      setFollowedEvents(followed.map(Number));
+    }
+	const handleStorageChange = () => {
+		if (storedUser) {
+		  const parsedUser = JSON.parse(storedUser);
+		  const followed = JSON.parse(localStorage.getItem(`followedEvents_${parsedUser.id}`)) || [];
+		  setFollowedEvents(followed.map(Number));
+		}
+	  };
+	  window.addEventListener('storage', handleStorageChange);
+	  window.addEventListener('focus', handleStorageChange); // Refresh on tab focus
+  
+	  return () => {
+		window.removeEventListener('storage', handleStorageChange);
+		window.removeEventListener('focus', handleStorageChange);
+	  };
+  }, []);
+
+  const handleFollowClick = () => {
+    if (!user) {
+      alert("Please log in to follow this event.");
+      return;
+    }
+    if (followedEvents.includes(Number(id))) {
+      handleUnfollow();
+    } else if (remainingSlots > 0) {
+      setIsFormVisible(true);
+    } else {
+      setIsEventFullModalVisible(true);
+    }
   };
 
 	const handleCloseForm = () => {
 		setIsFormVisible(false);
 	};
-	
-	const handleFormSubmit = (e) => {
-		e.preventDefault();
-		setRemainingSlots(prev => prev - 1);
-		setIsFormVisible(false);
-		setIsSuccessModalVisible(true);
+
+	const handleCloseUnfollowModal = () =>  {
+	setIsUnfollowModalVisible(false);
+	navigate('/external-events');
 	};
 	
+	const handleFormSubmit = async (e) => {
+		e.preventDefault();
+		if (!user) return;
+	
+		const formData = {
+		  name: e.target.name.value,
+		  studentId: e.target.studentId.value,
+		  year: e.target.year.value,
+		  email: e.target.email.value,
+		  userId: user.id,
+		  eventId: id,
+		};
+	
+		try {
+		  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+		  const response = await fetch(`${apiUrl}/external-events/${id}/signup`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(formData),
+		  });
+	
+		  if (!response.ok) {
+			const errorData = await response.json();
+			if (response.status === 400 && errorData.error === 'Event is full') {
+			  setIsFormVisible(false);
+			  setIsEventFullModalVisible(true);
+			  return;
+			}
+			throw new Error(`Failed to sign up: ${errorData.error || 'Unknown error'}`);
+		  }
+	
+		  const updatedEvent = await response.json();
+		  console.log("Updated event from signup:", updatedEvent);
+		  setdetailEventData(updatedEvent);
+		  setRemainingSlots(updatedEvent.external_event_max_number_of_attendees - updatedEvent.external_event_number_of_attendees);
+		  const updatedFollowed = [...followedEvents, Number(id)];
+		  setFollowedEvents(updatedFollowed);
+		  localStorage.setItem(`followedEvents_${user.id}`, JSON.stringify(updatedFollowed));
+		  setIsFormVisible(false);
+		  setIsSuccessModalVisible(true);
+		} catch (error) {
+		  console.error('Error signing up for event:', error);
+		  alert(`Failed to sign up: ${error.message}`);
+		}
+	  };
+	
+	  const handleUnfollow = async () => {
+		if (!user) {
+		  alert("Please log in to unfollow this event.");
+		  return;
+		}
+	
+		try {
+		  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+		  const response = await fetch(`${apiUrl}/external-events/${id}/unfollow`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ eventId: id, userId: user.id }),
+		  });
+	
+		  if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(`Failed to unfollow: ${errorData.error || 'Unknown error'}`);
+		  }
+	
+		  const updatedEvent = await response.json();
+		  setdetailEventData(updatedEvent);
+		  setRemainingSlots(updatedEvent.external_event_max_number_of_attendees - updatedEvent.external_event_number_of_attendees);
+		  const updatedFollowed = followedEvents.filter(eid => eid !== Number(id));
+      setFollowedEvents(updatedFollowed);
+      localStorage.setItem(`followedEvents_${user.id}`, JSON.stringify(updatedFollowed));
+      setIsUnfollowModalVisible(true);
+		} catch (error) {
+		  console.error('Error unfollowing event:', error);
+		  alert(`Failed to unfollow: ${error.message}`);
+		}
+	  };
 	const handleCloseSuccessModal = () => {
 		setIsSuccessModalVisible(false);
 		navigate('/external-events');
 	};
+	const handleCloseEventFullModal = () => {
+		setIsEventFullModalVisible(false);
+	  };
 	
 	const handlePurchaseTicket = () => {
 		alert("Please sign in to purchase tickets");
@@ -84,7 +191,11 @@ const handleFollowClick = () => {
             <h1 className="event-title-details-ext">{detailEventData.external_event_name}</h1>
           </div>
           <div className="detail-buttons-details-ext">
-            <button className="follow-button-details-ext" onClick={handleFollowClick}>Follow</button>
+		  {followedEvents.includes(Number(id)) ? (
+              <button className="follow-button-details-ext" onClick={handleUnfollow}>Unfollow</button>
+            ) : (
+              <button className="follow-button-details-ext" onClick={handleFollowClick}>Follow</button>
+            )}
             <button className="notification-button-details-ext">
               <FaBell />
             </button>
@@ -140,7 +251,7 @@ const handleFollowClick = () => {
                <div className="ticket-availability-details-ext">
                 <div className="availability-item-details-ext">
                   <FaTicketAlt className="icon-green-details-ext" />
-				  <span>Remaining slots: {remainingSlots ?? 'N/A'}</span>
+				  <span>Remaining Slots: {remainingSlots >= 0 ? remainingSlots : 'N/A'}</span>
 
                 </div> 
 				
@@ -207,6 +318,20 @@ const handleFollowClick = () => {
           </div>
         </div>
       )}
+	   {isUnfollowModalVisible && (
+        <div className="event-form-overlay">
+          <div className="success-modal">
+            <button className="close-form-button" onClick={handleCloseUnfollowModal} aria-label="Close modal">
+              <FaTimes />
+            </button>
+            <h2>Event unfollowed successfully</h2>
+            <p>You have unfollowed this event. The slot is now available for someone else.</p>
+            <button className="return-button" onClick={handleCloseUnfollowModal}>
+              Return to Event List
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Success Modal */}
       {isSuccessModalVisible && (
@@ -230,12 +355,27 @@ const handleFollowClick = () => {
           </div>
         </div>
       )}
-	  {isFull && (
-  <div className="event-full-popup">
-    <p>Sorry, this event is full.</p>
-    <button onClick={() => setIsFull(false)} className="close-popup">Close</button>
-  </div>
-)}
+	  {isEventFullModalVisible && (
+        <div className="details-ext-form-overlay">
+          <div className="details-ext-success-modal">
+            <button
+              className="details-ext-close-form-button"
+              onClick={handleCloseEventFullModal}
+              aria-label="Close modal"
+            >
+              <FaTimes />
+            </button>
+            <h2>Event is Full</h2>
+            <p>Sorry, this event has reached its maximum capacity.</p>
+            <button
+              className="details-ext-return-button"
+              onClick={handleCloseEventFullModal}
+            >
+              Return to Event Details
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

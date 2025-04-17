@@ -11,7 +11,7 @@ import {
 	FaEdit,
 	FaPencilAlt
 } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const formatTimestamp = (timestamp) => {
 	if (!timestamp) return "";
@@ -106,7 +106,12 @@ const ExternalEvents = () => {
 	const [events, setEvents] = useState([]);
 	const [refresh, setRefresh] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState('');
+	const [selectedEventId, setSelectedEventId] = useState(null);
+	const [isEventFullModalVisible, setIsEventFullModalVisible] = useState(false);
+	const [isUnfollowModalVisible, setIsUnfollowModalVisible] = useState(false);
+	const [followedEvents, setFollowedEvents] = useState([]);
 	const itemsPerPage = 4;
+	const location = useLocation();
 
 	const filteredEvents = events.filter((event) => {
 		if (!selectedCategory) return true;
@@ -262,6 +267,7 @@ const ExternalEvents = () => {
 		fetchEvents();
 	}, [refresh]);
 
+	
 	const promptLogin = () => {
 		alert("Please log in to follow or view event details.");
 		// Alternatively, redirect to login page:
@@ -269,15 +275,38 @@ const ExternalEvents = () => {
 	};
 
 
-	// Load user from sessionStorage
 	useEffect(() => {
-		const storedUser = sessionStorage.getItem("user");
-		if (storedUser) {
+		const loadUserAndFollowedEvents = () => {
+		  const storedUser = sessionStorage.getItem("user");
+		  if (storedUser) {
 			const parsedUser = JSON.parse(storedUser);
-			console.log("Logged in user:", parsedUser);
 			setUser(parsedUser);
-		}
-	}, []);
+			const followed = JSON.parse(localStorage.getItem(`followedEvents_${parsedUser.id}`)) || [];
+			setFollowedEvents(followed.map(Number)); // Ensure IDs are numbers
+		  } else {
+			setUser(null);
+			setFollowedEvents([]);
+		  }
+		};
+	
+		loadUserAndFollowedEvents();
+	
+		// Sync with localStorage changes from other tabs
+		const handleStorageChange = (e) => {
+		  if (e.key === `followedEvents_${user?.id}`) {
+			const followed = JSON.parse(localStorage.getItem(`followedEvents_${user?.id}`)) || [];
+			setFollowedEvents(followed.map(Number));
+		  }
+		};
+	
+		window.addEventListener('storage', handleStorageChange);
+		window.addEventListener('focus', loadUserAndFollowedEvents); // Refresh on tab focus
+	
+		return () => {
+		  window.removeEventListener('storage', handleStorageChange);
+		  window.removeEventListener('focus', loadUserAndFollowedEvents);
+		};
+	  }, [location.pathname]);
 
 	// Pagination
 	const totalPages = 2;
@@ -291,9 +320,55 @@ const ExternalEvents = () => {
 	  
 
 	// Form & Modal Handlers
-	const handleFollowClick = () => {
+	const handleFollowClick = (eventId) => {
+		if (!user) {
+		  promptLogin();
+		  return;
+		}
+		setSelectedEventId(Number(eventId)); // Store the event ID being signed up for
 		setIsFormVisible(true);
 	};
+
+	const handleUnfollowClick = async (eventId) => {
+		if (!user) {
+		  promptLogin();
+		  return;
+		}
+	
+		const numericEventId = Number(eventId); // Ensure number type
+	
+		try {
+		  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+		  const response = await fetch(`${apiUrl}/external-events/${numericEventId}/unfollow`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ eventId: numericEventId, userId: user.id }),
+		  });
+	
+		  if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(`Failed to unfollow: ${errorData.error || 'Unknown error'}`);
+		  }
+	
+		  const updatedEvent = await response.json();
+		  setEvents(prevEvents =>
+			prevEvents.map(event =>
+			  event.external_event_id === numericEventId
+				? { ...event, external_event_number_of_attendees: updatedEvent.external_event_number_of_attendees }
+				: event
+			)
+		  );
+		  setFollowedEvents(prev => {
+			const updated = prev.filter(id => id !== numericEventId);
+			localStorage.setItem(`followedEvents_${user.id}`, JSON.stringify(updated));
+			return updated;
+		  });
+		  setIsUnfollowModalVisible(true);
+		} catch (error) {
+		  console.error('Error unfollowing event:', error);
+		  alert(`Failed to unfollow: ${error.message}`);
+		}
+	  };
 
 	const handleDetailClick = (eventId) => {
 		navigate(`/external-events/${eventId}`);
@@ -303,12 +378,59 @@ const ExternalEvents = () => {
 		setIsFormVisible(false);
 	};
 
-	const handleFormSubmit = (e) => {
+	const handleFormSubmit = async (e) => {
 		e.preventDefault();
-		setIsFormVisible(false);
-		setIsSuccessModalVisible(true);
-	};
-
+		if (!selectedEventId || !user) return;
+	
+		const numericEventId = Number(selectedEventId); // Ensure number type
+	
+		const formData = {
+		  name: e.target.name.value,
+		  studentId: e.target.studentId.value,
+		  year: e.target.year.value,
+		  email: e.target.email.value,
+		  userId: user.id,
+		  eventId: numericEventId,
+		};
+	
+		try {
+		  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+		  const response = await fetch(`${apiUrl}/external-events/${numericEventId}/signup`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(formData),
+		  });
+	
+		  if (!response.ok) {
+			const errorData = await response.json();
+			if (response.status === 400 && errorData.error === 'Event is full') {
+			  setIsFormVisible(false);
+			  setIsEventFullModalVisible(true);
+			  return;
+			}
+			throw new Error(`Failed to sign up: ${errorData.error || 'Unknown error'}`);
+		  }
+	
+		  const updatedEvent = await response.json();
+		  setEvents(prevEvents =>
+			prevEvents.map(event =>
+			  event.external_event_id === numericEventId
+				? { ...event, external_event_number_of_attendees: updatedEvent.external_event_number_of_attendees }
+				: event
+			)
+		  );
+		  setFollowedEvents(prev => {
+			const updated = [...prev, numericEventId];
+			localStorage.setItem(`followedEvents_${user.id}`, JSON.stringify(updated));
+			return updated;
+		  });
+		  setIsFormVisible(false);
+		  setIsSuccessModalVisible(true);
+		} catch (error) {
+		  console.error('Error signing up for event:', error);
+		  alert(`Failed to sign up: ${error.message}`);
+		}
+	  };
 	//   const handleFormSubmit = () => {
 	// 	const storageKey = `followedEvents_${user.id}`;
 	// 	const followedEvents = JSON.parse(localStorage.getItem(storageKey)) || [];
@@ -326,6 +448,11 @@ const ExternalEvents = () => {
 	const handleCloseSuccessModal = () => {
 		setIsSuccessModalVisible(false);
 	};
+	const handleCloseEventFullModal = () => {
+		setIsEventFullModalVisible(false);
+		setSelectedEventId(null);
+	};
+	const handleCloseUnfollowModal = () => setIsUnfollowModalVisible(false);
 
 	// Admin-only Buttons
 	const handleCreateEventClick = () => {
@@ -642,9 +769,28 @@ const ExternalEvents = () => {
 							</div>
 						</div>
 						<div className="extevent-actions">
-							<button className="view-button" onClick={() => user ? handleFollowClick() : promptLogin()}>Follow</button>
-							<button className="apply-button" onClick={() => user ? handleDetailClick(event.external_event_id) : promptLogin()}>Details</button>
-						</div>
+						{followedEvents.includes(Number(event.external_event_id)) ? (
+                <button
+                  className="view-button"
+                  onClick={() => handleUnfollowClick(event.external_event_id)}
+                >
+                  Unfollow
+                </button>
+              ) : (
+                <button
+                  className="view-button"
+                  onClick={() => user ? handleFollowClick(event.external_event_id) : promptLogin()}
+                >
+                  Follow
+                </button>
+              )}
+              <button
+                className="apply-button"
+                onClick={() => user ? handleDetailClick(event.external_event_id) : promptLogin()}
+              >
+                Details
+              </button>
+            </div>
 						<div className="extevent-notification-icon"><FaBell /></div>
 					</div>
 				))}
@@ -717,6 +863,42 @@ const ExternalEvents = () => {
 					</div>
 				</div>
 			)}
+
+			{isEventFullModalVisible && (
+        <div className="event-form-overlay">
+          <div className="success-modal"> {/* Reusing success-modal class for styling */}
+            <button
+              className="close-form-button"
+              onClick={handleCloseEventFullModal}
+              aria-label="Close modal"
+            >
+              <FaTimes />
+            </button>
+            <h2>Event is Full</h2>
+            <p>Sorry, this event has reached its maximum capacity.</p>
+            <button
+              className="return-button"
+              onClick={handleCloseEventFullModal}
+            >
+              Return to Event List
+            </button>
+          </div>
+        </div>
+      )}
+	  {isUnfollowModalVisible && (
+        <div className="event-form-overlay">
+          <div className="success-modal">
+            <button className="close-form-button" onClick={handleCloseUnfollowModal} aria-label="Close modal">
+              <FaTimes />
+            </button>
+            <h2>Event unfollowed successfully</h2>
+            <p>You have unfollowed this event. The slot is now available for someone else.</p>
+            <button className="return-button" onClick={handleCloseUnfollowModal}>
+              Return to Event List
+            </button>
+          </div>
+        </div>
+      )}
 
 			{/* Edit Event Form */}
 			{isEditFormVisible && currentEditEvent && (

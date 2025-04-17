@@ -8,3 +8,15 @@
 .entity6-title h1 {
     font-size: 2em;
 }
+
+@media screen and (max-width: 768px) {
+    .entity6-title h1 {
+        font-size: 1.5em;
+        text-align: center;
+        margin-left: 0;
+    }
+
+    .entity6-title {
+        margin-top: 40px;
+    }
+}

@@ -5,8 +5,9 @@
     box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
-    max-width: 750px;
-    margin-top: 20px;
+    /* max-width: 750px; */
+        flex: 1;
+        /* margin-top: 20px; */
 }
 
 body[data-theme="dark"] .entity6-event-statistics{

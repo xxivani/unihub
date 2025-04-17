@@ -18,16 +18,16 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      // user_id: {
-      //   type: Sequelize.BIGINT,
-      //   allowNull: false,
-      //   references: {
-      //     model: 'Users', // Reference to users table
-      //     key: 'id'
-      //   },
-      //   onUpdate: 'CASCADE',
-      //   onDelete: 'CASCADE'
-      // },
+      user_id: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
       role_opening_registration_application_date: {
         type: Sequelize.DATE,
         allowNull: false,
@@ -52,11 +52,17 @@ module.exports = {
       applicant_cv_url: {
         type: Sequelize.STRING(255),
         allowNull: false
+      },
+      status: {
+        type: Sequelize.ENUM('UNDER_REVIEW', 'SELECTED', 'REJECTED'),
+        allowNull: false,
+        defaultValue: 'UNDER_REVIEW'
       }
     });
   },
 
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('role_opening_registrations');
+    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_role_opening_registrations_status";');
   }
 };

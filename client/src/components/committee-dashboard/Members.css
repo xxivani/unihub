@@ -1,7 +1,7 @@
 .members-container {
     padding: 15px;
-    padding-left: 85px;
-    padding-right: 30px;
+    padding-right: 0px;
+    padding-left: 70px;
 }
 
 .members-header {
@@ -149,4 +149,11 @@ body[data-theme="dark"] .ant-modal-content {
   
   body[data-theme="dark"] .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
     background-color: #555 !important;
-  }  
+  }
+
+@media screen and (max-width: 768px) {
+  .members-container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}

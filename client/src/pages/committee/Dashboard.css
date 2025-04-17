@@ -2,19 +2,67 @@
     display: flex;
     flex-direction: column;
     transition: background-color 0.3s ease, color 0.3s ease;
+    padding: 2rem;
+    box-sizing: border-box;
+    position: relative;
 }
 
 .entity6-dashboard-part2{
     display: flex;
     flex-direction: row;
+    width: 100%;
+    height: 100%;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .entity6-dashboard-part3{
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-width: 300px;
 }
 
 body[data-theme="dark"] .entity6-dashboard {
     background-color: #000000;
     color: #ffffff;
+}
+
+.select-club-container {
+    position: absolute;
+    top: 6.5rem;
+    right: 2rem;
+    z-index: 10;
+}
+
+.select-club-dropdown {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+    .entity6-dashboard {
+      padding: 1rem;
+    }
+  
+    .entity6-dashboard-part2 {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+  
+    .select-club-container {
+      position: static;
+      text-align: right;
+      width: 100%;
+      margin-top: 50px;
+    }
+  
+    .select-club-dropdown {
+      width: 100%;
+    }
 }

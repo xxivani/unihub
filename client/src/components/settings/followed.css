@@ -1,0 +1,67 @@
+.followed-page {
+    flex: 1;
+    padding: 20px;
+    max-width: 800px;
+    margin: 20px;
+  }
+  
+  .followed-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+  }
+  
+  .followed-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* border: 1px solid #ccc; */
+    padding: 14px 0;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .role-info {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .status {
+    min-width: 100px;
+    text-align: right;
+    font-weight: bold;
+  }
+
+  .status.rejected {
+    color: red;
+  }
+  .status.selected {
+    color: green;
+  }
+
+  .status.underreview {
+    color: orange;
+  }
+  
+  body[data-theme="dark"] .followed-item {
+    background-color: #1c1c1c;
+    color: white;
+    border-color: #444;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .followed-page {
+      padding: 10px;
+    }
+  
+    .followed-item h3 {
+      font-size: 18px;
+    }
+  
+    .followed-item p {
+      font-size: 14px;
+    }
+  }  

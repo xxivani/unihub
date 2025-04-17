@@ -1,3 +1,4 @@
+
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
@@ -8,17 +9,16 @@ const ensureDirectoryExists = (dir) => {
   }
 };
 
-
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     let uploadPath;
     
     if (file.fieldname === 'image') {
-      uploadPath = '/app/uploads/images/';
+      uploadPath = path.join('/app/uploads/images');
     } else if (file.fieldname === 'pdf') {
-      uploadPath = '/app/uploads/pdfs/';
+      uploadPath = path.join('/app/uploads/pdfs');
     } else {
-      uploadPath = '/app/uploads/misc/';
+      uploadPath = path.join('/app/uploads/misc');
     }
     
     ensureDirectoryExists(uploadPath);
@@ -34,21 +34,38 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ 
+const fileFilter = (req, file, cb) => {
+  console.log('Processing file:', file.originalname, 'of type:', file.mimetype);
+  
+  if (file.fieldname === 'image') {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Only image files are allowed!'), false);
+    }
+  } else if (file.fieldname === 'pdf') {
+    if (file.mimetype !== 'application/pdf') {
+      return cb(new Error('Only PDF files are allowed!'), false);
+    }
+  }
+  
+  cb(null, true);
+};
+
+const uploadConfig = {
   storage: storage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
-  fileFilter: function (req, file, cb) {
-    if (file.fieldname === 'image') {
-      if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-        return cb(new Error('Only image files are allowed!'), false);
-      }
-    } else if (file.fieldname === 'pdf') {
-      if (!file.originalname.match(/\.(pdf)$/)) {
-        return cb(new Error('Only PDF files are allowed!'), false);
-      }
-    }
-    cb(null, true);
-  }
-});
+  fileFilter: fileFilter
+};
 
-module.exports = { upload };
+const upload = multer(uploadConfig);
+
+const configuredUpload = {
+  fields: [
+    { name: 'image', maxCount: 1 },
+    { name: 'pdf', maxCount: 1 }
+  ]
+};
+
+module.exports = { 
+  upload: upload.fields(configuredUpload.fields),
+  uploadMiddleware: upload
+};

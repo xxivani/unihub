@@ -6,8 +6,12 @@ const { upload } = require('../middleware/upload');
 // Create a news post
 const createNewsPost = async (req, res) => {
   try {
+    console.log('Creating news post with body:', req.body);
+    console.log('Files received:', req.files);
+    
     const { title, body } = req.body;
     const user = req.user || { user_name: 'Admin' }; 
+    
     if (!title || !body) {
       return res.status(400).json({ message: 'Title and body are required' });
     }
@@ -18,20 +22,27 @@ const createNewsPost = async (req, res) => {
     
     console.log('PDF file details:', req.files.pdf[0]);
     
-    const pdfFilename = path.basename(req.files.pdf[0].path);
-    const imageFilename = req.files?.image ? path.basename(req.files.image[0].path) : null;
+    const pdfFilename = req.files.pdf[0].filename;
+    const imageFilename = req.files?.image ? req.files.image[0].filename : null;
     
     const pdfUrl = `/uploads/pdfs/${pdfFilename}`;
     const imageUrl = imageFilename ? `/uploads/images/${imageFilename}` : null;
     
     console.log('Storing PDF URL as:', pdfUrl);
+    console.log('Storing image URL as:', imageUrl);
+    
+    if (req.files.pdf[0].path) {
+      const pdfPath = req.files.pdf[0].path;
+      console.log('Checking if PDF exists at path:', pdfPath);
+      console.log('File exists:', fs.existsSync(pdfPath));
+    }
     
     const newsPost = await News.create({
       news_title: title,
       news_content: body,
       news_author: user.user_name,
       news_created_at: new Date(),
-      news_thumbnail_url: imageUrl,
+      news_thumbnail_url: imageUrl || '/uploads/images/default.jpg', 
       news_pdf_url: pdfUrl
     });
     
@@ -44,7 +55,6 @@ const createNewsPost = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
 
 const getAllNewsPosts = async (req, res) => {
   try {

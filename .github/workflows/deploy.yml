@@ -39,12 +39,20 @@ jobs:
 
       - name: Build and Push Client Image
         run: |
-          # Pass the build arg to Vite
-          docker build \
-            --build-arg VITE_API_URL="https://team77.bham.team/api" \
-            -t ghcr.io/uob-team-project/team77-client:${{ github.sha }} \
-            ./client
-
+          # For development branch
+          if [[ "${{ github.ref }}" == "refs/heads/development" ]]; then
+            docker build \
+              --build-arg VITE_API_URL="https://team77.dev.bham.team/api" \
+              -t ghcr.io/uob-team-project/team77-client:${{ github.sha }} \
+              ./client
+          else
+            # For main branch/tags
+            docker build \
+              --build-arg VITE_API_URL="https://team77.bham.team/api" \
+              -t ghcr.io/uob-team-project/team77-client:${{ github.sha }} \
+              ./client
+          fi
+          
           docker tag ghcr.io/uob-team-project/team77-client:${{ github.sha }} ghcr.io/uob-team-project/team77-client:latest
           docker push ghcr.io/uob-team-project/team77-client:${{ github.sha }}
           docker push ghcr.io/uob-team-project/team77-client:latest

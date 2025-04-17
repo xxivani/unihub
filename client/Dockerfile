@@ -4,10 +4,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# Copy all client code
 COPY . .
 
-# Declare and use the ARG
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 

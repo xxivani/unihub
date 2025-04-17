@@ -13,10 +13,17 @@ function Login() {
   const [apiConnectionStatus, setApiConnectionStatus] = useState("Checking connection...");
   const navigate = useNavigate();
 
-  // const apiUrl = import.meta.env.VITE_API_URL;
-  // const apiUrl = "http://localhost:5000";
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  // // const apiUrl = import.meta.env.VITE_API_URL;
+  // // const apiUrl = "http://localhost:5000";
+  // const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+
+const apiUrl = import.meta.env.VITE_API_URL || 
+(window.location.hostname === 'localhost' ? 
+  `http://localhost:${import.meta.env.VITE_DEV_PORT || '8080'}/api` :
+  `https://${window.location.hostname}/api`);
+
+  
   useEffect(() => {
     if (import.meta.env.DEV) {
       console.log("Environment variables:", import.meta.env);

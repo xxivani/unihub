@@ -16,7 +16,7 @@ import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import roleTableData from './roleTableData';
 import "../committee/budget-tracker/EventExpenses/EventExpensesForm.css";
-import './ROTable.css';
+import './ROtable.css';
 
 const { Option } = Select;
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';

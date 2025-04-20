@@ -1,11 +1,6 @@
 'use strict';
-const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class News extends Model {
-    static associate(models) {
-    }
-  }
-  News.init({
+  const News = sequelize.define('News', {
     news_id: {
       type: DataTypes.BIGINT,
       primaryKey: true,
@@ -37,12 +32,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     }
   }, {
-    sequelize,
-    modelName: 'News',
     tableName: 'news',
-    timestamps: false,
-    freezeTableName: true
+    timestamps: false
   });
-
   return News;
 };

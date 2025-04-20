@@ -1,4 +1,12 @@
 require('dotenv').config();
+const db = require('./src/models');
+db.sequelize.authenticate().then(() => {
+  console.log('DB connected');
+}).catch(err => {
+  console.error('DB connection failed:', err);
+});
+db.sequelize.sync({ alter: true });
+
 const express = require('express');
 const app = express();
 const swaggerUi = require('swagger-ui-express');

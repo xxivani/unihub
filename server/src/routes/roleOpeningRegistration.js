@@ -63,8 +63,8 @@ router.get('/', getAllRoleOpeningRegistrations);
  *       500:
  *         description: Server error
  */
-// router.post('/', createRoleOpeningRegistration);
-router.post('/', upload.fields([{ name: 'pdf', maxCount: 1 }]), createRoleOpeningRegistration);
+router.post('/', createRoleOpeningRegistration);
+// router.post('/', upload.fields([{ name: 'pdf', maxCount: 1 }]), createRoleOpeningRegistration);
 
 router.put('/:id', updateRegistrationStatus);
 

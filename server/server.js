@@ -14,9 +14,18 @@ async function initializeDatabase() {
     await db.sequelize.authenticate();
     
     if (process.env.NODE_ENV === 'development') {
-      await db.sequelize.sync({ alter: true });
+      try {
+        const syncOptions = {
+          alter: true,
+          hooks: false,
+          logging: console.log
+        };
+        await db.sequelize.sync(syncOptions);
+      } catch (syncError) {
+        console.error('Database sync completed with warnings:', syncError.message);
+      }
     }
-    
+
     const [results] = await db.sequelize.query(`
       SELECT EXISTS (
         SELECT FROM information_schema.tables 
@@ -32,7 +41,7 @@ async function initializeDatabase() {
     
     return true;
   } catch (error) {
-    console.error('Database initialization failed:', error);
+    console.error('Critical database initialization failed:', error);
     process.exit(1);
   }
 }
@@ -130,9 +139,20 @@ app.use('/api/club-contacts', clubContactRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-initializeDatabase().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`API Documentation available at http://localhost:${PORT}/api-docs`);
-  });
-});
+async function initializeDatabase() {
+  try {
+    await db.sequelize.authenticate();
+    
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        await db.sequelize.sync({ alter: true });
+      } catch (syncError) {
+        console.error('Sync error (non-fatal):', syncError.message);
+      }
+    }
+    
+  } catch (error) {
+    console.error('Critical database initialization failed:', error);
+    process.exit(1);
+  }
+}

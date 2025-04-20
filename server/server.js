@@ -5,7 +5,7 @@ db.sequelize.authenticate().then(() => {
 }).catch(err => {
   console.error('DB connection failed:', err);
 });
-
+db.sequelize.sync({ alter: true });
 
 const express = require('express');
 const app = express();

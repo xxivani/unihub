@@ -4,11 +4,11 @@ WORKDIR /app
 
 RUN apk add --no-cache postgresql-client netcat-openbsd
 
-COPY package*.json ./
+COPY package*.json .sequelizerc ./
 RUN npm install
 
 COPY . .
 
 EXPOSE 5000
 
-CMD ["npm", "run", "dev"]
+CMD ["npm","run","dev"]

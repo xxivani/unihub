@@ -1,19 +1,41 @@
 require('dotenv').config();
-const db = require('./src/models');
-db.sequelize.authenticate()
-  .then(() => console.log('DB connected'))
-  .catch(err => console.error('DB connection failed:', err));
-
-
 const express = require('express');
 const app = express();
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./swaggerOptions');
 const cors = require("cors");
 const path = require('path');
+const db = require('./src/models');
 
-process.env.NODE_ENV = process.env.NODE_ENV || 'test';
-console.log(`Running in ${process.env.NODE_ENV} environment`);
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
+async function initializeDatabase() {
+  try {
+    await db.sequelize.authenticate();
+    
+    if (process.env.NODE_ENV === 'development') {
+      await db.sequelize.sync({ alter: true });
+    }
+    
+    const [results] = await db.sequelize.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'news'
+      );
+    `);
+    
+    if (!results[0].exists) {
+      const { execSync } = require('child_process');
+      execSync('npx sequelize-cli db:migrate', { stdio: 'inherit' });
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Database initialization failed:', error);
+    process.exit(1);
+  }
+}
 
 app.use(express.json());
 const corsOptions = {
@@ -108,7 +130,9 @@ app.use('/api/club-contacts', clubContactRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`API Documentation available at http://localhost:${PORT}/api-docs`);
+initializeDatabase().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`API Documentation available at http://localhost:${PORT}/api-docs`);
+  });
 });

@@ -32,7 +32,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(255),
       allowNull: false
     },
-    // Need to configure the upload mount in dev and prod for the cv and newsletter pdf's ***
     news_pdf_url: {
       type: DataTypes.STRING(255),
       allowNull: true
@@ -41,7 +40,9 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'News',
     tableName: 'news',
-    timestamps: false 
+    timestamps: false,
+    freezeTableName: true
   });
+
   return News;
 };

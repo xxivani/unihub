@@ -14,7 +14,7 @@ module.exports = {
     },
     define: {
       freezeTableName: true,
-      underscored: true
+      underscored: false  
     },
     logging: console.log
   },
@@ -31,7 +31,7 @@ module.exports = {
     },
     define: {
       freezeTableName: true,
-      underscored: true
+      underscored: false  
     },
   },
   production: {
@@ -47,7 +47,7 @@ module.exports = {
     },
     define: {
       freezeTableName: true,
-      underscored: true
+      underscored: false  
     },
   }
 };

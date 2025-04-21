@@ -22,7 +22,7 @@ services:
     restart: always
 
     command: >
-      sh -c "npx sequelize-cli db:migrate && npm run dev"
+      sh -c "node -e \"require('./src/models').sequelize.sync({ alter: true })\" && npm run dev"
 
     environment:
       - NODE_ENV=development

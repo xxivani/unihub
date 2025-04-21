@@ -11,10 +11,11 @@ const NewsSection = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(3);
 
-  const API_URL = import.meta.env.VITE_API_URL || 
-               (window.location.hostname === 'localhost' ? 
-                 `http://localhost:${import.meta.env.VITE_DEV_PORT || '8080'}/api` :
-                 `https://${window.location.hostname}/api`);
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    (window.location.hostname === "localhost"
+      ? `http://localhost:${import.meta.env.VITE_DEV_PORT || "8080"}/api`
+      : `https://${window.location.hostname}/api`);
 
   // fallback data
   const sampleNewsPosts = [
@@ -24,7 +25,7 @@ const NewsSection = () => {
       news_content:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dictum est sodales quam consectetur feugiat. Vivamus posuere non augue non finibus. Pellentesque nec rutrum libero. Curabitur fringilla, metus placerat aliquet posuere, ante libero ullamcorper justo, quis placerat ante nisl eu risus. Suspendisse eu ipsum ac eros vehicula auctor.",
       news_thumbnail_url: "https://picsum.photos/200/150?random=1",
-      news_pdf_url: "#",
+      news_pdf_url: "#"
     },
     {
       news_id: 2,
@@ -32,7 +33,7 @@ const NewsSection = () => {
       news_content:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dictum est sodales quam consectetur feugiat. Vivamus posuere non augue non finibus. Pellentesque nec rutrum libero. Curabitur fringilla, metus placerat aliquet posuere, ante libero ullamcorper justo, quis placerat ante nisl eu risus. Suspendisse eu ipsum ac eros vehicula auctor.",
       news_thumbnail_url: "https://picsum.photos/200/150?random=2",
-      news_pdf_url: "#",
+      news_pdf_url: "#"
     },
     {
       news_id: 3,
@@ -40,7 +41,7 @@ const NewsSection = () => {
       news_content:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dictum est sodales quam consectetur feugiat. Vivamus posuere non augue non finibus. Pellentesque nec rutrum libero. Curabitur fringilla, metus placerat aliquet posuere, ante libero ullamcorper justo, quis placerat ante nisl eu risus. Suspendisse eu ipsum ac eros vehicula auctor.",
       news_thumbnail_url: "https://picsum.photos/200/150?random=3",
-      news_pdf_url: "#",
+      news_pdf_url: "#"
     },
     {
       news_id: 4,
@@ -48,172 +49,129 @@ const NewsSection = () => {
       news_content:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dictum est sodales quam consectetur feugiat. Vivamus posuere non augue non finibus. Pellentesque nec rutrum libero. Curabitur fringilla, metus placerat aliquet posuere, ante libero ullamcorper justo, quis placerat ante nisl eu risus. Suspendisse eu ipsum ac eros vehicula auctor.",
       news_thumbnail_url: "https://picsum.photos/200/150?random=4",
-      news_pdf_url: "#",
-    },
+      news_pdf_url: "#"
+    }
   ];
 
-  const handleDeletePost = async (postId) => {
-    if (!window.confirm("Are you sure you want to delete this news post? This action cannot be undone.")) {
-      return;
-    }
-    
-    try {
-      const response = await fetch(`${API_URL}/news/${postId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${sessionStorage.getItem('token')}` 
-        }
-      });
-      
-      if (response.ok) {
-        setNewsPosts(prevPosts => prevPosts.filter(post => (post.news_id || post.id) !== postId));
-        alert("News post deleted successfully!");
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to delete post");
-      }
-    } catch (err) {
-      console.error("Error deleting post:", err);
-      alert(`Error: ${err.message}`);
-    }
-  };
-  
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    
-    const fetchNewsPosts = async () => {
+    const stored = sessionStorage.getItem("user");
+    if (stored) setUser(JSON.parse(stored));
+    const fetchPosts = async () => {
       try {
-        console.log("Fetching news from:", `${API_URL}/news`);
-        const response = await fetch(`${API_URL}/news`);
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Error status: ${response.status}`, errorText);
-          throw new Error(`Failed to fetch news posts: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log("News data received:", data);
-        
-        if (data && Array.isArray(data) && data.length > 0) {
-          setNewsPosts(data);
-        } else {
-          console.log("No news posts found in API response, using sample data");
-          setNewsPosts(sampleNewsPosts);
-        }
-      } catch (err) {
-        console.error("Error fetching news posts:", err);
-        setError(`Failed to load news: ${err.message}`);
+        const res = await fetch(`${API_URL}/news`);
+        if (!res.ok) throw new Error(res.statusText);
+        const data = await res.json();
+        setNewsPosts(Array.isArray(data) && data.length ? data : sampleNewsPosts);
+      } catch (e) {
+        setError(e.message);
         setNewsPosts(sampleNewsPosts);
       } finally {
         setLoading(false);
       }
     };
-    
-    fetchNewsPosts();
+    fetchPosts();
   }, []);
 
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = newsPosts.slice(indexOfFirstPost, indexOfLastPost);
-  const totalPages = Math.ceil(newsPosts.length / postsPerPage);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  if (loading) return (
-    <section className="latest-news">
-      <div className="title-button">
-        <h2>Latest News</h2>
-      </div>
-      <p>Loading news posts...</p>
-    </section>
-  );
-
-  const getBaseUrl = () => {
-    return API_URL.endsWith('/api') ? API_URL.substring(0, API_URL.length - 4) : API_URL;
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this post?")) return;
+    try {
+      const res = await fetch(`${API_URL}/news/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setNewsPosts((prev) => prev.filter((p) => p.news_id !== id));
+      alert("Deleted");
+    } catch (e) {
+      alert(e.message);
+    }
   };
+
+  const indexLast = currentPage * postsPerPage;
+  const indexFirst = indexLast - postsPerPage;
+  const current = newsPosts.slice(indexFirst, indexLast);
+  const totalPages = Math.ceil(newsPosts.length / postsPerPage);
+  const paginate = (n) => setCurrentPage(n);
+  const base = API_URL.replace(/\/api$/, "");
+
+  if (loading) {
+    return (
+      <section className="latest-news">
+        <div className="title-button">
+          <h2>Latest News</h2>
+        </div>
+        <p>Loading...</p>
+      </section>
+    );
+  }
 
   return (
     <section className="latest-news">
       <div className="title-button">
         <h2>Latest News</h2>
-        {user && user.role === "admin" && (
+        {user?.role === "admin" && (
           <Link to="/news/create-news-post">
             <button className="create-news-button">Create News Post</button>
           </Link>
         )}
       </div>
-
       {error && <p className="error-message">{error}</p>}
-
       <div className="news-list">
-        {currentPosts.length > 0 ? (
-          currentPosts.map((news) => (
-            <div className="news-item" key={news.news_id || news.id}>
+        {current.length ? (
+          current.map((n) => (
+            <div className="news-item" key={n.news_id}>
               <div className="news-info">
                 <div className="news-image-container">
                   <img
                     src={
-                      news.news_thumbnail_url && news.news_thumbnail_url.startsWith('/uploads') 
-                        ? `${getBaseUrl()}${news.news_thumbnail_url}`
-                        : news.news_thumbnail_url || news.image || "https://picsum.photos/200/150?random=1"
+                      n.news_thumbnail_url?.startsWith("/uploads")
+                        ? `${base}${n.news_thumbnail_url}`
+                        : n.news_thumbnail_url
                     }
-                    alt={news.news_title || news.title}
-                    className="news-image"
+                    alt={n.news_title}
                     onError={(e) => {
-                      e.target.src = "https://picsum.photos/200/150?random=1"; 
-                      e.target.onerror = null;
+                      e.target.src = "https://picsum.photos/200/150";
                     }}
                   />
                 </div>
                 <div className="news-td">
-                  <h3>{news.news_title || news.title}</h3>
-                  <p>{news.news_content || news.description}</p>
-                  {news.news_author && news.news_author.toLowerCase() !== "admin" && (
-                    <p className="news-author">By: {news.news_author}</p>
-                  )}
-                  {news.news_created_at && news.news_author && news.news_author.toLowerCase() !== "admin" && (
-                    <p className="news-date">
-                      {new Date(news.news_created_at).toLocaleDateString()}
-                    </p>
+                  <h3>{n.news_title}</h3>
+                  <p>{n.news_content}</p>
+                  {n.news_author?.toLowerCase() !== "admin" && (
+                    <>
+                      <p className="news-author">By: {n.news_author}</p>
+                      <p className="news-date">
+                        {new Date(n.news_created_at).toLocaleDateString()}
+                      </p>
+                    </>
                   )}
                 </div>
                 <div className="buttons">
                   <a
-                    href={news.news_pdf_url && news.news_pdf_url.startsWith('/uploads') 
-                      ? `${getBaseUrl()}${news.news_pdf_url}`
-                      : news.news_pdf_url || "#"}
+                    href={`${base}${n.news_pdf_url}`}
                     className="view-newsletter"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    View Newsletter
+                    View
                   </a>
                   <a
-                    href={news.news_pdf_url && news.news_pdf_url.startsWith('/uploads') 
-                      ? `${getBaseUrl()}${news.news_pdf_url}`
-                      : news.news_pdf_url || "#"}
+                    href={`${base}${n.news_pdf_url}`}
                     className="download-newsletter"
                     download
-                    target="_blank" 
+                    target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Download Newsletter
+                    Download
                   </a>
-                  {user && user.role === "admin" && (
+                  {user?.role === "admin" && (
                     <div className="admin-actions">
-                      <Link to={`/news/edit/${news.news_id || news.id}`} className="edit-news-link">
-                        Edit Post
-                      </Link>
-                      <a 
-                        href="#" 
-                        className="delete-news-link"
+                      <Link to={`/news/edit/${n.news_id}`}>Edit</Link>
+                      <a
+                        href="#"
                         onClick={(e) => {
                           e.preventDefault();
-                          handleDeletePost(news.news_id || news.id);
+                          handleDelete(n.news_id);
                         }}
                       >
                         Delete
@@ -225,38 +183,26 @@ const NewsSection = () => {
             </div>
           ))
         ) : (
-          <p>No news posts found.</p>
+          <p>No posts</p>
         )}
       </div>
-
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="pagination">
-          <button 
-            onClick={() => paginate(currentPage - 1)} 
-            disabled={currentPage === 1}
-            className="pagination-button"
-          >
-            &laquo; Previous
+          <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
+            &laquo; Prev
           </button>
-          
           <div className="page-numbers">
-            {[...Array(totalPages).keys()].map(number => (
+            {[...Array(totalPages)].map((_, i) => (
               <button
-                key={number + 1}
-                onClick={() => paginate(number + 1)}
-                className={`pagination-button ${currentPage === number + 1 ? 'active' : ''}`}
+                key={i + 1}
+                onClick={() => paginate(i + 1)}
+                className={currentPage === i + 1 ? "active" : ""}
               >
-                {number + 1}
+                {i + 1}
               </button>
             ))}
           </div>
-          
-          <button 
-            onClick={() => paginate(currentPage + 1)} 
-            disabled={currentPage === totalPages}
-            className="pagination-button"
-          >
+          <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages}>
             Next &raquo;
           </button>
         </div>

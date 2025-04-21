@@ -32,8 +32,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     }
   }, {
-    tableName: 'news', 
-    timestamps: false
+    tableName: 'news',
+    schema: 'public',
+    timestamps: false,
+    freezeTableName: true,
+    underscored: true
   });
   return News;
 };

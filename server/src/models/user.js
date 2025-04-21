@@ -31,17 +31,14 @@ module.exports = (sequelize, DataTypes) => {
     studentName: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: 'studentname' 
     },
     yearOfStudy: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: 'year_of_study'
     },
     committeeName: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: 'committee_name'
     },
     club: {
       type: DataTypes.STRING,
@@ -50,13 +47,12 @@ module.exports = (sequelize, DataTypes) => {
     committeeRole: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: 'committee_role'
     }
   }, {
     sequelize,
     modelName: 'User',
     tableName: 'Users',
-    underscored: true, 
+    timestamps: true, 
     hooks: {
       beforeCreate: async (user) => {
         if (user.password) {

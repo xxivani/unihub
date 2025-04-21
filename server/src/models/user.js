@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
     }
-    
+
     validPassword(password) {
       return bcrypt.compare(password, this.password);
     }
@@ -28,7 +28,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 'student',
     },
-    // CHECK- if studentname and committeename should be joined into one field entirely
     studentName: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -37,7 +36,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    // needs to be checked with saachi if the field is neccessary 
     committeeName: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -53,6 +51,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'User',
+    tableName: 'Users',
     hooks: {
       beforeCreate: async (user) => {
         if (user.password) {
@@ -66,6 +65,6 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
   });
-  
+
   return User;
 };

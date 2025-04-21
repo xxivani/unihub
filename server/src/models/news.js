@@ -1,11 +1,6 @@
 'use strict';
-const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class News extends Model {
-    static associate(models) {
-    }
-  }
-  News.init({
+  const News = sequelize.define('News', {
     news_id: {
       type: DataTypes.BIGINT,
       primaryKey: true,
@@ -32,16 +27,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(255),
       allowNull: false
     },
-    // Need to configure the upload mount in dev and prod for the cv and newsletter pdf's ***
     news_pdf_url: {
       type: DataTypes.STRING(255),
       allowNull: true
     }
   }, {
-    sequelize,
-    modelName: 'News',
     tableName: 'news',
-    timestamps: false 
+    schema: 'public',
+    timestamps: false,
+    freezeTableName: true,
+    underscored: true
   });
   return News;
 };

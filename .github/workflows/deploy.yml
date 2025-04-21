@@ -128,9 +128,10 @@ jobs:
             # Wait for the database to be properly initialized
             for i in \$(seq 1 60); do
               echo \"Attempt \$i: Checking database readiness...\"
-              if docker exec team77-dev-db pg_isready -U team77 -d UniHub; then
-                echo \"Database is ready!\"
-                sleep 5  # Give it a little extra time to be fully initialized
+              if docker exec team77-dev-db pg_isready -U team77 -d UniHub && 
+                docker exec team77-dev-db psql -U team77 -d UniHub -c 'SELECT 1' > /dev/null 2>&1; then
+                echo \"Database is ready and can execute queries!\"
+                sleep 5 
                 break
               fi
               echo \"Database not ready yet. Waiting...\"

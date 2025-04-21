@@ -6,10 +6,15 @@ const NewsSection = () => {
   const [user, setUser] = useState(null);
   const [newsPosts, setNewsPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error] = useState(null);
+  const [error, setError] = useState(null);
   
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(3);
+
+  const API_URL = import.meta.env.VITE_API_URL || 
+               (window.location.hostname === 'localhost' ? 
+                 `http://localhost:${import.meta.env.VITE_DEV_PORT || '8080'}/api` :
+                 `https://${window.location.hostname}/api`);
 
   // fallback data
   const sampleNewsPosts = [
@@ -47,20 +52,17 @@ const NewsSection = () => {
     },
   ];
 
-
-const apiUrl = import.meta.env.VITE_API_URL || 
-               (window.location.hostname === 'localhost' ? 
-                 `http://localhost:${import.meta.env.VITE_DEV_PORT || '8080'}/api` :
-                 `https://${window.location.hostname}/api`);
-
   const handleDeletePost = async (postId) => {
     if (!window.confirm("Are you sure you want to delete this news post? This action cannot be undone.")) {
       return;
     }
     
     try {
-      const response = await fetch(`${apiUrl}/news/${postId}`, {
+      const response = await fetch(`${API_URL}/news/${postId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}` 
+        }
       });
       
       if (response.ok) {
@@ -84,14 +86,17 @@ const apiUrl = import.meta.env.VITE_API_URL ||
     
     const fetchNewsPosts = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-        const response = await fetch(`${apiUrl}/news`);
+        console.log("Fetching news from:", `${API_URL}/news`);
+        const response = await fetch(`${API_URL}/news`);
         
         if (!response.ok) {
-          throw new Error('Failed to fetch news posts');
+          const errorText = await response.text();
+          console.error(`Error status: ${response.status}`, errorText);
+          throw new Error(`Failed to fetch news posts: ${response.status}`);
         }
         
         const data = await response.json();
+        console.log("News data received:", data);
         
         if (data && Array.isArray(data) && data.length > 0) {
           setNewsPosts(data);
@@ -101,6 +106,7 @@ const apiUrl = import.meta.env.VITE_API_URL ||
         }
       } catch (err) {
         console.error("Error fetching news posts:", err);
+        setError(`Failed to load news: ${err.message}`);
         setNewsPosts(sampleNewsPosts);
       } finally {
         setLoading(false);
@@ -126,6 +132,10 @@ const apiUrl = import.meta.env.VITE_API_URL ||
     </section>
   );
 
+  const getBaseUrl = () => {
+    return API_URL.endsWith('/api') ? API_URL.substring(0, API_URL.length - 4) : API_URL;
+  };
+
   return (
     <section className="latest-news">
       <div className="title-button">
@@ -143,21 +153,21 @@ const apiUrl = import.meta.env.VITE_API_URL ||
         {currentPosts.length > 0 ? (
           currentPosts.map((news) => (
             <div className="news-item" key={news.news_id || news.id}>
-            <div className="news-info">
+              <div className="news-info">
                 <div className="news-image-container">
-                <img
-                  src={
-                    news.news_thumbnail_url && news.news_thumbnail_url.startsWith('/uploads') 
-                      ? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${news.news_thumbnail_url}`
-                      : news.news_thumbnail_url || news.image || "https://picsum.photos/200/150?random=1"
-                  }
-                  alt={news.news_title || news.title}
-                  className="news-image"
-                  onError={(e) => {
-                    e.target.src = "https://picsum.photos/200/150?random=1"; 
-                    e.target.onerror = null;
-                  }}
-                />
+                  <img
+                    src={
+                      news.news_thumbnail_url && news.news_thumbnail_url.startsWith('/uploads') 
+                        ? `${getBaseUrl()}${news.news_thumbnail_url}`
+                        : news.news_thumbnail_url || news.image || "https://picsum.photos/200/150?random=1"
+                    }
+                    alt={news.news_title || news.title}
+                    className="news-image"
+                    onError={(e) => {
+                      e.target.src = "https://picsum.photos/200/150?random=1"; 
+                      e.target.onerror = null;
+                    }}
+                  />
                 </div>
                 <div className="news-td">
                   <h3>{news.news_title || news.title}</h3>
@@ -173,7 +183,9 @@ const apiUrl = import.meta.env.VITE_API_URL ||
                 </div>
                 <div className="buttons">
                   <a
-                    href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${news.news_pdf_url}`}
+                    href={news.news_pdf_url && news.news_pdf_url.startsWith('/uploads') 
+                      ? `${getBaseUrl()}${news.news_pdf_url}`
+                      : news.news_pdf_url || "#"}
                     className="view-newsletter"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -181,7 +193,9 @@ const apiUrl = import.meta.env.VITE_API_URL ||
                     View Newsletter
                   </a>
                   <a
-                    href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${news.news_pdf_url}`}
+                    href={news.news_pdf_url && news.news_pdf_url.startsWith('/uploads') 
+                      ? `${getBaseUrl()}${news.news_pdf_url}`
+                      : news.news_pdf_url || "#"}
                     className="download-newsletter"
                     download
                     target="_blank" 

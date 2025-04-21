@@ -3,58 +3,76 @@ const path = require('path');
 const fs = require('fs');
 const { upload } = require('../middleware/upload'); 
 
-// Create a news post
-const createNewsPost = async (req, res) => {
-  try {
-    console.log('Creating news post with body:', req.body);
-    console.log('Files received:', req.files);
-    
-    const { title, body } = req.body;
-    const user = req.user || { user_name: 'Admin' }; 
-    
-    if (!title || !body) {
-      return res.status(400).json({ message: 'Title and body are required' });
-    }
+try {
+  console.log('Database connection details:', db.sequelize.config);
+  
+  const tableCheck = await News.sequelize.query('SELECT to_regclass(\'public.news\');');
+  console.log('Table check result:', tableCheck);
+  
 
-    if (!req.files?.pdf) {
-      return res.status(400).json({ message: 'PDF file is required' });
+  const createNewsPost = async (req, res) => {
+    try {
+      console.log('Creating news post with body:', req.body);
+      console.log('Files received:', req.files);
+      
+      const { title, body } = req.body;
+      const user = req.user || { user_name: 'Admin' }; 
+      
+      if (!title || !body) {
+        return res.status(400).json({ message: 'Title and body are required' });
+      }
+
+      if (!req.files?.pdf) {
+        return res.status(400).json({ message: 'PDF file is required' });
+      }
+      
+      console.log('PDF file details:', req.files.pdf[0]);
+      
+      const pdfFilename = req.files.pdf[0].filename;
+      const imageFilename = req.files?.image ? req.files.image[0].filename : null;
+      
+      const pdfUrl = `/uploads/pdfs/${pdfFilename}`;
+      const imageUrl = imageFilename ? `/uploads/images/${imageFilename}` : null;
+      
+      console.log('Storing PDF URL as:', pdfUrl);
+      console.log('Storing image URL as:', imageUrl);
+      
+      if (req.files.pdf[0].path) {
+        const pdfPath = req.files.pdf[0].path;
+        console.log('Checking if PDF exists at path:', pdfPath);
+        console.log('File exists:', fs.existsSync(pdfPath));
+      }
+      
+      const newsPost = await News.create({
+        news_title: title,
+        news_content: body,
+        news_author: user.user_name,
+        news_created_at: new Date(),
+        news_thumbnail_url: imageUrl || '/uploads/images/default.jpg', 
+        news_pdf_url: pdfUrl
+      });
+      
+      res.status(201).json({ 
+        message: 'News post created successfully',
+        newsPost
+      });
+    } catch (error) {
+      console.error('Error creating news post:', error);
+      res.status(500).json({ message: 'Server error', error: error.message });
     }
-    
-    console.log('PDF file details:', req.files.pdf[0]);
-    
-    const pdfFilename = req.files.pdf[0].filename;
-    const imageFilename = req.files?.image ? req.files.image[0].filename : null;
-    
-    const pdfUrl = `/uploads/pdfs/${pdfFilename}`;
-    const imageUrl = imageFilename ? `/uploads/images/${imageFilename}` : null;
-    
-    console.log('Storing PDF URL as:', pdfUrl);
-    console.log('Storing image URL as:', imageUrl);
-    
-    if (req.files.pdf[0].path) {
-      const pdfPath = req.files.pdf[0].path;
-      console.log('Checking if PDF exists at path:', pdfPath);
-      console.log('File exists:', fs.existsSync(pdfPath));
-    }
-    
-    const newsPost = await News.create({
-      news_title: title,
-      news_content: body,
-      news_author: user.user_name,
-      news_created_at: new Date(),
-      news_thumbnail_url: imageUrl || '/uploads/images/default.jpg', 
-      news_pdf_url: pdfUrl
-    });
-    
-    res.status(201).json({ 
-      message: 'News post created successfully',
-      newsPost
-    });
-  } catch (error) {
-    console.error('Error creating news post:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-};
+  };
+
+} catch (error) {
+  console.error('Error creating news post:', error);
+  console.error('Error stack:', error.stack);
+  console.error('Current DB connection:', {
+    database: News.sequelize.config.database,
+    username: News.sequelize.config.username,
+    host: News.sequelize.config.host,
+    port: News.sequelize.config.port
+  });
+  res.status(500).json({ message: 'Server error', error: error.message });
+}
 
 const getAllNewsPosts = async (req, res) => {
   try {

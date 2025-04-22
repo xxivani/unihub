@@ -26,9 +26,9 @@ services:
       - POSTGRES_USER=team77
       - POSTGRES_PASSWORD=team77
       - POSTGRES_DB=team77
-      - DB_HOST=db
+      - DB_HOST=team77-dev-db
       - DB_PORT=5432
-      - DATABASE_URL=postgres://team77:team77@db:5432/team77
+      - DATABASE_URL=postgres://team77:team77@team77-dev-db:5432/team77
       - JWT_SECRET=team77_secret  
     depends_on:
       - db

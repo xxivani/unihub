@@ -3,12 +3,12 @@ version: "3.8"
 services:
   db:
     image: postgres:14-alpine
-    container_name: team77-db
+    container_name: team77-prod-db
     restart: always
     env_file:
       - ./db.env  
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - prod-db-data:/var/lib/postgresql/data
     networks:
       - common-network
     healthcheck:
@@ -27,14 +27,14 @@ services:
       - POSTGRES_USER=team77
       - POSTGRES_PASSWORD=team77
       - POSTGRES_DB=team77
-      - DB_HOST=db
+      - DB_HOST=team77-prod-db
       - DB_PORT=5432
       - JWT_SECRET=team77_secret
-      - DATABASE_URL=postgres://team77:team77@db:5432/team77
+      - DATABASE_URL=postgres://team77:team77@team77-prod-db:5432/team77
     depends_on:
       - db
     volumes:
-      - uploads:/app/uploads
+      - prod-uploads:/app/uploads
     networks:
       - common-network
     ports:
@@ -61,5 +61,5 @@ networks:
     external: true
 
 volumes:
-  db-data:
-  uploads:
+  prod-db-data:
+  prod-uploads:

@@ -257,7 +257,7 @@ jobs:
             # Wait for the database to be properly initialized
             for i in \$(seq 1 60); do
               echo \"Attempt \$i: Checking database readiness...\"
-              if docker exec team77-db pg_isready -U team77 -d team77; then
+              if docker exec team77-prod-db pg_isready -U team77 -d team77; then
                 echo \"Database is ready!\"
                 sleep 5  # Give it a little extra time to be fully initialized
                 break
@@ -274,11 +274,11 @@ jobs:
             docker run --rm --name team77-migrations \
               --network common-network \
               -e NODE_ENV=production \
-              -e DATABASE_URL=postgres://team77:team77@team77-db:5432/team77 \
+              -e DATABASE_URL=postgres://team77:team77@team77-prod-db:5432/team77 \
               -e POSTGRES_USER=team77 \
               -e POSTGRES_PASSWORD=team77 \
               -e POSTGRES_DB=team77 \
-              -e DB_HOST=team77-db \
+              -e DB_HOST=team77-prod-db \
               -e DB_PORT=5432 \
               -v ~/team-project/migrations:/app/migrations \
               -v ~/team-project/seeders:/app/seeders \
@@ -291,12 +291,12 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
             # Remove the old volumes if they exist
-            docker volume rm team77-prod_uploads || true
+            docker volume rm team77-prod_prod-uploads || true
             
             # Create temporary container to initialize upload directories
             docker run --rm \
               --name upload-init \
-              -v team77-prod_uploads:/app/uploads \
+              -v team77-prod_prod-uploads:/app/uploads \
               alpine:latest \
               sh -c 'mkdir -p /app/uploads/{images,pdfs,misc} && chmod -R 777 /app/uploads'
           "

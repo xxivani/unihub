@@ -40,7 +40,7 @@ const CreateNewsForm = () => {
   const handlePdfChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      if (file.size > 10 * 1024 * 1024) { 
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
         setError("PDF file is too large. Please select a PDF smaller than 10MB.");
         e.target.value = null; 
         return;
@@ -54,16 +54,18 @@ const CreateNewsForm = () => {
   const clearNewsCache = useCallback(() => {
     try {
       const keysToRemove = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
         if (key && (key === "newsPosts" || key.startsWith("newsPost_"))) {
           keysToRemove.push(key);
         }
       }
       
       keysToRemove.forEach(key => {
-        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
       });
+      
+      sessionStorage.setItem("newsPostsUpdated", Date.now().toString());
       
       console.log(`Cleared ${keysToRemove.length} news cache items`);
     } catch (err) {
@@ -71,100 +73,116 @@ const CreateNewsForm = () => {
     }
   }, []);
 
+  const fetchWithRetry = useCallback(async (url, options = {}, attempts = 0) => {
+    try {
+      const response = await fetch(url, options);
+      
+      if (response.status === 413) {
+        throw new Error("File size too large. Please upload smaller files (max 10MB).");
+      }
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        try {
+          const errorJson = JSON.parse(errorText);
+          throw new Error(errorJson.error || errorJson.message || `Server error: ${response.status}`);
+        // eslint-disable-next-line no-unused-vars
+        } catch (e) {
+          throw new Error(errorText || `Server error: ${response.status}`);
+        }
+      }
+      return response;
+    } catch (err) {
+      if (attempts < MAX_RETRIES && !err.message.includes("File size too large")) {
+        console.log(`Retry attempt ${attempts + 1} for ${url}`);
+        const delay = Math.min(1000 * Math.pow(2, attempts), 10000);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return fetchWithRetry(url, options, attempts + 1);
+      }
+      throw err;
+    }
+  }, [MAX_RETRIES]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setSubmitAttempts(prev => prev + 1);
 
-    const maxRetries = MAX_RETRIES;
-    let retryCount = 0;
-    let success = false;
+    try {
+      if (!title.trim() || !body.trim()) {
+        throw new Error("Title and Body are required.");
+      }
+      
+      if (!pdfFile) {
+        throw new Error("Please attach a PDF for the newsletter.");
+      }
 
-    while (retryCount < maxRetries && !success) {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("body", body);
+      
+      if (imageFile) {
+        formData.append("image", imageFile);
+      } else {
+        formData.append("imageUrl", defaultImageUrl);
+      }
+      
+      formData.append("pdf", pdfFile);
+
+      console.log('Submitting news post to:', `${apiUrl}/news`);
+      
+      const startTime = Date.now();
+      const response = await fetchWithRetry(`${apiUrl}/news`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+        },
+      });
+      
+      const data = await response.json();
+      console.log(`Server response in ${Date.now() - startTime}ms:`, data);
+      
+      clearNewsCache();
+      
       try {
-        if (!title.trim() || !body.trim()) {
-          throw new Error("Title and Body are required.");
+        console.log("Fetching all posts after creation to update cache");
+        const allPosts = await fetchWithRetry(`${apiUrl}/news`);
+        const postsData = await allPosts.json();
+        
+        if (Array.isArray(postsData)) {
+          postsData.sort((a, b) => new Date(b.news_created_at) - new Date(a.news_created_at));
+          
+          sessionStorage.setItem("newsPosts", JSON.stringify(postsData));
+          postsData.forEach(post => {
+            sessionStorage.setItem(`newsPost_${post.news_id}`, JSON.stringify(post));
+          });
+          
+          sessionStorage.setItem("newsPostsUpdated", Date.now().toString());
+          
+          console.log(`Updated cache with ${postsData.length} posts`);
         }
-        
-        if (!pdfFile) {
-          throw new Error("Please attach a PDF for the newsletter.");
-        }
-
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("body", body);
-        
-        if (imageFile) {
-          formData.append("image", imageFile);
-        } else {
-          formData.append("imageUrl", defaultImageUrl);
-        }
-        
-        formData.append("pdf", pdfFile);
-
-        console.log('Submitting news post to:', `${apiUrl}/news`);
-        
-        const url = `${apiUrl}/news?_t=${Date.now()}`;
-        
-        const response = await fetch(url, {
-          method: "POST",
-          body: formData,
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem("token")}`,
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          },
-        });
-        
-        if (response.status === 413) {
-          throw new Error('File is too large. Please upload a smaller file (max 10MB).');
-        }
-        
-        if (!response.ok) {
-          const errorResponse = await response.text();
-          try {
-            const errorJson = JSON.parse(errorResponse);
-            throw new Error(errorJson.message || errorJson.error || `Server error: ${response.status}`);
-          // eslint-disable-next-line no-unused-vars
-          } catch (e) {
-            throw new Error(errorResponse || `Server error: ${response.status}`);
-          }
-        }
-        
-        const data = await response.json();
-        console.log('Server response:', data);
-        
-        success = true;
-        
-        clearNewsCache();
-        
-        if (data.lastModified) {
-          localStorage.setItem('newsLastModified', data.lastModified);
-        }
-        
-        alert("News post created successfully!");
-        
-        navigate("/news?refresh=true");
-        break;
-        
       } catch (err) {
-        retryCount++;
-        console.error(`Attempt ${retryCount}/${maxRetries} failed:`, err);
+        console.error("Failed to refresh posts after creation:", err);
         
-        if (retryCount < maxRetries) {
-          const delay = Math.min(1000 * Math.pow(2, retryCount), 8000);
-          setError(`Attempt ${retryCount} failed. Retrying in ${Math.round(delay/1000)} seconds...`);
-          await new Promise(resolve => setTimeout(resolve, delay));
-        } else {
-          setError(`Failed after ${maxRetries} attempts: ${err.message}`);
+        if (data && data.newsPost) {
+          const newPostId = data.newsPost.news_id;
+          sessionStorage.setItem(`newsPost_${newPostId}`, JSON.stringify(data.newsPost));
         }
       }
+      
+      alert("News post created successfully!");
+      
+      navigate("/news?refresh=true");
+      
+    } catch (err) {
+      console.error('Error creating news post:', err);
+      setError(err.message || "An error occurred while creating the news post.");
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   return (
@@ -251,7 +269,7 @@ const CreateNewsForm = () => {
             disabled={loading}
           >
             {loading ? 
-              (submitAttempts > 1 ? `Retrying... (${submitAttempts}/${MAX_RETRIES})` : "Creating...") 
+              (submitAttempts > 1 ? `Retrying... (${submitAttempts}/${MAX_RETRIES + 1})` : "Creating...") 
               : "Submit"}
           </button>
         </div>

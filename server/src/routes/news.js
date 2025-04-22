@@ -1,24 +1,18 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const newsController = require('../controllers/newsController');
-const { upload, uploadMiddleware } = require('../middleware/upload');
+const {
+  createNewsPost,
+  getAllNewsPosts,
+  getNewsPostById,
+  updateNewsPost,
+  deleteNewsPost
+} = require("../controllers/newsController");
+const { upload } = require("../middleware/upload");
 
-router.get('/', newsController.getAllNewsPosts);
-
-router.get('/last-modified', newsController.getLastModified);
-
-router.get('/:id', newsController.getNewsPostById);
-
-router.post('/', uploadMiddleware.fields([
-  { name: 'image', maxCount: 1 },
-  { name: 'pdf', maxCount: 1 }
-]), newsController.createNewsPost);
-
-router.put('/:id', uploadMiddleware.fields([
-  { name: 'image', maxCount: 1 },
-  { name: 'pdf', maxCount: 1 }
-]), newsController.updateNewsPost);
-
-router.delete('/:id', newsController.deleteNewsPost);
+router.post("/", upload, createNewsPost);
+router.get("/", getAllNewsPosts);
+router.get("/:id", getNewsPostById);
+router.put("/:id", upload, updateNewsPost);
+router.delete("/:id", deleteNewsPost);
 
 module.exports = router;

@@ -27,6 +27,11 @@
   margin-top: 30px;
 }
 
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
 .create-news-button {
   background-color: black;
   color: white;
@@ -37,9 +42,33 @@
   transition: all 0.2s ease;
 }
 
+.refresh-button {
+  background-color: #4a6cf7;
+  color: white;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.refresh-button:hover {
+  filter: brightness(1.1);
+}
+
+.refresh-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 [data-theme="dark"] .create-news-button {
   background-color: black;
   color: white;
+  border: 0.1px solid grey;
+}
+
+[data-theme="dark"] .refresh-button {
+  background-color: #5d7af8;
   border: 0.1px solid grey;
 }
 
@@ -55,34 +84,6 @@
   border-radius: 8px;
   transition: all 0.3s ease;
 }
-/* 
-.news-image-container {
-  width: 200px;
-  height: 150px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-}
-
-.news-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.news-info {
-  display: flex;
-  flex-direction: row;
-  gap: 30px;
-  align-items: flex-start;
-  width: 100%;
-}
-
-.news-td {
-  flex: 1;
-} */
 
 .news-image-container {
   width: 200px;
@@ -98,12 +99,12 @@
 .news-image-container img {
   width: 100%;
   height: 100%;
-  object-fit: contain; 
-  background-color: #f5f5f5;  
+  object-fit: contain;
+  background-color: #f5f5f5;
 }
 
 [data-theme="dark"] .news-image-container img {
-  background-color: #2a2a2a;  
+  background-color: #2a2a2a;
 }
 
 .news-info {
@@ -119,7 +120,6 @@
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
-
 
 .news-info h3 {
   font-size: 1.3rem;
@@ -260,6 +260,22 @@
   font-weight: 500;
 }
 
+.loading-message {
+  color: var(--info-text, #0288d1);
+  background-color: var(--info-bg, #e1f5fe);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.file-info {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+  margin-top: 4px;
+}
+
 @media screen and (max-width: 1024px) {
   .latest-news {
     margin: 20px;
@@ -297,6 +313,16 @@
     width: 100%;
     justify-content: space-between;
   }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .refresh-button, .create-news-button {
+    width: 100%;
+  }
 }
 
 @media screen and (max-width: 576px) {
@@ -315,7 +341,7 @@
     gap: 15px;
   }
   
-  .create-news-button {
+  .create-news-button, .refresh-button {
     width: 100%;
   }
   

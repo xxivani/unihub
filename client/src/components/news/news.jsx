@@ -1,6 +1,6 @@
 import "./news.css";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const NewsSection = () => {
   const [user, setUser] = useState(null);
@@ -9,6 +9,8 @@ const NewsSection = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(3);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
 
   const API_URL =
     import.meta.env.VITE_API_URL ||
@@ -21,7 +23,7 @@ const NewsSection = () => {
       news_id: 1,
       news_title: "Newsletter Week 6",
       news_content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dictum est sodales quam consectetur feugiat. Vivamus posuere non augue non finibus. Pellentesque nec rutrum libero. Curabitur fringilla, metus placerat aliquet posuere, ante libero ullamcorper justo, quis placerat ante nisl eu risus. Suspendisse eu ipsum ac eros vehicula auctor.",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dictum est sodales quam consectetur feugiat.",
       news_thumbnail_url: "https://picsum.photos/200/150?random=1",
       news_pdf_url: "#",
     },
@@ -29,109 +31,142 @@ const NewsSection = () => {
       news_id: 2,
       news_title: "Newsletter Week 5",
       news_content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dictum est sodales quam consectetur feugiat. Vivamus posuere non augue non finibus. Pellentesque nec rutrum libero. Curabitur fringilla, metus placerat aliquet posuere, ante libero ullamcorper justo, quis placerat ante nisl eu risus. Suspendisse eu ipsum ac eros vehicula auctor.",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dictum est sodales quam consectetur feugiat.",
       news_thumbnail_url: "https://picsum.photos/200/150?random=2",
-      news_pdf_url: "#",
-    },
-    {
-      news_id: 3,
-      news_title: "Newsletter Week 4",
-      news_content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dictum est sodales quam consectetur feugiat. Vivamus posuere non augue non finibus. Pellentesque nec rutrum libero. Curabitur fringilla, metus placerat aliquet posuere, ante libero ullamcorper justo, quis placerat ante nisl eu risus. Suspendisse eu ipsum ac eros vehicula auctor.",
-      news_thumbnail_url: "https://picsum.photos/200/150?random=3",
-      news_pdf_url: "#",
-    },
-    {
-      news_id: 4,
-      news_title: "Newsletter Week 3",
-      news_content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dictum est sodales quam consectetur feugiat. Vivamus posuere non augue non finibus. Pellentesque nec rutrum libero. Curabitur fringilla, metus placerat aliquet posuere, ante libero ullamcorper justo, quis placerat ante nisl eu risus. Suspendisse eu ipsum ac eros vehicula auctor.",
-      news_thumbnail_url: "https://picsum.photos/200/150?random=4",
       news_pdf_url: "#",
     },
   ];
 
-  const fetchPosts = async () => {
+  const clearNewsCache = useCallback(() => {
+    try {
+      const keysToRemove = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && (key === "newsPosts" || key.startsWith("newsPost_"))) {
+          keysToRemove.push(key);
+        }
+      }
+      
+      keysToRemove.forEach(key => {
+        sessionStorage.removeItem(key);
+      });
+      
+      console.log(`Cleared ${keysToRemove.length} news cache items`);
+    } catch (err) {
+      console.error("Error clearing news cache:", err);
+    }
+  }, []);
+
+  const fetchWithRetry = useCallback(async (url, options = {}, attempts = 0) => {
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+      return response;
+    } catch (err) {
+      if (attempts < MAX_RETRIES) {
+        console.log(`Retry attempt ${attempts + 1} for ${url}`);
+        const delay = Math.min(1000 * Math.pow(2, attempts), 10000);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return fetchWithRetry(url, options, attempts + 1);
+      }
+      throw err;
+    }
+  }, [MAX_RETRIES]);
+
+  const fetchPosts = useCallback(async (forceFresh = false) => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/news`);
-      if (!res.ok) {
-        throw new Error(`API error: ${res.status} ${res.statusText}`);
+      setError(null);
+
+      if (forceFresh) {
+        clearNewsCache();
       }
+
+      const startTime = Date.now();
+      console.log("Fetching news posts from API...");
+      
+      const res = await fetchWithRetry(`${API_URL}/news`);
       const data = await res.json();
-      if (Array.isArray(data) && data.length) {
-        data.forEach((post) => {
-          sessionStorage.setItem(
-            `newsPost_${post.news_id}`,
-            JSON.stringify(post)
-          );
-        });
+
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid data format received from server");
+      }
+
+      console.log(`Successfully fetched ${data.length} news posts in ${Date.now() - startTime}ms`);
+      
+      data.sort((a, b) => new Date(b.news_created_at) - new Date(a.news_created_at));
+      
+      setNewsPosts(data);
+      setRetryCount(0); 
+
+      try {
         sessionStorage.setItem("newsPosts", JSON.stringify(data));
-        setNewsPosts(data);
-      } else {
-        const reconstructedPosts = [];
+        
+        data.forEach(post => {
+          sessionStorage.setItem(`newsPost_${post.news_id}`, JSON.stringify(post));
+        });
+        
+        console.log("News cache successfully updated");
+      } catch (cacheErr) {
+        console.warn("Failed to update news cache:", cacheErr);
+
+      }
+    } catch (err) {
+      console.error("Failed to fetch news posts:", err);
+      setError(err.message);
+
+      try {
+        const cachedPosts = [];
+        const keys = [];
+        
         for (let i = 0; i < sessionStorage.length; i++) {
           const key = sessionStorage.key(i);
           if (key && key.startsWith("newsPost_")) {
-            try {
-              reconstructedPosts.push(
-                JSON.parse(sessionStorage.getItem(key))
-              );
-            } catch (e) {
-              console.error("Failed to parse stored post:", e);
-            }
+            keys.push(key);
           }
         }
-        if (reconstructedPosts.length) {
-          reconstructedPosts.sort(
-            (a, b) =>
-              new Date(b.news_created_at) - new Date(a.news_created_at)
-          );
-          setNewsPosts(reconstructedPosts);
+        
+        keys.forEach(key => {
+          try {
+            const post = JSON.parse(sessionStorage.getItem(key));
+            if (post && post.news_id) {
+              cachedPosts.push(post);
+            }
+          } catch (e) {
+            console.warn(`Failed to parse cached post ${key}:`, e);
+          }
+        });
+
+        if (cachedPosts.length) {
+          console.log(`Loaded ${cachedPosts.length} posts from individual cache entries`);
+          cachedPosts.sort((a, b) => new Date(b.news_created_at) - new Date(a.news_created_at));
+          setNewsPosts(cachedPosts);
         } else {
           const cached = sessionStorage.getItem("newsPosts");
           if (cached) {
-            setNewsPosts(JSON.parse(cached));
+            try {
+              const parsedPosts = JSON.parse(cached);
+              console.log(`Loaded ${parsedPosts.length} posts from aggregate cache`);
+              setNewsPosts(parsedPosts);
+            } catch (e) {
+              console.warn("Failed to parse aggregate news cache:", e);
+              setNewsPosts(sampleNewsPosts);
+            }
           } else {
+            console.log("No cache available, using sample posts");
             setNewsPosts(sampleNewsPosts);
           }
         }
-      }
-    } catch (e) {
-      console.error("Error fetching posts:", e);
-      setError(e.message);
-
-      const reconstructedPosts = [];
-      for (let i = 0; i < sessionStorage.length; i++) {
-        const key = sessionStorage.key(i);
-        if (key && key.startsWith("newsPost_")) {
-          try {
-            reconstructedPosts.push(
-              JSON.parse(sessionStorage.getItem(key))
-            );
-          } catch (e) {
-            console.error("Failed to parse stored post:", e);
-          }
-        }
-      }
-      if (reconstructedPosts.length) {
-        reconstructedPosts.sort(
-          (a, b) =>
-            new Date(b.news_created_at) - new Date(a.news_created_at)
-        );
-        setNewsPosts(reconstructedPosts);
-      } else {
-        const cached = sessionStorage.getItem("newsPosts");
-        if (cached) {
-          setNewsPosts(JSON.parse(cached));
-        } else {
-          setNewsPosts(sampleNewsPosts);
-        }
+      } catch (cacheErr) {
+        console.error("Cache fallback also failed:", cacheErr);
+        setNewsPosts(sampleNewsPosts);
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL, clearNewsCache, fetchWithRetry]);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("user");
@@ -139,33 +174,88 @@ const NewsSection = () => {
       try {
         setUser(JSON.parse(stored));
       } catch (e) {
-        console.error("Failed to parse user from sessionStorage", e);
+        console.warn("Failed to parse user data:", e);
       }
     }
-    fetchPosts();
-  }, []);
+
+    console.log("Initial news fetch with API URL:", API_URL);
+    fetchPosts(true); 
+    
+    const intervalId = setInterval(() => {
+      console.log("Polling for fresh news data");
+      fetchPosts();
+    }, 30000);
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('refresh') === 'true') {
+      console.log("Detected refresh parameter, forcing fresh data fetch");
+      fetchPosts(true);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    const handleStorageChange = (e) => {
+      if (e.key === "newsPostsUpdated") {
+        console.log("News posts updated in another tab, refreshing");
+        fetchPosts();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [API_URL, fetchPosts]);
+
+  const handleRefresh = () => {
+    console.log("Manual refresh requested");
+    setRetryCount(prevCount => prevCount + 1);
+    fetchPosts(true); 
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this post?")) return;
     try {
-      const res = await fetch(`${API_URL}/news/${id}`, {
+      setLoading(true);
+      console.log(`Deleting news post ${id}...`);
+      
+      const res = await fetchWithRetry(`${API_URL}/news/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
       });
+
       if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text);
+        const errorText = await res.text();
+        throw new Error(errorText || "Failed to delete post");
       }
+
       const updated = newsPosts.filter((p) => p.news_id !== id);
       setNewsPosts(updated);
-      sessionStorage.setItem("newsPosts", JSON.stringify(updated));
-      sessionStorage.removeItem(`newsPost_${id}`);
+      
+      try {
+        clearNewsCache();
+        sessionStorage.setItem("newsPosts", JSON.stringify(updated));
+        updated.forEach(post => {
+          sessionStorage.setItem(`newsPost_${post.news_id}`, JSON.stringify(post));
+        });
+        
+        sessionStorage.setItem("newsPostsUpdated", Date.now().toString());
+      } catch (cacheErr) {
+        console.warn("Failed to update cache after delete:", cacheErr);
+      }
+      
+      fetchPosts(true);
+      
       alert("Post deleted successfully");
     } catch (e) {
-      console.error("Error deleting post:", e);
+      console.error("Delete failed:", e);
       alert(`Error: ${e.message}`);
+      fetchPosts(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -176,7 +266,7 @@ const NewsSection = () => {
   const paginate = (n) => setCurrentPage(n);
   const base = API_URL.replace(/\/api$/, "");
 
-  if (loading) {
+  if (loading && newsPosts.length === 0) {
     return (
       <section className="latest-news">
         <div className="title-button">
@@ -191,20 +281,36 @@ const NewsSection = () => {
     <section className="latest-news">
       <div className="title-button">
         <h2>Latest News</h2>
-        {user?.role === "admin" && (
-          <Link to="/news/create-news-post">
-            <button className="create-news-button">
-              Create News Post
-            </button>
-          </Link>
-        )}
+        <div className="action-buttons">
+          <button 
+            className="refresh-button" 
+            onClick={handleRefresh}
+            disabled={loading}
+          >
+            {loading ? "Refreshing..." : "Refresh"}
+          </button>
+          
+          {user?.role === "admin" && (
+            <Link to="/news/create-news-post">
+              <button className="create-news-button">Create News Post</button>
+            </Link>
+          )}
+        </div>
       </div>
+
       {error && (
         <p className="error-message">
           Error loading news: {error}{" "}
-          <button onClick={fetchPosts}>Retry</button>
+          <button onClick={handleRefresh}>
+            {retryCount >= MAX_RETRIES ? "Try Again" : `Retry (${retryCount}/${MAX_RETRIES})`}
+          </button>
         </p>
       )}
+
+      {loading && newsPosts.length > 0 && (
+        <p className="loading-message">Refreshing news posts...</p>
+      )}
+
       <div className="news-list">
         {current.length ? (
           current.map((n) => (
@@ -228,13 +334,9 @@ const NewsSection = () => {
                   <p>{n.news_content}</p>
                   {n.news_author?.toLowerCase() !== "admin" && (
                     <>
-                      <p className="news-author">
-                        By: {n.news_author}
-                      </p>
+                      <p className="news-author">By: {n.news_author}</p>
                       <p className="news-date">
-                        {new Date(
-                          n.news_created_at
-                        ).toLocaleDateString()}
+                        {new Date(n.news_created_at).toLocaleDateString()}
                       </p>
                     </>
                   )}
@@ -279,12 +381,10 @@ const NewsSection = () => {
           <p>No news posts available</p>
         )}
       </div>
+
       {totalPages > 1 && (
         <div className="pagination">
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
+          <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
             &laquo; Prev
           </button>
           <div className="page-numbers">

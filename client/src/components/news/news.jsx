@@ -68,74 +68,30 @@ const NewsSection = () => {
       console.log("Posts received:", data);
       
       if (Array.isArray(data) && data.length) {
-        data.forEach(post => {
-          const postKey = `newsPost_${post.news_id}`;
-          sessionStorage.setItem(postKey, JSON.stringify(post));
-        });
-        
         sessionStorage.setItem("newsPosts", JSON.stringify(data));
         setNewsPosts(data);
       } else {
         console.warn("No posts found in API response, checking session storage");
-        
-        const reconstructedPosts = [];
-        for (let i = 0; i < sessionStorage.length; i++) {
-          const key = sessionStorage.key(i);
-          if (key && key.startsWith('newsPost_')) {
-            try {
-              const post = JSON.parse(sessionStorage.getItem(key));
-              reconstructedPosts.push(post);
-            } catch (e) {
-              console.error("Failed to parse stored post:", e);
-            }
-          }
-        }
-        
-        if (reconstructedPosts.length) {
-          console.log("Using reconstructed posts from session storage");
-          reconstructedPosts.sort((a, b) => new Date(b.news_created_at) - new Date(a.news_created_at));
-          setNewsPosts(reconstructedPosts);
+        const cached = sessionStorage.getItem("newsPosts");
+        if (cached) {
+          console.log("Using cached posts from session storage");
+          setNewsPosts(JSON.parse(cached));
         } else {
-          const cached = sessionStorage.getItem("newsPosts");
-          if (cached) {
-            console.log("Using cached posts from session storage");
-            setNewsPosts(JSON.parse(cached));
-          } else {
-            console.log("Using sample posts as fallback");
-            setNewsPosts(sampleNewsPosts);
-          }
+          console.log("Using sample posts as fallback");
+          setNewsPosts(sampleNewsPosts);
         }
       }
     } catch (e) {
       console.error("Error fetching posts:", e);
       setError(e.message);
       
-      const reconstructedPosts = [];
-      for (let i = 0; i < sessionStorage.length; i++) {
-        const key = sessionStorage.key(i);
-        if (key && key.startsWith('newsPost_')) {
-          try {
-            const post = JSON.parse(sessionStorage.getItem(key));
-            reconstructedPosts.push(post);
-          } catch (e) {
-            console.error("Failed to parse stored post:", e);
-          }
-        }
-      }
-      
-      if (reconstructedPosts.length) {
-        console.log("Using reconstructed posts from session storage due to error");
-        reconstructedPosts.sort((a, b) => new Date(b.news_created_at) - new Date(a.news_created_at));
-        setNewsPosts(reconstructedPosts);
+      const cached = sessionStorage.getItem("newsPosts");
+      if (cached) {
+        console.log("Using cached posts from session storage due to error");
+        setNewsPosts(JSON.parse(cached));
       } else {
-        const cached = sessionStorage.getItem("newsPosts");
-        if (cached) {
-          console.log("Using cached posts from session storage due to error");
-          setNewsPosts(JSON.parse(cached));
-        } else {
-          console.log("Using sample posts as fallback due to error");
-          setNewsPosts(sampleNewsPosts);
-        }
+        console.log("Using sample posts as fallback due to error");
+        setNewsPosts(sampleNewsPosts);
       }
     } finally {
       setLoading(false);
@@ -170,9 +126,7 @@ const NewsSection = () => {
       
       const updatedPosts = newsPosts.filter((p) => p.news_id !== id);
       setNewsPosts(updatedPosts);
-      
       sessionStorage.setItem("newsPosts", JSON.stringify(updatedPosts));
-      sessionStorage.removeItem(`newsPost_${id}`);
       
       alert("Post deleted successfully");
     } catch (e) {
@@ -241,7 +195,7 @@ const NewsSection = () => {
                   )}
                 </div>
                 <div className="buttons">
-                  
+                  <a
                     href={`${base}${n.news_pdf_url}`}
                     className="view-newsletter"
                     target="_blank"
@@ -249,7 +203,7 @@ const NewsSection = () => {
                   >
                     View
                   </a>
-                  
+                  <a
                     href={`${base}${n.news_pdf_url}`}
                     className="download-newsletter"
                     download
@@ -261,7 +215,7 @@ const NewsSection = () => {
                   {user?.role === "admin" && (
                     <div className="admin-actions">
                       <Link to={`/news/edit/${n.news_id}`}>Edit</Link>
-                      
+                      <a
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();

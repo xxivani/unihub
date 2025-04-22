@@ -81,6 +81,11 @@ const FormApply = () => {
         body: payload
       });
 
+      if (response.status === 413) {
+        alert('File is too large. Please upload a smaller file (max 10MB).');
+        return;
+      }
+
       const result = await response.json();
       if (!response.ok) {
         throw new Error(result.message || "Submission failed");

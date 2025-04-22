@@ -56,8 +56,13 @@ const createRoleOpeningRegistration = async (req, res) => {
       return res.status(400).json({ message: 'CV (PDF) file is required' });
     }
 
-    const pdfFilename = req.files.pdf[0].filename;
-    const applicant_cv_url = `/uploads/pdfs/${pdfFilename}`;
+    // const pdfFilename = req.files.pdf[0].filename;
+    // const applicant_cv_url = `/uploads/pdfs/${pdfFilename}`;
+    const pdfFile = req.files?.pdf?.[0];
+    if (!pdfFile) {
+      return res.status(400).json({ message: 'CV (PDF) file is required' });
+    }
+    const applicant_cv_url = `/uploads/pdfs/${pdfFile.filename}`;
 
     // Check if the role opening exists
     const roleOpening = await RoleOpening.findByPk(role_opening_id, { transaction: t });

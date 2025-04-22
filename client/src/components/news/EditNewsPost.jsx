@@ -22,11 +22,20 @@ const EditNewsForm = () => {
   useEffect(() => {
     const fetchNewsPost = async () => {
       try {
-        const response = await fetch(`${apiUrl}/news/${id}`);
+        console.log(`Fetching news post with ID: ${id}`);
+        const response = await fetch(`${apiUrl}/news/${id}`, {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+        
         if (!response.ok) {
-          throw new Error("Failed to fetch news post");
+          throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
         }
+        
         const data = await response.json();
+        console.log('Received news post data:', data);
         
         setTitle(data.news_title || data.title || "");
         setBody(data.news_content || data.description || "");
@@ -86,21 +95,23 @@ const EditNewsForm = () => {
     }
 
     try {
+      console.log(`Updating news post with ID: ${id}`);
       const response = await fetch(`${apiUrl}/news/${id}`, {
         method: "PUT",
         body: formData,
       });
       
       const data = await response.json();
+      console.log('Server response:', data);
       
       if (response.ok) {
         alert("News post updated successfully!");
-        navigate("/news");
+        navigate("/news", { state: { refresh: true }});
       } else {
-        setError(data.error || "Failed to update news post");
+        setError(data.error || data.message || "Failed to update news post");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error updating news post:", err);
       setError("An error occurred while updating the news post.");
     } finally {
       setLoading(false);

@@ -10,7 +10,12 @@ const checkDatabaseConnection = async () => {
       return false;
     }
     
-    console.log('Database connection details:', News.sequelize.config);
+    console.log('Database connection details:', {
+      database: News.sequelize.config.database,
+      username: News.sequelize.config.username,
+      host: News.sequelize.config.host,
+      port: News.sequelize.config.port
+    });
     
     const tableCheck = await News.sequelize.query('SELECT to_regclass(\'public.news\');');
     console.log('Table check result:', tableCheck);
@@ -37,6 +42,12 @@ const createNewsPost = async (req, res) => {
   try {
     console.log('Creating news post with body:', req.body);
     console.log('Files received:', req.files);
+    
+    const isConnected = await checkDatabaseConnection();
+    if (!isConnected) {
+      console.error('Database connection check failed before creating news post');
+      return res.status(500).json({ message: 'Database connection error' });
+    }
     
     const { title, body } = req.body;
     const user = req.user || { user_name: 'Admin' }; 
@@ -112,11 +123,20 @@ const createNewsPost = async (req, res) => {
 
 const getAllNewsPosts = async (req, res) => {
   try {
+    console.log('Fetching all news posts');
+    
+    const isConnected = await checkDatabaseConnection();
+    if (!isConnected) {
+      console.error('Database connection check failed before fetching news posts');
+      return res.status(500).json({ message: 'Database connection error' });
+    }
+    
     try {
       const newsPosts = await News.findAll({
         order: [['news_created_at', 'DESC']]
       });
       
+      console.log(`Retrieved ${newsPosts.length} news posts`);
       res.status(200).json(newsPosts);
     } catch (modelError) {
       console.error('Error using model findAll, trying raw query:', modelError);
@@ -130,6 +150,7 @@ const getAllNewsPosts = async (req, res) => {
         }
       );
       
+      console.log(`Retrieved ${rawQuery.length} news posts via raw query`);
       res.status(200).json(rawQuery);
     }
   } catch (error) {
@@ -141,6 +162,7 @@ const getAllNewsPosts = async (req, res) => {
 const getNewsPostById = async (req, res) => {
   try {
     const newsId = req.params.id;
+    console.log(`Fetching news post with ID: ${newsId}`);
     
     try {
       const newsPost = await News.findByPk(newsId);

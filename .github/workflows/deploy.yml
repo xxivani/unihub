@@ -128,8 +128,8 @@ jobs:
             # Wait for the database to be properly initialized
             for i in \$(seq 1 60); do
               echo \"Attempt \$i: Checking database readiness...\"
-              if docker exec team77-dev-db pg_isready -U team77 -d UniHub && 
-                docker exec team77-dev-db psql -U team77 -d UniHub -c 'SELECT 1' > /dev/null 2>&1; then
+              if docker exec team77-dev-db pg_isready -U team77 -d team77 && 
+                docker exec team77-dev-db psql -U team77 -d team77 -c 'SELECT 1' > /dev/null 2>&1; then
                 echo \"Database is ready and can execute queries!\"
                 sleep 5 
                 break
@@ -146,10 +146,10 @@ jobs:
             docker run --rm --name team77-migrations \
               --network common-network \
               -e NODE_ENV=development \
-              -e DATABASE_URL=postgres://team77:team77@team77-dev-db:5432/UniHub \
+              -e DATABASE_URL=postgres://team77:team77@team77-dev-db:5432/team77 \
               -e POSTGRES_USER=team77 \
               -e POSTGRES_PASSWORD=team77 \
-              -e POSTGRES_DB=UniHub \
+              -e POSTGRES_DB=team77 \
               -e DB_HOST=team77-dev-db \
               -e DB_PORT=5432 \
               -v ~/team-project/migrations:/app/migrations \
@@ -257,7 +257,7 @@ jobs:
             # Wait for the database to be properly initialized
             for i in \$(seq 1 60); do
               echo \"Attempt \$i: Checking database readiness...\"
-              if docker exec team77-db pg_isready -U team77 -d UniHub; then
+              if docker exec team77-db pg_isready -U team77 -d team77; then
                 echo \"Database is ready!\"
                 sleep 5  # Give it a little extra time to be fully initialized
                 break
@@ -274,10 +274,10 @@ jobs:
             docker run --rm --name team77-migrations \
               --network common-network \
               -e NODE_ENV=production \
-              -e DATABASE_URL=postgres://team77:team77@team77-db:5432/UniHub \
+              -e DATABASE_URL=postgres://team77:team77@team77-db:5432/team77 \
               -e POSTGRES_USER=team77 \
               -e POSTGRES_PASSWORD=team77 \
-              -e POSTGRES_DB=UniHub \
+              -e POSTGRES_DB=team77 \
               -e DB_HOST=team77-db \
               -e DB_PORT=5432 \
               -v ~/team-project/migrations:/app/migrations \

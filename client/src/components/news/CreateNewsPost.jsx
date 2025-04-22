@@ -72,27 +72,60 @@ const CreateNewsForm = () => {
     formData.append("pdf", pdfFile);
 
     try {
+      console.log('Submitting news post to:', `${apiUrl}/news`);
       const response = await fetch(`${apiUrl}/news`, {
         method: "POST",
         body: formData,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+        },
       });
       
       if (response.status === 413) {
         alert('File is too large. Please upload a smaller file (max 10MB).');
+        setLoading(false);
         return;
       }
     
-      
       const data = await response.json();
+      console.log('Server response:', data);
       
       if (response.ok) {
+        try {
+          const allPosts = await fetch(`${apiUrl}/news`);
+          if (allPosts.ok) {
+            const postsData = await allPosts.json();
+            if (Array.isArray(postsData)) {
+              sessionStorage.setItem("newsPosts", JSON.stringify(postsData));
+              postsData.forEach(post => {
+                sessionStorage.setItem(`newsPost_${post.news_id}`, JSON.stringify(post));
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Failed to refresh posts after creation:", err);
+        }
+        
+        if (data && data.id) {
+          const newPost = {
+            news_id: data.id,
+            news_title: title,
+            news_content: body,
+            news_thumbnail_url: data.imageUrl || defaultImageUrl,
+            news_pdf_url: data.pdfUrl,
+            news_created_at: new Date().toISOString()
+          };
+          sessionStorage.setItem(`newsPost_${data.id}`, JSON.stringify(newPost));
+        }
+        
         alert("News post created successfully!");
-        navigate("/news");
+        navigate("/news", { state: { refresh: true }});
       } else {
-        setError(data.error || "Failed to create news post");
+        setError(data.error || data.message || "Failed to create news post");
       }
     } catch (err) {
-      console.error(err);
+      console.error('Error creating news post:', err);
       setError("An error occurred while creating the news post.");
     } finally {
       setLoading(false);

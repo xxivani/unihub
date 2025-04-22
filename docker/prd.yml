@@ -26,11 +26,11 @@ services:
       - PORT=8080
       - POSTGRES_USER=team77
       - POSTGRES_PASSWORD=team77
-      - POSTGRES_DB=UniHub
+      - POSTGRES_DB=team77
       - DB_HOST=db
       - DB_PORT=5432
       - JWT_SECRET=team77_secret
-      - DATABASE_URL=postgres://team77:team77@db:5432/UniHub
+      - DATABASE_URL=postgres://team77:team77@db:5432/team77
     depends_on:
       - db
     volumes:

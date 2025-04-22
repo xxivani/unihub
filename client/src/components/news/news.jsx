@@ -53,23 +53,106 @@ const NewsSection = () => {
     }
   ];
 
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      console.log("Fetching posts from:", `${API_URL}/news`);
+      
+      const res = await fetch(`${API_URL}/news`);
+      if (!res.ok) {
+        console.error("API error response:", res.status, res.statusText);
+        throw new Error(`API error: ${res.status} ${res.statusText}`);
+      }
+      
+      const data = await res.json();
+      console.log("Posts received:", data);
+      
+      if (Array.isArray(data) && data.length) {
+        data.forEach(post => {
+          const postKey = `newsPost_${post.news_id}`;
+          sessionStorage.setItem(postKey, JSON.stringify(post));
+        });
+        
+        sessionStorage.setItem("newsPosts", JSON.stringify(data));
+        setNewsPosts(data);
+      } else {
+        console.warn("No posts found in API response, checking session storage");
+        
+        const reconstructedPosts = [];
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const key = sessionStorage.key(i);
+          if (key && key.startsWith('newsPost_')) {
+            try {
+              const post = JSON.parse(sessionStorage.getItem(key));
+              reconstructedPosts.push(post);
+            } catch (e) {
+              console.error("Failed to parse stored post:", e);
+            }
+          }
+        }
+        
+        if (reconstructedPosts.length) {
+          console.log("Using reconstructed posts from session storage");
+          reconstructedPosts.sort((a, b) => new Date(b.news_created_at) - new Date(a.news_created_at));
+          setNewsPosts(reconstructedPosts);
+        } else {
+          const cached = sessionStorage.getItem("newsPosts");
+          if (cached) {
+            console.log("Using cached posts from session storage");
+            setNewsPosts(JSON.parse(cached));
+          } else {
+            console.log("Using sample posts as fallback");
+            setNewsPosts(sampleNewsPosts);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Error fetching posts:", e);
+      setError(e.message);
+      
+      const reconstructedPosts = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && key.startsWith('newsPost_')) {
+          try {
+            const post = JSON.parse(sessionStorage.getItem(key));
+            reconstructedPosts.push(post);
+          } catch (e) {
+            console.error("Failed to parse stored post:", e);
+          }
+        }
+      }
+      
+      if (reconstructedPosts.length) {
+        console.log("Using reconstructed posts from session storage due to error");
+        reconstructedPosts.sort((a, b) => new Date(b.news_created_at) - new Date(a.news_created_at));
+        setNewsPosts(reconstructedPosts);
+      } else {
+        const cached = sessionStorage.getItem("newsPosts");
+        if (cached) {
+          console.log("Using cached posts from session storage due to error");
+          setNewsPosts(JSON.parse(cached));
+        } else {
+          console.log("Using sample posts as fallback due to error");
+          setNewsPosts(sampleNewsPosts);
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const stored = sessionStorage.getItem("user");
     if (stored) setUser(JSON.parse(stored));
-    const fetchPosts = async () => {
-      try {
-        const res = await fetch(`${API_URL}/news`);
-        if (!res.ok) throw new Error(res.statusText);
-        const data = await res.json();
-        setNewsPosts(Array.isArray(data) && data.length ? data : sampleNewsPosts);
-      } catch (e) {
-        setError(e.message);
-        setNewsPosts(sampleNewsPosts);
-      } finally {
-        setLoading(false);
-      }
-    };
+    
     fetchPosts();
+    
+    const refreshInterval = setInterval(() => {
+      fetchPosts();
+    }, 60000); 
+    
+    return () => clearInterval(refreshInterval);
   }, []);
 
   const handleDelete = async (id) => {
@@ -79,11 +162,22 @@ const NewsSection = () => {
         method: "DELETE",
         headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
       });
-      if (!res.ok) throw new Error(await res.text());
-      setNewsPosts((prev) => prev.filter((p) => p.news_id !== id));
-      alert("Deleted");
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText);
+      }
+      
+      const updatedPosts = newsPosts.filter((p) => p.news_id !== id);
+      setNewsPosts(updatedPosts);
+      
+      sessionStorage.setItem("newsPosts", JSON.stringify(updatedPosts));
+      sessionStorage.removeItem(`newsPost_${id}`);
+      
+      alert("Post deleted successfully");
     } catch (e) {
-      alert(e.message);
+      console.error("Error deleting post:", e);
+      alert(`Error: ${e.message}`);
     }
   };
 
@@ -100,7 +194,7 @@ const NewsSection = () => {
         <div className="title-button">
           <h2>Latest News</h2>
         </div>
-        <p>Loading...</p>
+        <p>Loading news posts...</p>
       </section>
     );
   }
@@ -115,7 +209,7 @@ const NewsSection = () => {
           </Link>
         )}
       </div>
-      {error && <p className="error-message">{error}</p>}
+      {error && <p className="error-message">Error loading news: {error}. <button onClick={fetchPosts}>Retry</button></p>}
       <div className="news-list">
         {current.length ? (
           current.map((n) => (
@@ -147,7 +241,7 @@ const NewsSection = () => {
                   )}
                 </div>
                 <div className="buttons">
-                  <a
+                  
                     href={`${base}${n.news_pdf_url}`}
                     className="view-newsletter"
                     target="_blank"
@@ -155,7 +249,7 @@ const NewsSection = () => {
                   >
                     View
                   </a>
-                  <a
+                  
                     href={`${base}${n.news_pdf_url}`}
                     className="download-newsletter"
                     download
@@ -167,7 +261,7 @@ const NewsSection = () => {
                   {user?.role === "admin" && (
                     <div className="admin-actions">
                       <Link to={`/news/edit/${n.news_id}`}>Edit</Link>
-                      <a
+                      
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();
@@ -183,7 +277,7 @@ const NewsSection = () => {
             </div>
           ))
         ) : (
-          <p>No posts</p>
+          <p>No news posts available</p>
         )}
       </div>
       {totalPages > 1 && (

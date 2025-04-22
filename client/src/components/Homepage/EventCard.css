@@ -1,14 +1,6 @@
-/* no lines should show up for the place and time the event takes place*/
-
-/* add padding to the list of events*/
-
-/* the heading should be a link that redirects the user to the event in detail*/
-
-/* the view all events button will redirect the user to all events*/
-
 .events-section {
-  margin-bottom: 200px;
-  margin-top: 300px;
+  margin-bottom: 100px;
+  margin-top: 150px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,7 +25,6 @@
   text-align: left;
 }
 
-
 .events-card-group {
   display: flex;
   gap: 40px;
@@ -46,6 +37,8 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-in-out;
   max-width: 370px;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .event-card:hover {
@@ -83,7 +76,6 @@
   border: none !important;
 }
 
-
 .event-description {
   font-size: 0.9rem;
   color: #666;
@@ -96,14 +88,72 @@
   color: #000;
   padding: 18px 140px;
   font-weight: bold;
-  margin-top: 20px;
+  margin-top: 60px;
   text-decoration: none;
   transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  margin-top: 80px;
 }
 
 .view-all-events-button:hover {
   background-color: #e0b000;
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+@media screen and (max-width: 1024px) {
+  .events-section {
+    margin-top: 100px;
+    margin-bottom: 80px;
+  }
+  
+  .events-heading-wrapper {
+    margin-left: 30px;
+  }
+  
+  .event-card {
+    max-width: 320px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .events-heading-wrapper {
+    margin-left: 20px;
+    margin-bottom: 40px;
+  }
+  
+  .events-card-group {
+    gap: 20px;
+  }
+  
+  .view-all-events-button {
+    padding: 15px 100px;
+    margin-top: 40px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .events-section {
+    margin-top: 80px;
+    margin-bottom: 60px;
+    padding: 0 15px;
+  }
+  
+  .events-heading-wrapper {
+    margin-left: 0;
+    align-self: center;
+    margin-bottom: 30px;
+  }
+  
+  .events-heading {
+    font-size: 1.2rem;
+  }
+  
+  .event-card {
+    max-width: 100%;
+  }
+  
+  .view-all-events-button {
+    padding: 15px;
+    width: 100%;
+    max-width: 300px;
+  }
 }

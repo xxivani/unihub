@@ -9,8 +9,7 @@ const NewsSection = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(3);
-  const [retryCount, setRetryCount] = useState(0);
-  const MAX_RETRIES = 3;
+  const [serverLastModified, setServerLastModified] = useState(0);
 
   const API_URL =
     import.meta.env.VITE_API_URL ||
@@ -37,18 +36,48 @@ const NewsSection = () => {
     },
   ];
 
+  const checkServerUpdates = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/news/last-modified`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+      
+      if (!response.ok) {
+        console.warn('Failed to check for updates:', response.status);
+        return false;
+      }
+      
+      const data = await response.json();
+      
+      if (data.lastModified > serverLastModified) {
+        console.log('Server has newer data:', new Date(data.lastModified).toISOString());
+        setServerLastModified(data.lastModified);
+        return true;
+      }
+      
+      return false;
+    } catch (err) {
+      console.error('Error checking for updates:', err);
+      return false;
+    }
+  }, [API_URL, serverLastModified]);
+
   const clearNewsCache = useCallback(() => {
     try {
       const keysToRemove = [];
-      for (let i = 0; i < sessionStorage.length; i++) {
-        const key = sessionStorage.key(i);
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
         if (key && (key === "newsPosts" || key.startsWith("newsPost_"))) {
           keysToRemove.push(key);
         }
       }
       
       keysToRemove.forEach(key => {
-        sessionStorage.removeItem(key);
+        localStorage.removeItem(key);
       });
       
       console.log(`Cleared ${keysToRemove.length} news cache items`);
@@ -57,24 +86,6 @@ const NewsSection = () => {
     }
   }, []);
 
-  const fetchWithRetry = useCallback(async (url, options = {}, attempts = 0) => {
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-      return response;
-    } catch (err) {
-      if (attempts < MAX_RETRIES) {
-        console.log(`Retry attempt ${attempts + 1} for ${url}`);
-        const delay = Math.min(1000 * Math.pow(2, attempts), 10000);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        return fetchWithRetry(url, options, attempts + 1);
-      }
-      throw err;
-    }
-  }, [MAX_RETRIES]);
-
   const fetchPosts = useCallback(async (forceFresh = false) => {
     try {
       setLoading(true);
@@ -82,36 +93,46 @@ const NewsSection = () => {
 
       if (forceFresh) {
         clearNewsCache();
+        await new Promise(resolve => setTimeout(resolve, 300));
       }
 
-      const startTime = Date.now();
       console.log("Fetching news posts from API...");
       
-      const res = await fetchWithRetry(`${API_URL}/news`);
+      const res = await fetch(`${API_URL}/news`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+      
+      if (!res.ok) {
+        throw new Error(`API error: ${res.status}`);
+      }
+
       const data = await res.json();
 
       if (!Array.isArray(data)) {
-        throw new Error("Invalid data format received from server");
+        throw new Error("Invalid data format");
       }
 
-      console.log(`Successfully fetched ${data.length} news posts in ${Date.now() - startTime}ms`);
+      console.log(`Successfully fetched ${data.length} news posts`);
       
       data.sort((a, b) => new Date(b.news_created_at) - new Date(a.news_created_at));
       
       setNewsPosts(data);
-      setRetryCount(0); 
 
       try {
-        sessionStorage.setItem("newsPosts", JSON.stringify(data));
-        
+        localStorage.setItem("newsPosts", JSON.stringify(data));
         data.forEach(post => {
-          sessionStorage.setItem(`newsPost_${post.news_id}`, JSON.stringify(post));
+          localStorage.setItem(`newsPost_${post.news_id}`, JSON.stringify(post));
         });
+        
+        localStorage.setItem("newsLastFetch", Date.now().toString());
         
         console.log("News cache successfully updated");
       } catch (cacheErr) {
         console.warn("Failed to update news cache:", cacheErr);
-
       }
     } catch (err) {
       console.error("Failed to fetch news posts:", err);
@@ -121,8 +142,8 @@ const NewsSection = () => {
         const cachedPosts = [];
         const keys = [];
         
-        for (let i = 0; i < sessionStorage.length; i++) {
-          const key = sessionStorage.key(i);
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
           if (key && key.startsWith("newsPost_")) {
             keys.push(key);
           }
@@ -130,7 +151,7 @@ const NewsSection = () => {
         
         keys.forEach(key => {
           try {
-            const post = JSON.parse(sessionStorage.getItem(key));
+            const post = JSON.parse(localStorage.getItem(key));
             if (post && post.news_id) {
               cachedPosts.push(post);
             }
@@ -144,7 +165,7 @@ const NewsSection = () => {
           cachedPosts.sort((a, b) => new Date(b.news_created_at) - new Date(a.news_created_at));
           setNewsPosts(cachedPosts);
         } else {
-          const cached = sessionStorage.getItem("newsPosts");
+          const cached = localStorage.getItem("newsPosts");
           if (cached) {
             try {
               const parsedPosts = JSON.parse(cached);
@@ -166,10 +187,10 @@ const NewsSection = () => {
     } finally {
       setLoading(false);
     }
-  }, [API_URL, clearNewsCache, fetchWithRetry]);
+  }, [API_URL, clearNewsCache]);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("user");
+    const stored = localStorage.getItem("user");
     if (stored) {
       try {
         setUser(JSON.parse(stored));
@@ -178,40 +199,44 @@ const NewsSection = () => {
       }
     }
 
-    console.log("Initial news fetch with API URL:", API_URL);
-    fetchPosts(true); 
+    const params = new URLSearchParams(window.location.search);
+    const shouldRefresh = params.get('refresh') === 'true';
     
-    const intervalId = setInterval(() => {
-      console.log("Polling for fresh news data");
-      fetchPosts();
-    }, 30000);
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('refresh') === 'true') {
-      console.log("Detected refresh parameter, forcing fresh data fetch");
-      fetchPosts(true);
+    if (shouldRefresh) {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
+
+    console.log(`Initial news fetch with API URL: ${API_URL}, force refresh: ${shouldRefresh}`);
+    fetchPosts(shouldRefresh);
     
-    const handleStorageChange = (e) => {
-      if (e.key === "newsPostsUpdated") {
-        console.log("News posts updated in another tab, refreshing");
-        fetchPosts();
+    const checkInterval = setInterval(async () => {
+      const hasUpdates = await checkServerUpdates();
+      if (hasUpdates) {
+        console.log('Server has updates, refreshing data');
+        fetchPosts(true);
       }
+    }, 10000); 
+    
+    const handleFocus = () => {
+      console.log('Window focused, checking for updates');
+      checkServerUpdates().then(hasUpdates => {
+        if (hasUpdates) {
+          fetchPosts(true);
+        }
+      });
     };
     
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('focus', handleFocus);
     
     return () => {
-      clearInterval(intervalId);
-      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(checkInterval);
+      window.removeEventListener('focus', handleFocus);
     };
-  }, [API_URL, fetchPosts]);
+  }, [API_URL, fetchPosts, checkServerUpdates]);
 
   const handleRefresh = () => {
     console.log("Manual refresh requested");
-    setRetryCount(prevCount => prevCount + 1);
-    fetchPosts(true); 
+    fetchPosts(true);
   };
 
   const handleDelete = async (id) => {
@@ -220,10 +245,11 @@ const NewsSection = () => {
       setLoading(true);
       console.log(`Deleting news post ${id}...`);
       
-      const res = await fetchWithRetry(`${API_URL}/news/${id}`, {
+      const res = await fetch(`${API_URL}/news/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate'
         },
       });
 
@@ -235,21 +261,15 @@ const NewsSection = () => {
       const updated = newsPosts.filter((p) => p.news_id !== id);
       setNewsPosts(updated);
       
-      try {
-        clearNewsCache();
-        sessionStorage.setItem("newsPosts", JSON.stringify(updated));
-        updated.forEach(post => {
-          sessionStorage.setItem(`newsPost_${post.news_id}`, JSON.stringify(post));
-        });
-        
-        sessionStorage.setItem("newsPostsUpdated", Date.now().toString());
-      } catch (cacheErr) {
-        console.warn("Failed to update cache after delete:", cacheErr);
-      }
-      
-      fetchPosts(true);
+      clearNewsCache();
+      localStorage.setItem("newsPosts", JSON.stringify(updated));
+      updated.forEach(post => {
+        localStorage.setItem(`newsPost_${post.news_id}`, JSON.stringify(post));
+      });
       
       alert("Post deleted successfully");
+      
+      fetchPosts(true);
     } catch (e) {
       console.error("Delete failed:", e);
       alert(`Error: ${e.message}`);
@@ -301,9 +321,7 @@ const NewsSection = () => {
       {error && (
         <p className="error-message">
           Error loading news: {error}{" "}
-          <button onClick={handleRefresh}>
-            {retryCount >= MAX_RETRIES ? "Try Again" : `Retry (${retryCount}/${MAX_RETRIES})`}
-          </button>
+          <button onClick={handleRefresh}>Try Again</button>
         </p>
       )}
 

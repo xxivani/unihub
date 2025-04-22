@@ -4,7 +4,7 @@ module.exports = {
   development: {
     username: process.env.POSTGRES_USER     || 'team77',
     password: process.env.POSTGRES_PASSWORD || 'team77',
-    database: process.env.POSTGRES_DB       || 'UniHub',
+    database: process.env.POSTGRES_DB       || 'team77', 
     host:     process.env.DB_HOST           || '127.0.0.1',
     port:     process.env.DB_PORT           || 5432,
     dialect:  'postgres',
@@ -27,7 +27,7 @@ module.exports = {
   test: {
     username: process.env.POSTGRES_USER     || 'team77',
     password: process.env.POSTGRES_PASSWORD || 'team77',
-    database: process.env.POSTGRES_DB       || 'UniHub',
+    database: process.env.POSTGRES_DB       || 'team77', 
     host:     process.env.DB_HOST           || '127.0.0.1',
     port:     process.env.DB_PORT           || 5433,
     dialect:  'postgres',

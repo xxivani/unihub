@@ -1,7 +1,7 @@
 const { News } = require('../models');
 const path = require('path');
 const fs = require('fs');
-const { upload } = require('../middleware/upload'); 
+const uploadMiddleware = require('../middleware/upload');
 
 const checkDatabaseConnection = async () => {
   try {
@@ -525,5 +525,4 @@ module.exports = {
   updateNewsPost,
   deleteNewsPost,
   getLastModified,
-  upload
 };

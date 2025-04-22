@@ -98,6 +98,7 @@ const CreateNewsForm = () => {
             const postsData = await allPosts.json();
             if (Array.isArray(postsData)) {
               sessionStorage.setItem("newsPosts", JSON.stringify(postsData));
+              
               postsData.forEach(post => {
                 sessionStorage.setItem(`newsPost_${post.news_id}`, JSON.stringify(post));
               });
@@ -105,18 +106,26 @@ const CreateNewsForm = () => {
           }
         } catch (err) {
           console.error("Failed to refresh posts after creation:", err);
-        }
-        
-        if (data && data.id) {
-          const newPost = {
-            news_id: data.id,
-            news_title: title,
-            news_content: body,
-            news_thumbnail_url: data.imageUrl || defaultImageUrl,
-            news_pdf_url: data.pdfUrl,
-            news_created_at: new Date().toISOString()
-          };
-          sessionStorage.setItem(`newsPost_${data.id}`, JSON.stringify(newPost));
+          
+          if (data && data.newsPost) {
+            const newPost = data.newsPost;
+            const newPostId = newPost.news_id;
+            
+            if (newPostId) {
+              sessionStorage.setItem(`newsPost_${newPostId}`, JSON.stringify(newPost));
+              
+              const existingPosts = sessionStorage.getItem("newsPosts");
+              if (existingPosts) {
+                try {
+                  const parsedPosts = JSON.parse(existingPosts);
+                  const updatedPosts = [newPost, ...parsedPosts];
+                  sessionStorage.setItem("newsPosts", JSON.stringify(updatedPosts));
+                } catch (e) {
+                  console.error("Failed to update cached posts:", e);
+                }
+              }
+            }
+          }
         }
         
         alert("News post created successfully!");

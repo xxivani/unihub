@@ -24,14 +24,21 @@ const AccountSettings = () => {
         const res = await fetch(`${apiUrl}/users/${id}`);
         const data = await res.json();
 
-        const fullName = role === 'student' ? data.studentName : data.committeeName;
-        const [firstName, ...lastNameParts] = fullName.split(" ");
-        const lastName = lastNameParts.join(" ");
+        let firstName = '';
+        let lastName = '';
+
+        if (role === 'student' && data.studentName) {
+          [firstName, ...lastName] = data.studentName.split(" ");
+          lastName = lastName.join(" ");
+        } else if (role === 'committee' && data.committeeName) {
+          [firstName, ...lastName] = data.committeeName.split(" ");
+          lastName = lastName.join(" ");
+        }
 
         setFormData(prev => ({
           ...prev,
-          firstName: firstName || '',
-          lastName: lastName || '',
+          firstName,
+          lastName,
           email: data.email || '',
           role: data.role || '',
           club: data.club || '',

@@ -80,7 +80,7 @@ const Members = ({ selectedClubId }) => {
         permissions: member.permissions?.map((p) => p.permission) || [],
       }));
       setMembers(formatted);
-      console.log("✅ Final formatted members:", formatted);
+      console.log("Final formatted members:", formatted);
 
     } catch (error) {
       console.warn("Using fallback committee members:", error.message);

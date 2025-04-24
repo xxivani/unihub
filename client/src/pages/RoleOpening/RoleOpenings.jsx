@@ -31,14 +31,25 @@ const RoleOpenings = () => {
         const ongoingRoles = rolesData.filter(role => role.status === "ONGOING");
 
         if (ongoingRoles.length > 0) {
-          setRoles(ongoingRoles.map(role => ({
+          setRoles(ongoingRoles.map((role, i) => ({
             title: `${role.position} for ${clubMap[role.club_id] || "Unknown Club"}`,
             description: role.description,
             deadline: new Date(role.due_date).toLocaleDateString(),
-            imageSrc: "https://picsum.photos/200/150",
+            imageSrc: role.thumbnail_url 
+              ? `${apiUrl.replace(/\/api$/, '')}${role.thumbnail_url}` 
+              : `https://picsum.photos/200/150?random=${i + 1}`,
             id: role.role_opening_id,
             club_id: role.club_id
           })));
+                    
+          // setRoles(ongoingRoles.map(role => ({
+          //   title: `${role.position} for ${clubMap[role.club_id] || "Unknown Club"}`,
+          //   description: role.description,
+          //   deadline: new Date(role.due_date).toLocaleDateString(),
+          //   imageSrc: "https://picsum.photos/200/150",
+          //   id: role.role_opening_id,
+          //   club_id: role.club_id
+          // })));
         } else {
           console.log("No ongoing roles from API. Using fallback.");
           setRoles(ongoingRolesSample);

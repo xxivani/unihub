@@ -39,6 +39,10 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false
       },
+      thumbnail_url: {
+        type: Sequelize.STRING(255),
+        allowNull: true
+      },
       number_of_registrations: {
         type: Sequelize.INTEGER,
         allowNull: false

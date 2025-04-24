@@ -24,7 +24,6 @@
     background-color: #ddd;
   }
   
-  /* 📱 Responsive behavior */
   @media screen and (max-width: 600px) {
     .pagination {
       flex-direction: column;

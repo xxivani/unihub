@@ -19,13 +19,11 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tool
 const ClubStatistics = () => {
   const navigate = useNavigate();
 
-  // ✅ Immediately read current theme on first render
   const getInitialTheme = () => document.body.getAttribute("data-theme") || "light";
   const [theme, setTheme] = useState(getInitialTheme());
   const isDarkTheme = theme === "dark";
 
   useEffect(() => {
-    // ✅ Watch for theme changes (e.g., via toggle)
     const observer = new MutationObserver(() => {
       const newTheme = document.body.getAttribute("data-theme");
       setTheme(newTheme);
@@ -114,7 +112,6 @@ const ClubStatistics = () => {
       <h5>Engagement over the last 3 months</h5>
       <div className="charts-container">
         <div className="bar-chart">
-          {/* 👇 Ensures chart re-renders with the correct theme applied */}
           <Bar key={theme + "-bar"} data={data1} options={options1} />
         </div>
         <div className="doughnut-chart">

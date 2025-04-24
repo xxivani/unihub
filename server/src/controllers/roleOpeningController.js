@@ -1,6 +1,7 @@
 'use strict';
 const { RoleOpening, RoleOpeningRegistration } = require('../models');
 const { Op } = require('sequelize');
+const path = require('path');
 const { sequelize } = require('../models');
 
 // Create a role opening
@@ -12,6 +13,10 @@ const createRoleOpening = async (req, res) => {
       return res.status(400).json({ message: 'Position, description, eligibility criteria, and due date are required' });
     }
 
+    const imageUrl = req.files?.image?.[0]
+      ? `/uploads/images/${path.basename(req.files.image[0].path)}`
+      : null;
+
     const roleOpening = await RoleOpening.create({
       position,
       description,
@@ -20,7 +25,8 @@ const createRoleOpening = async (req, res) => {
       club_id: club_id || 1,
       number_of_registrations: 0, // Default value
       status: 'ONGOING', // Default value
-      role_opening_created_at: new Date()
+      role_opening_created_at: new Date(),
+      thumbnail_url: imageUrl
     });
 
     res.status(201).json({
@@ -89,6 +95,11 @@ const updateRoleOpening = async (req, res) => {
       eligibility_criteria: eligibility_criteria || roleOpening.eligibility_criteria,
       due_date: due_date ? new Date(due_date) : roleOpening.due_date
     };
+
+    if (req.files?.image) {
+      const imagePath = `/uploads/images/${path.basename(req.files.image[0].path)}`;
+      updateData.thumbnail_url = imagePath;
+    }
 
     await roleOpening.update(updateData);
 

@@ -7,6 +7,7 @@ const {
     deleteRoleOpening,
     getRoleOpeningById
 } = require('../controllers/roleOpeningController');
+const { upload } = require('../middleware/upload');
 
 /**
  * @swagger
@@ -43,7 +44,7 @@ const {
  *       500:
  *         description: Server error.
  */
-router.post('/', createRoleOpening);
+router.post('/', upload, createRoleOpening);
 
 /**
  * @swagger
@@ -96,7 +97,7 @@ router.get('/', getAllRoleOpenings);
  *       500:
  *         description: Server error.
  */
-router.put('/:id', updateRoleOpening);
+router.put('/:id', upload, updateRoleOpening);
 
 /**
  * @swagger

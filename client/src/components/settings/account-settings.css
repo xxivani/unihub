@@ -175,6 +175,13 @@ body[data-theme="dark"] .settings-section{
   background-color: #d2bc77;
 }
 
+body[data-theme="dark"] .form-group input,
+body[data-theme="dark"] .form-group select {
+  background-color: #1e1e1e;
+  color: #fff;
+  border-color: #555;
+}
+
 @media (max-width: 768px) {
   .settings-layout {
     flex-direction: column;

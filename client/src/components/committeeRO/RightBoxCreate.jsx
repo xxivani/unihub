@@ -1,7 +1,7 @@
 import './RightBox.css';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaPaperclip } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -15,11 +15,13 @@ const RightBoxCreate = () => {
     position: '',
     due_date: '',
     description: '',
-    eligibility_criteria: ''
+    eligibility_criteria: '',
+    thumbnail: null
   });
 
   const [error, setError] = useState('');
   const [clubId, setClubId] = useState(club_id_from_query ? parseInt(club_id_from_query) : null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (!clubId) {
@@ -44,17 +46,28 @@ const RightBoxCreate = () => {
   };
 
   const handleChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+    const { name, value, files } = e.target;
+    if (name === 'thumbnail') {
+      const file = files[0];
+      if (file && !['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+        setError("Only .jpg, .jpeg, or .png files are allowed for thumbnail.");
+        return;
+      }
+      setFormData(prev => ({ ...prev, thumbnail: file }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+    // setFormData(prev => ({
+    //   ...prev,
+    //   [e.target.name]: e.target.value
+    // }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    const { position, due_date, description, eligibility_criteria } = formData;
+    const { position, due_date, description, eligibility_criteria, thumbnail } = formData;
 
     if (!position || !due_date || !description || !eligibility_criteria) {
       setError("All fields are required.");
@@ -71,16 +84,31 @@ const RightBoxCreate = () => {
     }
 
     try {
+      const formPayload = new FormData();
+      formPayload.append('position', position);
+      formPayload.append('due_date', due_date);
+      formPayload.append('description', description);
+      formPayload.append('eligibility_criteria', eligibility_criteria);
+      formPayload.append('club_id', clubId);
+      if (thumbnail) {
+        formPayload.append('image', thumbnail);
+      }
+
       const response = await fetch(`${apiUrl}/role-openings`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...formData,
-          club_id: clubId
-        })
+        body: formPayload
       });
+
+      // const response = await fetch(`${apiUrl}/role-openings`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify({
+      //     ...formData,
+      //     club_id: clubId
+      //   })
+      // });
 
       if (!response.ok) {
         const err = await response.json();
@@ -99,7 +127,7 @@ const RightBoxCreate = () => {
   return (
     <div className="entity6-right-box">
       <FaTimes className="entity6-close-icon" onClick={handleBack} />
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} encType="multipart/form-data">
         <label htmlFor="position">Enter Position*</label>
         <input
           type="text"
@@ -132,6 +160,19 @@ const RightBoxCreate = () => {
           name="eligibility_criteria"
           value={formData.eligibility_criteria}
           onChange={handleChange}
+        />
+
+        <label htmlFor="thumbnail" style={{ marginTop: '10px' }}>
+          <FaPaperclip style={{ marginRight: '6px' }} />
+          Attach Thumbnail (Optional)
+        </label>
+        <input
+          type="file"
+          id="thumbnail"
+          name="thumbnail"
+          accept=".jpg,.jpeg,.png"
+          onChange={handleChange}
+          ref={fileInputRef}
         />
 
         {error && <p className="error-message">{error}</p>}

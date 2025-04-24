@@ -42,6 +42,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false
     },
+    thumbnail_url: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
     number_of_registrations: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -52,7 +56,6 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         isIn: [['ONGOING', 'COMPLETED']]
       }
-    //   type: DataTypes.ENUM('ONGOING', 'COMPLETED'),
     }
   }, {
     sequelize,

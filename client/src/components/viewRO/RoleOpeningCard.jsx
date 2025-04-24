@@ -32,7 +32,12 @@ const RoleOpeningCard = ({ role, index }) => {
     return (
         <div className="entity6-cards-container">
             <div className="entity6-rocard">
-                <img src={role.imageSrc} alt={role.title} className="entity6-card-image" />
+                {/* <img src={role.imageSrc} alt={role.title} className="entity6-card-image" /> */}
+                <img src={role.imageSrc} alt={role.title} className="entity6-card-image"
+                    onError={(e) => {
+                    e.target.src = `https://picsum.photos/200/150?random=${Math.floor(Math.random() * 1000)}`;
+                  }}
+                />
                 <div className="entity6-card-content">
                     <h2>{role.title}</h2>
                     <p>{role.description}</p>

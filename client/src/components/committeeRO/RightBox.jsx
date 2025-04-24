@@ -1,5 +1,5 @@
 import './RightBox.css';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaPaperclip } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
@@ -17,6 +17,7 @@ const RightBox = () => {
   });
 
   const [originalDueDate, setOriginalDueDate] = useState(null);
+  const [thumbnail, setThumbnail] = useState(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -33,7 +34,7 @@ const RightBox = () => {
 
         setFormData({
           position: role.position,
-          due_date: role.due_date.split("T")[0], // For <input type="date" />
+          due_date: role.due_date.split("T")[0],
           description: role.description,
           eligibility_criteria: role.eligibility_criteria
         });
@@ -54,6 +55,10 @@ const RightBox = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e) => {
+    setThumbnail(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -65,17 +70,26 @@ const RightBox = () => {
       return;
     }
 
+    const form = new FormData();
+    form.append('description', formData.description);
+    form.append('eligibility_criteria', formData.eligibility_criteria);
+    form.append('due_date', formData.due_date);
+    if (thumbnail) {
+      form.append('image', thumbnail);
+    }
+
     try {
       const response = await fetch(`${apiUrl}/role-openings/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          description: formData.description,
-          eligibility_criteria: formData.eligibility_criteria,
-          due_date: formData.due_date
-        })
+        body: form
+        // headers: {
+        //   'Content-Type': 'application/json'
+        // },
+        // body: JSON.stringify({
+        //   description: formData.description,
+        //   eligibility_criteria: formData.eligibility_criteria,
+        //   due_date: formData.due_date
+        // })
       });
 
       if (!response.ok) {
@@ -121,6 +135,16 @@ const RightBox = () => {
           name="eligibility_criteria"
           value={formData.eligibility_criteria}
           onChange={handleChange}
+        />
+
+        <label htmlFor="thumbnail">
+          <FaPaperclip /> Attach Thumbnail (optional)
+        </label>
+        <input
+          type="file"
+          id="thumbnail"
+          accept=".jpg,.jpeg,.png"
+          onChange={handleFileChange}
         />
 
         {error && <p className="error-message">{error}</p>}

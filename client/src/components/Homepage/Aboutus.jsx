@@ -101,15 +101,14 @@ const Aboutus = () => {
       </div>
       <div style={aboutusCardStyle}>
         <div style={aboutusTextContainerStyle}>
-          <h1 style={aboutusHeadingStyle}>heading</h1>
+          <h1 style={aboutusHeadingStyle}>Our Aim</h1>
           <p style={textStyle}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam
-            ipsum dolor, placerat vitae massa a, bibendum tempus velit. Duis
-            leo dui, euismod ut nisi sodales, ultricies hendrerit justo. Etiam
-            semper facilisis tortor, eget varius lacus commodo ut. Aliquam
-            bibendum sit amet odio at tristique. Nam felis augue, mollis in
-            dolor vitae, malesuada vehicula ante. Phasellus semper enim eget mi
-            iaculis, eget convallis ipsum dignissim.
+          At UniHub, we set out to solve one simple problem: university life can be overwhelming when everything from club meetings to networking events is scattered across a dozen different websites. Our MVP brings it all together in one place, students can quickly find on-campus club events, off-campus hackathons, or open leadership roles without jumping between tabs.
+
+          Each week, we package the highlights into a concise newsletter so you never miss a beat whether it’s a must-see lecture, a new committee role, or an upcoming social mixer, it lands in your inbox every Monday morning.
+          
+          For club leaders, UniHub offers an intuitive dashboard to create and manage events, track who’s joining, and post new role openings. Our budget tracker takes the stress out of planning by letting committees log expenses, forecast annual budgets, and keep everyone on the same page financially. We’ve also added an Event Image Manager, so you can upload and organize eye-catching visuals that make your events pop.
+          
           </p>
         </div>
         <div style={imgStyle}></div>

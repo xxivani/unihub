@@ -5,14 +5,24 @@
   margin-top: 60px;
 }
 
+body[data-theme="dark"] .settings-layout{
+  background-color: black;
+  color: #fff;
+}  
+
 .account-settings {
   flex: 1;
   padding: 30px 40px;
-  margin-left: 80px; 
-  margin-right: 80px;
+  /* margin-left: 80px;  */
+  /* margin-right: 80px; */
   background-color: white;
   min-height: 100vh;
 }
+
+body[data-theme="dark"] .account-settings{
+  background-color: black;
+  color: #fff;
+} 
 
 h1 {
   font-size: 28px;
@@ -77,6 +87,11 @@ h1 {
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
+
+body[data-theme="dark"] .settings-section{
+  background-color: black;
+  color: #fff;
+} 
 
 .form-row {
   display: flex;

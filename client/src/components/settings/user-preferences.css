@@ -1,0 +1,50 @@
+/* user-preferences.css */
+
+.user-preferences-container {
+    flex-grow: 1;
+    padding: 2rem;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    min-height: 100vh;
+  }
+  
+  .user-preferences-container h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+  
+  .preferences-section {
+    background-color: var(--card-background);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .preferences-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+  
+  .contrast-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    padding-top: 1rem;
+  }
+  
+  .toggle-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.25rem;
+    color: var(--text-color);
+    transition: transform 0.2s ease;
+  }
+  
+  .toggle-button:hover {
+    transform: scale(1.1);
+  }
+  

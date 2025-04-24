@@ -11,7 +11,7 @@ services:
     networks:
       - common-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-team77}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -20,16 +20,8 @@ services:
     container_name: team77-dev-server
     image: ghcr.io/uob-team-project/team77-server:latest
     restart: always
-    environment:
-      - NODE_ENV=development
-      - PORT=8080
-      - POSTGRES_USER=team77
-      - POSTGRES_PASSWORD=team77
-      - POSTGRES_DB=team77
-      - DB_HOST=team77-dev-db
-      - DB_PORT=5432
-      - DATABASE_URL=postgres://team77:team77@team77-dev-db:5432/team77
-      - JWT_SECRET=team77_secret  
+    env_file:
+      - ./server.env
     depends_on:
       - db
     volumes:
@@ -43,11 +35,8 @@ services:
     container_name: team77-dev-client
     image: ghcr.io/uob-team-project/team77-client:latest
     restart: always
-    environment:
-      - NODE_ENV=development
-      - PORT=3000
-      - REACT_APP_API_URL=https://team77.dev.bham.team/api
-      - VITE_API_URL=https://team77.dev.bham.team/api
+    env_file:
+      - ./client.env
     depends_on:
       - team77-dev-server
     networks:

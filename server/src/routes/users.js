@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, loginUser, getUserByEmail } = require('../controllers/userController');
+const { registerUser, loginUser, getUserByEmail, getUserById } = require('../controllers/userController');
 
 /**
  * @swagger
@@ -65,5 +65,6 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 
 router.get('/by-email/:email', getUserByEmail);
+router.get('/:id', getUserById);
 
 module.exports = router;

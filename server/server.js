@@ -63,15 +63,19 @@ app.use('/news', newsRoutes);
 
 const roleOpeningRoutes = require('./src/routes/roleOpening');
 app.use('/api/role-openings', roleOpeningRoutes);
+app.use('/role-openings', roleOpeningRoutes);
 
 const roleOpeningRegistrationRoutes = require('./src/routes/roleOpeningRegistration');
 app.use('/api/role-opening-registrations', roleOpeningRegistrationRoutes);
+app.use('/role-opening-registrations', roleOpeningRegistrationRoutes);
 
 const committeeMemberRoutes = require('./src/routes/committeeMember');
 app.use('/api/committee-members', committeeMemberRoutes);
+app.use('/committee-members', committeeMemberRoutes);
 
 const committeeMemberPermissionRoutes = require('./src/routes/committeeMemberPermission');
 app.use('/api/committee-member-permissions', committeeMemberPermissionRoutes);
+app.use('/committee-member-permissions', committeeMemberPermissionRoutes);
 
 const eventRoutes = require('./src/routes/event');
 app.use('/api/event', eventRoutes);
@@ -106,6 +110,7 @@ app.use('/bt_eventRoute', eventExpenseRoutes);
 
 const clubContactRoutes = require('./src/routes/clubContact');
 app.use('/api/club-contacts', clubContactRoutes);
+app.use('/club-contacts', clubContactRoutes);
 
 const PORT = process.env.PORT || 5000;
 

@@ -179,13 +179,8 @@ const NewsSection = () => {
     }
 
     console.log("Initial news fetch with API URL:", API_URL);
-    fetchPosts(true); 
-    
-    const intervalId = setInterval(() => {
-      console.log("Polling for fresh news data");
-      fetchPosts();
-    }, 30000);
-    
+    fetchPosts(); 
+        
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('refresh') === 'true') {
       console.log("Detected refresh parameter, forcing fresh data fetch");
@@ -203,16 +198,9 @@ const NewsSection = () => {
     window.addEventListener('storage', handleStorageChange);
     
     return () => {
-      clearInterval(intervalId);
       window.removeEventListener('storage', handleStorageChange);
     };
   }, [API_URL, fetchPosts]);
-
-  const handleRefresh = () => {
-    console.log("Manual refresh requested");
-    setRetryCount(prevCount => prevCount + 1);
-    fetchPosts(true); 
-  };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this post?")) return;
@@ -282,14 +270,6 @@ const NewsSection = () => {
       <div className="title-button">
         <h2>Latest News</h2>
         <div className="action-buttons">
-          <button 
-            className="refresh-button" 
-            onClick={handleRefresh}
-            disabled={loading}
-          >
-            {loading ? "Refreshing..." : "Refresh"}
-          </button>
-          
           {user?.role === "admin" && (
             <Link to="/news/create-news-post">
               <button className="create-news-button">Create News Post</button>
@@ -301,14 +281,14 @@ const NewsSection = () => {
       {error && (
         <p className="error-message">
           Error loading news: {error}{" "}
-          <button onClick={handleRefresh}>
+          <button onClick={() => fetchPosts(true)}>
             {retryCount >= MAX_RETRIES ? "Try Again" : `Retry (${retryCount}/${MAX_RETRIES})`}
           </button>
         </p>
       )}
 
       {loading && newsPosts.length > 0 && (
-        <p className="loading-message">Refreshing news posts...</p>
+        <p className="loading-message">Loading news posts...</p>
       )}
 
       <div className="news-list">

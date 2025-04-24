@@ -15,28 +15,23 @@ import Footer from "./components/footer/footer";
 import ClubDetailsPage from "./pages/ClubDetailsPage"; 
 import CreateClub from "./pages/CreateClub"; 
 import GDPRPolicy from "./pages/GDPRPolicy";
-import { ThemeProvider } from "./ThemeContext"
+import { ThemeProvider } from "./ThemeContext";
 
 import AccountSettingsPage from "./pages/settings/AccountSettingsPage";
-
-
-
-// Settings Pages
 import Followed from "./components/settings/followed";
+import UserPreferences from "./components/settings/userPreferences";
 
-// Committee Pages
 import Dashboard from "./pages/committee/Dashboard";
 import BudgetTracker from "./pages/committee/BudgetTracker/BudgetTracker";
 import EventExpensesPage from "./pages/committee/BudgetTracker/EventExpenses";
 import RegisteredStudentsPage from "./pages/committee/BudgetTracker/RegisteredStudents";
-import MultiEventImages from "./pages/committee/ImageManagement"
+import MultiEventImages from "./pages/committee/ImageManagement";
 import SingleEventImages from "./pages/committee/ImageM-SingleEvent";
 import EditEventImages from "./pages/committee/ImageM-EditEvent";
-// Committee Events Pages
+
 import ViewEvents from "./pages/committee/committee-events/ViewEvents";
 import CreateEvent from "./pages/committee/committee-events/CreateEvent";
 
-// Committee Roles Pages
 import ViewRoles from "./pages/committee/commitee-Roles/ViewRoles";
 import CreateRole from "./pages/committee/commitee-Roles/CreateRole";
 import EditRole from "./pages/committee/commitee-Roles/EditRole";
@@ -52,6 +47,8 @@ import CommiteeLogin from "./components/auth/Commit";
 import DetailsExt from "./components/externalevents/DetailsExt";
 import EditNewsForm from "./components/news/EditNewsPost";
 
+import ProtectedRoute from "./utils/ProtectedRoute";
+
 function AppContent() {
   const location = useLocation();
   const isAuthPage = location.pathname === "/auth";
@@ -59,22 +56,41 @@ function AppContent() {
   const isStudentPage = location.pathname === "/student";
   const isLoginPage = location.pathname === "/login";
   const isVerifyPage = location.pathname === "/verify";
-  const isAccountVerifyPage = location.pathname == "/accountverified";
-  const isWelcomePage = location.pathname == "/welcome"
+  const isAccountVerifyPage = location.pathname === "/accountverified";
+  const isWelcomePage = location.pathname === "/welcome";
 
   return (
     <>
-      {!isAuthPage && !isWelcomePage && !isCommitteePage && !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <CustomNavbar />} {/* Hide Navbar on Auth Page */}
+      {!isAuthPage && !isWelcomePage && !isCommitteePage && !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <CustomNavbar />}
       <div className="main-content">
         <Routes>
-          {/* Default route should be Home */}
           <Route path="/" element={<Home />} />
-          {/* Auth Route */}
           <Route path="/auth" element={<Auth />} />
 
-          {/*Settings */}
-          <Route path="/settings" element={<AccountSettingsPage />} />
-          <Route path="/settings/followed" element={<Followed />} />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <AccountSettingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings/followed"
+            element={
+              <ProtectedRoute>
+                <Followed />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings/preferences"
+            element={
+              <ProtectedRoute>
+                <UserPreferences />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Public Routes */}
           <Route path="/clubs" element={<Clubs />} />
@@ -86,34 +102,125 @@ function AppContent() {
           <Route path="/roles/apply/:index" element={<ApplyRoleOpening />} />
           <Route path="/external-events" element={<ExternalEvents />} />
           <Route path="/create-external-event" element={<CreateExternalEvents />} />
-		  <Route path="/external-events/:id" element={<DetailsExt />} />
-          {/* news routes */}
+          <Route path="/external-events/:id" element={<DetailsExt />} />
+
+          {/* News Routes */}
           <Route path="/news" element={<NewsSection />} />
           <Route path="/news/create-news-post" element={<CreateNewsPost />} />
-          <Route path="/news/edit/:id" element={<EditNewsForm />} /> {/* Add this route */}
+          <Route path="/news/edit/:id" element={<EditNewsForm />} />
           <Route path="/gdpr-policy" element={<GDPRPolicy />} />
 
-          {/* Committee Routes */}
-          <Route path="/committee/dashboard" element={<Dashboard />} />
-          <Route path="/committee/budget-tracker" element={<BudgetTracker />} />
-          <Route path="/committee/image-management" element={<MultiEventImages />} />
-          <Route path="/committee/image-management-single" element={<SingleEventImages />} />
-          <Route path="/committee/image-management-edit" element={<EditEventImages />} />   
-          <Route path="/committee/budget-tracker/registered-students" element={<RegisteredStudentsPage />} />
+          {/* Protected Committee Routes */}
+          <Route
+            path="/committee/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={["committee", "admin"]}>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/committee/budget-tracker"
+            element={
+              <ProtectedRoute allowedRoles={["committee", "admin"]}>
+                <BudgetTracker />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/committee/image-management"
+            element={
+              <ProtectedRoute allowedRoles={["committee", "admin"]}>
+                <MultiEventImages />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/committee/image-management-single"
+            element={
+              <ProtectedRoute allowedRoles={["committee", "admin"]}>
+                <SingleEventImages />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/committee/image-management-edit"
+            element={
+              <ProtectedRoute allowedRoles={["committee", "admin"]}>
+                <EditEventImages />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/committee/budget-tracker/registered-students"
+            element={
+              <ProtectedRoute allowedRoles={["committee", "admin"]}>
+                <RegisteredStudentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/committee/budget-tracker/event-expenses"
+            element={
+              <ProtectedRoute allowedRoles={["committee", "admin"]}>
+                <EventExpensesPage />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* Committee Events Routes */}
-          <Route path="/committee/events" element={<ViewEvents />} />
-          <Route path="/committee/events/create" element={<CreateEvent />} />
-          <Route path="/committee/budget-tracker/event-expenses" element={<EventExpensesPage />} />
+          {/* Committee Events */}
+          <Route
+            path="/committee/events"
+            element={
+              <ProtectedRoute allowedRoles={["committee", "admin"]}>
+                <ViewEvents />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/committee/events/create"
+            element={
+              <ProtectedRoute allowedRoles={["committee", "admin"]}>
+                <CreateEvent />
+              </ProtectedRoute>
+            }
+          />
 
+          {/* Committee Roles */}
+          <Route
+            path="/committee/roles"
+            element={
+              <ProtectedRoute allowedRoles={["committee", "admin"]}>
+                <ViewRoles />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/committee/roles/create"
+            element={
+              <ProtectedRoute allowedRoles={["committee", "admin"]}>
+                <CreateRole />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/committee/roles/edit/:id"
+            element={
+              <ProtectedRoute allowedRoles={["committee", "admin"]}>
+                <EditRole />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/committee/roles/view/:id"
+            element={
+              <ProtectedRoute allowedRoles={["committee", "admin"]}>
+                <ViewRoleDetail />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* Committee Roles Routes */}
-          <Route path="/committee/roles" element={<ViewRoles />} />
-          <Route path="/committee/roles/create" element={<CreateRole />} />
-          <Route path="/committee/roles/edit/:id" element={<EditRole />} />
-          <Route path="/committee/roles/view/:id" element={<ViewRoleDetail />} />
-
-          {/* Student Route */}
+          {/* Auth Routes */}
           <Route path="/student" element={<Student />} />
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
@@ -122,16 +229,13 @@ function AppContent() {
           <Route path="/commiteelogin" element={<CommiteeLogin />} />
         </Routes>
       </div>
-      {!isAuthPage && !isWelcomePage && !isCommitteePage && !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <Footer />} {/* Hide Footer on Auth Page */}
+      {!isAuthPage && !isWelcomePage && !isCommitteePage && !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <Footer />}
     </>
   );
 }
 
 function App() {
   return (
-    // <Router>
-    //   <AppContent />
-    // </Router>
     <ThemeProvider>
       <Router>
         <AppContent />

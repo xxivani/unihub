@@ -29,8 +29,14 @@ const Members = ({ selectedClubId }) => {
     permissions: [],
     email: "",
     user_id: 0,
-    club_id: 1,
+    club_id: selectedClubId || 1,
   });
+
+  useEffect(() => {
+    if (selectedClubId) {
+      setNewMember((prev) => ({ ...prev, club_id: selectedClubId }));
+    }
+  }, [selectedClubId]);
 
   const getPresidentCount = () => {
     return members.filter(member => member.description === "PRESIDENT").length;
@@ -108,14 +114,10 @@ const Members = ({ selectedClubId }) => {
 
   useEffect(() => {
     if (selectedClubId) {
-      console.log("Hi");
       fetchPermissions();
       fetchMembers();
       checkAssignPermission();
     }
-    // fetchPermissions();
-    // fetchMembers();
-    // checkAssignPermission();
   }, [selectedClubId]);
 
   const togglePermission = async (index, permission) => {

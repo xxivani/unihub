@@ -48,6 +48,7 @@ import DetailsExt from "./components/externalevents/DetailsExt";
 import EditNewsForm from "./components/news/EditNewsPost";
 
 import ProtectedRoute from "./utils/ProtectedRoute";
+import { useEffect } from "react";
 
 function AppContent() {
   const location = useLocation();
@@ -58,6 +59,14 @@ function AppContent() {
   const isVerifyPage = location.pathname === "/verify";
   const isAccountVerifyPage = location.pathname === "/accountverified";
   const isWelcomePage = location.pathname === "/welcome";
+
+  // Apply stored font size when app loads
+  useEffect(() => {
+    const storedFontSize = sessionStorage.getItem('fontSize');
+    if (storedFontSize) {
+      document.documentElement.style.setProperty('--base-font-size', `${storedFontSize}px`);
+    }
+  }, []);
 
   return (
     <>

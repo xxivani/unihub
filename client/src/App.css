@@ -5,6 +5,17 @@
   --card-bg: #f5f5f5;
   --card-text: #222222;
   --link-color: #000000;
+  --base-font-size: 16px;
+  --primary-color: #000;
+  --background-color: #fff;
+  --border-color: #ddd;
+  --slider-track: #e0e0e0;
+  --dark-primary-color: #fff;
+  --dark-background-color: #000;
+  --dark-text-color: #fff;
+  --dark-card-background: #1a1a1a;
+  --dark-border-color: #333;
+  --dark-slider-track: #333;
 }
 
 body[data-theme="dark"] {
@@ -13,6 +24,14 @@ body[data-theme="dark"] {
   --card-bg: #1e1e1e;
   --card-text: #ffffff;
   --link-color: #ffffff;
+  --primary-color: var(--dark-primary-color);
+  --background-color: var(--dark-background-color);
+  --border-color: var(--dark-border-color);
+  --slider-track: var(--dark-slider-track);
+}
+
+html {
+  font-size: var(--base-font-size);
 }
 
 .h1, .h2, .h3, .h4, .h5, .h6,

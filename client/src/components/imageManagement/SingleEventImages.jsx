@@ -232,7 +232,7 @@ const ImageSEvents = () => {//This is for creating image the first time
         throw new Error('Failed to fetch images');
         }
         const data = await response.json();
-        const events = data.filter(fetched => fetched.eventName === "Zoo");
+        const events = data.filter(fetched => fetched.eventName === event_name);
 
         const clearedEvent = {};
         for (let i = 0; i <= 7; i++) {

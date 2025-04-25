@@ -348,8 +348,6 @@ const ImageMEvents = () => {
 
           setEvents(externalEvents);
 
-          console.log("extvent:" + JSON.stringify(externalEvents));
-
         }
         const response = await fetch(`${API_URL}/image-management/`);
         if (!response.ok) {

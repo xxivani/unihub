@@ -132,3 +132,81 @@
 .go-back-button:hover {
   background-color: #444;
 }
+
+/* Mobile Responsiveness */
+@media screen and (max-width: 768px) {
+    .create-ext-container {
+        padding: 10px;
+        margin-top: 80px;
+    }
+
+    .create-ext-form {
+        width: 95%;
+        padding: 1rem;
+    }
+
+    .create-ext-title {
+        font-size: 1.5rem;
+    }
+
+    .create-ext-form-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .create-ext-form-group {
+        width: 100%;
+    }
+
+    .create-ext-form-group input,
+    .create-ext-form-group textarea,
+    .create-ext-form-group select {
+        width: 100%;
+    }
+
+    .create-ext-form-actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .create-ext-button {
+        width: 100%;
+    }
+
+    .create-ext-team-section {
+        grid-template-columns: 1fr;
+    }
+
+    .create-ext-team-member {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .create-ext-title {
+        font-size: 1.3rem;
+    }
+
+    .create-ext-form-group label {
+        font-size: 0.9rem;
+    }
+
+    .create-ext-form-group input,
+    .create-ext-form-group textarea,
+    .create-ext-form-group select {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
+
+    .create-ext-team-member {
+        padding: 0.75rem;
+    }
+
+    .create-ext-team-member h4 {
+        font-size: 1rem;
+    }
+
+    .create-ext-team-member input {
+        font-size: 0.9rem;
+    }
+}

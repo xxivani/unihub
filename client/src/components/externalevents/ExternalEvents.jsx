@@ -110,12 +110,59 @@ const ExternalEvents = () => {
 	const [isEventFullModalVisible, setIsEventFullModalVisible] = useState(false);
 	const [isUnfollowModalVisible, setIsUnfollowModalVisible] = useState(false);
 	const [followedEvents, setFollowedEvents] = useState([]);
+	const [searchQuery, setSearchQuery] = useState('');
 	const itemsPerPage = 4;
 	const location = useLocation();
 
 	const filteredEvents = events.filter((event) => {
-		if (!selectedCategory) return true;
-		return event.external_event_category === selectedCategory;
+		// Apply category filter
+		if (selectedCategory && event.external_event_category !== selectedCategory) {
+			return false;
+		}
+		
+		// Apply search filter
+		if (searchQuery) {
+			const query = searchQuery.toLowerCase();
+			
+			// Format date and time for searching
+			const eventDate = event.external_event_date ? new Date(event.external_event_date).toLocaleDateString('en-US', {
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric',
+			}).toLowerCase() : '';
+			
+			const eventTime = event.external_event_time ? new Date(event.external_event_time).toLocaleTimeString('en-US', {
+				hour: 'numeric',
+				minute: '2-digit',
+				hour12: true,
+			}).toLowerCase() : '';
+
+			// Also check for numeric date formats (e.g., "2/20/2025" or "02/20/2025")
+			const numericDate = event.external_event_date ? new Date(event.external_event_date).toLocaleDateString('en-US', {
+				year: 'numeric',
+				month: '2-digit',
+				day: '2-digit',
+			}).toLowerCase() : '';
+
+			// Check for 24-hour time format
+			const time24Hour = event.external_event_time ? new Date(event.external_event_time).toLocaleTimeString('en-US', {
+				hour: '2-digit',
+				minute: '2-digit',
+				hour12: false,
+			}).toLowerCase() : '';
+
+			return (
+				event.external_event_name?.toLowerCase().includes(query) ||
+				event.external_event_description?.toLowerCase().includes(query) ||
+				event.external_event_location?.toLowerCase().includes(query) ||
+				eventDate.includes(query) ||
+				eventTime.includes(query) ||
+				numericDate.includes(query) ||
+				time24Hour.includes(query)
+			);
+		}
+		
+		return true;
 	});
 
 	const startIndex = (currentPage - 1) * itemsPerPage;
@@ -660,7 +707,12 @@ const ExternalEvents = () => {
 				<h1 className="extevent-page-title">Upcoming Events</h1>
 				<div className="extevent-search-filter-container">
 					<div className="extevent-search-bar">
-						<input type="text" placeholder="Search" />
+						<input 
+							type="text" 
+							placeholder="Search events..." 
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+						/>
 						<button className="extevent-search-button"><FaSearch /></button>
 					</div>
 					<div className="extevent-action-buttons">
@@ -791,7 +843,6 @@ const ExternalEvents = () => {
                 Details
               </button>
             </div>
-						<div className="extevent-notification-icon"><FaBell /></div>
 					</div>
 				))}
 			</div>

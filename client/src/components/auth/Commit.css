@@ -236,3 +236,52 @@
     height: 1px;   /* Line thickness */
     background-color: rgb(0, 0, 0); /* Line color */
   }
+
+/* Mobile Responsiveness */
+@media screen and (max-width: 768px) {
+    .commit-container {
+        padding: 1rem;
+        margin-top: 60px;
+    }
+
+    .commit-form {
+        width: 100%;
+        max-width: 100%;
+        padding: 1.5rem;
+    }
+
+    .commit-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .commit-title {
+        font-size: 1.5rem;
+    }
+
+    .commit-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .commit-button {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .commit-footer {
+        font-size: 0.9rem;
+    }
+}

@@ -1,4 +1,3 @@
-
 /*
 .modal-container {
     height: 100vh;
@@ -256,3 +255,38 @@
     }
   } 
   
+
+/* Mobile Responsiveness */
+@media screen and (max-width: 768px) {
+    .welcome-modal {
+        width: 90%;
+        max-width: 100%;
+        padding: 1.5rem;
+    }
+
+    .welcome-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .welcome-title {
+        font-size: 1.5rem;
+    }
+
+    .welcome-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .welcome-content {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .welcome-button {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .welcome-footer {
+        font-size: 0.9rem;
+    }
+}

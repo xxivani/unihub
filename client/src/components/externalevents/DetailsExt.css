@@ -425,6 +425,7 @@
 @media screen and (max-width: 768px) {
     .page-container-details-ext {
         padding: 1rem;
+        margin-top: 100px;
     }
 
     .detail-header-details-ext {

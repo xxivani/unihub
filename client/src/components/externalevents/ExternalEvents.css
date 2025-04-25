@@ -730,7 +730,7 @@
     }
 
     .extevent-details {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
     }
 
     .extevent-title {
@@ -738,7 +738,7 @@
     }
 
     .extevent-description {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
     }
 
     .edit-event-form-container {
@@ -762,6 +762,19 @@
 
     .cancel-button, .update-event-button {
         width: 100%;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .pagination-number {
+        padding: 0.5rem;
+    }
+
+    .pagination-arrow {
+        padding: 0.5rem;
     }
 }
 

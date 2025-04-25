@@ -776,6 +776,58 @@
     .pagination-arrow {
         padding: 0.5rem;
     }
+
+    .extevent-edit-button {
+        position: relative;
+        width: 100%;
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .extevent-edit-button.active {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .edit-extevent-button {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        background-color: #f8d030;
+        color: #333;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0.9;
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+
+    .delete-extevent-button {
+        position: absolute;
+        top: 10px;
+        right: 50px;
+        background-color: rgba(220, 53, 69, 0.8);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
 }
 
 @media screen and (max-width: 480px) {

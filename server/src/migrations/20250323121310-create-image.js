@@ -28,10 +28,6 @@ module.exports = {
         allowNull: false
     },
     
-    thumbnail: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false
-    },
 
     position:{
         type: Sequelize.INTEGER,

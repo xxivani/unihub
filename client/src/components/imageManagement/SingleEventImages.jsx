@@ -1,10 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import './SingleEventImages.css';
 
-const ImageSEvents = () => {
+const ImageSEvents = () => {//This is for creating image the first time
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const event_name = queryParams.get("name");
+  const event_type = queryParams.get("type"); //internal or external
   const navigate = useNavigate();
-  const [currentPreview, setCurrentPreview] = useState(null);
   const [isPopupMode, setIsPopupMode] = useState(false);
   const [imageRow, setImageRow] = useState(0);
   const column = [0, 1, 2, 3, 4, 5, 6, 7];
@@ -25,36 +28,67 @@ const ImageSEvents = () => {
     e.preventDefault();
   };
     const [selectedColumn, setSelectedColumn] = useState(null);
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const canvasRefs = useRef([]);
+    const renderImage = (mode, col) => {
+      const canvas = canvasRefs.current[mode * 10 + col];
+      if (col == 9) {
+        col = selectedColumn;
+      }
+      if (!canvas || !events[`image${col}`]) return;
   
-    const handleImport = (event) => {
+      const canvasCtx = canvas?.getContext("2d");
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = `${API_URL}${events[`image${col}`]}`;
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvasCtx.filter = `
+          brightness(${events[`imageBr${col}`]}%) 
+          saturate(${events[`imageSa${col}`]}%) 
+          blur(${events[`imageBl${col}`]}px) 
+          invert(${events[`imageIn${col}`]}%)`;
+        canvasCtx.drawImage(img, 0, 0);
+      };
+    };
+  
+    const handleImport = async (event) => {
       const file = event.target.files[0];
+
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml', 'image/webp'];
     
-      if (file && validTypes.includes(file.type)) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const newImage = e.target.result;
-          
-          setEvents((prevEvents) => ({
-                  ...prevEvents,
-                  [`image${selectedColumn}`]: newImage,
-              })
-          );
-    
-          setCurrentPreview(newImage);
+      if (!file || !validTypes.includes(file.type)) {
+        alert('Please select a correct file format (jpeg, jpg, png, svg, webp).');
+        return;
+      }
 
-          setTimeout(() => {
-            setIsPopupMode(false);
-            setSelectedColumn(null);
-          }, 10);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        alert('Please choose a correct file format (JPG, PNG, JPEG, SVG, WEBP).');
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append('eventType', event_type);
+      formData.append("eventName", event_name);
+      formData.append("position", selectedColumn + 1);
+
+      try {
+        const response = await fetch(`${API_URL}/image-management/`, {
+          method: "POST",
+          body: formData,
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to upload image');
+        }
+  
+        setIsPopupMode(false);
+        setSelectedColumn(null);
+  
+        fetchImages();
+      } catch (error) {
+        console.error("Upload image error:", error);
       }
     };
   
-    const handleDelete = () => {
+    const handleDelete = async () => {
       setEvents(() =>
           selectedColumn != '0' 
             ? {
@@ -63,13 +97,31 @@ const ImageSEvents = () => {
               }
             : events
       );
-      setIsPopupMode(false);
-      setSelectedColumn(null);
+      try {
+        const imageId = events[`imageId${selectedColumn}`];
+        if (!imageId) {
+          alert("No image to delete.");
+          return;
+        }
+        const response = await fetch(`${API_URL}/image-management/${imageId}`, {
+          method: "DELETE",
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to delete image');
+        }
+  
+        setIsPopupMode(false);
+        setSelectedColumn(null);
+  
+        fetchImages();
+      } catch (error) {
+        console.error("Delete image error:", error);
+      }
     };
 
     const handleClose = () => {
       setIsPopupMode(false);
-      setCurrentPreview(null);
       setSelectedColumn(null);
     };
   
@@ -89,12 +141,11 @@ const ImageSEvents = () => {
     };
 
     const openPopup = (column) => {
-      setCurrentPreview(events[`image${column}`]);
       setSelectedColumn(column);
       setIsPopupMode(true);
     };
   
-    const handleTargetSelection = (column) => {
+    const handleTargetSelection = async (column) => {
       if (isInMoveMode && selectedImage !== null) {
         const sourceColumn = selectedColumn;
         const targetColumn = column;
@@ -106,19 +157,64 @@ const ImageSEvents = () => {
           updatedEvents[`image${targetColumn}`] = temp;
           return updatedEvents;
       });
+
+        const sourceImageId = events[`imageId${sourceColumn}`];
+        const targetImageId = events[`imageId${targetColumn}`];
   
+        try {
+          if (sourceImageId) {
+            const response = await fetch(`${API_URL}/image-management/${sourceImageId}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                imageId: sourceImageId,
+                eventName: event_name,
+                position: targetColumn + 1,
+              })
+            });
+      
+            if (!response.ok) {
+              throw new Error("Failed to update source position in the database");
+            }
+          };
+      
+          if (targetImageId) {
+            const response = await fetch(`${API_URL}/image-management/${targetImageId}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                imageId: targetImageId,
+                eventName: event_name,
+                position: sourceColumn + 1,
+              })
+            });
+      
+            if (!response.ok) {
+              throw new Error("Failed to update target position in the database");
+            }
+          }
+      
+        } catch (err) {
+          console.error("Move image failed:", err);
+          alert("Image move failed.");
+        }
+
         setIsInMoveMode(false);
         setSelectedImage(null);
         setIsPopupMode(false);
+
+        await fetchImages();
       }
     };
 
     const [selectedImage, setSelectedImage] = useState(null);
-    const [targetImage, setTargetImage] = useState(null);
     const [isInMoveMode, setIsInMoveMode] = useState(false);
   
     const handleMove = () => {
-      console.log("sc:" + selectedColumn);
       if (selectedColumn != null) {
         const movingImage = events[`image${selectedColumn}`];
         if (movingImage) {
@@ -129,7 +225,52 @@ const ImageSEvents = () => {
       }
     };
 
-    const sortAlgorithm = (Column) => {
+    const fetchImages = async () => {
+      try {
+        const response = await fetch(`${API_URL}/image-management/`);
+        if (!response.ok) {
+        throw new Error('Failed to fetch images');
+        }
+        const data = await response.json();
+        const events = data.filter(fetched => fetched.eventName === "Zoo");
+
+        const clearedEvent = {};
+        for (let i = 0; i <= 7; i++) {
+          clearedEvent[`image${i}`] = "";
+          clearedEvent[`imageId${i}`] = "";
+          clearedEvent[`imageBr${i}`] = "";
+          clearedEvent[`imageSa${i}`] = "";
+          clearedEvent[`imageBl${i}`] = "";
+          clearedEvent[`imageIn${i}`] = "";
+        };
+  
+        events.forEach(fetched => {
+          const col = fetched.position - 1;
+          if (col >= 0 && col <= 7) {
+            clearedEvent[`image${col}`] = fetched.URL;
+            clearedEvent[`imageId${col}`] = fetched.id;
+            clearedEvent[`imageBr${col}`] = fetched.brightness;
+            clearedEvent[`imageSa${col}`] = fetched.saturation;
+            clearedEvent[`imageBl${col}`] = fetched.blur;
+            clearedEvent[`imageIn${col}`] = fetched.inversion;
+          }
+        });
+        
+        let highestColWithImage = -1;
+        for (let col = 0; col <= 7; col++) {
+          if (clearedEvent[`image${col}`] && clearedEvent[`image${col}`] !== "") {
+            highestColWithImage = col;
+          }
+        }
+
+        setImageRow(highestColWithImage + 1);
+        setEvents(clearedEvent);
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    }
+
+    /*const sortAlgorithm = (Column) => {
       setImageRow((prevImageRow) => {
         setEvents(() => {
               const updatedEvent = { ...events };
@@ -142,20 +283,26 @@ const ImageSEvents = () => {
         )
         return prevImageRow + 1;
       })
-    }
+    }*/
 
     const hasRun = useRef(false);
-    
-      useEffect(() => {
-        if (hasRun.current) return;
-        hasRun.current = true;
-    
-            column.forEach((Column) => {
-              if (events[`image${Column}`] !== "") {
-                sortAlgorithm(Column);
-              }
-          })
-      }, []);
+
+    useEffect(() => {
+      if (selectedColumn !== null) {
+        renderImage(2, 9);
+      }
+    }, [selectedColumn]);
+
+    useEffect(() => {
+      column.forEach((col) => {
+        if (events[`image${col}`]) {
+          renderImage(1, col);
+        }
+      });
+      if (hasRun.current) return;
+      hasRun.current = true;
+      fetchImages();
+    }, [events]);
 
   return (
     <div className="imageS-main-container">
@@ -163,7 +310,7 @@ const ImageSEvents = () => {
         <h1 className="imageS-title">Event Name</h1>
         <button
           className="imageS-go-back-button"
-          onClick={() => navigate("/committee/image-management")}
+          onClick={() => navigate(-1)}
         >
           Go Back
         </button>
@@ -177,7 +324,7 @@ const ImageSEvents = () => {
             </button>
             <div className="imageM-button-splitter">
               <div className="imageM-preview-image">
-                <img src={currentPreview} />
+                <canvas ref={(el) => canvasRefs.current[29] = el} />
               </div>
               <div className="imageM-button-container">
             <button className="imageM-popup-button" onClick={() => document.getElementById('fileInput').click()}>
@@ -190,10 +337,7 @@ const ImageSEvents = () => {
               onChange={handleImport}
               style={{ display: 'none' }}
             />
-                <button className="imageM-popup-button" onClick={() => window.location.href="/committee/image-management-single"}>
-                  Detail
-                </button>
-                <button className="imageM-popup-button" onClick={() => window.location.href="/committee/image-management-edit"}>
+                <button className="imageM-popup-button" onClick={() => window.location.href=`/committee/image-management-edit?id=${events[`imageId${selectedColumn}`]}`}>
                   Edit
                 </button>
                 <button className="imageM-popup-button" 
@@ -210,9 +354,7 @@ const ImageSEvents = () => {
           </div>
         )}
         <div className="imageS-card" onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '600px' }}>
-          {/* Container for the two smaller cards */}
           <div className="imageS-small-card-container">
-            {/* First smaller card */}
             <div className="imageS-small-card">
               <div className="imageS-actions">
                 {column.slice(0,4).map((Column) => (
@@ -236,7 +378,7 @@ const ImageSEvents = () => {
                         : () => setImageRow(imageRow + 1)
                     }
                   >
-                    {(imageRow > Column) && (events[`image${Column}`].trim() !== "") && (<img src={events[`image${Column}`] }/>)}
+                    {(imageRow > Column) && (events[`image${Column}`].trim() !== "") && (<canvas ref={(el) => canvasRefs.current[10 + Column] = el}/>)}
                     {imageRow !== Column ? '' : '+'}
                   </button>
                 ))}
@@ -244,7 +386,6 @@ const ImageSEvents = () => {
   
             </div>
 
-            {/* Second smaller card */}
             <div className="imageS-small-card">
               <div className="imageS-actions">
                 {column.slice(4).map((Column) => (
@@ -266,7 +407,7 @@ const ImageSEvents = () => {
                         : () => setImageRow(imageRow + 1)
                     }
                   >
-                    {(imageRow > Column) && (events[`image${Column}`].trim() !== "") && (<img src={events[`image${Column}`] }/>)}
+                    {(imageRow > Column) && (events[`image${Column}`].trim() !== "") && (<canvas ref={(el) => canvasRefs.current[10 + Column] = el}/>)}
                     {imageRow !== Column ? '' : '+'}
                   </button>
                 ))}
@@ -275,7 +416,6 @@ const ImageSEvents = () => {
             </div>
           </div>
 
-          {/* Update button remains at the bottom */}
           <button type="submit" className="imageS-update-button">
             Update
           </button>

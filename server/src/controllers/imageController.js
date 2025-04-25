@@ -41,12 +41,12 @@ const upload = multer({
     }
     cb(null, true);
   }
-});
+})
 
 const createImage = async (req, res) => {
   try {
-    const { URL, eventType, eventName, thumbnail, position } = req.body;
-    if (!URL || !eventType || !eventName || !thumbnail || !position) {
+    const { eventType, eventName, position } = req.body;
+    if (!eventType || !eventName || !position) {
       return res.status(400).json({ message: 'Some types are missing' });
     }
     
@@ -54,11 +54,10 @@ const createImage = async (req, res) => {
     const imageUrl = imageFilename ? `/uploads/imageM/images/${imageFilename}` : null;
     
     const Image = await image.create({
-      URL: URL,
+      URL: imageUrl,
       eventType: eventType,
       eventName: eventName,
       eventType: eventType,
-      thumbnail: thumbnail,
       position: position,
       brightness: 100,
       saturation: 100,
@@ -107,7 +106,7 @@ const getImageById = async (req, res) => {
 const updateImage = async (req, res) => {
   try {
     const imageId = req.params.id;
-    const { URL, eventType, eventName, thumbnail, position, brightness, saturation, blur, inversion } = req.body;
+    const { URL, eventType, eventName, position, brightness, saturation, blur, inversion } = req.body;
     
     const images = await image.findByPk(imageId);
     
@@ -119,7 +118,6 @@ const updateImage = async (req, res) => {
       URL,
       eventType,
       eventName,
-      thumbnail,
       position,
       brightness,
       saturation,

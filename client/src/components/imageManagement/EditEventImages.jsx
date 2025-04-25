@@ -9,6 +9,7 @@ const ImageEEvents = () => {
   const navigate = useNavigate();
   const canvasRef = useRef(null);
   const [image, setImage] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const [settings, setSettings] = useState({
     brightness: 100,
     saturation: 100,
@@ -16,17 +17,6 @@ const ImageEEvents = () => {
     inversion: 0,
   });
 
-  // Reset settings to default values
-  const resetSettings = () => {
-    setSettings({
-      brightness: 100,
-      saturation: 100,
-      blur: 0,
-      inversion: 0,
-    });
-  };
-
-  // Update a specific setting based on slider input
   const updateSetting = (key, value) => {
     if (!image) return;
     setSettings((prevSettings) => ({
@@ -35,13 +25,34 @@ const ImageEEvents = () => {
     }));
   };
 
-  // Generate the CSS filter string based on current settings
+  const saveUpdate = async () => {
+    try {
+      const { brightness, saturation, blur, inversion } = settings;
+      const response = await fetch(`${API_URL}/image-management/${image_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          brightness: brightness,
+          saturation: saturation,
+          blur: blur,
+          inversion: inversion,
+        })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to save update');
+        }
+    } catch (error) {
+      console.error('Error saving updates:', error);
+    }
+  }
+
   const generateFilter = () => {
     const { brightness, saturation, blur, inversion } = settings;
     return `brightness(${brightness}%) saturate(${saturation}%) blur(${blur}px) invert(${inversion}%)`;
   };
 
-  // Render the image on the canvas with applied filters
   const renderImage = () => {
     const canvas = canvasRef.current;
     const canvasCtx = canvas?.getContext("2d");
@@ -53,25 +64,11 @@ const ImageEEvents = () => {
     canvasCtx.drawImage(image, 0, 0);
   };
 
-  // Handle file input change to load the image
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const newImage = new Image();
-      newImage.onload = () => {
-        setImage(newImage);
-        resetSettings();
-      };
-      newImage.src = URL.createObjectURL(file);
-    }
-  };
-
   const hasRun = useRef(false);
 
   const fetchImage = async () => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const response = await fetch(`${apiUrl}/image-management/${image_id}`);
+      const response = await fetch(`${API_URL}/image-management/${image_id}`);
       if (!response.ok) {
       throw new Error('Failed to fetch images');
       }
@@ -80,13 +77,18 @@ const ImageEEvents = () => {
       newImage.onload = () => {
         setImage(newImage);
       };
-      newImage.src = data.URL;
+      newImage.src = `${API_URL}${data.URL}`;
+      setSettings({
+        brightness: data.brightness,
+        saturation: data.saturation,
+        blur: data.blur,
+        inversion: data.inversion,
+      })
     } catch (error) {
       console.error('Error fetching images:', error);
     }
   };
 
-  // Re-render the image whenever settings or image changes
   useEffect(() => {
     renderImage();
     if (hasRun.current) return;
@@ -100,7 +102,7 @@ const ImageEEvents = () => {
         <h1></h1>
         <button
           className="imageE-go-back-button"
-          onClick={() => navigate("/committee/image-management")}
+          onClick={() => navigate(-1)}
         >
           Go Back
         </button>
@@ -175,7 +177,7 @@ const ImageEEvents = () => {
           </div>
         </div>
 
-        <button className="imageE-update-button">
+        <button onClick={(e) => saveUpdate()} className="imageE-update-button">
           Update
         </button>
       </div>

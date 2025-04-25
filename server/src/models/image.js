@@ -30,11 +30,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false
     },
-    
-    thumbnail: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false
-    },
 
     position:{
         type: DataTypes.INTEGER,

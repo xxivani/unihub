@@ -675,4 +675,121 @@
 	background-color: #cc0000;
   }
   
+  /* Mobile Responsiveness */
+@media screen and (max-width: 768px) {
+    .extevent-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 10px;
+        margin-top: 80px;
+    }
+
+    .extevent-page-title {
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .extevent-search-filter-container {
+        width: 100%;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .extevent-search-bar {
+        width: 100%;
+        max-width: none;
+    }
+
+    .extevent-action-buttons {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .extevent-card {
+        flex-direction: column;
+        max-height: none;
+    }
+
+    .extevent-image {
+        width: 100%;
+        height: 200px;
+    }
+
+    .extevent-content {
+        padding: 1rem;
+    }
+
+    .extevent-actions {
+        width: 100%;
+        margin: 1rem 0;
+        align-items: stretch;
+    }
+
+    .view-button, .apply-button {
+        width: 100%;
+    }
+
+    .extevent-details {
+        font-size: 0.8rem;
+    }
+
+    .extevent-title {
+        font-size: 1.1rem;
+    }
+
+    .extevent-description {
+        font-size: 0.8rem;
+    }
+
+    .edit-event-form-container {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .edit-form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .edit-form-group {
+        width: 100%;
+    }
+
+    .edit-form-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .cancel-button, .update-event-button {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .extevent-page-title {
+        font-size: 1.3rem;
+    }
+
+    .extevent-image {
+        height: 150px;
+    }
+
+    .extevent-card {
+        min-height: auto;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .pagination-number {
+        padding: 0.25rem 0.5rem;
+    }
+
+    .pagination-arrow {
+        padding: 0.25rem;
+    }
+}
+  
   

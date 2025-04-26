@@ -9,7 +9,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - /var/www/letsencrypt:/var/www/letsencrypt:ro
+      - /var/www/letsencrypt:/var/www/letsencrypt
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - /etc/nginx/ssl/dev:/etc/nginx/ssl/dev:ro
       - /etc/nginx/ssl/prod:/etc/nginx/ssl/prod:ro

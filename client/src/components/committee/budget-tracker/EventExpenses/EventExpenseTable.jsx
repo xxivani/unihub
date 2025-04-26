@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Link, useLocation } from "react-router-dom";
 import EventAddExpenseButton from './EventExpensesForm';
+import './EventExpenses.css';
 import "./EventExpensesForm.css";
 
 const { Text } = Typography;
@@ -261,7 +262,7 @@ const EventExpensesTable = ({ events }) => {
                 alignItems: 'center'
             }}>
                 {/* Left side with legend */}
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div className='category-legend' style={{ display: 'flex', alignItems: 'center' }}>
                     <Text strong style={{ marginRight: 8 }}>Category Legend: </Text>
                     <Space size="small">
                         {Object.entries(categoryColors).map(([category, color]) => (

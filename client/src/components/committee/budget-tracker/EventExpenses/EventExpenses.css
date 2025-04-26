@@ -175,4 +175,147 @@ body[data-theme="dark"] .event-expenses-back-button {
     background-color: #e0b000;
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
 }
+.category-legend {
+    flex-wrap: wrap;
+}
 
+/* Base Styles (Already provided) */
+
+/* Media Queries */
+
+/* For devices up to 480px (mobile) */
+@media (max-width: 480px) {
+    .event-expenses-page {
+      flex-direction: column;
+      margin-left: 10px;
+      margin-right: 10px;
+      height: auto;
+    }
+  
+    .main-event-expenses {
+      padding: 10px;
+    }
+  
+    .event-expenses-title {
+      font-size: 20px;
+      margin-left: 10px;
+    }
+  
+    .event-expenses-controls {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .event-expenses-search-bar {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 10px;
+    }
+  
+    .event-expenses-header {
+      width: 100%;
+      justify-content: center;
+    }
+  
+    .event-expenses-table {
+      margin-left: 0;
+      padding: 10px;
+    }
+  
+    .event-expenses-button-container {
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+  
+    .event-expenses-next-button,
+    .event-expenses-back-button {
+      font-size: 13px;
+    }
+
+    .category-legend {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .category-legend .ant-space {
+        flex-wrap: wrap;
+    }
+  }
+  
+  /* For devices up to 768px (tablet) */
+  @media (max-width: 768px) {
+    .event-expenses-page {
+      flex-direction: column;
+      margin-left: 15px;
+      margin-right: 15px;
+      height: auto;
+    }
+  
+    .event-expenses-title {
+      font-size: 22px;
+    }
+  
+    .event-expenses-controls {
+      flex-direction: column;
+      gap: 15px;
+    }
+  
+    .event-expenses-search-bar {
+      width: 100%;
+      margin-left: 0;
+    }
+  
+    .event-expenses-header {
+      width: 100%;
+      justify-content: center;
+    }
+  
+    .event-expenses-table {
+      margin-left: 0;
+      padding: 15px;
+    }
+  
+    .event-expenses-button-container {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .event-expenses-next-button,
+    .event-expenses-back-button {
+      width: 80%;
+      margin: 10px 0;
+    }
+  }
+  
+  /* For devices larger than 768px (desktop) */
+  @media (min-width: 769px) {
+    .event-expenses-page {
+      flex-direction: row;
+    }
+  
+    .event-expenses-controls {
+      flex-direction: row;
+    }
+  
+    .event-expenses-search-bar {
+      width: 400px;
+      margin-left: 30px;
+    }
+  
+    .event-expenses-header {
+      width: 200px;
+    }
+  
+    .event-expenses-button-container {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  
+    .event-expenses-next-button,
+    .event-expenses-back-button {
+      width: auto;
+      margin-top: 20px;
+    }
+  }
+  

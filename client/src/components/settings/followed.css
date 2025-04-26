@@ -45,11 +45,26 @@
   .status.underreview {
     color: orange;
   }
+
+  .followed-page h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+  }
+
+  .followed-page p {
+    color: var(--text-color);
+    font-size: 1rem;
+  }
   
   body[data-theme="dark"] .followed-item {
     background-color: black;
     color: white;
     border-color: #444;
+  }
+
+  body[data-theme="dark"] .followed-page h2 {
+    color: white;
   }
   
   @media screen and (max-width: 768px) {

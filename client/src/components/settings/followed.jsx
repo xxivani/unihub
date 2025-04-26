@@ -7,14 +7,50 @@ const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const Followed = () => {
   const [userId, setUserId] = useState(null);
   const [followedRoles, setFollowedRoles] = useState([]);
+  const [followedEvents, setFollowedEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
     if (userData?.id) {
       setUserId(userData.id);
       fetchFollowedRoles(userData.id);
+      fetchFollowedEvents(userData.id);
     }
   }, []);
+
+  const fetchFollowedEvents = async (userId) => {
+    try {
+      const followedEventsIds = JSON.parse(localStorage.getItem(`followedEvents_${userId}`)) || [];
+      console.log("Followed Events IDs:", followedEventsIds); // Debug log
+      
+      if (followedEventsIds.length === 0) {
+        setFollowedEvents([]);
+        setLoading(false);
+        return;
+      }
+
+      const eventsRes = await fetch(`${apiUrl}/external-events`);
+      const eventsData = await eventsRes.json();
+      console.log("All Events:", eventsData); // Debug log
+
+      const userFollowedEvents = eventsData.filter(event => 
+        followedEventsIds.includes(Number(event.external_event_id))
+      ).map(event => ({
+        id: event.external_event_id,
+        name: event.external_event_name,
+        date: event.external_event_date,
+        location: event.external_event_location
+      }));
+
+      console.log("User Followed Events:", userFollowedEvents); // Debug log
+      setFollowedEvents(userFollowedEvents);
+    } catch (err) {
+      console.error("Error fetching followed events:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchFollowedRoles = async (userId) => {
     console.log("User-id: ", userId);
@@ -63,6 +99,16 @@ const Followed = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "Date not set";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   return (
     <div className="settings-layout">
       <SidebarSettings />
@@ -71,7 +117,7 @@ const Followed = () => {
         <h2>Followed Role Openings</h2>
 
         {followedRoles.length === 0 ? (
-          <p>You haven’t applied to any role openings yet.</p>
+          <p>You haven't applied to any role openings yet.</p>
         ) : (
           <ul className="followed-list">
             {followedRoles.map((role, idx) => (
@@ -85,6 +131,26 @@ const Followed = () => {
                 {/* <h3>{role.position}</h3>
                 <p><strong>Club:</strong> {role.club}</p>
                 <p><strong>Status:</strong> {role.status}</p> */}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <h2 style={{ marginTop: '2rem' }}>Followed External Events</h2>
+        {loading ? (
+          <p>Loading events...</p>
+        ) : followedEvents.length === 0 ? (
+          <p>You haven't followed any external events yet.</p>
+        ) : (
+          <ul className="followed-list">
+            {followedEvents.map((event, idx) => (
+              <li key={idx} className="followed-item">
+                <span className="role-info">
+                  {event.name} at {event.location}
+                </span>
+                <span className="status">
+                  {formatDate(event.date)}
+                </span>
               </li>
             ))}
           </ul>

@@ -1,4 +1,4 @@
-/* ✅ Club Card - Main Styling */
+
 .club-card {
   display: flex;
   border: 1px solid #ddd;
@@ -16,7 +16,7 @@ body[data-theme="dark"] .club-card {
   border-color: #444;
 }
 
-/* ✅ Club Image */
+
 .club-image {
   position: relative;
   display: inline-block;
@@ -30,7 +30,7 @@ body[data-theme="dark"] .club-card {
   display: block;
 }
 
-/* ✅ Delete Button */
+
 .delete-club-button {
   position: absolute;
   top: 25px;
@@ -54,7 +54,7 @@ body[data-theme="dark"] .club-card {
   transform: scale(1.1);
 }
 
-/* ✅ Edit Button */
+
 .edit-club-button {
   position: absolute;
   bottom: 100px;
@@ -78,7 +78,7 @@ body[data-theme="dark"] .club-card {
   transform: scale(1.1);
 }
 
-/* ✅ Club Details */
+
 .club-details {
   display: flex;
   flex-direction: column;
@@ -106,7 +106,7 @@ body[data-theme="dark"] .club-details p {
   color: #ccc;
 }
 
-/* ✅ Club Buttons */
+
 .club-buttons {
   display: flex;
   flex-direction: column;
@@ -146,7 +146,7 @@ body[data-theme="dark"] .club-details p {
   background-color: #333;
 }
 
-/* ✅ Edit Modal Overlay */
+
 .edit-modal-overlay {
   position: fixed;
   top: 0;
@@ -160,7 +160,7 @@ body[data-theme="dark"] .club-details p {
   z-index: 999;
 }
 
-/* ✅ Modal Box */
+
 .edit-modal {
   background: white;
   padding: 25px;
@@ -180,7 +180,7 @@ body[data-theme="dark"] .edit-modal {
   color: #fff;
 }
 
-/* Close Button */
+
 .close-modal-button {
   position: absolute;
   top: 12px;
@@ -200,7 +200,7 @@ body[data-theme="dark"] .close-modal-button {
   color: black;
 }
 
-/* ✅ Form Groups */
+
 .edit-form-group {
   margin-bottom: 15px;
   text-align: left;
@@ -237,7 +237,7 @@ body[data-theme="dark"] .edit-form-group textarea {
   border-color: #555;
 }
 
-/* ✅ Save Button */
+
 .save-changes-btn {
   width: 100%;
   padding: 12px;
@@ -253,3 +253,23 @@ body[data-theme="dark"] .edit-form-group textarea {
 .save-changes-btn:hover {
   background-color: #c9af74;
 }
+
+.leave-club-btn {
+  background-color: #dc3545; 
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  height: 50px;
+  width: 230px;
+  text-align: center;
+  padding: 10px 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+}
+
+.leave-club-btn:hover {
+  background-color: #c82333; 
+}
+

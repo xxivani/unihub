@@ -103,7 +103,7 @@ function AppContent() {
 
           {/* Public Routes */}
           <Route path="/clubs" element={<Clubs />} />
-          <Route path="/club-details" element={<ClubDetailsPage />} />
+          <Route path="/club-details/:id" element={<ClubDetailsPage />} />
           <Route path="/create-club" element={<CreateClub />} />
           <Route path="/events" element={<Events />} />
           <Route path="/event-details" element={<EventDetails />} />

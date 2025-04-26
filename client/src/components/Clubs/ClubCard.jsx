@@ -1,102 +1,104 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; 
-import "./ClubCard.css"; 
-import { FaTrash, FaPencilAlt, FaTimes } from "react-icons/fa"; 
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import "./ClubCard.css";
 
-const ClubCard = ({ club, isEditMode, onDelete, onUpdate }) => {
-  const {
-    club_id,
-    club_name,
-    club_description,
-    club_thumbnail_url
-  } = club;
+const ClubCard = ({ club, user, userMemberships, refreshMemberships }) => {
+  const { club_id, club_name, club_description, club_thumbnail_url } = club;
+  const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-  const navigate = useNavigate(); 
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editedClub, setEditedClub] = useState({
-    club_name,
-    club_description,
-    club_thumbnail_url
-  });
+  const isMember = userMemberships.includes(club_id);
 
-  const handleEditClick = () => {
-    setIsEditModalOpen(true);
+  const fallbackImage = "https://picsum.photos/200/150?random=1";
+
+  const handleJoinClub = async () => {
+    if (!user) {
+      alert("Please log in first.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiUrl}/club-memberships`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, clubId: club_id }),
+      });
+
+      if (response.status === 201) {
+        alert("Joined club successfully!");
+        refreshMemberships();
+      } else if (response.status === 400) {
+        alert("You are already a member of this club.");
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Join club error:", error);
+      alert("Failed to join club.");
+    }
   };
 
-  const handleCloseEditModal = () => {
-    setIsEditModalOpen(false);
-  };
+  const handleLeaveClub = async () => {
+    if (!user) {
+      alert("Please log in first.");
+      return;
+    }
 
-  const handleSaveChanges = () => {
-    onUpdate(club_id, editedClub); // 🛠 Send updated club data to parent
-    setIsEditModalOpen(false);
+    try {
+      const response = await fetch(`${apiUrl}/club-memberships/leave`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, clubId: club_id }),
+      });
+
+      if (response.ok) {
+        alert("Left club successfully!");
+        refreshMemberships();
+      } else {
+        alert("Failed to leave the club.");
+      }
+    } catch (error) {
+      console.error("Leave club error:", error);
+      alert("Server error while leaving the club.");
+    }
   };
 
   return (
-    <>
-      <div className="club-card">
-        <div className="club-image">
-          <img src={club_thumbnail_url} alt={club_name} />
-        </div>
-
-        <div className="club-details">
-          <h3>{club_name}</h3>
-          <p>{club_description}</p>
-        </div>
-
-        <div className="club-buttons">
-          <button className="view-club-btn" onClick={() => navigate("/club-details")}>
-            View Club Details
-          </button>
-          <button className="join-club-btn">Join</button>
-        </div>
-
-        {isEditMode && (
-          <>
-            <button className="delete-club-button" onClick={() => onDelete(club_id)}>
-              <FaTrash />
-            </button>
-            <button className="edit-club-button" onClick={handleEditClick}>
-              <FaPencilAlt />
-            </button>
-          </>
-        )}
+    <div className="club-card">
+      <div className="club-image">
+        <img
+          src={club_thumbnail_url || fallbackImage}
+          alt={club_name}
+          onError={(e) => {
+            e.target.src = fallbackImage;
+            e.target.onerror = null;
+          }}
+        />
       </div>
 
-      {/* ✅ Edit Modal */}
-      {isEditModalOpen && (
-        <div className="edit-modal-overlay">
-          <div className="edit-modal">
-            <button className="close-modal-button" onClick={handleCloseEditModal}>
-              <FaTimes />
-            </button>
-            <h2>Edit Club Details</h2>
+      <div className="club-details">
+        <h3>{club_name}</h3>
+        <p>{club_description}</p>
+      </div>
 
-            <label>Club Name:</label>
-            <input 
-              type="text" 
-              value={editedClub.club_name} 
-              onChange={(e) => setEditedClub({ ...editedClub, club_name: e.target.value })} 
-            />
-
-            <label>Club Logo (Image URL):</label>
-            <input 
-              type="text" 
-              value={editedClub.club_thumbnail_url} 
-              onChange={(e) => setEditedClub({ ...editedClub, club_thumbnail_url: e.target.value })} 
-            />
-
-            <label>Club Description:</label>
-            <textarea 
-              value={editedClub.club_description} 
-              onChange={(e) => setEditedClub({ ...editedClub, club_description: e.target.value })} 
-            />
-
-            <button onClick={handleSaveChanges} className="save-changes-btn">Save Changes</button>
-          </div>
-        </div>
-      )}
-    </>
+      <div className="club-buttons">
+        <button
+          className="view-club-btn"
+          onClick={() => navigate(`/club-details/${club_id}`)}
+        >
+          View Club Details
+        </button>
+        {isMember ? (
+          <button className="leave-club-btn" onClick={handleLeaveClub}>
+            Leave
+          </button>
+        ) : (
+          <button className="join-club-btn" onClick={handleJoinClub}>
+            Join
+          </button>
+        )}
+      </div>
+    </div>
   );
 };
 

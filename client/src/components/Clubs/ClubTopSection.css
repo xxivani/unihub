@@ -1,4 +1,3 @@
-
 .club-top-container {
     height: 25vh;
     min-height: 250px;
@@ -10,7 +9,12 @@
     margin-top: 56px;
     padding: 3vh 5vw;
     flex-direction: row;
-    background-color: #F8F8F8 ; 
+    background-color: #F8F8F8;
+}
+
+
+body[data-theme="dark"] .club-top-container {
+    background-color: #1e1e1e;
 }
 
 
@@ -29,6 +33,7 @@
 }
 
 
+
 .club-title {
     font-size: 2.8rem;
     color: #1e1e1e;
@@ -37,13 +42,19 @@
     text-align: left;
 }
 
+body[data-theme="dark"] .club-title {
+    color: #fff;
+}
+
+
 
 .club-actions {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-right: -20px; 
+    margin-right: -20px;
 }
+
 
 
 .join-button {
@@ -52,19 +63,25 @@
     border-radius: 5px;
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #dec585;  
+    background-color: #dec585;
     color: black;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
+body[data-theme="dark"] .join-button {
+    background-color: #dec585;
+    color: black;
+}
+
+
 
 .notification-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f4f1ec; 
+    background-color: #f4f1ec;
     border: none;
     width: 40px;
     height: 40px;
@@ -75,18 +92,34 @@
 }
 
 
+body[data-theme="dark"] .notification-button {
+    background-color: #333;
+    color: white;
+}
+
+
+
 .exit-button {
     position: absolute;
-    top: 70px; 
+    top: 90px; 
     right: 20px; 
     background: none;
     border: none;
     cursor: pointer;
     font-size: 0.01rem; 
     color: black; 
-    z-index: 1000; 
+    z-index: 1000;
 }
 
 .exit-button:hover {
     color: #555;
+}
+
+
+body[data-theme="dark"] .exit-button {
+    color: white;
+}
+
+body[data-theme="dark"] .exit-button:hover {
+    color: #ccc;
 }

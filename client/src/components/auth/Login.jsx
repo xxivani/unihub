@@ -13,9 +13,9 @@ function Login() {
   const [apiConnectionStatus, setApiConnectionStatus] = useState("Checking connection...");
   const navigate = useNavigate();
 
-  const apiUrl = import.meta.env.VITE_API_URL;
-  // // const apiUrl = "http://localhost:5000";
-  // const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  //const apiUrl = import.meta.env.VITE_API_URL;
+  //const apiUrl = "http://localhost:5000";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5050";
 
 
 
@@ -79,7 +79,8 @@ function Login() {
     
 
     // const loginApiUrl = "http://localhost:5000";
-    const loginApiUrl = import.meta.env.VITE_API_URL;
+    //const loginApiUrl = import.meta.env.VITE_API_URL;
+    const loginApiUrl = import.meta.env.VITE_API_URL || "http://localhost:5050/api";
     console.log("Using API URL:", loginApiUrl);
     
     try {

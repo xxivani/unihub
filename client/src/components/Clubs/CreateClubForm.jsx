@@ -8,6 +8,8 @@ const CreateClubForm = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [category, setCategory] = useState("");
 
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -24,7 +26,7 @@ const CreateClubForm = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5050/api/clubs", {
+      const response = await fetch(`${apiUrl}/clubs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

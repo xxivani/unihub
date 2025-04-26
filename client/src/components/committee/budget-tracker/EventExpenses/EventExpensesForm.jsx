@@ -1,39 +1,77 @@
 import { Button, Form, Input, Modal, DatePicker, Select, Radio, Checkbox } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import "./EventExpensesForm.css";
-// import "./AddExpense.css";
-
-const { RangePicker } = DatePicker;
 
 function EventAddExpenseButton({ onAddEvent }) {
   const [form] = Form.useForm();
   const variant = Form.useWatch('variant', form);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState({});
+  const [clubName, setClubName] = useState('');
+  
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const [clubId, setClubId] = useState(null);
 
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-
   // Category colors for visual consistency with the table
   const categoryColors = {
-      catering: "blue",
-      materials: "green",
-      prize: "gold",
-      venue: "purple",
-      transportation: "red",
+    catering: "blue",
+    materials: "green",
+    prize: "gold",
+    venue: "purple",
+    transportation: "red",
   };
 
   // Available categories
   const categories = [
-      { label: 'Catering', value: 'catering' },
-      { label: 'Materials', value: 'materials' },
-      { label: 'Prize', value: 'prize' },
-      { label: 'Venue', value: 'venue' },
-      { label: 'Transportation', value: 'transportation' },
+    { label: 'Catering', value: 'catering' },
+    { label: 'Materials', value: 'materials' },
+    { label: 'Prize', value: 'prize' },
+    { label: 'Venue', value: 'venue' },
+    { label: 'Transportation', value: 'transportation' },
   ];
+
+  // On component mount, get club_id from URL or session
+  useEffect(() => {
+    const clubIdFromUrl = queryParams.get('club_id');
+    const clubIdFromSession = sessionStorage.getItem('selectedClubId');
+    
+    const id = clubIdFromUrl || clubIdFromSession;
+    if (id) {
+      setClubId(id);
+      // Fetch club name if needed
+      fetchClubName(id);
+    }
+    console.log("EventExpensesForm - Using Club ID:", id);
+  }, [location.search]);
+
+  // Fetch club name if available
+  const fetchClubName = async (id) => {
+    try {
+      const response = await fetch(`${apiUrl}/api/clubs/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setClubName(data.club_name || `Club ${id}`);
+      } else {
+        setClubName(`Club ${id}`);
+      }
+    } catch (error) {
+      console.error("Error fetching club name:", error);
+      setClubName(`Club ${id}`);
+    }
+  };
 
   // Open Modal
   const showModal = () => {
+    // Check if a club is selected
+    if (!clubId) {
+      alert('Please select a club first before adding an expense');
+      return;
+    }
+    
     setIsModalOpen(true);
     setSelectedCategories({});
     form.resetFields();
@@ -73,6 +111,18 @@ function EventAddExpenseButton({ onAddEvent }) {
   // Handle Form Submission
   const handleSubmit = async (values) => {
     try {
+      // Validate club selection
+      if (!clubId) {
+        alert('Please select a club first');
+        return;
+      }
+
+      // Validate at least one category is selected
+      if (Object.keys(selectedCategories).length === 0) {
+        alert('Please select at least one expense category');
+        return;
+      }
+
       // Convert categories to the format expected by the API
       const categoriesData = Object.entries(selectedCategories)
         .filter(([_, amount]) => amount !== "")
@@ -81,35 +131,39 @@ function EventAddExpenseButton({ onAddEvent }) {
           amount: Number(amount)
         }));
       
-      // Create request body
+      // Create event data
       const eventData = {
         name: values.eventName,
         date: values.eventDate.format('YYYY-MM-DD'),
         status: values.eventStatus,
         description: values.description || '',
-        categories: categoriesData
+        categories: categoriesData,
+        club_id: clubId // Use the clubId from state
       };
-      
-      // Send POST request to API
-      const response = await fetch(`${apiUrl}/bt_eventRoute`, {
+
+      console.log("Creating new event with data:", eventData);
+
+      // Send POST request to create event
+      const eventResponse = await fetch(`${apiUrl}/bt_eventRoute`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(eventData)
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to create event');
+
+      if (!eventResponse.ok) {
+        throw new Error(`Failed to create event: ${eventResponse.status}`);
       }
-      
-      const createdEvent = await response.json();
-      
+
+      const createdEvent = await eventResponse.json();
+      console.log("Created event:", createdEvent);
+
       // Call the parent function to refresh data
       if (onAddEvent) {
-        onAddEvent(createdEvent);
+        onAddEvent();
       }
-      
+
       alert('Event added successfully');
       form.resetFields();
       setSelectedCategories({});
@@ -129,7 +183,9 @@ function EventAddExpenseButton({ onAddEvent }) {
 
       {/* Modal */}
       <Modal
-        title={<div className='event-expense-form-modal-title'>Event Expense Form</div>}
+        title={<div className='event-expense-form-modal-title'>
+          {clubName ? `Add Event Expense for ${clubName}` : 'Event Expense Form'}
+        </div>}
         open={isModalOpen}
         onCancel={handleCancel}
         footer={null}
@@ -140,33 +196,32 @@ function EventAddExpenseButton({ onAddEvent }) {
           variant={variant || 'filled'}
           onFinish={handleSubmit}
         >
-          <Form.Item 
-            label="Event Name" 
-            name="eventName" 
+          <Form.Item
+            label="Event Name"
+            name="eventName"
             rules={[{ required: true, message: 'Please input event name' }]}
           >
             <Input />
           </Form.Item>
 
-          <Form.Item 
-            label="Event Date" 
-            name="eventDate" 
+          <Form.Item
+            label="Event Date"
+            name="eventDate"
             rules={[{ required: true, message: 'Please select a date' }]}
           >
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>
 
-          <Form.Item 
-            label="Event Description" 
-            name="eventDesc" 
-            // rules={[{ required: true, message: 'Please select a date' }]}
+          <Form.Item
+            label="Event Description"
+            name="description"
           >
             <Input />
           </Form.Item>
 
-          <Form.Item 
-            label="Event Status" 
-            name="eventStatus" 
+          <Form.Item
+            label="Event Status"
+            name="eventStatus"
             rules={[{ required: true, message: 'Please select status' }]}
           >
             <Radio.Group>
@@ -175,8 +230,8 @@ function EventAddExpenseButton({ onAddEvent }) {
             </Radio.Group>
           </Form.Item>
 
-          <Form.Item 
-            label="Expense Categories" 
+          <Form.Item
+            label="Expense Categories"
             required
             validateStatus={Object.keys(selectedCategories).length === 0 ? 'error' : 'success'}
             help={Object.keys(selectedCategories).length === 0 ? 'Please select at least one category' : null}
@@ -205,18 +260,21 @@ function EventAddExpenseButton({ onAddEvent }) {
             ))}
           </Form.Item>
 
+          {/* Hidden field to store club_id */}
+          <input type="hidden" value={clubId} />
+
           <Form.Item>
-            <Button 
-              className='event-expense-form-submit-button' 
-              type="primary" 
+            <Button
+              className='event-expense-form-submit-button'
+              type="primary"
               htmlType="submit"
               disabled={Object.keys(selectedCategories).length === 0}
             >
               Submit
             </Button>
-            <Button 
-              className='event-expense-form-cancel-button' 
-              onClick={handleCancel} 
+            <Button
+              className='event-expense-form-cancel-button'
+              onClick={handleCancel}
               style={{ marginLeft: 8 }}
             >
               Cancel

@@ -168,6 +168,7 @@ body[data-theme = "dark"] .latest-event-expense {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    /* margin-top: 25px; */
     
 }
 .expense-breakdown-chart {
@@ -311,4 +312,235 @@ body[data-theme="dark"] .budget-next-button {
     align-items: center;
     font-weight: bold;
     z-index: 10;
+}
+.select-club-container-bt {
+    position: relative;
+    margin-left: 15px;
+    margin-top: 10px;
+}
+
+.select-club-dropdown-bt {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+}
+
+/* media responsivesness */
+
+/* Responsive for tablets (768px and below) */
+@media screen and (max-width: 768px) {
+    .budget-dashboard {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+        margin-top: 60px;
+    }
+
+    .budget-dashboard-sidebar {
+        margin-right: 0;
+        width: 90%;
+        padding: 10px;
+    }
+
+    .main-budget-dash {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .budget-boxes {
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        gap: 15px;
+        height: fit-content;
+    }
+
+    .budget-box1, .budget-box2, .budget-box3 {
+        width: 90%;
+    }
+
+    .monthly-expense, 
+    .latest-event-expense {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .expense-breakdown-chart, 
+    .budget-committee-members {
+        width: 90%;
+        margin: 10px auto;
+    }
+
+    .budget-next-button {
+        margin-left: 0;
+        margin-top: 20px;
+    }
+}
+
+/* Responsive styles for screens between 768px and 1024px */
+
+
+/* Responsive for mobile devices (480px and below) */
+@media screen and (max-width: 480px) {
+    .budget-dashboard-title {
+        font-size: 20px;
+        text-align: center;
+        margin-left: 0;
+    }
+
+    .budget-boxes {
+        width: 100%;
+        height: fit-content;
+    }
+
+    .budget-box1, .budget-box2, .budget-box3 {
+        width: 100%;
+    }
+
+    .monthly-expense, 
+    .latest-event-expense {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .expense-breakdown-chart, 
+    .budget-committee-members {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .amount {
+        font-size: 22px;
+    }
+
+    .add-expense-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 40px !important;
+    }
+}
+
+/* Responsive styles for screens between 768px and 1200px */
+/* Responsive styles for screens between 768px and 1200px */
+@media screen and (min-width: 769px) and (max-width: 1200px) {
+    .budget-dashboard {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+        margin-left: 70px;
+    }
+
+    .budget-dashboard-sidebar {
+        width: 100%;
+        margin-right: 65px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 20px; 
+        padding: 10px;
+        position: absolute;
+        overflow-y: visible;
+
+    }
+
+    .main-budget-dash {
+        width: 100%;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .budget-dashboard-title {
+        width: 100%;
+        text-align: center;
+        margin-left: 0;
+        margin-bottom: 20px;
+    }
+
+    .budget-boxes {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
+        height: fit-content;
+        margin-top: 15px;
+        margin-left: 0;
+        gap: 20px;
+    }
+
+    .budget-box1, 
+    .budget-box2, 
+    .budget-box3 {
+        width: 250px;
+        height: 165px;
+    }
+
+    .monthly-expense {
+        width: 90%;
+        margin-left: 0;
+        margin-top: 20px;
+        height: auto;
+    }
+
+    .latest-event-expense {
+        width: 90%;
+        margin-left: 0;
+        margin-top: 20px;
+        height: auto;
+    }
+
+    .expense-breakdown {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .expense-breakdown-chart {
+        width: 90%;
+        margin: 0;
+    }
+
+    .budget-committee-members {
+        width: 90%;
+        margin: 0;
+    }
+
+    .budget-next-button {
+        margin-left: 0;
+        margin-top: 20px;
+        align-self: center;
+    }
+}
+
+
+/* Additional tweaks for screens between 1024px and 1200px */
+@media screen and (min-width: 1024px) and (max-width: 1200px) {
+    .budget-boxes {
+        gap: 30px;
+    }
+
+    .budget-box1, 
+    .budget-box2, 
+    .budget-box3 {
+        width: 270px;
+        height: 170px;
+        padding: 25px;
+        align-content: center;
+    }
+
+    .expense-breakdown {
+        gap: 30px;
+    }
+
+    .expense-breakdown-chart,
+    .budget-committee-members {
+        width: 95%;
+    }
 }

@@ -1,10 +1,16 @@
+const { where } = require('sequelize');
 const { Budget } = require('../../models/');
 
 // Get current budget
 const getCurrentBudget = async (req, res) => {
   try {
+    // Add query parameter for club_id
+    const { club_id } = req.query;
+    // Prepare where clause if club_id is provided
+    const whereClause = club_id ? { club_id } : {};
     // Get the most recent budget (assuming one budget per fiscal year)
     const budget = await Budget.findOne({
+      where: whereClause,
       order: [['createdAt', 'DESC']]
     });
 
@@ -22,7 +28,7 @@ const getCurrentBudget = async (req, res) => {
 // Create new budget
 const createBudget = async (req, res) => {
   try {
-    const { totalAmount, fiscalYear, description } = req.body;
+    const { totalAmount, fiscalYear, description, club_id } = req.body;
 
     // Validate input
     if (!totalAmount || !fiscalYear) {
@@ -33,7 +39,8 @@ const createBudget = async (req, res) => {
     const newBudget = await Budget.create({
       totalAmount,
       fiscalYear,
-      description: description || ''
+      description: description || '',
+      club_id: club_id || null
     });
 
     return res.status(201).json(newBudget);
@@ -95,7 +102,14 @@ const deleteBudget = async (req, res) => {
 // Get all budgets (for admin)
 const getAllBudgets = async (req, res) => {
   try {
+
+    // Add query parameter for club_id
+    const { club_id } = req.query;
+    // Prepare where clause if club_id is provided
+    const whereClause = club_id ? { club_id } : {};
+
     const budgets = await Budget.findAll({
+      where: whereClause,
       order: [['fiscalYear', 'DESC']]
     });
 
@@ -125,6 +139,47 @@ const testBudget = async (req, res) => {
   }
 };
 
+// Create default budget for a club
+const createDefaultBudget = async (club_id, fiscalYear) => {
+  try {
+    // Set default values
+    const defaultAmount = 0.00;  // Or whatever default value you want
+    
+    // Create the budget
+    const budget = await Budget.create({
+      totalAmount: defaultAmount,
+      fiscalYear: fiscalYear || `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
+      description: 'Default club budget',
+      club_id
+    });
+    
+    return budget;
+  } catch (error) {
+    console.error('Error creating default budget:', error);
+    throw error;
+  }
+};
+// Add to budgetController.js
+const getBudgetByClubId = async (req, res) => {
+  try {
+    const { club_id } = req.params;
+    
+    const budget = await Budget.findOne({
+      where: { club_id },
+      order: [['createdAt', 'DESC']]
+    });
+
+    if (!budget) {
+      return res.status(404).json({ message: 'No budget found for this club' });
+    }
+
+    return res.status(200).json(budget);
+  } catch (error) {
+    console.error('Error getting club budget:', error);
+    return res.status(500).json({ message: 'Failed to retrieve club budget', error: error.message });
+  }
+};
+
 
 module.exports = {
   getCurrentBudget,
@@ -132,5 +187,7 @@ module.exports = {
   updateBudget,
   deleteBudget,
   getAllBudgets,
-  testBudget
+  testBudget,
+  createDefaultBudget,
+  getBudgetByClubId
 };

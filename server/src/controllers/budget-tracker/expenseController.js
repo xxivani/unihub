@@ -4,7 +4,12 @@ const { Op } = require('sequelize');
 // Get all expenses
 const getAllExpenses = async (req, res) => {
   try {
+
+    const { club_id } = req.query;
+    const expense_whereClause = club_id ? { club_id } : {};
+
     const expenses = await Expense.findAll({
+      where: expense_whereClause,
       include: [
         { model: Category, as: 'category' },
         { model: Event, as: 'event' }
@@ -44,11 +49,16 @@ const getExpenseById = async (req, res) => {
 // Create a new expense
 const createExpense = async (req, res) => {
   try {
-    const { amount, description, date, categoryId, eventId } = req.body;
+    const { amount, description, date, categoryId, eventId, club_id } = req.body;
 
     // Validate input
     if (!amount || !categoryId) {
       return res.status(400).json({ message: 'Amount and category are required' });
+    }
+
+    // Ensure club_id is provided
+    if (!club_id) {
+      return res.status(400).json({ message: 'Club ID is required' });
     }
 
     // Check if category exists
@@ -71,7 +81,8 @@ const createExpense = async (req, res) => {
       description: description || '',
       date: date || new Date(),
       categoryId,
-      eventId: eventId || null
+      eventId: eventId || null,
+      club_id
     });
 
     // Get the created expense with its relations
@@ -93,7 +104,7 @@ const createExpense = async (req, res) => {
 const updateExpense = async (req, res) => {
   try {
     const { id } = req.params;
-    const { amount, description, date, categoryId, eventId } = req.body;
+    const { amount, description, date, categoryId, eventId, club_id } = req.body;
 
     // Find expense by ID
     const expense = await Expense.findByPk(id);
@@ -124,7 +135,8 @@ const updateExpense = async (req, res) => {
       description: description !== undefined ? description : expense.description,
       date: date || expense.date,
       categoryId: categoryId || expense.categoryId,
-      eventId: eventId !== undefined ? eventId : expense.eventId
+      eventId: eventId !== undefined ? eventId : expense.eventId,
+      club_id: expense.club_id
     });
 
     // Get the updated expense with its relations

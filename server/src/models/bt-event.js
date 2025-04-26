@@ -8,6 +8,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'eventId',
         as: 'expenses'
       });
+      BTevent.belongsTo(models.Club, {
+        foreignKey: 'club_id',
+        
+      });
     }
   }
   
@@ -37,11 +41,20 @@ module.exports = (sequelize, DataTypes) => {
     description: {
       type: DataTypes.TEXT,
       allowNull: true
+    },
+    club_id: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
+      references: {
+        model: 'clubs',
+        key: 'club_id'
+      }
     }
   }, {
     sequelize,
     modelName: 'BTevent',
-    tableName: "Events"
+    // tableName: "Events"
+    tableName: "BTEvents"
   });
   
   return BTevent;

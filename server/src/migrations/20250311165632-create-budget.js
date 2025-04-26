@@ -8,7 +8,7 @@ module.exports = {
     // });
     
     // You could add other budget-related fields as needed
-    await queryInterface.addColumn('Events', 'budgetStatus', {
+    await queryInterface.addColumn('BTEvents', 'budgetStatus', {
       type: Sequelize.ENUM('PENDING', 'APPROVED', 'REJECTED'),
       allowNull: true,
       defaultValue: 'PENDING'
@@ -16,6 +16,6 @@ module.exports = {
   },
   async down(queryInterface, Sequelize) {
     // await queryInterface.removeColumn('Events', 'totalBudget');
-    await queryInterface.removeColumn('Events', 'budgetStatus');
+    await queryInterface.removeColumn('BTEvents', 'budgetStatus');
   }
 };

@@ -2,9 +2,25 @@ const { BTevent, Expense, Category, sequelize } = require('../../models');
 const { Op } = require('sequelize');
 
 // Get all events with expenses and categories
+
 const getAllEventsBT = async (req, res) => {
   try {
+    const { club_id } = req.query;
+    console.log('Get all events - club_id:', club_id);
+    
+    // Require club_id parameter - don't allow fetching events without a club_id
+    if (!club_id) {
+      return res.status(400).json({ 
+        message: 'club_id parameter is required' 
+      });
+    }
+    
+    // Use where clause with correct type conversion
+    const whereClause = { club_id: parseInt(club_id) };
+    console.log('Events where clause:', whereClause);
+
     const events = await BTevent.findAll({
+      where: whereClause,
       include: [
         {
           model: Expense,
@@ -21,17 +37,19 @@ const getAllEventsBT = async (req, res) => {
       
       // Calculate total expenses for the event
       const totalExpense = rawEvent.expenses.reduce(
-        (sum, expense) => sum + parseFloat(expense.amount), 0
+        (sum, expense) => sum + parseFloat(expense.amount || 0), 0
       );
       
       // Group expenses by category for the frontend tags
       const categoriesMap = {};
       rawEvent.expenses.forEach(expense => {
-        const categoryName = expense.category.name.toLowerCase();
-        if (!categoriesMap[categoryName]) {
-          categoriesMap[categoryName] = 0;
+        if (expense.category) {
+          const categoryName = expense.category.name.toLowerCase();
+          if (!categoriesMap[categoryName]) {
+            categoriesMap[categoryName] = 0;
+          }
+          categoriesMap[categoryName] += parseFloat(expense.amount || 0);
         }
-        categoriesMap[categoryName] += parseFloat(expense.amount);
       });
       
       // Convert to array format for frontend
@@ -42,22 +60,25 @@ const getAllEventsBT = async (req, res) => {
       
       return {
         id: rawEvent.id,
-        key: rawEvent.id.toString(), // Frontend needs a key
+        key: rawEvent.id.toString(),
         name: rawEvent.name,
-        date: new Date(rawEvent.date).toLocaleDateString('en-GB'), // Format as DD/MM/YYYY
+        date: new Date(rawEvent.date).toLocaleDateString('en-GB'),
         status: rawEvent.status,
         expense: `AED ${totalExpense.toFixed(2)}`,
         description: rawEvent.description,
-        categories
+        categories,
+        club_id: rawEvent.club_id
       };
     });
-
+    
+    console.log(`Returning ${formattedEvents.length} events for club_id: ${club_id}`);
     return res.status(200).json(formattedEvents);
   } catch (error) {
     console.error('Error getting all events:', error);
     return res.status(500).json({ message: 'Failed to retrieve events', error: error.message });
   }
 };
+
 
 // Get event by ID
 const getBTeventById = async (req, res) => {
@@ -107,7 +128,8 @@ const getBTeventById = async (req, res) => {
       status: rawEvent.status,
       expense: `AED ${totalExpense.toFixed(2)}`,
       description: rawEvent.description,
-      categories
+      categories,
+      club_id: rawEvent.club_id,
     };
 
     return res.status(200).json(formattedEvent);
@@ -122,11 +144,16 @@ const createEventBT = async (req, res) => {
   const transaction = await sequelize.transaction();
   
   try {
-    const { name, date, status, description, categories } = req.body;
+    const { name, date, status, description, categories, club_id } = req.body;
     
     // Validate input
     if (!name || !date || !status) {
       return res.status(400).json({ message: 'Name, date, and status are required' });
+    }
+
+    // Ensure club_id is provided
+    if (!club_id) {
+      return res.status(400).json({ message: 'Club ID is required' });
     }
     
     if (!categories || !Array.isArray(categories) || categories.length === 0) {
@@ -145,7 +172,8 @@ const createEventBT = async (req, res) => {
       name,
       date: formattedDate,
       status,
-      description: description || ''
+      description: description || '',
+      club_id: parseInt(club_id),
     }, { transaction });
     
     // Create expenses for each category
@@ -170,7 +198,8 @@ const createEventBT = async (req, res) => {
         description: `${categoryName} expense for ${name}`,
         date: formattedDate,
         categoryId: category.id,
-        eventId: newEvent.id
+        eventId: newEvent.id,
+        club_id: parseInt(club_id),
       }, { transaction });
     });
     
@@ -210,7 +239,8 @@ const createEventBT = async (req, res) => {
       status: rawEvent.status,
       expense: `AED ${totalExpense.toFixed(2)}`,
       description: rawEvent.description,
-      categories: responseCategories
+      categories: responseCategories,
+      club_id: rawEvent.club_id,
     };
     
     return res.status(201).json(formattedEvent);
@@ -228,7 +258,7 @@ const updateEventBT = async (req, res) => {
   
   try {
     const { id } = req.params;
-    const { name, date, status, description, categories } = req.body;
+    const { name, date, status, description, categories, club_id } = req.body;
     
     // Find the event
     const event = await BTevent.findByPk(id);
@@ -250,8 +280,9 @@ const updateEventBT = async (req, res) => {
       name: name || event.name,
       date: formattedDate || event.date,
       status: status || event.status,
-      description: description !== undefined ? description : event.description
+      description: description !== undefined ? description : event.description,
       // description: description || event.description,
+      club_id,
     }, { transaction });
     
     // If categories are provided, update the expenses
@@ -284,7 +315,9 @@ const updateEventBT = async (req, res) => {
           description: `${categoryName} expense for ${name || event.name}`,
           date: formattedDate || event.date,
           categoryId: category.id,
-          eventId: id
+          eventId: id,
+          club_id,
+
         }, { transaction });
       });
       
@@ -335,7 +368,9 @@ const updateEventBT = async (req, res) => {
       status: rawEvent.status,
       expense: `AED ${totalExpense.toFixed(2)}`,
       description: rawEvent.description,
-      categories: responseCategories
+      categories: responseCategories,
+      club_id: rawEvent.club_id,
+
     };
     
     return res.status(200).json(formattedEvent);
@@ -384,83 +419,89 @@ const deleteEventBT = async (req, res) => {
 };
 
 // Search events by name
+// const searchEventsBT = async (req, res) => {
+//   try {
+//     const { query } = req.query;
+    
+//     if (!query) {
+//       return res.status(400).json({ message: 'Search query is required' });
+//     }
+    
+//     const events = await BTevent.findAll({
+//       where: {
+//         name: {
+//           [Op.iLike]: `%${query}%`  // Case-insensitive search
+//         }
+//       },
+//       include: [
+//         {
+//           model: Expense,
+//           as: 'expenses',
+//           include: [{ model: Category, as: 'category' }]
+//         }
+//       ],
+//       order: [['date', 'DESC']]
+//     });
+    
+//     // Format response similar to getAllEvents
+//     const formattedEvents = events.map(event => {
+//       const rawEvent = event.get({ plain: true });
+      
+//       const totalExpense = rawEvent.expenses.reduce(
+//         (sum, expense) => sum + parseFloat(expense.amount), 0
+//       );
+      
+//       const categoriesMap = {};
+//       rawEvent.expenses.forEach(expense => {
+//         const categoryName = expense.category.name.toLowerCase();
+//         if (!categoriesMap[categoryName]) {
+//           categoriesMap[categoryName] = 0;
+//         }
+//         categoriesMap[categoryName] += parseFloat(expense.amount);
+//       });
+      
+//       const categories = Object.entries(categoriesMap).map(([name, amount]) => ({
+//         name,
+//         amount
+//       }));
+      
+//       return {
+//         id: rawEvent.id,
+//         key: rawEvent.id.toString(),
+//         name: rawEvent.name,
+//         date: new Date(rawEvent.date).toLocaleDateString('en-GB'),
+//         status: rawEvent.status,
+//         expense: `AED ${totalExpense.toFixed(2)}`,
+//         description: rawEvent.description,
+//         categories,
+//         club_id: rawEvent.club_id,
+
+//       };
+//     });
+    
+//     return res.status(200).json(formattedEvents);
+//   } catch (error) {
+//     console.error('Error searching events:', error);
+//     return res.status(500).json({ message: 'Failed to search events', error: error.message });
+//   }
+// };
+
 const searchEventsBT = async (req, res) => {
   try {
-    const { query } = req.query;
+    const { query, club_id } = req.query;
+    console.log('Search events - query:', query, 'club_id:', club_id);
     
     if (!query) {
       return res.status(400).json({ message: 'Search query is required' });
     }
     
-    const events = await BTevent.findAll({
-      where: {
-        name: {
-          [Op.iLike]: `%${query}%`  // Case-insensitive search
-        }
+    // Combine search query with club_id filter if provided
+    const whereClause = {
+      name: {
+        [Op.iLike]: `%${query}%`  // Case-insensitive search
       },
-      include: [
-        {
-          model: Expense,
-          as: 'expenses',
-          include: [{ model: Category, as: 'category' }]
-        }
-      ],
-      order: [['date', 'DESC']]
-    });
-    
-    // Format response similar to getAllEvents
-    const formattedEvents = events.map(event => {
-      const rawEvent = event.get({ plain: true });
-      
-      const totalExpense = rawEvent.expenses.reduce(
-        (sum, expense) => sum + parseFloat(expense.amount), 0
-      );
-      
-      const categoriesMap = {};
-      rawEvent.expenses.forEach(expense => {
-        const categoryName = expense.category.name.toLowerCase();
-        if (!categoriesMap[categoryName]) {
-          categoriesMap[categoryName] = 0;
-        }
-        categoriesMap[categoryName] += parseFloat(expense.amount);
-      });
-      
-      const categories = Object.entries(categoriesMap).map(([name, amount]) => ({
-        name,
-        amount
-      }));
-      
-      return {
-        id: rawEvent.id,
-        key: rawEvent.id.toString(),
-        name: rawEvent.name,
-        date: new Date(rawEvent.date).toLocaleDateString('en-GB'),
-        status: rawEvent.status,
-        expense: `AED ${totalExpense.toFixed(2)}`,
-        description: rawEvent.description,
-        categories
-      };
-    });
-    
-    return res.status(200).json(formattedEvents);
-  } catch (error) {
-    console.error('Error searching events:', error);
-    return res.status(500).json({ message: 'Failed to search events', error: error.message });
-  }
-};
-
-// Filter events by status
-const filterEventsByStatusBT = async (req, res) => {
-  try {
-    const { status } = req.params;
-    
-    // Validate status
-    if (status !== 'ONGOING' && status !== 'COMPLETED' && status !== 'all') {
-      return res.status(400).json({ message: 'Invalid status. Use ONGOING, COMPLETED, or all' });
-    }
-    
-    // Prepare where clause based on status
-    const whereClause = status === 'all' ? {} : { status };
+      ...(club_id ? { club_id: parseInt(club_id) } : {})
+    };
     
     const events = await BTevent.findAll({
       where: whereClause,
@@ -504,10 +545,160 @@ const filterEventsByStatusBT = async (req, res) => {
         status: rawEvent.status,
         expense: `AED ${totalExpense.toFixed(2)}`,
         description: rawEvent.description,
-        categories
+        categories,
+        club_id: rawEvent.club_id,
       };
     });
     
+    console.log(`Found ${formattedEvents.length} events matching "${query}" for club_id: ${club_id || 'all'}`);
+    return res.status(200).json(formattedEvents);
+  } catch (error) {
+    console.error('Error searching events:', error);
+    return res.status(500).json({ message: 'Failed to search events', error: error.message });
+  }
+};
+
+
+// Filter events by status
+// const filterEventsByStatusBT = async (req, res) => {
+//   try {
+//     const { status } = req.params;
+//     const { club_id } = req.query;
+
+    
+//     // Validate status
+//     if (status !== 'ONGOING' && status !== 'COMPLETED' && status !== 'all') {
+//       return res.status(400).json({ message: 'Invalid status. Use ONGOING, COMPLETED, or all' });
+//     }
+    
+//     // Prepare where clause based on status
+//     const whereClause = {
+//       ...(status !== 'all' ? { status } : {}),
+//       ...(club_id ? { club_id: parseInt(club_id) } : {})
+//     };
+
+//     const events = await BTevent.findAll({
+//       where: whereClause,
+//       include: [
+//         {
+//           model: Expense,
+//           as: 'expenses',
+//           include: [{ model: Category, as: 'category' }]
+//         }
+//       ],
+//       order: [['date', 'DESC']]
+//     });
+    
+//     // Format response similar to getAllEvents
+//     const formattedEvents = events.map(event => {
+//       const rawEvent = event.get({ plain: true });
+      
+//       const totalExpense = rawEvent.expenses.reduce(
+//         (sum, expense) => sum + parseFloat(expense.amount), 0
+//       );
+      
+//       const categoriesMap = {};
+//       rawEvent.expenses.forEach(expense => {
+//         const categoryName = expense.category.name.toLowerCase();
+//         if (!categoriesMap[categoryName]) {
+//           categoriesMap[categoryName] = 0;
+//         }
+//         categoriesMap[categoryName] += parseFloat(expense.amount);
+//       });
+      
+//       const categories = Object.entries(categoriesMap).map(([name, amount]) => ({
+//         name,
+//         amount
+//       }));
+      
+//       return {
+//         id: rawEvent.id,
+//         key: rawEvent.id.toString(),
+//         name: rawEvent.name,
+//         date: new Date(rawEvent.date).toLocaleDateString('en-GB'),
+//         status: rawEvent.status,
+//         expense: `AED ${totalExpense.toFixed(2)}`,
+//         description: rawEvent.description,
+//         categories,
+//         club_id: rawEvent.club_id,
+
+//       };
+//     });
+    
+//     return res.status(200).json(formattedEvents);
+//   } catch (error) {
+//     console.error('Error filtering events by status:', error);
+//     return res.status(500).json({ message: 'Failed to filter events', error: error.message });
+//   }
+// };
+
+const filterEventsByStatusBT = async (req, res) => {
+  try {
+    const { status } = req.params;
+    const { club_id } = req.query;
+    console.log('Filter events - status:', status, 'club_id:', club_id);
+    
+    // Validate status
+    if (status !== 'ONGOING' && status !== 'COMPLETED' && status !== 'all') {
+      return res.status(400).json({ message: 'Invalid status. Use ONGOING, COMPLETED, or all' });
+    }
+    
+    // Prepare where clause based on status and club_id
+    const whereClause = {
+      ...(status !== 'all' ? { status } : {}),
+      ...(club_id ? { club_id: parseInt(club_id) } : {})
+    };
+    
+    console.log('Filter where clause:', whereClause);
+
+    const events = await BTevent.findAll({
+      where: whereClause,
+      include: [
+        {
+          model: Expense,
+          as: 'expenses',
+          include: [{ model: Category, as: 'category' }]
+        }
+      ],
+      order: [['date', 'DESC']]
+    });
+    
+    // Format response similar to getAllEvents
+    const formattedEvents = events.map(event => {
+      const rawEvent = event.get({ plain: true });
+      
+      const totalExpense = rawEvent.expenses.reduce(
+        (sum, expense) => sum + parseFloat(expense.amount), 0
+      );
+      
+      const categoriesMap = {};
+      rawEvent.expenses.forEach(expense => {
+        const categoryName = expense.category.name.toLowerCase();
+        if (!categoriesMap[categoryName]) {
+          categoriesMap[categoryName] = 0;
+        }
+        categoriesMap[categoryName] += parseFloat(expense.amount);
+      });
+      
+      const categories = Object.entries(categoriesMap).map(([name, amount]) => ({
+        name,
+        amount
+      }));
+      
+      return {
+        id: rawEvent.id,
+        key: rawEvent.id.toString(),
+        name: rawEvent.name,
+        date: new Date(rawEvent.date).toLocaleDateString('en-GB'),
+        status: rawEvent.status,
+        expense: `AED ${totalExpense.toFixed(2)}`,
+        description: rawEvent.description,
+        categories,
+        club_id: rawEvent.club_id,
+      };
+    });
+    
+    console.log(`Found ${formattedEvents.length} events with status "${status}" for club_id: ${club_id || 'all'}`);
     return res.status(200).json(formattedEvents);
   } catch (error) {
     console.error('Error filtering events by status:', error);

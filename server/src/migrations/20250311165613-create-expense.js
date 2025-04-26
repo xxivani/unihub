@@ -35,7 +35,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
-          model: 'Events',  // This should match your existing Events table name
+          model: 'BTEvents',  // This should match your existing Events table name
           key: 'id'
         },
         onUpdate: 'CASCADE',

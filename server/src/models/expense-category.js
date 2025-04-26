@@ -40,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         modelName: 'Category',
+        tableName: "Categories"
         //sequelize: The Sequelize instance
         // modelName: Defines the model name in Sequelize (table name will be plural by default)
     });

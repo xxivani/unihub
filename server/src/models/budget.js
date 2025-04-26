@@ -4,6 +4,12 @@ module.exports = (sequelize, DataTypes) => {
   class Budget extends Model {
     static associate(models) {
       // A budget belongs to a fiscal period, if you want to track budgets by period
+
+      //adding association to clubs
+      Budget.belongsTo(models.Club, {
+        foreignKey: 'club_id',
+        
+      });
     }
   }
   
@@ -27,10 +33,19 @@ module.exports = (sequelize, DataTypes) => {
     description: {
       type: DataTypes.TEXT,
       allowNull: true
-    }
+    },
+    club_id: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      references: {
+        model: 'clubs',
+        key: 'club_id'
+      }
+    },
   }, {
     sequelize,
     modelName: 'Budget',
+    tableName: "Budgets",
   });
   
   return Budget;

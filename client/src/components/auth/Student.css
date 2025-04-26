@@ -240,49 +240,98 @@
 
 /* Mobile Responsiveness */
 @media screen and (max-width: 768px) {
-    .student-container {
+    .modal-container {
         padding: 1rem;
         margin-top: 60px;
+        height: calc(100vh - 60px); /* Ensure it fits within viewport */
+        width: 100vw;
+        overflow-y: auto; /* Enable vertical scrolling */
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        box-sizing: border-box;
     }
 
-    .student-form {
+    .modal-content {
+        flex-direction: column;
+        width: 100%;
+        max-width: 100%; /* Ensure it doesn't exceed container */
+        height: auto; /* Let content determine height */
+        min-height: 0; /* Allow flexibility */
+        border-radius: 16px;
+        overflow: visible; /* Ensure content isn't clipped */
+    }
+
+    .left-panel,
+    .right-panel {
+        width: 100%;
+        height: auto; /* Allow panels to grow with content */
+        min-height: 200px; /* Minimum height for aesthetics */
+        padding: 24px; /* Reduced padding for smaller screens */
+        box-sizing: border-box;
+    }
+
+    .left-panel {
+        border-radius: 16px 16px 0 0; /* Top corners rounded */
+    }
+
+    .right-panel {
+        border-radius: 0 0 16px 16px; /* Bottom corners rounded */
+    }
+
+    /* Ensure buttons stay within scrollable area */
+    .back-button,
+    .studentclose-button {
+        position: absolute; /* Keep absolute for positioning within panels */
+        z-index: 1000; /* Ensure visibility */
+    }
+
+    .back-button {
+        top: 16px;
+        left: 16px;
+    }
+
+    .studentclose-button {
+        top: 16px;
+        right: 16px;
+    }
+
+    /* Adjust form container for smaller screens */
+    .form-container {
         width: 100%;
         max-width: 100%;
-        padding: 1.5rem;
+        padding: 0;
     }
 
-    .student-header {
-        margin-bottom: 1.5rem;
+    .welcome-content {
+        width: 100%;
+        padding: 0 16px;
+        box-sizing: border-box;
     }
 
-    .student-title {
-        font-size: 1.5rem;
+    /* Ensure inputs don't overflow */
+    .input-group input,
+    .input-group select {
+        width: 100%;
+        box-sizing: border-box;
     }
 
-    .student-subtitle {
-        font-size: 0.9rem;
+    /* Adjust decorative elements to prevent overflow */
+    .circle,
+    .circle1,
+    .circle2 {
+        width: 150px;
+        height: 150px;
+        margin: -30px; /* Reduce margin for smaller screens */
     }
 
-    .form-group {
-        margin-bottom: 1rem;
+    .triangle {
+        border-left: 120px solid #3A4224;
+        border-top: 110px solid transparent;
+        margin: -20px;
     }
 
-    .form-group label {
-        font-size: 0.9rem;
-    }
-
-    .form-group input,
-    .form-group select {
-        padding: 0.75rem;
-        font-size: 0.9rem;
-    }
-
-    .student-button {
-        padding: 0.75rem;
-        font-size: 0.9rem;
-    }
-
-    .student-footer {
-        font-size: 0.9rem;
+    .line,
+    .line1 {
+        width: 200px; /* Shorten lines for smaller screens */
     }
 }

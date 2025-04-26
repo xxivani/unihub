@@ -239,49 +239,132 @@
 
 /* Mobile Responsiveness */
 @media screen and (max-width: 768px) {
-    .commit-container {
+    .modal-container {
         padding: 1rem;
         margin-top: 60px;
+        height: calc(100vh - 60px);
+        width: 100vw;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        box-sizing: border-box;
     }
 
-    .commit-form {
+    .modal-content {
+        flex-direction: column;
         width: 100%;
         max-width: 100%;
-        padding: 1.5rem;
+        height: auto;
+        min-height: 0;
+        border-radius: 16px;
+        overflow: visible;
     }
 
-    .commit-header {
-        margin-bottom: 1.5rem;
+    .left-panel {
+        width: 100%;
+        height: auto;
+        min-height: 200px;
+        padding: 24px;
+        border-radius: 16px 16px 0 0;
+        box-sizing: border-box;
     }
 
-    .commit-title {
-        font-size: 1.5rem;
+    .right-panel {
+        width: 100%;
+        height: auto;
+        min-height: 300px;
+        padding: 24px;
+        border-radius: 0 0 16px 16px;
+        box-sizing: border-box;
     }
 
-    .commit-subtitle {
-        font-size: 0.9rem;
+    .welcome-content {
+        width: 100%;
+        padding: 0 16px;
+        box-sizing: border-box;
     }
 
-    .form-group {
-        margin-bottom: 1rem;
+    .welcome-title {
+        font-size: 24px;
     }
 
-    .form-group label {
-        font-size: 0.9rem;
+    .welcome-subtitle {
+        font-size: 16px;
     }
 
-    .form-group input,
-    .form-group textarea {
-        padding: 0.75rem;
-        font-size: 0.9rem;
+    .welcome-text {
+        font-size: 14px;
     }
 
-    .commit-button {
-        padding: 0.75rem;
-        font-size: 0.9rem;
+    .form-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 16px 0; /* Added padding to ensure space for content */
+        box-sizing: border-box;
     }
 
-    .commit-footer {
-        font-size: 0.9rem;
+    .form-title {
+        font-size: 20px;
+        margin-bottom: 24px; /* Increased to push "Create Account" lower */
+    }
+
+    .form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .input-group input,
+    .input-group select {
+        height: 40px;
+        font-size: 14px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .login-button,
+    .register-button {
+        height: 40px;
+        font-size: 14px;
+        width: 100%;
+        margin-top: 8px; /* Reduced margin to keep button inside container */
+        box-sizing: border-box;
+    }
+
+    .back-button,
+    .commitclose-button {
+        position: absolute;
+        z-index: 1000;
+    }
+
+    .back-button {
+        top: 10px;
+        left: 10px;
+        font-size: 18px;
+    }
+
+    .commitclose-button {
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+    }
+
+    .circle,
+    .circle1,
+    .circle2 {
+        width: 150px;
+        height: 150px;
+        margin: -30px;
+    }
+
+    .triangle {
+        border-left: 120px solid #3A4224;
+        border-top: 110px solid transparent;
+        margin: -20px;
+    }
+
+    .line,
+    .line1 {
+        width: 200px;
     }
 }

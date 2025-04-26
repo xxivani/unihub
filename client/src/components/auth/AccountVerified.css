@@ -289,3 +289,103 @@
   {
     margin-top: 50px;
   }
+
+  /* Mobile Responsiveness */
+  @media screen and (max-width: 768px) {
+    .auth-page {
+        width: 100%;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .content-container {
+        padding: 20px;
+        height: auto;
+        min-height: calc(100vh - 64px);
+    }
+
+    .auth-card {
+        width: 100%;
+        height: auto;
+        min-height: 500px;
+    }
+
+    .card-content {
+        flex-direction: column;
+    }
+
+    .login-section {
+        width: 100%;
+        padding: 30px;
+    }
+
+    .login-section h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+        margin-top: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+        margin-top: 30px;
+    }
+
+    .form-group input {
+        height: 40px;
+        font-size: 14px;
+    }
+
+    .login-button {
+        height: 40px;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .image-section {
+        width: 100%;
+        height: 200px;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .back-button,
+    .accclose-button {
+        top: 10px;
+        font-size: 18px;
+    }
+
+    .back-button {
+        left: 10px;
+    }
+
+    .accclose-button {
+        right: 10px;
+        font-size: 24px;
+    }
+
+    .triangle-top-left {
+        width: 200px;
+        height: 200px;
+    }
+
+    .circle-bottom-right {
+        width: 200px;
+        height: 200px;
+    }
+
+    .circle,
+    .circle1,
+    .circle2 {
+        width: 150px;
+        height: 150px;
+    }
+
+    .triangle {
+        border-left: 120px solid #3A4224;
+        border-top: 110px solid transparent;
+    }
+
+    .line,
+    .line1 {
+        width: 250px;
+    }
+  }

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./BrowseClubs.css";
 import "./ClubCard.css";
-import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaSearch, FaChevronLeft, FaChevronRight, FaTrash, FaPencilAlt, FaEdit } from "react-icons/fa";
 
 const BrowseClubs = () => {
   const navigate = useNavigate();
@@ -13,10 +13,11 @@ const BrowseClubs = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingClub, setEditingClub] = useState(null);
   const clubsPerPage = 4;
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-  
   useEffect(() => {
     const loadUserAndMemberships = () => {
       const storedUser = sessionStorage.getItem("user");
@@ -26,7 +27,7 @@ const BrowseClubs = () => {
 
         const savedMemberships = localStorage.getItem(`userMemberships_${parsedUser.id}`);
         if (savedMemberships) {
-          setUserMemberships(JSON.parse(savedMemberships).map(Number)); 
+          setUserMemberships(JSON.parse(savedMemberships).map(Number));
         }
 
         fetchUserMemberships(parsedUser.id);
@@ -58,7 +59,7 @@ const BrowseClubs = () => {
     try {
       const response = await fetch(`${apiUrl}/club-memberships/user/${userId}`);
       const memberships = await response.json();
-      setUserMemberships(memberships.map(Number)); 
+      setUserMemberships(memberships.map(Number));
       localStorage.setItem(`userMemberships_${userId}`, JSON.stringify(memberships));
     } catch (error) {
       console.error("Error fetching memberships:", error);
@@ -71,7 +72,6 @@ const BrowseClubs = () => {
     }
   };
 
-  
   useEffect(() => {
     const fetchClubs = async () => {
       try {
@@ -86,7 +86,6 @@ const BrowseClubs = () => {
     fetchClubs();
   }, []);
 
-  
   const handleJoinClub = async (clubId) => {
     if (!user) {
       alert("Please log in first.");
@@ -143,7 +142,61 @@ const BrowseClubs = () => {
     }
   };
 
-  
+  const handleDeleteClub = async (clubId) => {
+    if (!window.confirm("Are you sure you want to delete this club?")) return;
+
+    try {
+      const response = await fetch(`${apiUrl}/clubs/${clubId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setClubs(prev => prev.filter(club => club.club_id !== clubId));
+        alert("Club deleted successfully!");
+      } else {
+        alert("Failed to delete the club.");
+      }
+    } catch (error) {
+      console.error("Error deleting club:", error);
+      alert("Server error while deleting the club.");
+    }
+  };
+
+  const handleEditClick = (club) => {
+    setEditingClub(club);
+  };
+
+  const handleEditFormChange = (field, value) => {
+    setEditingClub({ ...editingClub, [field]: value });
+  };
+
+  const handleEditFormSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`${apiUrl}/clubs/${editingClub.club_id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          club_name: editingClub.club_name,
+          club_description: editingClub.club_description,
+          club_thumbnail_url: editingClub.club_thumbnail_url,
+        }),
+      });
+
+      if (response.ok) {
+        alert("Club updated successfully!");
+        setEditingClub(null);
+        window.location.reload();
+      } else {
+        alert("Failed to update club.");
+      }
+    } catch (error) {
+      console.error("Edit club error:", error);
+      alert("Error updating club.");
+    }
+  };
+
   const filteredClubs = clubs.filter((club) => {
     const matchesSearch = club.club_name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "" || club.club_category === selectedCategory;
@@ -155,7 +208,6 @@ const BrowseClubs = () => {
   const currentClubs = filteredClubs.slice(indexOfFirstClub, indexOfLastClub);
   const totalPages = Math.ceil(filteredClubs.length / clubsPerPage);
 
-  // -------------------- Main JSX --------------------
   return (
     <main className="browse-clubs-main">
       <div className="browse-clubs-header">
@@ -192,11 +244,27 @@ const BrowseClubs = () => {
                 Clear Filter
               </button>
             )}
+
+            {user && user.role === "admin" && (
+              <>
+                <button
+                  className="create-club-button"
+                  onClick={() => navigate("/create-club")}
+                >
+                  Create Club
+                </button>
+                <button
+                  className={`edit-clubs-button ${isEditMode ? "active" : ""}`}
+                  onClick={() => setIsEditMode(!isEditMode)}
+                >
+                  {isEditMode ? "Exit Edit Mode" : "Edit Page"} <FaEdit />
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
 
-      
       <div className="club-cards-list">
         {currentClubs.length > 0 ? (
           currentClubs.map((club) => {
@@ -213,6 +281,22 @@ const BrowseClubs = () => {
                       e.target.onerror = null;
                     }}
                   />
+                  {user && user.role === "admin" && isEditMode && (
+                    <>
+                      <button
+                        className="delete-club-button"
+                        onClick={() => handleDeleteClub(club.club_id)}
+                      >
+                        <FaTrash />
+                      </button>
+                      <button
+                        className="edit-club-button"
+                        onClick={() => handleEditClick(club)}
+                      >
+                        <FaPencilAlt />
+                      </button>
+                    </>
+                  )}
                 </div>
 
                 <div className="club-details">
@@ -252,7 +336,6 @@ const BrowseClubs = () => {
         )}
       </div>
 
-      
       <div className="pagination-controls">
         <button
           disabled={currentPage === 1}
@@ -268,6 +351,51 @@ const BrowseClubs = () => {
           Next <FaChevronRight />
         </button>
       </div>
+
+      {editingClub && (
+        <div className="edit-modal-overlay">
+          <div className="edit-modal">
+            <button
+              className="close-modal-button"
+              onClick={() => setEditingClub(null)}
+            >
+              ×
+            </button>
+            <h2>Edit Club</h2>
+            <form onSubmit={handleEditFormSubmit}>
+              <div className="edit-form-group">
+                <label>Club Name:</label>
+                <input
+                  type="text"
+                  value={editingClub.club_name}
+                  onChange={(e) => handleEditFormChange("club_name", e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="edit-form-group">
+                <label>Club Logo URL:</label>
+                <input
+                  type="text"
+                  value={editingClub.club_thumbnail_url || ""}
+                  onChange={(e) => handleEditFormChange("club_thumbnail_url", e.target.value)}
+                />
+              </div>
+
+              <div className="edit-form-group">
+                <label>Club Description:</label>
+                <textarea
+                  value={editingClub.club_description}
+                  onChange={(e) => handleEditFormChange("club_description", e.target.value)}
+                  required
+                />
+              </div>
+
+              <button type="submit" className="save-changes-btn">Save Changes</button>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

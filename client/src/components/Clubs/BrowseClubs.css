@@ -1,175 +1,191 @@
 .browse-clubs-main {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    padding: 20px;
-    position: relative;
-  }
-  
-  .browse-clubs-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    margin-bottom: 2rem;
-    margin-top: 110px;
-    background-color: var(--bg-color);
-  }
-  
-  .browse-clubs-title {
-    font-size: 2rem;
-    margin: 0;
-    color: var(--text-color);
-    flex-shrink: 0;
-  }
-  
-  .browse-clubs-search-filter {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-grow: 1;
-    width: 100%;
-    justify-content: space-between;
-  }
-  
-  .browse-clubs-search {
-    display: flex;
-    width: 50%;
-    max-width: 400px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    overflow: hidden;
-    margin-left: 180px;
-  }
-  
-  .browse-clubs-search input {
-    flex: 1;
-    padding: 0.5rem 1rem;
-    border: none;
-    outline: none;
-    background-color: transparent;
-    color: var(--text-color);
-  }
-  
-  .search-button {
-    background: none;
-    border: none;
-    padding: 0 1rem;
-    cursor: pointer;
-    color: var(--text-color);
-  }
-  
-  .browse-clubs-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-  }
-  
-  .filter-button, .create-club-button {
-    padding: 0.5rem 1rem;
-    border: 2px solid rgb(160, 160, 160);
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .filter-button:hover, .create-club-button:hover {
-    border-color: black;
-  }
-  
-  .club-cards-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-    padding: 0 20px;
-  }
-  
-  .edit-clubs-button {
-    padding: 0.5rem 1rem;
-    border: 2px solid rgb(160, 160, 160); 
-    border-radius: 5px;
-    background-color: var(--card-bg);     
-    color: var(--text-color);            
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-  }
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+}
 
-  
-  .edit-clubs-button.active {
-    background-color: #dc3545;
-    color: white;
-    border-color: black;
-  }
-  
-  .pagination-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 30px;
-    gap: 15px;
-  }
-  
-  .pagination-controls button {
-    background-color: #dec585;
-    color: black;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .pagination-controls button:hover:not(:disabled) {
-    background-color: #c9af74;
-  }
-  
-  .pagination-controls button:disabled {
-    background-color: #ddd;
-    color: #999;
-    cursor: not-allowed;
-  }
-  
-  .pagination-controls span {
-    font-weight: bold;
-    font-size: 1.1rem;
-  }
+.browse-clubs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-bottom: 2rem;
+  margin-top: 110px;
+  background-color: var(--bg-color);
+}
 
-  .filter-dropdown {
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background-color: #f9f9f9;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #333;
-    cursor: pointer;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-  }
-  
-  .filter-dropdown:hover {
-    background-color: #f0f0f0;
-    border-color: #bbb;
-  }
-  
-  body[data-theme="dark"] .filter-dropdown {
-    background-color: #2a2a2a;
-    border: 1px solid #555;
-    color: #eee;
-  }
-  
-  body[data-theme="dark"] .filter-dropdown:hover {
-    background-color: #3a3a3a;
-    border-color: #777;
-  }
-  
+.browse-clubs-title {
+  font-size: 2rem;
+  margin: 0;
+  color: var(--text-color);
+  flex-shrink: 0;
+}
+
+.browse-clubs-search-filter {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-grow: 1;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.browse-clubs-search {
+  display: flex;
+  width: 50%;
+  max-width: 400px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-left: 180px;
+}
+
+.browse-clubs-search input {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: var(--text-color);
+}
+
+.search-button {
+  background: none;
+  border: none;
+  padding: 0 1rem;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.browse-clubs-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.filter-button {
+  padding: 0.5rem 1rem;
+  border: 2px solid rgb(160, 160, 160);
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.filter-button:hover {
+  border-color: black;
+}
+
+
+.create-club-button {
+  padding: 0.5rem 1rem;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.create-club-button:hover {
+  background-color: #333;
+}
+
+
+.edit-clubs-button {
+  padding: 0.5rem 1rem;
+  border: 2px solid rgb(160, 160, 160);
+  border-radius: 5px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.edit-clubs-button.active {
+  background-color: #dc3545;
+  color: white;
+  border-color: black;
+}
+
+.club-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 0 20px;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  gap: 15px;
+}
+
+.pagination-controls button {
+  background-color: #dec585;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background-color: #c9af74;
+}
+
+.pagination-controls button:disabled {
+  background-color: #ddd;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.pagination-controls span {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Filter Dropdown */
+.filter-dropdown {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.filter-dropdown:hover {
+  background-color: #f0f0f0;
+  border-color: #bbb;
+}
+
+body[data-theme="dark"] .filter-dropdown {
+  background-color: #2a2a2a;
+  border: 1px solid #555;
+  color: #eee;
+}
+
+body[data-theme="dark"] .filter-dropdown:hover {
+  background-color: #3a3a3a;
+  border-color: #777;
+}

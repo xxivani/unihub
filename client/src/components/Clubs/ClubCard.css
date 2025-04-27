@@ -33,7 +33,7 @@ body[data-theme="dark"] .club-card {
 
 .delete-club-button {
   position: absolute;
-  top: 25px;
+  top: 100px;
   left: 170px;
   background-color: rgba(220, 53, 69, 0.9);
   color: white;

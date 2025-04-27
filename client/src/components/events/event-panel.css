@@ -475,3 +475,98 @@ overflow: hidden;
   .e4d-return-button:hover {
     transform: scale(1.05);
   }
+
+  /* Mobile Responsiveness */
+@media screen and (max-width: 768px) {
+  .e4d-main-detail-container {
+      min-width: 200px;
+      width: auto;
+      height: auto;
+      max-height: none;
+      padding: 1rem;
+      margin-top: 40px;
+  }
+
+  .e4d-back-button {
+    margin-top: 10px;
+    margin-left: 0;
+  }
+
+  .e4d-top-container1 {
+      min-width: 200px;
+      max-width: 900px;
+      width: 100%;
+      height: auto;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-top: 1rem;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .e4d-top-image {
+      min-height: 150px;
+  }
+
+  .e4d-top-title1 {
+      font-size: 1.5rem;
+  }
+
+  .e4d-top-buttons-container {
+      width: 100%;
+      min-height: 80px;
+      justify-content: space-between;
+  }
+
+  .e4d-follow-button {
+      width: 100%;
+  }
+
+  .e4d-main-container {
+      min-width: 200px;
+      width: 100%;
+      max-width: 900px;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      display: flex;
+      flex-direction: column;
+      margin: auto;
+  }
+
+  .e4d-description-panel {
+      min-width: 200px;
+      width: 100%;
+      max-width: 900px;
+  }
+
+  .e4d-description-image {
+      height: 200px;
+  }
+
+  .e4d-description-text {
+      font-size: 0.9rem;
+  }
+
+  .e4d-detail-item{
+      font-size: 0.9rem;
+  }
+
+  .e4d-panel-container {
+    min-width: 200px;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .e4d-ticket-panel {
+      padding: 1rem;
+  }
+
+  .e4d-ticket-price {
+      font-size: 1.3rem;
+  }
+
+  .e4d-event-team-grid {
+      grid-template-columns: 1fr;
+  }
+}

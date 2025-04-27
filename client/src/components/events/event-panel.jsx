@@ -283,7 +283,7 @@ function E4EventPanel() {
                     onMouseLeave={() => setHovered2(false)}
                     className="e4d-ticket-panel"
                     style={{transform: hovered2 ? "scale(1.01)" : "scale(1)", transition: "transform 0.2s ease, background-color 0.4s ease, color 0.4s ease"}}>
-                <div className="e4d-ticket-price">Price: {eventData.price + " AED/-"}</div>
+                <div className="e4d-ticket-price">Price: {eventData.price + " AED"}</div>
                 <div className="e4d-ticket-availability">
                 <div className="e4d-availability-item">
                   <FaUserFriends className="e4d-icon-green" />

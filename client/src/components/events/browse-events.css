@@ -1,9 +1,9 @@
 /*Main container of the top scetion*/
 .e4-top-container {
   min-width: 1300px;
-  height: 20vh;
+  /*height: 20vh;*/
   min-height: 180px;
-  max-height: 400px;
+  max-height: 600px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -705,3 +705,128 @@
       background-color: #13eda8;
     }
   }
+
+  /* Mobile Responsiveness */
+  @media screen and (max-width: 768px) {
+    .e4-top-container {
+        min-width: 200px;
+        width: 100vw;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 10px;
+        margin-top: 80px;
+    }
+
+    .e4-top-title {
+        min-width: 200px;
+        width: 100%;
+        justify-content: center;
+        margin-left: 2rem;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .e4-search-container {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .e4-top-search {
+        min-width: 80px;
+        width: 50vw;
+        justify-content: center;
+        align-items: center;
+        max-width: none;
+    }
+
+    .e4-top-button {
+        justify-content: space-between;
+    }
+
+    .e4-browse-events {
+        min-width: 200px;
+        width: 90vw;
+        max-height: none;
+        margin: 5vw;
+    }
+
+    .e4-browse-events-list {
+        min-width: 200px;
+        width: 90vw;
+        max-height: none;
+        padding: 3vw;
+    }
+
+    .e4-events-list {
+        min-width: 200px;
+        width: 90vw;
+        max-height: none;
+    }
+
+    .e4-event-format {
+        min-width: none;
+        width: 100%;
+        flex-direction: column;
+        max-height: none;
+    }
+
+    .e4-event-image {
+        width: 100%;
+        height: 200px;
+    }
+
+    .e4-event-image canvas {
+        width: 100% !important;
+        height: 200px;
+    }
+
+    .e4-event-info-container {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .e4-event-button-container {
+        width: 100%;
+        margin: 0.5rem 0;
+        justify-content: center;
+        align-items: stretch;
+    }
+
+    .e4-event-up-down-container {
+      width: 100%;
+      margin-left: 0px;
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+
+    .e4-event-follow-button, .e4-event-detail-button {
+        width: 100%;
+    }
+
+    .e4-event-time {
+        font-size: 0.9rem;
+    }
+
+    .e4-event-title {
+        font-size: 1.1rem;
+    }
+
+    .e4-event-description {
+        font-size: 0.9rem;
+    }
+
+    .e4-event-pagination {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .e4-event-pagination-number {
+        padding: 0.5rem;
+    }
+
+    .e4-event-pagination-arrow {
+        padding: 0.5rem;
+    }
+}

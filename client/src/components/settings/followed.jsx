@@ -7,7 +7,9 @@ const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const Followed = () => {
   const [userId, setUserId] = useState(null);
   const [followedRoles, setFollowedRoles] = useState([]);
+  const [events, setEvents] = useState([]);
   const [followedEvents, setFollowedEvents] = useState([]);
+  const [loadingInt, setLoadingInt] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,9 +17,32 @@ const Followed = () => {
     if (userData?.id) {
       setUserId(userData.id);
       fetchFollowedRoles(userData.id);
+      fetchEvents(userData.id);
       fetchFollowedEvents(userData.id);
     }
   }, []);
+
+  const fetchEvents = async (userId) => {
+    try {
+      const response = await fetch(`${apiUrl}/events`);
+      const data = await response.json();
+
+      const followed = data.filter(event => 
+        event.follower.some(f => f.id == userId)
+      ).map(event => ({
+        id: event.id,
+        name: event.title,
+        date: event.date,
+        location: event.location
+      }));
+
+      setEvents(followed);
+    } catch (err) {
+      console.error("Error fetching internal events:", err);
+    } finally {
+      setLoadingInt(false);
+    }
+  };
 
   const fetchFollowedEvents = async (userId) => {
     try {
@@ -135,6 +160,26 @@ const Followed = () => {
             ))}
           </ul>
         )}
+
+        <h2 style={{ marginTop: '2rem' }}>Followed Events</h2>
+          {loadingInt ? (
+            <p>Loading events...</p>
+          ) : events.length === 0 ? (
+            <p>You haven't followed any events yet.</p>
+          ) : (
+            <ul className="followed-list">
+              {events.map((event, idx) => (
+                <li key={idx} className="followed-item">
+                  <span className="role-info">
+                    {event.name} at {event.location}
+                  </span>
+                  <span className="status">
+                    {formatDate(event.date)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
 
         <h2 style={{ marginTop: '2rem' }}>Followed External Events</h2>
         {loading ? (

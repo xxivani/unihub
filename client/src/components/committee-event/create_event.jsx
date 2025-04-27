@@ -139,10 +139,10 @@ const E4EventCreate = () => {
           venue: budgetCategories.venue
         }));
         formData.append("team", JSON.stringify([
-            {role: "organizer", name: eventData.eventOrganizer || ""},
-            {role: "coOrganizer", name: eventData.eventCoOrganizer || ""},
-            {role: "manager", name: eventData.eventManager || ""},
-            {role: "speaker", name: eventData.eventSpeaker || ""}
+            {role: "Organizer", name: eventData.eventOrganizer || ""},
+            {role: "Co-organizer", name: eventData.eventCoOrganizer || ""},
+            {role: "Manager", name: eventData.eventManager || ""},
+            {role: "Speaker", name: eventData.eventSpeaker || ""}
         ]));
         formData.append("follower", JSON.stringify([]));
         const response = await fetch(`${apiUrl}/events`, {

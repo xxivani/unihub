@@ -45,7 +45,7 @@ const upload = multer({
 //Create an event
 const createEvent = async (req, res) => {
   try {
-    const {title, image, description, location, time, club, date, deadline, capacity, followed, waiting, price, budget_required, budget, team} = req.body;
+    const {title, image, description, location, time, club, date, deadline, capacity, followed, waiting, price, budget_required, budget, team, follower} = req.body;
     console.log('body:', req.body);
     const event = await Event.create({
       title,
@@ -63,6 +63,7 @@ const createEvent = async (req, res) => {
       budget_required,
       budget: JSON.parse(budget),
       team: JSON.parse(team),
+      follower: JSON.parse(follower),
       created: new Date(),
     });
     res.status(201).json({ message: 'Event created successfully', event });
@@ -76,7 +77,7 @@ const createEvent = async (req, res) => {
 const getAllEvents = async (req, res) => {
   try {
     const events = await Event.findAll({
-      order: [['date', 'ASC']]
+      order: [['title', 'ASC']]
     });
     const eventsData = events.map(event => event.get({ plain: true }));
     res.status(200).json(eventsData);
@@ -153,11 +154,85 @@ const deleteEvent = async (req, res) => {
   }
 };
 
+const followEvent = async (req, res) => {
+	const eventId = req.params.id;
+	const { email, id } = req.body;
+	try {
+	  const event = await Event.findByPk(eventId);
+	  if (!event) {
+		return res.status(404).json({ error: 'Event not found' });
+	  }
+    let followers = [];
+    try {
+      followers = event.follower || '[]';
+    } catch (err) {
+      console.warn("Invalid JSON");
+    }
+    if (followers.some(f => f.id == id)) {
+      return res.status(400).json({ error: 'Already followed event' });
+    }
+    if (event.followed >= event.capacity) {
+    return res.status(400).json({ error: 'Event is full' });
+    }
+    followers.push({ email, id });
+    event.follower = followers;
+    event.changed('follower', true);
+	  event.followed += 1;
+    event.changed('followed', true);
+	  await event.save();
+    console.log('Saved follower:', event.follower);
+	  res.status(200).json(event);
+	} catch (error) {
+	  console.error('Error signing up for event:', error);
+	  res.status(500).json({ error: 'Internal server error' });
+	}
+  };
+
+const unfollowEvent = async (req, res) => {
+	const eventId = req.params.id;
+	const { email, id } = req.body;
+  
+	try {
+	  const event = await Event.findByPk(eventId);
+	  if (!event) {
+		return res.status(404).json({ error: 'Event not found' });
+	  }
+    let followers = [];
+    try {
+      followers = event.follower || '[]';
+    } catch (err) {
+      console.warn("Invalid JSON");
+    }
+	  if (followers.some(f => f.id == id)) {
+      if (event.followed > 0) {
+        followers = followers.filter(follower => follower.email !== email && follower.id !== id);
+        event.follower = followers;
+        event.changed('follower', true);
+        event.followed -= 1;
+        event.changed('followed', true);
+        await event.save();
+        } else {
+        return res.status(400).json({ error: 'No attendees to remove' });
+        }
+      
+        res.status(200).json(event);
+    }
+    else {
+      return res.status(400).json({ error: 'Not following the event' });
+    }
+	} catch (error) {
+	  console.error('Error unfollowing event:', error);
+	  res.status(500).json({ error: 'Internal server error' });
+	}
+  };
+
 module.exports = {
   createEvent,
   getAllEvents,
   getEventById,
   updateEvent,
   deleteEvent,
+  followEvent,
+  unfollowEvent,
   upload
 };

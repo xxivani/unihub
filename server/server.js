@@ -36,7 +36,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 app.use('/uploads', express.static('/app/uploads'));
 app.use('/api/uploads', express.static('/app/uploads'));
-/*app.use('/uploads', express.static(path.join(__dirname, 'uploads')));*/
+/*app.use('/uploads', express.static(path.join(__dirname, 'uploads'));*/
 
 app.get('/health', (req, res) => {  
   res.status(200).json({
@@ -79,7 +79,7 @@ app.use('/api/committee-member-permissions', committeeMemberPermissionRoutes);
 app.use('/committee-member-permissions', committeeMemberPermissionRoutes);
 
 const eventRoutes = require('./src/routes/event');
-app.use('/api/event', eventRoutes);
+app.use('/api/events', eventRoutes);
 app.use('/events', eventRoutes);
 
 const externalEventsRoutes = require('./src/routes/externalEvents');

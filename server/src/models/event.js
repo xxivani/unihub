@@ -78,6 +78,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.JSONB,
       allowNull: false,
       defaultValue: []
+    },
+    follower: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+      defaultValue: []
     }
   }, {
     sequelize,

@@ -22,13 +22,13 @@
   align-items: center;
   justify-content: flex-start;
   text-align: center;
-  margin-top: 80px;
   padding: 3vh 5vw 3vh 5vw;
   flex-direction: row;
 }
 
 .e4d-top-image {
 min-width: 150px;
+max-width: 150px;
 height: 150px;
 border-radius: 5px;
 /*background-image: url("./event_template.png");*/
@@ -41,15 +41,18 @@ margin-right: 3vw;
 }
 
 .e4d-top-title1 {
-  width: 45%;
-  min-width: 300px;
-  text-align: left;
-  border: 5px solid rgba(0, 0, 0, 0);
-  color: rgb(30, 30, 30);
-  font-size: 2.5rem;
-  font-weight: bold;
-  text-shadow: 2px 2px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
+width: 45%;
+min-width: 300px;
+height: 100%;
+padding-top: 8vh;
+text-align: left;
+border: 5px solid rgba(0, 0, 0, 0);
+color: rgb(30, 30, 30);
+transition: background-color 0.4s ease, color 0.4s ease !important;
+font-size: 2.5rem;
+font-weight: bold;
+text-shadow: 2px 2px rgba(0, 0, 0, 0.2);
+overflow: hidden;
 }
 
 /*Style of the top button container*/
@@ -86,24 +89,29 @@ margin-right: 3vw;
   cursor: pointer;
   box-shadow: 2px 2px rgba(0, 0, 0, 0.2);
   background-color: rgb(231, 215, 157);
-  color: rgb(0, 0, 0);
+  color: rgb(20, 20, 20);
+  transition: transform 0.4s ease, color 0.4s ease;
 }
 
 .e4d-follow-button:hover {
-  background-color: rgb(241, 225, 167);
+  background-color: rgb(251, 235, 177);
+  color: var(--e4-gold);
+  transform: scale(1.05);
 }
 
 .e4d-follow-button:active {
-  background-color: rgb(236, 220, 162);
+  background-color: rgb(241, 225, 167);
   box-shadow: 2px 0px rgba(0, 0, 0, 0.2);
   margin-top: 2px;
 }
 
+/*
 .e4d-notification-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: white;
+  background-color: var(--bg-color)/*white*//*;
+  transition: background-color 0.4s ease, color 0.4s ease;
   border: none;
   color:rgb(42, 42, 42);
 }
@@ -117,6 +125,37 @@ margin-right: 3vw;
   color: rgb(47, 47, 47);
   margin-top: 2px;
 }
+*/
+
+.e4d-back-button {
+  background-color: var(--bg-color);
+  border-radius: 5px;
+  border: 5px solid rgba(0, 0, 0, 0);
+  color: var(--e4-button);
+  padding: 6px 20px 6px 20px;
+  width: 150px;
+  height: 45px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: calc(80px + 3vh + var(--base-font-size));
+  margin-left: 3vw;
+  user-select: none;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.e4d-back-button:hover {
+  font-size: 20px;
+  color: var(--e4-button-hover);
+}
+
+.e4d-back-button:hover:active {
+  font-size: 19px;
+  color: var(--e4-button-active);
+}
 
 @media only screen and (min-width: 2300px) and (max-width: 2310px) and (min-height: 650px) and (max-height: 700px) {
   .e4d-top-title1 {
@@ -125,6 +164,10 @@ margin-right: 3vw;
     color: #13eda8
   }
   .e4d-follow-button {
+    border: 5px solid #13eda8;
+    font-family: 'Times New Roman', Times, serif;
+  }
+  .e4d-back-button {
     border: 5px solid #13eda8;
     font-family: 'Times New Roman', Times, serif;
   }
@@ -146,7 +189,7 @@ margin-right: 3vw;
   width: 50%;
   min-width: 700px;
   height: 100%;
-  background-color: #f4f4f4;
+  background-color: var(--card-bg)/*#f4f4f4*/;
   border-radius: 10px;
   padding: 2rem;
   box-shadow: 2px 2px rgba(0, 0, 0, 0.2);
@@ -155,21 +198,43 @@ margin-right: 3vw;
 .e4d-description-image {
   margin-bottom: 2vh;
   text-align: center;
+  display: flex;
+  flex-direction: row;
 }
 
 .e4d-event-description-image {
   width: 100%;
   min-width: 100px;
+  max-width: 700px;
   height: 200px;
+  max-height: 300px;
   border-radius: 10px;
   object-fit: cover;
-  
+  overflow: hidden;
+}
+
+.e4d-arrow {
+  color: var(--e4-search-border);
+  background-color: var(--card-bg);
+  border: 2px outset var(--e4-search-border);
+  transition: color 0.4s ease, background-color 0.4s ease, border 0.4s ease;
+}
+
+.e4d-arrow:hover {
+  background-color: var(--e4-search-hover);
+}
+
+.e4d-arrow:active {
+  background-color: var(--e4-search);
+  box-shadow: 2px 0px rgba(0, 0, 0, 0.2);
+  margin-top: 2px;
 }
 
 .e4d-description-text {
   font-size: 1rem;
   line-height: 1.5;
-  color: #555;
+  color: var(--text-primary)/*#555*/;
+  transition: background-color 0.4s ease, color 0.4s ease !important;
 }
 
 .e4d-detailext-details {
@@ -182,11 +247,13 @@ margin-right: 3vw;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
   font-size: 0.95rem;
-  color: #333;
+  color: var(--text-secondary)/*#333*/;
+  transition: background-color 0.4s ease, color 0.4s ease !important;
 }
 
 .e4d-icon-green {
-  color: #000000;
+  color: var(--e4-button)/*#000000*/;
+  transition: background-color 0.4s ease, color 0.4s ease !important;
 }
 
 /*Rightside panel container */
@@ -201,7 +268,7 @@ margin-right: 3vw;
 
 /*The ticket panel */
 .e4d-ticket-panel {
-  background-color: #f4f4f4;
+  background-color: var(--card-bg)/*#f4f4f4*/;
   border-radius: 10px;
   padding: 2rem;
   box-shadow: 2px 2px rgba(0, 0, 0, 0.2);
@@ -213,7 +280,8 @@ margin-right: 3vw;
 .e4d-ticket-price {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #333;
+  color: var(--card-text)/*#333*/;
+  transition: background-color 0.4s ease, color 0.4s ease !important;
   margin-bottom: 1vh;
 }
 
@@ -227,12 +295,14 @@ margin-right: 3vw;
   gap: 0.5rem;
   font-size: 1rem;
   margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  transition: background-color 0.4s ease, color 0.4s ease !important;
 }
 
 /*The event team panel*/
 .e4d-event-team-panel {
   width: 100%;
-  background-color: #f4f4f4;
+  background-color: var(--card-bg)/*#f4f4f4*/;
   border-radius: 10px;
   padding: 2rem;
   box-shadow: 2px 2px rgba(0, 0, 0, 0.2);
@@ -242,7 +312,8 @@ margin-right: 3vw;
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: var(--card-text)/*#333*/;
+  transition: background-color 0.4s ease, color 0.4s ease !important;
 }
 
 .e4d-event-team-grid {
@@ -269,12 +340,14 @@ margin-right: 3vw;
 .e4d-member-role {
   font-size: 0.8rem;
   font-weight: bold;
-  color: #555;
+  color: var(--card-text)/*#555*/;
+  transition: color 0.4s ease;
 }
 
 .e4d-member-name {
   font-size: 0.9rem;
-  color: #333;
+  color: var(--text-secondary)/*#333*/;
+  transition: background-color 0.4s ease, color 0.4s ease !important;
 }
 
 /*Sign up Form*/
@@ -396,7 +469,7 @@ margin-right: 3vw;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.4s ease;
   }
   
   .e4d-return-button:hover {

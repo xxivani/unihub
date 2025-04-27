@@ -73,6 +73,11 @@ module.exports = {
         allowNull: false,
         defaultValue: []
       },
+      follower: {
+        type: Sequelize.JSONB,
+        allowNull: true,
+        defaultValue: []
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

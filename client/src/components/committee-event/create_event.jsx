@@ -1,108 +1,198 @@
 import './create_event.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const E4EventCreate = () => {
-    const navigate = useNavigate();
-    const [budgetCategories, setBudgetCategories] = useState({
-      catering: false,
-      materials: false,
-      price: false,
-      transportation: false,
-      venue: false
-    });
-    const [eventData, setEventData] = useState({
-        eventName: "",
-        eventImage: JSON.stringify({"thumbnail": "/assets/images/social.jpeg", "prev": "/assets/images/picnic.webp"}),
-        eventDescription: "",
-        eventLocation: "",
-        eventTime: "",
-        eventClub: "Temp Club",
-        eventDate: "",
-        eventCapacity: "",
-        eventPrice: "",
-        eventBudgetRequired: false,
-        eventBudgetCategories: budgetCategories,
-        eventOrganizer: "",
-        eventCoOrganizer: "",
-        eventManager: "",
-        eventSpeaker: ""
-    });
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const navigate = useNavigate();
+  const [lockName, setLockName] = useState(false);
+  const [user, setUser] = useState(null);
+  const [budgetCategories, setBudgetCategories] = useState({
+    catering: false,
+    materials: false,
+    price: false,
+    transportation: false,
+    venue: false
+  });
+  const [eventData, setEventData] = useState({
+      eventName: "",
+      eventImage: JSON.stringify({"image0": "/assets/images/social.jpeg", "image1": "/assets/images/picnic.webp"}),
+      eventDescription: "",
+      eventLocation: "",
+      eventTime: "",
+      eventClub: "Admin",
+      eventDate: "",
+      eventCapacity: "",
+      eventPrice: "",
+      eventBudgetRequired: false,
+      eventBudgetCategories: budgetCategories,
+      eventOrganizer: "",
+      eventCoOrganizer: "",
+      eventManager: "",
+      eventSpeaker: ""
+  });
 
-    const handleBack = () => {
-        navigate(-1);
-    };
-
-    const handleChange = (e) => {
-        const { id, value, type, checked, files} = e.target;
-        setEventData({
-            ...eventData,
-            [id]: type === "checkbox" ? checked : files ? files[0] : value
-        });
-        return eventData
-    };
-
-    const handleBudgetCategoryChange = (category) => (e) => {
-      setBudgetCategories((prevCategories) => {
-      const updatedCategories = {
-        ...prevCategories,
-        [category]: e.target.checked
-    };
-
-    setEventData((prevData) => ({
-        ...prevData,
-        eventBudgetCategories: updatedCategories
-    }));
-
-    return updatedCategories;
-    })};
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!eventData.eventName || !eventData.eventImage || !eventData.eventLocation || !eventData.eventTime || !eventData.eventClub || !eventData.eventDate || !eventData.eventCapacity || !eventData.eventOrganizer) {
-          alert("Required fields missing.");
-          return;
-        }
-        try {
-          const formData = new FormData();
-          formData.append("title", eventData.eventName);
-          formData.append("image", eventData.eventImage);
-          formData.append("description", eventData.eventDescription);
-          formData.append("location", eventData.eventLocation);
-          formData.append("time", eventData.eventTime);
-          formData.append("club", eventData.eventClub);
-          formData.append("date", eventData.eventDate);
-          formData.append("deadline", (new Date(eventData.eventDate).toDateString() === new Date().toDateString() ? eventData.eventDate/*(`${new Date()}T${eventData.eventTime}`)*/ : new Date(eventData.eventDate).setDate(new Date(eventData.eventDate).getDate() - 1)));
-          formData.append("capacity", eventData.eventCapacity);
-          formData.append("followed", 0);
-          formData.append("waiting", 0);
-          formData.append("price", eventData.eventPrice);
-          formData.append("budget_required", eventData.eventBudgetRequired);
-          formData.append("budget", JSON.stringify({
-            catering: budgetCategories.catering,
-            materials: budgetCategories.materials,
-            price: budgetCategories.price,
-            transportation: budgetCategories.transportation,
-            venue: budgetCategories.venue
-          }));
-          formData.append("team", JSON.stringify([
-              {role: "organizer", name: eventData.eventOrganizer || ""},
-              {role: "coOrganizer", name: eventData.eventCoOrganizer || ""},
-              {role: "manager", name: eventData.eventManager || ""},
-              {role: "speaker", name: eventData.eventSpeaker || ""}
-          ]));
-          const response = await fetch("http://localhost:5000/events", {
-              method: "POST",
-              body: formData
-          });
-          const result = await response.json();
-          console.log(result);
-          navigate("/committee/events");
-        } catch (error) {
-          alert("Wrong format in some fields.");
+  const handleImage = () => {
+    if (!lockName) {
+      if (!window.confirm(`Are you sure you want ${eventData.eventName} as the event name?\nAdding image will lock the event name and you won't be able to change it`)) {
+        return;
       }
     }
+    sessionStorage.setItem('temp_eventData', JSON.stringify(eventData));
+    sessionStorage.setItem('temp_budgetCategories', JSON.stringify(budgetCategories));
+    sessionStorage.setItem('temp_lockName', JSON.stringify(true));
+    window.location.href=`/committee/image-management-single?type=Internal&name=${eventData.eventName}`;
+  };
 
+  const handleChange = (e) => {
+      const { id, value, type, checked, files} = e.target;
+      if (id == "eventName" && lockName) {
+        alert(`Event name is locked`);
+        return eventData
+      }
+      setEventData({
+          ...eventData,
+          [id]: type === "checkbox" ? checked : files ? files[0] : value
+      });
+      return eventData
+  };
+
+  const handleBudgetCategoryChange = (category) => (e) => {
+    setBudgetCategories((prevCategories) => {
+    const updatedCategories = {
+      ...prevCategories,
+      [category]: e.target.checked
+  };
+
+  setEventData((prevData) => ({
+      ...prevData,
+      eventBudgetCategories: updatedCategories
+  }));
+
+  return updatedCategories;
+  })};
+
+  const timeFormat = (value) => {
+    const timeRegex = /^([0-1]?\d|2[0-3]):([0-5]\d)\s*-\s*([0-1]?\d|2[0-3]):([0-5]\d)$/;
+    return timeRegex.test(value);
+  };
+
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      if (!eventData.eventName || !eventData.eventImage || !eventData.eventLocation || !eventData.eventTime || !eventData.eventClub || !eventData.eventDate || !eventData.eventCapacity || !eventData.eventOrganizer) {
+        alert("Required fields missing.");
+        return;
+      }
+      if (!timeFormat(eventData.eventTime)) {
+        alert("Time format incorrect.\nFormat: HH:MM - HH:MM");
+        return;
+      }
+      try {
+        const formData = new FormData();
+        formData.append("title", eventData.eventName);
+        let updatedEventImage = eventData.eventImage;
+        try {
+          const response = await fetch(`${apiUrl}/image-management`);
+          const data = await response.json();
+          const image = data.filter(img => img.eventName == eventData.eventName);
+          updatedEventImage = JSON.stringify({
+            image0: image.find(img => img.position == 1)?.URL || "/assets/images/social.jpeg",
+            image1: image.find(img => img.position == 2)?.URL || "/assets/images/picnic.webp",
+            image2: image.find(img => img.position == 3)?.URL || "",
+            image3: image.find(img => img.position == 4)?.URL || "",
+            image4: image.find(img => img.position == 5)?.URL || "",
+            image5: image.find(img => img.position == 6)?.URL || "",
+            image6: image.find(img => img.position == 7)?.URL || "",
+            image7: image.find(img => img.position == 8)?.URL || "",
+          });
+
+        } catch (error) {
+          console.error("Error fetching images:", error);
+        }
+        formData.append("image", updatedEventImage);
+        formData.append("description", eventData.eventDescription);
+        formData.append("location", eventData.eventLocation);
+        formData.append("time", eventData.eventTime);
+        formData.append("club", eventData.eventClub);
+        formData.append("date", eventData.eventDate);
+        let deadline;
+        const today = new Date().toDateString();
+        const selectedDate = new Date(eventData.eventDate);
+
+        if (selectedDate.toDateString() === today) {
+          deadline = selectedDate.toISOString();
+        } else {
+          selectedDate.setDate(selectedDate.getDate() - 1);
+          deadline = selectedDate.toISOString();
+        };
+        formData.append("deadline", deadline);
+        formData.append("capacity", eventData.eventCapacity);
+        formData.append("followed", 0);
+        formData.append("waiting", 0);
+        formData.append("price", eventData.eventPrice);
+        formData.append("budget_required", eventData.eventBudgetRequired);
+        formData.append("budget", JSON.stringify({
+          catering: budgetCategories.catering,
+          materials: budgetCategories.materials,
+          price: budgetCategories.price,
+          transportation: budgetCategories.transportation,
+          venue: budgetCategories.venue
+        }));
+        formData.append("team", JSON.stringify([
+            {role: "organizer", name: eventData.eventOrganizer || ""},
+            {role: "coOrganizer", name: eventData.eventCoOrganizer || ""},
+            {role: "manager", name: eventData.eventManager || ""},
+            {role: "speaker", name: eventData.eventSpeaker || ""}
+        ]));
+        formData.append("follower", JSON.stringify([]));
+        const response = await fetch(`${apiUrl}/events`, {
+            method: "POST",
+            body: formData
+        });
+        const result = await response.json();
+        sessionStorage.removeItem('temp_eventData');
+        sessionStorage.removeItem('temp_budgetCategories');
+        sessionStorage.removeItem('temp_lockName');
+        navigate("/committee/events");
+      } catch (error) {
+        alert("Wrong format in some fields.");
+    }
+  };
+  const fetchData = async () => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    setUser(user);
+    try {
+      const response = await fetch(`${apiUrl}/committee-members/by-user/${user.id}`);
+      const data = await response.json();
+
+      if (!data || !data.club_id) return;
+
+      if (user.role == "committee") {
+        try {
+          const club_response = await fetch(`${apiUrl}/clubs/${data.club_id}`);
+          const club_data = await club_response.json();
+          setEventData((prev) => ({
+            ...prev,
+            eventClub: club_data.club_name
+          }));
+          } catch(error) {
+              console.error("Error fetching clubs:", error);
+          }
+      }
+    } catch (error) {
+      console.error("Error fetching committees:", error);
+    }
+  };
+  useEffect(() => {
+    const savedData = sessionStorage.getItem('temp_eventData');
+    const savedBudget = sessionStorage.getItem('temp_budgetCategories');
+    const savedLock = sessionStorage.getItem('temp_lockName');
+  
+    if (savedData) setEventData(JSON.parse(savedData));
+    if (savedBudget) setBudgetCategories(JSON.parse(savedBudget));
+    if (savedLock) setLockName(JSON.parse(savedLock));
+    fetchData();
+  }, []);
     return (
       <div className="e4-form-page">
       <div className="e4-header-row">
@@ -143,8 +233,9 @@ const E4EventCreate = () => {
             <div className="e4-form-group">
               <label htmlFor="e4-event-time">Event Time:</label>
               <input
-                type="time"
+                type="text"
                 id="eventTime"
+                placeholder="HH:MM - HH:MM"
                 value={eventData.eventTime}
                 onChange={handleChange}
                 required
@@ -194,7 +285,7 @@ const E4EventCreate = () => {
             <button
               id="eventImage"
               value={eventData.eventImage}
-              onClick={handleChange} //go to image management page
+              onClick={handleImage}
               required
               className="e4-event-category-select"
             >

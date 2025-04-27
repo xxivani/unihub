@@ -1,11 +1,20 @@
 import "./browse-events.css"
-import React, { useState, useEffect } from 'react';
-import { FaBell, FaTimes } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { useLocation, useSearchParams } from "react-router-dom";
+import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 
 const BrowseEvents = () =>{
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const previousPage = queryParams.get("page");
+    const [searchParams, setSearchParams] = useSearchParams();
     const [isFormVisible, setIsFormVisible] = useState(false);
+    const [isFilterVisible, setIsFilterVisible] = useState(false);
     const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+    const [selectedClubs, setSelectedClubs] = useState([]);
+    const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [events, setEvents] = useState([
       {
@@ -101,33 +110,175 @@ const BrowseEvents = () =>{
         club: "SOCIAL_GATHERING"
       }
     ]);
-          const handleFormSubmit = (e) => {
-            e.preventDefault();
-            setIsFormVisible(false);
-            setIsSuccessModalVisible(true);
+    const [user, setUser] = useState(null);
+    const [clubs, setClubs] = useState([]);
+    const filteredEvents = events.filter(event => {
+      const matchesClub = selectedClubs.length === 0 || selectedClubs.includes(event.club);
+      const matchesSearch = search === "" || event.title.toLowerCase().includes(search.toLowerCase());
+      return matchesClub && matchesSearch;
+    });
+    const [followed, setFollowed] = useState([]);
+    const [followId, setFollowId] = useState(0);
+    const totalPages = Math.ceil(filteredEvents.length / 5);
+    const [currentPage, setCurrentPage] = useState(Number(previousPage) || 1);
+    const canvasRefs = useRef([]);
+    const renderImage = (eventIndex, col) => {
+      let event = null
+      let canvas = null;
+      event = events[eventIndex];
+      canvas = canvasRefs.current[event.id * 10 + col];
+
+      if (!canvas || !event.image[`image${col}`]) return;
+
+      const canvasCtx = canvas?.getContext("2d");
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = `${apiUrl}${event.image[`image${col}`]}`;
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvasCtx.filter = `
+          brightness(${event.image[`imageBr${col}`]}%) 
+          saturate(${event.image[`imageSa${col}`]}%) 
+          blur(${event.image[`imageBl${col}`]}px) 
+          invert(${event.image[`imageIn${col}`]}%)`;
+        canvasCtx.drawImage(img, 0, 0);
+      };
+    };
+    const handlePageChange = (pageNumber) => {
+      setCurrentPage(pageNumber);
+      searchParams.set('page', pageNumber);
+      setSearchParams(searchParams);
+    };
+    const handleFollowClick = async (eventId) => {
+      try {
+        const follow = followed.includes(eventId);
+        const response = await fetch(`${apiUrl}/events/${follow ? 'unfollow' : 'follow'}/${eventId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user),
+        });
+        if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 400) {
+          alert(`Failed: ${errorData.error}`);
+          return;
+        }
+        throw new Error(`${errorData.error || 'Unknown error'}`);
+        };
+        fetchData();
+        setFollowId(eventId);
+        setIsSuccessModalVisible(true);
+      } catch (error) {
+        console.error('Error signing up for event:', error);
+        alert(`Failed to sign up: ${error.message}`);
+      }
+    };
+    /*const handleFormSubmit = (e) => {
+      e.preventDefault();
+      setIsFormVisible(false);
+      setIsSuccessModalVisible(true);
+    };*/
+    const handleCloseSuccessModal = () => {
+      setIsSuccessModalVisible(false);
+    };
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/events`);
+        const data = await response.json();
+        setEvents(data);
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        setUser(user);
+        const followed = data.filter(event => event.follower?.some(follower => Number(follower.id) == Number(user?.id))).map(event => event.id);
+        setFollowed(followed);
+        try {
+          const response = await fetch(`${apiUrl}/clubs`);
+          const data = await response.json();
+          setClubs(data);
+          } catch(error) {
+              console.error("Error fetching clubs:", error);
           };
-          const handleCloseSuccessModal = () => {
-            setIsSuccessModalVisible(false);
-          };
-          useEffect(() => {
-            try {
-            fetch("http://localhost:5000/events")
-              .then((response) => response.json())
-              .then((data) => {
-                setEvents(JSON.parse(JSON.stringify(data, null, 2)));
-                setLoading(false);
-              })
-              .catch((error) => {
-                console.error("Error fetching events:", error);
-                setLoading(false);
-              });
-            } catch (error) {
-              /*offline template data*/
+        try {
+          const img_response = await fetch(`${apiUrl}/image-management/`);
+          const img_data = await img_response.json();
+          const int_image = img_data.filter(img => img.eventType == "Internal");
+
+          const updatedEvents = data.map((event) => {
+            const curImages = int_image.filter(img => img.eventName == event.title);
+            for (let col = 0; col == 0; col++) {
+              if (event.image[`image${col}`]) {
+                const imgFound = curImages.find(img => img.position == col + 1) || {};
+                event = {
+                  ...event,
+                  image: {
+                    ...event.image,
+                    [`image${col}`]: imgFound?.URL,
+                    [`imageBr${col}`]: imgFound.brightness,
+                    [`imageSa${col}`]: imgFound.saturation,
+                    [`imageBl${col}`]: imgFound.blur,
+                    [`imageIn${col}`]: imgFound.inversion,
+                  }
+                };
+              }
             }
-          }, []);
-            if (loading) return <h3>Loading events...</h3>;
+            return event;
+          });
+          setEvents(updatedEvents);
+        } catch(error) {
+          console.error("Error fetching images:", error);
+        };
+        } catch(error) {
+          console.error("Error fetching events or users:", error);
+        } finally {
+          setLoading(false);
+        };
+    }
+    useEffect(() => {
+      if (!loading) {
+        events.forEach((event, rowIndex) => {
+          for (let col = 0; col == 0; col++) {
+            if (event.image[`image${col}`]) {
+              renderImage(rowIndex, col);
+            }
+          }
+        });
+      }
+    }, [loading, events, currentPage]);
+    useEffect(() => {
+      fetchData();
+    }, [selectedClubs, search, currentPage]);
+    if (loading) return <h3 style={{
+      position: "absolute",
+      top: "35%",
+      left: "40%",
+      margin: 0,
+    }}>Loading events...</h3>;
     return (
+      <div>
+      <div className="e4-top-container">
+            <div className="e4-search-container">
+            <h1 className="e4-top-title">Upcoming Events</h1>
+                <div className="e4-top-search">
+                    <input type="text" placeholder="Search.." value={search} onChange={(e) => setSearch(e.target.value)}></input>
+                    </div>
+                <div className="e4-top-filter-container">
+                  <button className="e4-top-button" tabIndex="0" onClick={() => isFilterVisible?setIsFilterVisible(false):setIsFilterVisible(true)}><span>Filter</span></button>
+                  <div className={`e4-filter-layer${isFilterVisible?' active':''}`}>
+                    {clubs.map(club => (
+                      <div className={`e4-filter-option${isFilterVisible?' active':''}${selectedClubs.includes(club.club_name) ? ' selected' : ''}`} tabIndex="0" key={club.club_id} onClick={() => {
+                        setSelectedClubs(prev => 
+                          prev.includes(club.club_name) 
+                            ? prev.filter(c => c !== club.club_name) 
+                            : [...prev, club.club_name]
+                        );
+                      }}>{club.club_name}</div>
+                    ))}
+                  </div>
+                </div>
+                </div>
+            </div>
         <div className="e4-browse-events">
+          {/*
           {isFormVisible && (
             <div className="e4-event-form-overlay">
               <div className="e4-event-form-container">
@@ -163,6 +314,7 @@ const BrowseEvents = () =>{
               </div>
             </div>
           )}
+          */}
           {isSuccessModalVisible && (
             <div className="e4-event-form-overlay">
               <div className="e4-success-modal">
@@ -173,8 +325,13 @@ const BrowseEvents = () =>{
                 >
                   <FaTimes />
                 </button>
-                <h2>Event followed successfully</h2>
-                <p>Please make sure to unfollow it if you won't be able to make it to the event on time to give spot to someone else!</p>
+                {followed.includes(followId) ? (
+                  <div><h2>Event followed successfully</h2>
+                <p>Please make sure to unfollow it if you won't be able to make it to the event on time to give spot to someone else!</p></div>)
+                : (
+                  <div><h2>Event unfollowed successfully</h2>
+                <p>Don't worry, you can always follow again if you change your mind!</p></div>)
+                }
                 <button 
                   className="e4-return-button"
                   onClick={handleCloseSuccessModal}
@@ -185,30 +342,96 @@ const BrowseEvents = () =>{
             </div>
           )}
             {events != null && (<div className="e4-browse-events-list">
-                {events.slice(0,5).map(event => (
+                {filteredEvents.slice((0 + (currentPage - 1) * 5), (5 + (currentPage - 1) * 5)).map(event => (
                     <div className="e4-events-list" key={event.id}><div className="e4-event-format">
-                        <div className="e4-event-image"><img src={event.image.thumbnail} alt={event.title} /></div>
-                        <div className="e4-event-info-container"><div className="e4-event-title">{event.title}</div>
+                        <div className="e4-event-image"><canvas id="canvas" ref={(el) => canvasRefs.current[event.id * 10] = el} onClick={() => window.location.href=`/event-details?eventid=${event.id}`}/></div>
+                        <div className="e4-event-info-container"><div className="e4-event-title" onClick={() => window.location.href=`/event-details?eventid=${event.id}`}>{event.title}</div>
                         <div className="e4-event-description">{event.description}{/*Super duper trooper looper uper awesome jaw-dropping eye-popping lung-exploding cool event description*/}</div>
                         <div className="e4-event-time">Location: {event.location}</div><div className="e4-event-time">Time: {event.time}</div><div className="e4-event-time">Date: {event.date}</div></div>
                         <div className="e4-event-button-container">
-                        <div className="e4-event-up-down-container"><FaBell/>
-                        <button className="e4-event-follow-button" onClick={() => setIsFormVisible(true)}>Follow</button>
+                        <div className="e4-event-up-down-container" style={{color: "var(--text-primary) !important",
+                          transition: "color 0.4s ease",
+                        }}>
+                        <button className="e4-event-follow-button" onClick={() => user ? handleFollowClick(event.id) : window.location.href=`/auth`}>{followed.includes(event.id) ? "Unfollow" : "Follow"}</button>
                         <button className="e4-event-detail-button" onClick={() => window.location.href=`/event-details?eventid=${event.id}`}>Detail</button></div></div></div></div>
                 ))}
             </div>)}
-            <div className="e4-event-pagination">
-            <a href="#">&laquo;</a>
-            <a class="active" href="#">1</a>
-            <a href="#">2</a>
-            <a href="#">3</a>
-            <a href="#">4</a>
-            <a href="#">5</a>
-            <a href="#">6</a>
-            <a href="#">&raquo;</a>
-            </div>
+            {totalPages == 0 && <h3 style={{
+                position: "absolute",
+                top: "-10%",
+                left: "38%",
+                margin: 0,
+              }}>404: No matching events found...</h3>}
+            <Pagination
+                  totalPages={totalPages}
+                  currentPage={currentPage}
+                  onPageChange={handlePageChange}
+                />
+        </div>
         </div>
     );
+};
+
+const Pagination = ({ totalPages, currentPage, onPageChange }) => {
+const isFirstPage = currentPage === 1;
+const isLastPage = currentPage === totalPages;
+
+  return (
+    <div className="e4-event-pagination">
+      <button
+        className={`e4-event-pagination-arrow ${isFirstPage ? 'disabled' : ''}`}
+        onClick={() => !isFirstPage && onPageChange(currentPage - 1)}
+        aria-label="Previous page"
+      >
+        <FaChevronLeft />
+      </button>
+
+      {totalPages > 4 && <button
+        className={`e4-event-pagination-number ${currentPage === Math.min(Math.max(1, currentPage - 2), totalPages - 4) ? 'active' : ''}`}
+        onClick={() => onPageChange(Math.min(Math.max(1, currentPage - 2), totalPages - 4))}
+      >
+        {Math.min(Math.max(1, currentPage - 2), totalPages - 4)}
+      </button>}
+
+      {totalPages > 3 && <button
+        className={`e4-event-pagination-number ${currentPage === Math.min(Math.max(2, currentPage - 1), totalPages - 3) ? 'active' : ''}`}
+        onClick={() => onPageChange(Math.min(Math.max(2, currentPage - 1), totalPages - 3))}
+      >
+        {Math.min(Math.max(2, currentPage - 1), totalPages - 3)}
+      </button>}
+
+      {totalPages > 2 && <button
+        className={`e4-event-pagination-number ${currentPage === Math.min(Math.max(3, currentPage), totalPages - 2) ? 'active' : ''}`}
+        onClick={() => onPageChange(Math.min(Math.max(3, currentPage), totalPages - 2))}
+      >
+        {Math.min(Math.max(3, currentPage), totalPages - 2)}
+      </button>}
+
+      {totalPages > 1 && <button
+        className={`e4-event-pagination-number ${currentPage === Math.min(Math.max(4, currentPage + 1), totalPages - 1) ? 'active' : ''}`}
+        onClick={() => onPageChange(Math.min(Math.max(4, currentPage + 1), totalPages - 1))}
+      >
+        {Math.min(Math.max(4, currentPage + 1), totalPages - 1)}
+      </button>}
+
+      {totalPages > 5 && <span className="e4c-event-pagination-ellipsis">...</span>}
+
+      {totalPages && <button
+        className={`e4-event-pagination-number ${currentPage === totalPages ? 'active' : ''}`}
+        onClick={() => onPageChange(totalPages)}
+      >
+        {totalPages}
+      </button>}
+
+      <button
+        className={`e4-event-pagination-arrow ${isLastPage ? 'disabled' : ''}`}
+        onClick={() => !isLastPage && onPageChange(currentPage + 1)}
+        aria-label="Next page"
+      >
+        <FaChevronRight />
+      </button>
+    </div>
+  );
 };
 
 export default BrowseEvents;

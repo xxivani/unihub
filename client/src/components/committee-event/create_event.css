@@ -20,7 +20,8 @@
   .e4-form-box {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
     overflow: hidden;
-    background-color: #fff;
+    background-color: var(--e4-search)/*#fff*/;
+    transition: background-color 0.4s ease;
   }
   
   .e4-form-container {
@@ -46,6 +47,8 @@
   
   .e4-form-group label {
     margin-bottom: 5px;
+    color: var(--e4-button);
+    transition: color 0.4s ease;
   }
   
   .e4-form-group input[type="text"],
@@ -55,15 +58,20 @@
   .e4-form-group textarea,
   .e4-form-group select {
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--e4-button)/*#ccc*/;
     border-radius: 4px;
     font-size: 1rem;
-    background-color: white;
+    background-color: var(--e4-search-hover)/*white*/;
+    color: var(--e4-button-hover);
+    transition: background-color 0.4s ease, color 0.4s ease, border 0.4s ease;
   }
   
   /* Styling for the event category dropdown */
   .e4-event-category-select {
     height: 42px;
+    background-color: var(--e4-search-hover);
+    color: var(--e4-button);
+    transition: background-color 0.4s ease, color 0.4s ease;
     cursor: pointer;
   }
   
@@ -79,7 +87,8 @@
   }
   
   .e4-event-team-section, .e4-budget-requirements-section {
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--e4-button)/*#eee*/;
+    transition: border 0.4s ease;
     padding-top: 20px;
     margin-top: 10px;
     margin-bottom: 20px;
@@ -88,7 +97,8 @@
   .e4-event-team-section h3, .e4-budget-requirements-section h3 {
     margin-bottom: 15px;
     font-size: 18px;
-    color: #333;
+    color: var(--e4-button-hover)/*#333*/;
+    transition: color 0.4s ease;
   }
   
   /* Budget section styles */
@@ -96,6 +106,8 @@
     display: flex;
     align-items: center;
     margin-bottom: 15px;
+    color: var(--e4-button);
+    transition: color 0.4s ease;
   }
   
   .e4-budget-toggle input[type="checkbox"] {
@@ -105,7 +117,9 @@
   }
   
   .e4-budget-categories {
-    background-color: #f9f9f9;
+    background-color: var(--e4-search-hover)/*#f9f9f9*/;
+    color: var(--e4-button);
+    transition: background-color 0.4s ease, color 0.4s ease;
     border-radius: 5px;
     padding: 15px;
     margin-bottom: 15px;

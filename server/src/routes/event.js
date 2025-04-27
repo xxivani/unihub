@@ -7,6 +7,8 @@ const {
   getEventById, 
   updateEvent, 
   deleteEvent,
+  followEvent, 
+  unfollowEvent,
   upload 
 } = require('../controllers/eventController');
 
@@ -30,5 +32,9 @@ router.put(
 );
 
 router.delete('/:id', deleteEvent);
+
+router.post('/follow/:id', followEvent);
+
+router.post('/unfollow/:id', unfollowEvent);
 
 module.exports = router;

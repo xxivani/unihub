@@ -29,7 +29,7 @@ const BudgetDashboard = () => {
     const urlClubId = queryParams.get('club_id');
 
     // Fetch dashboard data
-    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
     const fetchDashboardData = async () => {
         try {

@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'club_id',
         
       });
+      BTevent.belongsTo(models.Event, {
+        foreignKey: 'general_event_id',
+        as: 'generalEvent'
+      })
     }
   }
   
@@ -48,6 +52,14 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: 'clubs',
         key: 'club_id'
+      }
+    },
+    general_event_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Event',
+        key: 'id'
       }
     }
   }, {

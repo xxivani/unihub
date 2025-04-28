@@ -7,7 +7,8 @@ const {
     updateEventBT,
     deleteEventBT,
     searchEventsBT,
-    filterEventsByStatusBT
+    filterEventsByStatusBT,
+    syncGeneralEvents
 } = require('../controllers/budget-tracker/event_expensesController');
 
 /**
@@ -212,5 +213,35 @@ router.put('/:id', updateEventBT);
  *         description: Server error.
  */
 router.delete('/:id', deleteEventBT);
+
+/**
+ * @swagger
+ * /events/sync-general-events:
+ *   post:
+ *     summary: Sync general events with budget tracker events
+ *     tags: [Events]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - club_id
+ *             properties:
+ *               club_id:
+ *                 type: integer
+ *                 description: ID of the club to sync events for
+ *     responses:
+ *       200:
+ *         description: Events synchronized successfully.
+ *       400:
+ *         description: Club ID is required.
+ *       404:
+ *         description: Club not found.
+ *       500:
+ *         description: Server error.
+ */
+router.post('/sync-general-events', syncGeneralEvents);
 
 module.exports = router;

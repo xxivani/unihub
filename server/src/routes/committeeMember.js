@@ -6,7 +6,8 @@ const {
   createCommitteeMember,
   getAllCommitteeMembers,
   deleteCommitteeMember,
-  getCommitteeMemberByUserId
+  getCommitteeMemberByUserId,
+  getCommitteeMembersByClubId
 } = require('../controllers/committeeMemberController');
 
 /**
@@ -129,5 +130,28 @@ router.get('/', getAllCommitteeMembers);
 router.delete('/:id', deleteCommitteeMember);
 
 router.get('/by-user/:userId', getCommitteeMemberByUserId);
+
+/**
+ * @swagger
+ * /committee-members/by-club/{clubId}:
+ *   get:
+ *     summary: Get committee members for a specific club
+ *     tags: [Committee Members]
+ *     parameters:
+ *       - in: path
+ *         name: clubId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Club ID
+ *     responses:
+ *       200:
+ *         description: Committee members retrieved successfully.
+ *       400:
+ *         description: Club ID is required.
+ *       500:
+ *         description: Server error.
+ */
+router.get('/by-club/:clubId', getCommitteeMembersByClubId);
 
 module.exports = router;

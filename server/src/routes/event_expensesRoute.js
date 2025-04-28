@@ -8,7 +8,8 @@ const {
     deleteEventBT,
     searchEventsBT,
     filterEventsByStatusBT,
-    syncGeneralEvents
+    syncGeneralEvents,
+    getLatestEventsByClub
 } = require('../controllers/budget-tracker/event_expensesController');
 
 /**
@@ -243,5 +244,34 @@ router.delete('/:id', deleteEventBT);
  *         description: Server error.
  */
 router.post('/sync-general-events', syncGeneralEvents);
+
+/**
+ * @swagger
+ * /bt_eventRoute/latest:
+ *   get:
+ *     summary: Get latest events for a specific club
+ *     tags: [Events]
+ *     parameters:
+ *       - in: query
+ *         name: club_id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Club ID
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         default: 3
+ *         description: Number of events to return
+ *     responses:
+ *       200:
+ *         description: Latest events retrieved successfully.
+ *       400:
+ *         description: Club ID is required.
+ *       500:
+ *         description: Server error.
+ */
+router.get('/latest', getLatestEventsByClub);
 
 module.exports = router;

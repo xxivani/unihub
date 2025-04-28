@@ -1098,6 +1098,68 @@ const syncGeneralEvents = async (req, res) => {
   }
 };
 
+// Get latest events for dashboard
+const getLatestEventsByClub = async (req, res) => {
+  try {
+    const { club_id, limit = 3 } = req.query;
+    console.log('Get latest events - club_id:', club_id, 'limit:', limit);
+    
+    // Require club_id parameter
+    if (!club_id) {
+      return res.status(400).json({ 
+        message: 'club_id parameter is required' 
+      });
+    }
+    
+    // Use where clause with correct type conversion
+    const whereClause = { club_id: parseInt(club_id) };
+    
+    // Get events with proper ordering and limit
+    const events = await BTevent.findAll({
+      where: whereClause,
+      include: [
+        {
+          model: Expense,
+          as: 'expenses',
+          include: [{ model: Category, as: 'category' }]
+        },
+        {
+          model: Event,
+          as: 'generalEvent'
+        }
+      ],
+      order: [['date', 'DESC']],
+      limit: parseInt(limit)
+    });
+
+    // Format the data to match the frontend's expected structure
+    const formattedEvents = events.map(event => {
+      const rawEvent = event.get({ plain: true });
+      
+      // Calculate total expenses for the event
+      const totalExpense = rawEvent.expenses.reduce(
+        (sum, expense) => sum + parseFloat(expense.amount || 0), 0
+      );
+      
+      return {
+        id: rawEvent.id,
+        name: rawEvent.name,
+        totalExpense,
+        amount: `AED ${totalExpense.toLocaleString()}`,
+        general_event_id: rawEvent.general_event_id,
+        is_general_event: !!rawEvent.general_event_id,
+        original_title: rawEvent.generalEvent ? rawEvent.generalEvent.title : null
+      };
+    });
+    
+    console.log(`Returning ${formattedEvents.length} latest events for club_id: ${club_id}`);
+    return res.status(200).json(formattedEvents);
+  } catch (error) {
+    console.error('Error getting latest events:', error);
+    return res.status(500).json({ message: 'Failed to retrieve latest events', error: error.message });
+  }
+};
+
 
 module.exports = {
   getAllEventsBT,
@@ -1107,5 +1169,6 @@ module.exports = {
   deleteEventBT,
   searchEventsBT,
   filterEventsByStatusBT,
-  syncGeneralEvents
+  syncGeneralEvents,
+  getLatestEventsByClub
 };

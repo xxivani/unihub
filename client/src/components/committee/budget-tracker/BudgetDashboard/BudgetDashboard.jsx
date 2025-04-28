@@ -69,9 +69,9 @@ const BudgetDashboard = () => {
     //function to fetch clubs
     const fetchClubs = async () => {
         try {
-            const res = await fetch(`${apiUrl}/api/clubs`);
+            const res = await fetch(`${apiUrl}/clubs`);
             //debug
-            console.log("Clubs fetch URL:", `${apiUrl}/api/clubs`);
+            console.log("Clubs fetch URL:", `${apiUrl}/clubs`);
 
             if (!res.ok) {
                 throw new Error(`Failed to fetch clubs: ${res.status}`);

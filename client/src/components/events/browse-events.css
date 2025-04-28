@@ -283,7 +283,7 @@
     transition: margin-right 0.2s ease;
   }
 
-  .e4-event-image canvas{
+  .e4-event-image canvas {
     width: 100% !important;
     max-width: calc(120px + var(--base-font-size) * 6) !important;
     height: 100% !important;

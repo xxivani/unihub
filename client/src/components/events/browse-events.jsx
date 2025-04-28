@@ -149,6 +149,7 @@ const BrowseEvents = () =>{
       setCurrentPage(pageNumber);
       searchParams.set('page', pageNumber);
       setSearchParams(searchParams);
+      window.scrollTo({ top: 0, behavior: 'instant' });
     };
     const handleFollowClick = async (eventId) => {
       try {
@@ -192,9 +193,9 @@ const BrowseEvents = () =>{
         const followed = data.filter(event => event.follower?.some(follower => Number(follower.id) == Number(user?.id))).map(event => event.id);
         setFollowed(followed);
         try {
-          const response = await fetch(`${apiUrl}/clubs`);
-          const data = await response.json();
-          setClubs(data);
+          const club_response = await fetch(`${apiUrl}/clubs`);
+          const club_data = await club_response.json();
+          setClubs(club_data);
           } catch(error) {
               console.error("Error fetching clubs:", error);
           };
@@ -249,8 +250,8 @@ const BrowseEvents = () =>{
     }, [selectedClubs, search, currentPage]);
     if (loading) return <h3 style={{
       position: "absolute",
-      top: "35%",
-      left: "40%",
+      top: "20%",
+      left: "38vw",
       margin: 0,
     }}>Loading events...</h3>;
     return (
@@ -344,7 +345,7 @@ const BrowseEvents = () =>{
             {events != null && (<div className="e4-browse-events-list">
                 {filteredEvents.slice((0 + (currentPage - 1) * 5), (5 + (currentPage - 1) * 5)).map(event => (
                     <div className="e4-events-list" key={event.id}><div className="e4-event-format">
-                        <div className="e4-event-image"><canvas id="canvas" ref={(el) => canvasRefs.current[event.id * 10] = el} onClick={() => window.location.href=`/event-details?eventid=${event.id}`}/></div>
+                        <div className="e4-event-image"><canvas ref={(el) => canvasRefs.current[event.id * 10] = el} onClick={() => window.location.href=`/event-details?eventid=${event.id}`}/></div>
                         <div className="e4-event-info-container"><div className="e4-event-title" onClick={() => window.location.href=`/event-details?eventid=${event.id}`}>{event.title}</div>
                         <div className="e4-event-description">{event.description}{/*Super duper trooper looper uper awesome jaw-dropping eye-popping lung-exploding cool event description*/}</div>
                         <div className="e4-event-time">Location: {event.location}</div><div className="e4-event-time">Time: {event.time}</div><div className="e4-event-time">Date: {event.date}</div></div>
@@ -357,10 +358,10 @@ const BrowseEvents = () =>{
                 ))}
             </div>)}
             {totalPages == 0 && <h3 style={{
-                position: "absolute",
-                top: "-10%",
-                left: "38%",
-                margin: 0,
+                position: "relative",
+                width: "100%",
+                textAlign: "center",
+                margin: "2px",
               }}>404: No matching events found...</h3>}
             <Pagination
                   totalPages={totalPages}

@@ -83,7 +83,6 @@ function E4EventPanel() {
   };
   const handleFollowClick = async (eventId) => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
       const follow = followed.includes(Number(eventId));
       const response = await fetch(`${apiUrl}/events/${follow ? 'unfollow' : 'follow'}/${eventId}`, {
       method: 'POST',
@@ -116,7 +115,7 @@ function E4EventPanel() {
   };
   const fetchData = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/events/${eventID}`);
+      const response = await fetch(`${apiUrl}/events/${eventID}`);
       const data = await response.json();
       setEventData(JSON.parse(JSON.stringify(data, null, 2)));
       const user = JSON.parse(sessionStorage.getItem("user"));
@@ -235,7 +234,7 @@ function E4EventPanel() {
             )}
       <div className="e4d-back-button" onClick={() => navigate(-1)}>Back</div>
       <div className="e4d-top-container1">
-        <canvas id="canvas" className="e4d-top-image" ref={(el) => canvasRefs.current[Number(eventID) * 10] = el}/>{/*<img className="e4d-top-image" src={eventData.image.thumbnail} alt="Event Image"/>*/}
+        <canvas id="canvas" className="e4d-top-image" ref={(el) => canvasRefs.current[Number(eventID) * 10] = el}/>
         <h1 className="e4d-top-title1">{eventData.title}</h1>
             <div className="e4d-top-buttons-container">
                 <button className="e4d-follow-button" onClick={() => user ? handleFollowClick(Number(eventID)) : window.location.href=`/auth`}>{followed.includes(Number(eventID)) ? "Unfollow" : "Follow"}</button>
@@ -293,10 +292,6 @@ function E4EventPanel() {
                     <FaTicketAlt className="e4d-icon-green" />
                     <span>Remaining slots: {eventData.capacity - eventData.followed}</span>
                   </div>
-                  <div className="e4d-availability-item">
-                    <FaUsers className="e4d-icon-green" />
-                    <span>Waiting in line: {eventData.waiting + " people"}</span>
-                  </div>
                 </div>
               </div>
   
@@ -306,7 +301,7 @@ function E4EventPanel() {
                   style={{transform: hovered3 ? "scale(1.01)" : "scale(1)", transition: "transform 0.2s ease, background-color 0.4s ease, color 0.4s ease"}}>
                 <h2 className="e4d-section-title">Event Team</h2>
                 <div className="e4d-event-team-grid">
-                  {eventData.team.map((person) => (
+                  {eventData.team?.map((person) => (
                     <div key={person.role} className="e4d-team-member">
                       <div className="e4d-member-avatar">
                         <FaUserCircle />

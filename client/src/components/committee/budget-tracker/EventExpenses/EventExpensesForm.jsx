@@ -20,7 +20,7 @@ function EventAddExpenseButton({ onAddEvent }) {
   const queryParams = new URLSearchParams(location.search);
   const [clubId, setClubId] = useState(null);
 
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
   // Category colors for visual consistency with the table
   const categoryColors = {

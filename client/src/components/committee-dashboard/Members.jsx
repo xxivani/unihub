@@ -12,7 +12,7 @@ const fallbackPermissions = [
   "UpdateBudget",
 ];
 
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const Members = ({ selectedClubId }) => {
   const [members, setMembers] = useState([]);

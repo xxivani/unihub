@@ -5,7 +5,7 @@ import "./ClubCard.css";
 const ClubCard = ({ club, user, userMemberships, refreshMemberships }) => {
   const { club_id, club_name, club_description, club_thumbnail_url } = club;
   const navigate = useNavigate();
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
   const isMember = userMemberships.includes(club_id);
 

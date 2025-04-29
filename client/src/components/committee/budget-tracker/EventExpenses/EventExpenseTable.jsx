@@ -42,7 +42,7 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
         return () => observer.disconnect();
     }, []);
 
-    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
     // Update local data when events prop changes
     useEffect(() => {
@@ -52,90 +52,30 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
     }, [events]);
 
     // handle delete
-    // const handleDelete = async (record) => {
-    //     // Confirm before deleting
-    //     if (window.confirm(`Are you sure you want to delete this event${record.general_event_id ? ' from budget tracking' : ''}?`)) {
-    //         try {
-    //             const response = await fetch(`${apiUrl}/bt_eventRoute/${record.id}`, {
-    //                 method: 'DELETE'
-    //             });
-
-    //             if (!response.ok) {
-    //                 throw new Error("Failed to delete event");
-    //             }
-
-    //             // update local state after deletion
-    //             const updatedData = data.filter(item => item.id !== record.id);
-    //             setData(updatedData);
-
-    //             // Notify parent component if provided
-    //             if (onEventUpdate) {
-    //                 onEventUpdate();
-    //             }
-
-    //             alert("Event deleted successfully from event expenses table!");
-
-    //         } catch (error) {
-    //             console.error("Error deleting event:", error);
-    //             alert("Failed to delete event: " + error.message);
-    //         }
-    //     }
-    // };
-
-    // Add this enhanced version of handleDelete to your EventExpensesTable component
     const handleDelete = async (record) => {
-        console.log("Delete requested for event:", record);
+        try {
+            const response = await fetch(`${apiUrl}/bt_eventRoute/${record.id}`, {
+                method: 'DELETE'
+            });
 
-        // Confirm before deleting
-        if (window.confirm(`Are you sure you want to delete this event from the budget tracker? ${record.general_event_id ? '\n\nNote: This will only remove it from budget tracking, not from the events system.' : ''}`)) {
-            try {
-                console.log(`Attempting to delete event ID: ${record.id}`);
-
-                const url = `${apiUrl}/bt_eventRoute/${record.id}`;
-                console.log("DELETE request URL:", url);
-
-                const response = await fetch(url, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-
-                console.log("Server response status:", response.status);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error("Error response text:", errorText);
-                    throw new Error(`Server returned status ${response.status}: ${errorText}`);
-                }
-
-                // Try to parse response as JSON
-                let result;
-                try {
-                    result = await response.json();
-                    console.log("Deletion result:", result);
-                } catch (jsonError) {
-                    console.log("Response wasn't JSON:", await response.text());
-                }
-
-                // Update local state after deletion
-                console.log("Updating local state after deletion");
-                const updatedData = data.filter(item => item.id !== record.id);
-                setData(updatedData);
-
-                // Notify parent component if provided
-                if (onEventUpdate) {
-                    console.log("Notifying parent of update");
-                    onEventUpdate();
-                }
-
-                alert("Event deleted successfully from budget tracking!");
-            } catch (error) {
-                console.error("Error deleting event:", error);
-                alert(`Failed to delete event: ${error.message}`);
+            if (!response.ok) {
+                throw new Error("Failed to delete event");
             }
-        } else {
-            console.log("User cancelled deletion");
+
+            // update local state after deletion
+            const updatedData = data.filter(item => item.id !== record.id);
+            setData(updatedData);
+            
+            // Notify parent component if provided
+            if (onEventUpdate) {
+                onEventUpdate();
+            }
+
+            alert("Event deleted successfully!");
+
+        } catch (error) {
+            console.error("Error deleting event:", error);
+            alert("Failed to delete event");
         }
     };
 
@@ -200,11 +140,13 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
             render: (_, record) => (
                 <Space size="middle">
                     <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>Edit</Button>
-                    <Button
-                        type="link"
-                        icon={<DeleteOutlined />}
-                        danger
+                    <Button 
+                        type="link" 
+                        icon={<DeleteOutlined />} 
+                        danger 
                         onClick={() => handleDelete(record)}
+                        disabled={record.general_event_id}
+                        title={record.general_event_id ? "Linked events can only be deleted from the main event system" : ""}
                     >
                         Delete
                     </Button>
@@ -215,7 +157,7 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
 
     const handleEdit = (record) => {
         setEditingEvent(record);
-
+        
         // Set the form fields with the event's existing data
         form.setFieldsValue({
             name: record.name,
@@ -223,7 +165,7 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
             status: record.status,
             description: record.description || "",
         });
-
+    
         // Initialize selectedCategories with ONLY the categories that exist in the event
         const initialSelectedCategories = {};
         if (record.categories && record.categories.length > 0) {
@@ -233,75 +175,75 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
             });
         }
         setSelectedCategories(initialSelectedCategories);
-
+        
         console.log("Editing event with categories:", initialSelectedCategories);
     };
 
     const handleSave = async () => {
         form.validateFields().then(async (values) => {
-            try {
-                setLoading(true);
-
-                // Convert selected categories to array format
-                // Ensure each amount is at least 0.01 to pass backend validation
-                const updatedCategories = Object.entries(selectedCategories).map(([name, amount]) => {
-                    const numAmount = parseFloat(amount);
-                    return {
-                        name,
-                        amount: isNaN(numAmount) ? 0.01 : Math.max(0.01, numAmount) // Ensure minimum of 0.01
-                    };
-                });
-
-                // Prepare update data
-                const updateData = {
-                    name: values.name,
-                    date: values.date,
-                    status: values.status,
-                    description: values.description || '',
-                    categories: updatedCategories,
-                    club_id: clubId, // Make sure to include club_id in the update
-                    general_event_id: editingEvent.general_event_id // Preserve the link to general event
-                };
-
-                console.log("Updating event with data:", updateData);
-
-                // Send PUT request to API
-                const response = await fetch(`${apiUrl}/bt_eventRoute/${editingEvent.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updateData)
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to update event');
-                }
-
-                const updatedEvent = await response.json();
-                console.log("Received updated event:", updatedEvent);
-
-                // Update local state with the returned data
-                const updatedData = data.map((item) =>
-                    item.id === editingEvent.id ? updatedEvent : item
-                );
-
-                setData(updatedData);
-                setEditingEvent(null);
-                setSelectedCategories({});
-
-                // Notify parent component if provided
-                if (onEventUpdate) {
-                    onEventUpdate();
-                }
-
-                alert('Event updated successfully');
-            } catch (error) {
-                console.error('Error updating event:', error);
-                alert(`Failed to update event: ${error.message}`);
-            } finally {
-                setLoading(false);
+          try {
+            setLoading(true);
+            
+            // Convert selected categories to array format
+            // Ensure each amount is at least 0.01 to pass backend validation
+            const updatedCategories = Object.entries(selectedCategories).map(([name, amount]) => {
+              const numAmount = parseFloat(amount);
+              return {
+                name,
+                amount: isNaN(numAmount) ? 0.01 : Math.max(0.01, numAmount) // Ensure minimum of 0.01
+              };
+            });
+            
+            // Prepare update data
+            const updateData = {
+              name: values.name,
+              date: values.date,
+              status: values.status,
+              description: values.description || '',
+              categories: updatedCategories,
+              club_id: clubId, // Make sure to include club_id in the update
+              general_event_id: editingEvent.general_event_id // Preserve the link to general event
+            };
+            
+            console.log("Updating event with data:", updateData);
+            
+            // Send PUT request to API
+            const response = await fetch(`${apiUrl}/bt_eventRoute/${editingEvent.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(updateData)
+            });
+            
+            if (!response.ok) {
+              throw new Error('Failed to update event');
             }
+            
+            const updatedEvent = await response.json();
+            console.log("Received updated event:", updatedEvent);
+            
+            // Update local state with the returned data
+            const updatedData = data.map((item) =>
+              item.id === editingEvent.id ? updatedEvent : item
+            );
+            
+            setData(updatedData);
+            setEditingEvent(null);
+            setSelectedCategories({});
+            
+            // Notify parent component if provided
+            if (onEventUpdate) {
+                onEventUpdate();
+            }
+            
+            alert('Event updated successfully');
+          } catch (error) {
+            console.error('Error updating event:', error);
+            alert(`Failed to update event: ${error.message}`);
+          } finally {
+            setLoading(false);
+          }
         });
     };
 
@@ -319,7 +261,7 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
             }
         });
     };
-
+    
     const handleAmountChange = (category, value) => {
         setSelectedCategories((prev) => ({
             ...prev,
@@ -356,9 +298,9 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                     colorBorderSecondary: isDarkTheme ? "#555555" : "#f0f0f0",
                 },
             }}
-        >
-            <div style={{
-                marginBottom: 16,
+        >       
+            <div style={{ 
+                marginBottom: 16, 
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center'
@@ -374,9 +316,9 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                         ))}
                     </Space>
                 </div>
-
+                
                 {/* Right side with button */}
-                <EventAddExpenseButton onAddEvent={onEventUpdate || (() => { })} />
+                <EventAddExpenseButton onAddEvent={onEventUpdate || (() => {})} />
             </div>
 
             {data.length === 0 ? (
@@ -385,10 +327,10 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                 </div>
             ) : (
                 <>
-                    <Table
-                        columns={columns}
-                        dataSource={paginatedData}
-                        pagination={false}
+                    <Table 
+                        columns={columns} 
+                        dataSource={paginatedData} 
+                        pagination={false} 
                         rowKey="id"
                         loading={loading}
                     />
@@ -399,7 +341,7 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                     />
                 </>
             )}
-
+            
             <Modal
                 title={<div className='event-expense-form-modal-title'>
                     {editingEvent?.general_event_id ? 'Edit Linked Event' : 'Edit Event'}
@@ -410,13 +352,13 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                 confirmLoading={loading}
             >
                 <Form form={form} layout="vertical">
-                    <Form.Item name="name" label="Event Name" rules={[{ required: true }]}>
+                    <Form.Item name="name" label="Event Name" rules={[{ required: true }]}> 
                         <Input disabled={editingEvent?.general_event_id} />
                     </Form.Item>
-                    <Form.Item name="date" label="Event Date" rules={[{ required: true }]}>
+                    <Form.Item name="date" label="Event Date" rules={[{ required: true }]}> 
                         <Input disabled={editingEvent?.general_event_id} />
                     </Form.Item>
-                    <Form.Item name="status" label="Event Status" rules={[{ required: true }]}>
+                    <Form.Item name="status" label="Event Status" rules={[{ required: true }]}> 
                         <Select>
                             <Option value="ONGOING">ONGOING</Option>
                             <Option value="COMPLETED">COMPLETED</Option>
@@ -447,14 +389,14 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                             </div>
                         ))}
                     </Form.Item>
-
+                   
                     <div style={{ marginBottom: 16 }}>
                         <strong>Total Expense: AED {calculateTotalExpense().toFixed(2)}</strong>
                     </div>
 
                     {editingEvent?.general_event_id && (
-                        <div style={{
-                            marginBottom: 16,
+                        <div style={{ 
+                            marginBottom: 16, 
                             color: '#1890ff',
                             padding: '10px',
                             background: isDarkTheme ? '#111d2c' : '#e6f7ff',

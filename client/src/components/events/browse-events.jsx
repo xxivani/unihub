@@ -5,7 +5,7 @@ import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 
 const BrowseEvents = () =>{
-    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const previousPage = queryParams.get("page");

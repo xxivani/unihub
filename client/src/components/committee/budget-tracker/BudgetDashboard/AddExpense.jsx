@@ -5,7 +5,7 @@ import "./AddExpense.css"
 import { FaEdit } from "react-icons/fa";
 
 function AddExpenseButton({ onUpdateExpenses, chartData }) {
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
   const [form] = Form.useForm();
   const variant = Form.useWatch('variant', form);

@@ -79,7 +79,7 @@ const ImageMEvents = () => {
   ]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [selectedColumn, setSelectedColumn] = useState(null);
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const [user, setUser] = useState(null);
   const canvasRefs = useRef([]);
   const renderImage = (eventIndex, col) => {

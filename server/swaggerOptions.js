@@ -10,7 +10,7 @@ const options = {
     },
     servers: [
       {
-//         url: 'http://localhost:5001/api' // Below code should now work instead, if it doesn't uncomment this, only for testing purposes
+//         url: 'http://localhost:5000/api' // Below code should now work instead, if it doesn't uncomment this, only for testing purposes
 //       }
 //     ]
         url: process.env.NODE_ENV === 'production' 
@@ -18,8 +18,8 @@ const options = {
           : process.env.NODE_ENV === 'development'
             ? 'https://team77.dev.bham.team/api'
             : process.env.NODE_ENV === 'test'
-              ? 'http://localhost:5001/api'
-              : 'http://localhost:5001/api',
+              ? 'http://localhost:5000/api'
+              : 'http://localhost:5000/api',
       },
     ],
   },

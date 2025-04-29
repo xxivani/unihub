@@ -22,7 +22,7 @@ function DetailsExt() {
   useEffect(() => {
 	const fetchEvent = async () => {
 		try {
-		const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+		const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 		const response = await fetch(`${apiUrl}/external-events/${id}`);
 		const data = await response.json();
 		setdetailEventData(data);
@@ -97,7 +97,7 @@ useEffect(() => {
 		};
 	
 		try {
-		  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+		  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 		  const response = await fetch(`${apiUrl}/external-events/${id}/signup`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -136,7 +136,7 @@ useEffect(() => {
 		}
 	
 		try {
-		  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+		  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 		  const response = await fetch(`${apiUrl}/external-events/${id}/unfollow`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },

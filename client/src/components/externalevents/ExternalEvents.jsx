@@ -296,7 +296,7 @@ const ExternalEvents = () => {
 	// Fetch events from API
 	const fetchEvents = async () => {
 		try {
-			const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+			const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 			const response = await fetch(`${apiUrl}/external-events`);
 			if (!response.ok) {
 				throw new Error('Failed to fetch external events');
@@ -385,7 +385,7 @@ const ExternalEvents = () => {
 		const numericEventId = Number(eventId); // Ensure number type
 	
 		try {
-		  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+		  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 		  const response = await fetch(`${apiUrl}/external-events/${numericEventId}/unfollow`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -441,7 +441,7 @@ const ExternalEvents = () => {
 		};
 	
 		try {
-		  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+		  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 		  const response = await fetch(`${apiUrl}/external-events/${numericEventId}/signup`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -514,7 +514,7 @@ const ExternalEvents = () => {
 		if (window.confirm('Are you sure you want to delete this event?')) {
 			try {
 				console.log("Deleting event with ID:", id);
-				const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+				const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 				const response = await fetch(`${apiUrl}/external-events/${id}`, {
 					method: 'DELETE',
 				});
@@ -616,7 +616,7 @@ const ExternalEvents = () => {
 	const handleEditFormSubmit = async (e) => {
 		e.preventDefault();
 
-		const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+		const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 		// Create a copy of the current edit event
 		const updatedEvent = { ...currentEditEvent };
@@ -765,7 +765,7 @@ const ExternalEvents = () => {
 							<img
 								src={
 									event.image && event.image.startsWith('/uploads')
-										? `${import.meta.env.VITE_API_URL || 'http://localhost:5001'}${event.image}`
+										? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${event.image}`
 										: event.image || "https://picsum.photos/200/150?random=1"
 								}
 								alt={event.title}

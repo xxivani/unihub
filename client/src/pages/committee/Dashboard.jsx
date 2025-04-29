@@ -7,7 +7,7 @@ import Members from '../../components/committee-dashboard/Members';
 import CurrentEvent from '../../components/committee-dashboard/CurrentEvent';
 import { useEffect, useState } from 'react';
 
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const Dashboard = () => {
   const [userRole, setUserRole] = useState("");

@@ -81,13 +81,12 @@ const { Op } = require('sequelize');
 
 //new
 // Get all events with expenses and categories - Updated to include linked general events
-// Modified getAllEventsBT function to prevent automatic recreation of deleted BT events
 const getAllEventsBT = async (req, res) => {
   try {
     const { club_id } = req.query;
     console.log('Get all events - club_id:', club_id);
     
-    // Require club_id parameter
+    // Require club_id parameter - don't allow fetching events without a club_id
     if (!club_id) {
       return res.status(400).json({ 
         message: 'club_id parameter is required' 
@@ -115,89 +114,47 @@ const getAllEventsBT = async (req, res) => {
       order: [['date', 'DESC']]
     });
 
-    // Track which general events are already linked to BT events
-    const linkedGeneralEventIds = btEvents
-      .filter(event => event.general_event_id !== null)
-      .map(event => event.general_event_id);
-    
-    console.log('Existing linked general event IDs:', linkedGeneralEventIds);
-
-    // Check if automatic sync is requested - only create new BT events for general events 
-    // when explicitly requested via a query parameter
-    const shouldSyncEvents = req.query.sync_events === 'true';
-    
-    // Only fetch and create BT events for unlinked general events if sync is requested
-    let newBTEvents = [];
-    if (shouldSyncEvents) {
-      console.log('Automatic sync requested, checking for unlinked general events');
-      
-      // Fetch general events that require a budget but don't have a BTevent yet
-      const generalEvents = await Event.findAll({
-        where: {
-          budget_required: true,
-          club: { 
-            [Op.iLike]: `%${await getClubNameById(club_id)}%` 
-          },
-          id: {
-            [Op.notIn]: linkedGeneralEventIds
-          }
-        }
-      });
-      
-      console.log(`Found ${generalEvents.length} unlinked general events`);
-
-      // Create BTevent instances for general events that don't have one yet
-      for (const genEvent of generalEvents) {
-        try {
-          // Parse date string if it's in DD/MM/YYYY format
-          let formattedDate = genEvent.date;
-          if (formattedDate.includes('/')) {
-            const [day, month, year] = formattedDate.split('/');
-            formattedDate = `${year}-${month}-${day}`;
-          }
-          
-          // Create the BTevent
-          const newBTEvent = await BTevent.create({
-            name: genEvent.title,
-            date: formattedDate,
-            status: 'ONGOING',
-            description: genEvent.description || '',
-            club_id: parseInt(club_id),
-            general_event_id: genEvent.id
-          });
-          
-          newBTEvents.push(newBTEvent);
-          console.log(`Created new BT event for general event ${genEvent.id}`);
-        } catch (error) {
-          console.error(`Error creating BTevent for general event ${genEvent.id}:`, error);
+    // Fetch general events that require a budget but don't have a BTevent yet
+    const generalEvents = await Event.findAll({
+      where: {
+        budget_required: true,
+        club: { 
+          [Op.iLike]: `%${await getClubNameById(club_id)}%` 
+        },
+        id: {
+          [Op.notIn]: btEvents.filter(event => event.general_event_id !== null)
+                            .map(event => event.general_event_id)
         }
       }
-      
-      if (newBTEvents.length > 0) {
-        console.log(`Created ${newBTEvents.length} new BT events from general events`);
+    });
+
+    // Create BTevent instances for general events that don't have one yet
+    for (const genEvent of generalEvents) {
+      try {
+        // Parse date string if it's in DD/MM/YYYY format
+        let formattedDate = genEvent.date;
+        if (formattedDate.includes('/')) {
+          const [day, month, year] = formattedDate.split('/');
+          formattedDate = `${year}-${month}-${day}`;
+        }
         
-        // If we created new events, we need to re-fetch all events
-        const updatedBtEvents = await BTevent.findAll({
-          where: whereClause,
-          include: [
-            {
-              model: Expense,
-              as: 'expenses',
-              include: [{ model: Category, as: 'category' }]
-            },
-            {
-              model: Event,
-              as: 'generalEvent'
-            }
-          ],
-          order: [['date', 'DESC']]
+        // Create the BTevent
+        await BTevent.create({
+          name: genEvent.title,
+          date: formattedDate,
+          status: 'ONGOING',
+          description: genEvent.description || '',
+          club_id: parseInt(club_id),
+          general_event_id: genEvent.id
         });
-        
-        btEvents.length = 0; // Clear array
-        btEvents.push(...updatedBtEvents); // Add the updated events
+      } catch (error) {
+        console.error(`Error creating BTevent for general event ${genEvent.id}:`, error);
       }
-    } else {
-      console.log('Automatic sync not requested, skipping general event check');
+    }
+
+    // Refetch if we created new BTevents
+    if (generalEvents.length > 0) {
+      return getAllEventsBT(req, res);
     }
 
     // Format the data to match the frontend's expected structure
@@ -874,156 +831,38 @@ const updateEventBT = async (req, res) => {
 };
 
 // Delete an event
-// const deleteEventBT = async (req, res) => {
-//   const transaction = await sequelize.transaction();
-  
-//   try {
-//     const { id } = req.params;
-    
-//     // Find the event
-//     const event = await BTevent.findByPk(id);
-    
-//     if (!event) {
-//       await transaction.rollback();
-//       return res.status(404).json({ message: 'BTevent not found' });
-//     }
-    
-//     // Delete all associated expenses first
-//     await Expense.destroy({
-//       where: { eventId: id },
-//       transaction
-//     });
-    
-//     // Then delete the event
-//     await event.destroy({ transaction });
-    
-//     // Commit the transaction
-//     await transaction.commit();
-    
-//     return res.status(200).json({ message: 'BTevent deleted successfully' });
-//   } catch (error) {
-//     // Rollback the transaction on error
-//     await transaction.rollback();
-//     console.error('Error deleting event:', error);
-//     return res.status(500).json({ message: 'Failed to delete event', error: error.message });
-//   }
-// };
-
-// const deleteEventBT = async (req, res) => {
-//   const transaction = await sequelize.transaction();
-  
-//   try {
-//     const { id } = req.params;
-//     console.log(`Deleting BT event with ID: ${id}`);
-    
-//     // Find the BT event
-//     const event = await BTevent.findByPk(id);
-    
-//     if (!event) {
-//       await transaction.rollback();
-//       return res.status(404).json({ message: 'BTevent not found' });
-//     }
-    
-//     console.log(`Found BT event: ${event.name}, general_event_id: ${event.general_event_id}`);
-    
-//     // Delete all associated expenses first
-//     const deletedExpenses = await Expense.destroy({
-//       where: { eventId: id },
-//       transaction
-//     });
-    
-//     console.log(`Deleted ${deletedExpenses} expenses for event ID: ${id}`);
-    
-//     // Then delete the BT event itself
-//     await event.destroy({ transaction });
-//     console.log(`Deleted BT event with ID: ${id}`);
-    
-//     // Do NOT delete or modify the general event, even if this BT event is linked to one
-    
-//     // Commit the transaction
-//     await transaction.commit();
-    
-//     return res.status(200).json({ 
-//       message: 'BTevent deleted successfully',
-//       wasLinked: !!event.general_event_id
-//     });
-//   } catch (error) {
-//     // Rollback the transaction on error
-//     await transaction.rollback();
-//     console.error('Error deleting BT event:', error);
-//     return res.status(500).json({ message: 'Failed to delete event', error: error.message });
-//   }
-// };
-
-// Replace your current deleteEventBT function with this simplified version
 const deleteEventBT = async (req, res) => {
+  const transaction = await sequelize.transaction();
+  
   try {
     const { id } = req.params;
-    console.log(`DELETE request received for BT event ID: ${id}`);
     
     // Find the event
     const event = await BTevent.findByPk(id);
     
     if (!event) {
-      console.log(`BTevent with ID ${id} not found`);
+      await transaction.rollback();
       return res.status(404).json({ message: 'BTevent not found' });
     }
     
-    // Store general_event_id before deleting (for logging)
-    const generalEventId = event.general_event_id;
-    const wasLinked = !!generalEventId;
-    
-    console.log(`Found BT event: ${event.name}, linked to general event: ${wasLinked ? generalEventId : 'No'}`);
-    
-    // Delete all associated expenses first without using transaction
-    const deletedExpenses = await Expense.destroy({
-      where: { eventId: id }
+    // Delete all associated expenses first
+    await Expense.destroy({
+      where: { eventId: id },
+      transaction
     });
     
-    console.log(`Deleted ${deletedExpenses} expenses for event ID: ${id}`);
+    // Then delete the event
+    await event.destroy({ transaction });
     
-    // Then delete the BT event itself without using transaction
-    const deleteResult = await BTevent.destroy({
-      where: { id }
-    });
+    // Commit the transaction
+    await transaction.commit();
     
-    if (deleteResult === 0) {
-      console.error(`Failed to delete BT event ID: ${id}`);
-      return res.status(500).json({ message: 'Failed to delete event' });
-    }
-    
-    console.log(`Successfully deleted BT event ID: ${id}`);
-    
-    // If this BT event was linked to a general event, we need to update the "deleted" flag
-    // This prevents the event from being auto-recreated during sync
-    if (wasLinked) {
-      console.log(`Marking general event ${generalEventId} as having its BT event deleted`);
-      try {
-        // Updating a hidden field in the general event to track deletion status
-        // (You'll need to add this field to your Event model if it doesn't exist)
-        await Event.update(
-          { bt_event_deleted: true },
-          { where: { id: generalEventId } }
-        );
-      } catch (updateError) {
-        console.error(`Warning: Failed to update general event deletion status: ${updateError.message}`);
-        // We continue with the successful deletion even if this update fails
-      }
-    }
-    
-    return res.status(200).json({ 
-      message: 'BTevent deleted successfully',
-      id: id,
-      expenses_deleted: deletedExpenses,
-      was_linked: wasLinked
-    });
+    return res.status(200).json({ message: 'BTevent deleted successfully' });
   } catch (error) {
-    console.error(`Error deleting BT event: ${error.message}`);
-    console.error(error.stack);
-    return res.status(500).json({ 
-      message: 'Failed to delete event', 
-      error: error.message 
-    });
+    // Rollback the transaction on error
+    await transaction.rollback();
+    console.error('Error deleting event:', error);
+    return res.status(500).json({ message: 'Failed to delete event', error: error.message });
   }
 };
 

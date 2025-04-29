@@ -6,7 +6,7 @@ import "./event-panel.css"
 
 
 function E4EventPanel() {
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);

@@ -318,6 +318,9 @@ body[data-theme="dark"] .budget-next-button {
     margin-left: 15px;
     margin-top: 10px;
 }
+body[data-theme="dark"] .select-club-dropdown-bt {
+    background-color: #fad5b9;
+}
 
 .select-club-dropdown-bt {
     padding: 0.5rem 1rem;

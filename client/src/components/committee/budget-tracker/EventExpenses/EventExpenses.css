@@ -349,6 +349,116 @@ body[data-theme="dark"] .loading-indicator {
   color: #ccc;
 }
 
+/* Dark mode form styling for EventExpenses.css */
+
+/* Form text colors in dark mode */
+body[data-theme="dark"] .ant-form-item-label > label {
+  color: #e0e0e0;
+}
+
+body[data-theme="dark"] .ant-input,
+body[data-theme="dark"] .ant-input-number,
+body[data-theme="dark"] .ant-select-selector,
+body[data-theme="dark"] .ant-select-selection-item,
+body[data-theme="dark"] .ant-input-number-input,
+body[data-theme="dark"] .ant-checkbox-wrapper,
+body[data-theme="dark"] .ant-input-textarea {
+  color: #ffffff;
+  background-color: #424242;
+  border-color: #555555;
+}
+
+/* Modal content in dark mode */
+body[data-theme="dark"] .ant-modal-content {
+  background-color: #303030;
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .ant-modal-header {
+  background-color: #303030;
+  border-bottom: 1px solid #424242;
+}
+
+body[data-theme="dark"] .ant-modal-title {
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .ant-modal-close {
+  color: #e0e0e0;
+}
+
+/* Select dropdown in dark mode */
+body[data-theme="dark"] .ant-select-dropdown {
+  background-color: #424242;
+  border-color: #555555;
+}
+
+body[data-theme="dark"] .ant-select-item {
+  color: #e0e0e0;
+}
+
+body[data-theme="dark"] .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background-color: #303030;
+}
+
+body[data-theme="dark"] .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: #1890ff26;
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .ant-select-arrow {
+  color: #e0e0e0;
+}
+
+/* Form element focus states */
+body[data-theme="dark"] .ant-input:focus,
+body[data-theme="dark"] .ant-input-number:focus,
+body[data-theme="dark"] .ant-input-affix-wrapper:focus,
+body[data-theme="dark"] .ant-input-affix-wrapper-focused {
+  border-color: #4a6831;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* Checkbox styling in dark mode */
+body[data-theme="dark"] .ant-checkbox-inner {
+  background-color: #424242;
+  border-color: #666666;
+}
+
+body[data-theme="dark"] .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #4a6831;
+  border-color: #4a6831;
+}
+
+/* Modal footer in dark mode */
+body[data-theme="dark"] .ant-modal-footer {
+  border-top: 1px solid #424242;
+}
+
+/* Form validation messages */
+body[data-theme="dark"] .ant-form-item-explain-error {
+  color: #ff7875;
+}
+
+/* Form item required asterisk */
+body[data-theme="dark"] .ant-form-item-required::before {
+  color: #ff7875;
+}
+
+/* Ensure text is visible in notifications */
+body[data-theme="dark"] .ant-notification-notice {
+  background-color: #303030;
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .ant-notification-notice-message {
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .ant-notification-notice-description {
+  color: #d9d9d9;
+}
+
 /* Media Queries */
 /* For devices up to 480px (mobile) */
 @media (max-width: 480px) {

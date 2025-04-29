@@ -2,6 +2,7 @@
     text-align: center !important;
     color: #203246 !important;
 }
+
 .event-expense-form-submit-button {
     background-color: #182534 !important;
     color: white;
@@ -9,12 +10,161 @@
     justify-content: center;
     margin-left: 160px;
 }
+
 .event-expense-form-cancel-button {
     background-color: #182534 !important;
     color: white;
     align-items: center;
     justify-content: center;
 }
+
 .event-expense-form-cancel-button:hover {
     color: white !important;
+}
+
+body[data-theme="dark"] .event-expense-form-modal-title {
+    color: #ffffff !important;
+}
+
+body[data-theme="dark"] .event-expense-form-submit-button,
+body[data-theme="dark"] .event-expense-form-cancel-button {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    border: 1px solid #555;
+}
+
+body[data-theme="dark"] .event-expense-form-cancel-button:hover {
+    color: #ffffff !important;
+}
+
+
+body[data-theme="dark"] .ant-picker {
+    background-color: #2a2a2a;
+    border-color: #555;
+}
+
+body[data-theme="dark"] .ant-picker-input>input {
+    color: #fff;
+}
+
+body[data-theme="dark"] .ant-picker-suffix {
+    color: #ccc;
+}
+
+body[data-theme="dark"] .ant-picker-clear {
+    background-color: #2a2a2a;
+    color: #ccc;
+}
+
+/* Date Picker Dropdown Panel */
+body[data-theme="dark"] .ant-picker-dropdown .ant-picker-panel-container {
+    background-color: #1e1e1e;
+    border-color: #444;
+}
+
+body[data-theme="dark"] .ant-picker-header {
+    color: #fff;
+    border-bottom-color: #444;
+}
+
+body[data-theme="dark"] .ant-picker-header button {
+    color: #ccc;
+}
+
+body[data-theme="dark"] .ant-picker-content th {
+    color: #ccc;
+}
+
+body[data-theme="dark"] .ant-picker-cell {
+    color: #ccc;
+}
+
+body[data-theme="dark"] .ant-picker-cell-in-view {
+    color: #fff;
+}
+
+body[data-theme="dark"] .ant-picker-cell:hover .ant-picker-cell-inner {
+    background-color: #333;
+}
+
+body[data-theme="dark"] .ant-picker-cell-selected .ant-picker-cell-inner {
+    background-color: #4a6831;
+    color: #fff;
+}
+
+/* Radio Button Styling for Dark Mode */
+body[data-theme="dark"] .ant-radio-wrapper {
+    color: #ccc;
+}
+
+body[data-theme="dark"] .ant-radio-inner {
+    background-color: #2a2a2a;
+    border-color: #555;
+}
+
+body[data-theme="dark"] .ant-radio-checked .ant-radio-inner {
+    border-color: #4a6831;
+}
+
+body[data-theme="dark"] .ant-radio-inner::after {
+    background-color: #4a6831;
+}
+
+/* Radio Button Group */
+body[data-theme="dark"] .ant-radio-group {
+    color: #ccc;
+}
+
+/* Input Number for Dark Mode */
+body[data-theme="dark"] .ant-input-number {
+    background-color: #2a2a2a;
+    border-color: #555;
+}
+
+body[data-theme="dark"] .ant-input-number-input {
+    color: #fff;
+}
+
+body[data-theme="dark"] .ant-input-number-handler-wrap {
+    background-color: #1e1e1e;
+    border-left-color: #444;
+}
+
+body[data-theme="dark"] .ant-input-number-handler-up-inner,
+body[data-theme="dark"] .ant-input-number-handler-down-inner {
+    color: #ccc;
+}
+
+body[data-theme="dark"] .ant-picker-focused .ant-picker-input > input,
+body[data-theme="dark"] .ant-picker-input > input {
+  color: #fff !important; /* Force the input text to be white */
+}
+
+/* Fix for date picker placeholder */
+body[data-theme="dark"] .ant-picker-input > input::placeholder {
+  color: #aaa;
+}
+
+/* Fix for "Total Expense" text in edit form */
+body[data-theme="dark"] div > strong,
+body[data-theme="dark"] .ant-form-item + div > strong,
+body[data-theme="dark"] .ant-form strong,
+body[data-theme="dark"] .event-expenses-table strong {
+  color: #fff !important;
+}
+
+/* Make sure dropdown in edit form has visible text */
+body[data-theme="dark"] .ant-select-selector .ant-select-selection-item {
+    color: #fff;
+}
+
+/* Specific fix for AED text in add expense form */
+body[data-theme="dark"] .ant-input-group-addon,
+body[data-theme="dark"] .ant-input-affix-wrapper .ant-input-prefix,
+body[data-theme="dark"] input[addonBefore="AED"],
+body[data-theme="dark"] .ant-input-group > .ant-input:first-child, 
+body[data-theme="dark"] .ant-input-group-addon:first-child {
+    color: #fff !important;
+    background-color: #2a2a2a !important;
+    border-color: #555 !important;
 }

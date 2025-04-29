@@ -7,6 +7,8 @@
   --e4-button-active: rgb(50, 50, 50);
   --e4-gold: rgb(130, 100, 50);
   --e4-filter: rgb(200, 200, 200);
+  --e4-less: rgb(100, 100, 100);
+  --e4-more: rgb(80, 80, 80);
 }
 
 [data-theme="dark"] {
@@ -17,7 +19,9 @@
   --e4-button-hover: rgb(240, 240, 240);
   --e4-button-active: rgb(220, 220, 220);
   --e4-gold: rgb(180, 150, 100);
-  --e4-filter: rgb(80, 80, 80)
+  --e4-filter: rgb(80, 80, 80);
+  --e4-less: rgb(150, 150, 150);
+  --e4-more: rgb(180, 180, 180);
 }
 
 /*Main container of the top scetion*/
@@ -702,7 +706,7 @@
 }
 
 .e4c-event-follow-button {
-  background-color: rgb(230, 214, 156);
+  background-color: rgb(222, 197, 133)/*rgb(230, 214, 156)*/;
   border-radius: 5px;
   border: 5px solid rgba(0, 0, 0, 0);
   color: black;
@@ -720,11 +724,11 @@
 }
 
 .e4c-event-follow-button:hover {
-  background-color: rgb(240, 224, 166);
+  background-color: rgb(232, 207, 143)/*rgb(240, 224, 166)*/;
 }
 
 .e4c-event-follow-button:hover:active {
-  background-color: rgb(235, 219, 161);
+  background-color: rgb(227, 202, 138)/*rgb(235, 219, 161)*/;
   box-shadow: 2px 0px rgba(0, 0, 0, 0.2);
   margin-top: 2px;
   margin-bottom: -2px;

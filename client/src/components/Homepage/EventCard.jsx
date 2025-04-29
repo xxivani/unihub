@@ -5,6 +5,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import { CalendarIcon, LocationIcon } from "../../assets/icons"; 
 import { Link } from "react-router-dom"; 
 import { useState, useEffect, useRef } from "react";
+import { FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa';
 
 function EventCards() {
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -120,10 +121,10 @@ function EventCards() {
             </Card.Body>
             <ListGroup className="event-details">
               <ListGroup.Item className="event-detail-item">
-                <CalendarIcon /> {event.date} {event.time}
+              <FaCalendarAlt className="e4-card-icon" /> {event.date} {event.time}
               </ListGroup.Item>
               <ListGroup.Item className="event-detail-item">
-                <LocationIcon /> {event.location}
+                <FaMapMarkerAlt className="e4-card-icon" /> {event.location}
               </ListGroup.Item>
             </ListGroup>
             <Card.Text className="event-description">

@@ -368,7 +368,7 @@
   }
 
   .e4-event-follow-button {
-    background-color: rgb(230, 214, 156);
+    background-color: rgb(222, 197, 133)/*rgb(230, 214, 156)*/;
     border-radius: 5px;
     border: 5px solid rgba(0, 0, 0, 0);
     color: black;
@@ -386,11 +386,11 @@
   }
 
   .e4-event-follow-button:hover {
-    background-color: rgb(240, 224, 166);
+    background-color: rgb(232, 207, 143)/*rgb(240, 224, 166)*/;
   }
 
   .e4-event-follow-button:hover:active {
-    background-color: rgb(235, 219, 161);
+    background-color: rgb(227, 202, 138)/*rgb(235, 219, 161)*/;
     box-shadow: 2px 0px rgba(0, 0, 0, 0.2);
     margin-top: 2px;
     margin-bottom: -2px;

@@ -246,15 +246,40 @@ const E4CommitteeEvents = () =>{
           alert("Time format incorrect.\nFormat: HH:MM - HH:MM");
           return;
         }
+        let deadline;
+        const current = new Date();
+        const today = current.toDateString();
+        const selectedDate = new Date(currentEditEvent.date);
+        const [startTIme] = currentEditEvent.time.split("-");
+        const [hours, minutes] = startTIme.split(":").map(Number);
+        selectedDate.setHours(hours);
+        selectedDate.setMinutes(minutes);
+        selectedDate.setSeconds(0);
+        selectedDate.setMilliseconds(0);
+        const timeDifference = Math.floor((selectedDate - current) / (1000 * 60 * 60 * 24));
+        if (selectedDate.toDateString() === today) {
+          selectedDate.setHours(selectedDate.getHours() - 1);
+          deadline = selectedDate.toISOString();
+        } else if (timeDifference == 1) {
+          selectedDate.setHours(selectedDate.getHours() - 5);
+          deadline = selectedDate.toISOString();
+        } else {
+          selectedDate.setDate(selectedDate.getDate() - 1);
+          deadline = selectedDate.toISOString();
+        };
+        const updatedEvent = {
+          ...currentEditEvent,
+          deadline: deadline
+        };
         const response = await fetch(`${apiUrl}/events/${currentEditEvent.id}`, {
           method: 'PUT',
           headers: {
               'Content-Type': 'application/json',
           },
-          body: JSON.stringify(currentEditEvent),
+          body: JSON.stringify(updatedEvent),
       });
         const updatedEvents = events.map(event => 
-            event.id === currentEditEvent.id ? currentEditEvent : event
+            event.id === updatedEvent.id ? updatedEvent : event
           );
           setEvents(updatedEvents);
           localStorage.setItem('eventsList', JSON.stringify(updatedEvents));

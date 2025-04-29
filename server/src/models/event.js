@@ -51,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     deadline: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       allowNull: true
     },
     capacity: {

@@ -1,47 +1,72 @@
-/* ✅ GDPR Policy Styling */
+:root {
+  --background: #f5f5f7;
+  --container-bg: #fff;
+  --text-primary: #333;
+  --text-secondary: #444;
+  --text-tertiary: #555;
+  --link-color: #007bff;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+  --background: #121212;
+  --container-bg: #1e1e1e;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-tertiary: #aaaaaa;
+  --link-color: #4dabf7;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 .gdpr-container {
-    max-width: 800px;
-    margin: 80px auto 40px; /* 🔥 Adds top margin to push content below navbar */
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    line-height: 1.6;
-  }
-  
-  .gdpr-container h1 {
-    font-size: 2rem;
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .gdpr-container h2 {
-    font-size: 1.5rem;
-    color: #444;
-    margin-top: 30px;
-  }
-  
-  .gdpr-container p,
-  .gdpr-container ul {
-    font-size: 1rem;
-    color: #555;
-  }
-  
-  .gdpr-container ul {
-    padding-left: 20px;
-  }
-  
-  .gdpr-container ul li {
-    margin-bottom: 10px;
-  }
-  
-  .gdpr-container a {
-    color: #007bff;
-    text-decoration: none;
-  }
-  
-  .gdpr-container a:hover {
-    text-decoration: underline;
-  }
-  
+  max-width: 800px;
+  margin: 80px auto 40px;
+  padding: 20px;
+  background-color: var(--container-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  line-height: 1.6;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gdpr-container h1 {
+  font-size: 2rem;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.gdpr-container h2 {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  margin-top: 30px;
+}
+
+.gdpr-container p,
+.gdpr-container ul {
+  font-size: 1rem;
+  color: var(--text-tertiary);
+}
+
+.gdpr-container ul {
+  padding-left: 20px;
+}
+
+.gdpr-container ul li {
+  margin-bottom: 10px;
+}
+
+.gdpr-container a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.gdpr-container a:hover {
+  text-decoration: underline;
+}

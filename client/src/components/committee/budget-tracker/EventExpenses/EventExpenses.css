@@ -222,6 +222,10 @@ body[data-theme="dark"] .event-expenses-back-button {
 .category-legend {
   flex-wrap: wrap;
 }
+body[data-theme="dark"] .event-expenses-table .category-legend .ant-typography,
+body[data-theme="dark"] .event-expenses-table .category-legend strong {
+  color: #000 !important;
+}
 
 /* Tag animations */
 .ant-tag {

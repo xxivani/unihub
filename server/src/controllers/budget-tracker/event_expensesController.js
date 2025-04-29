@@ -396,6 +396,8 @@ const getBTeventById = async (req, res) => {
 
 //new
 // Update createEventBT to link with general event if appropriate
+// Create a new event with expenses
+// Create a new event with expenses
 const createEventBT = async (req, res) => {
   const transaction = await sequelize.transaction();
   
@@ -412,8 +414,9 @@ const createEventBT = async (req, res) => {
       return res.status(400).json({ message: 'Club ID is required' });
     }
     
-    if (!categories || !Array.isArray(categories) || categories.length === 0) {
-      return res.status(400).json({ message: 'At least one expense category is required' });
+    // Allow empty categories array but validate if categories are provided
+    if (categories && !Array.isArray(categories)) {
+      return res.status(400).json({ message: 'Categories must be an array' });
     }
     
     // Parse date string if it's in DD/MM/YYYY format
@@ -433,34 +436,42 @@ const createEventBT = async (req, res) => {
       general_event_id: general_event_id || null
     }, { transaction });
     
-    // Create expenses for each category
-    const expensePromises = categories.map(async ({ name: categoryName, amount }) => {
-      // Find the category
-      const category = await Category.findOne({
-        where: {
-          name: sequelize.where(
-            sequelize.fn('LOWER', sequelize.col('name')), 
-            sequelize.fn('LOWER', categoryName)
-          )
+    // Create expenses for each category (if any)
+    let expensePromises = [];
+    
+    // Only create expenses for the categories that were explicitly provided
+    if (categories && categories.length > 0) {
+      expensePromises = categories.map(async ({ name: categoryName, amount }) => {
+        // Find the category
+        const category = await Category.findOne({
+          where: {
+            name: sequelize.where(
+              sequelize.fn('LOWER', sequelize.col('name')), 
+              sequelize.fn('LOWER', categoryName)
+            )
+          }
+        });
+        
+        if (!category) {
+          throw new Error(`Category not found: ${categoryName}`);
         }
+        
+        // Ensure amount is a positive number or minimum of 0.01
+        const expenseAmount = parseFloat(amount);
+        
+        // Create the expense with minimum valid amount
+        return Expense.create({
+          amount: isNaN(expenseAmount) ? 0.01 : Math.max(0.01, expenseAmount),
+          description: `${categoryName} expense for ${name}`,
+          date: formattedDate,
+          categoryId: category.id,
+          eventId: newEvent.id,
+          club_id: parseInt(club_id),
+        }, { transaction });
       });
       
-      if (!category) {
-        throw new Error(`Category not found: ${categoryName}`);
-      }
-      
-      // Create the expense
-      return Expense.create({
-        amount,
-        description: `${categoryName} expense for ${name}`,
-        date: formattedDate,
-        categoryId: category.id,
-        eventId: newEvent.id,
-        club_id: parseInt(club_id),
-      }, { transaction });
-    });
-    
-    await Promise.all(expensePromises);
+      await Promise.all(expensePromises);
+    }
     
     // If this budget event is linked to a general event, update the general event's budget_required flag
     if (general_event_id) {
@@ -497,10 +508,25 @@ const createEventBT = async (req, res) => {
       (sum, expense) => sum + parseFloat(expense.amount), 0
     );
     
-    const responseCategories = categories.map(({ name, amount }) => ({
-      name: name.toLowerCase(),
-      amount: parseFloat(amount)
-    }));
+    // Create categories array from the actual created expenses
+    // This ensures we only return categories that were actually created
+    const responseCategories = [];
+    if (rawEvent.expenses && rawEvent.expenses.length > 0) {
+      const categoriesMap = {};
+      rawEvent.expenses.forEach(expense => {
+        const categoryName = expense.category.name.toLowerCase();
+        if (!categoriesMap[categoryName]) {
+          categoriesMap[categoryName] = 0;
+        }
+        categoriesMap[categoryName] += parseFloat(expense.amount);
+      });
+      
+      Object.entries(categoriesMap).forEach(([name, amount]) => {
+        if (amount > 0) {
+          responseCategories.push({ name, amount });
+        }
+      });
+    }
     
     const formattedEvent = {
       id: rawEvent.id,
@@ -527,12 +553,142 @@ const createEventBT = async (req, res) => {
 
 
 // Update an existing event
+// const updateEventBT = async (req, res) => {
+//   const transaction = await sequelize.transaction();
+  
+//   try {
+//     const { id } = req.params;
+//     const { name, date, status, description, categories, club_id } = req.body;
+    
+//     // Find the event
+//     const event = await BTevent.findByPk(id);
+    
+//     if (!event) {
+//       await transaction.rollback();
+//       return res.status(404).json({ message: 'Event not found' });
+//     }
+
+//     //parse date
+//     let formattedDate = date;
+//     if (date && date.includes('/')) {
+//       const [day, month, year] = date.split('/');
+//       formattedDate = `${year}-${month}-${day}`;
+//     }
+    
+//     // Update event details
+//     await event.update({
+//       name: name || event.name,
+//       date: formattedDate || event.date,
+//       status: status || event.status,
+//       description: description !== undefined ? description : event.description,
+//       // description: description || event.description,
+//       club_id,
+//     }, { transaction });
+    
+//     // If categories are provided, update the expenses
+//     if (categories && Array.isArray(categories)) {
+//       // First, delete all existing expenses for this event
+//       await Expense.destroy({
+//         where: { eventId: id },
+//         transaction
+//       });
+      
+//       // Then create new expenses for each category
+//       const expensePromises = categories.map(async ({ name: categoryName, amount }) => {
+//         // Find the category
+//         const category = await Category.findOne({
+//           where: {
+//             name: sequelize.where(
+//               sequelize.fn('LOWER', sequelize.col('name')), 
+//               sequelize.fn('LOWER', categoryName)
+//             )
+//           }
+//         });
+        
+//         if (!category) {
+//           throw new Error(`Category not found: ${categoryName}`);
+//         }
+        
+//         // Create the expense
+//         return Expense.create({
+//           amount,
+//           description: `${categoryName} expense for ${name || event.name}`,
+//           date: formattedDate || event.date,
+//           categoryId: category.id,
+//           eventId: id,
+//           club_id,
+
+//         }, { transaction });
+//       });
+      
+//       await Promise.all(expensePromises);
+//     }
+    
+//     // Commit the transaction
+//     await transaction.commit();
+    
+//     // Get the updated event with all its relations
+//     const updatedEvent = await BTevent.findByPk(id, {
+//       include: [
+//         {
+//           model: Expense,
+//           as: 'expenses',
+//           include: [{ model: Category, as: 'category' }]
+//         }
+//       ]
+//     });
+    
+//     // Format the response
+//     const rawEvent = updatedEvent.get({ plain: true });
+    
+//     const totalExpense = rawEvent.expenses.reduce(
+//       (sum, expense) => sum + parseFloat(expense.amount), 0
+//     );
+    
+//     // Group expenses by category
+//     const categoriesMap = {};
+//     rawEvent.expenses.forEach(expense => {
+//       const categoryName = expense.category.name.toLowerCase();
+//       if (!categoriesMap[categoryName]) {
+//         categoriesMap[categoryName] = 0;
+//       }
+//       categoriesMap[categoryName] += parseFloat(expense.amount);
+//     });
+    
+//     const responseCategories = Object.entries(categoriesMap).map(([name, amount]) => ({
+//       name,
+//       amount
+//     }));
+    
+//     const formattedEvent = {
+//       id: rawEvent.id,
+//       key: rawEvent.id.toString(),
+//       name: rawEvent.name,
+//       date: new Date(rawEvent.date).toLocaleDateString('en-GB'),
+//       status: rawEvent.status,
+//       expense: `AED ${totalExpense.toFixed(2)}`,
+//       description: rawEvent.description,
+//       categories: responseCategories,
+//       club_id: rawEvent.club_id,
+
+//     };
+    
+//     return res.status(200).json(formattedEvent);
+//   } catch (error) {
+//     // Rollback the transaction on error
+//     await transaction.rollback();
+//     console.error('Error updating event:', error);
+//     return res.status(500).json({ message: 'Failed to update event', error: error.message });
+//   }
+// };
+
+// Update an existing event
 const updateEventBT = async (req, res) => {
   const transaction = await sequelize.transaction();
   
   try {
     const { id } = req.params;
-    const { name, date, status, description, categories, club_id } = req.body;
+    const { name, date, status, description, categories, club_id, general_event_id } = req.body;
     
     // Find the event
     const event = await BTevent.findByPk(id);
@@ -555,8 +711,8 @@ const updateEventBT = async (req, res) => {
       date: formattedDate || event.date,
       status: status || event.status,
       description: description !== undefined ? description : event.description,
-      // description: description || event.description,
       club_id,
+      general_event_id: general_event_id || null
     }, { transaction });
     
     // If categories are provided, update the expenses
@@ -583,19 +739,32 @@ const updateEventBT = async (req, res) => {
           throw new Error(`Category not found: ${categoryName}`);
         }
         
-        // Create the expense
+        // Ensure amount is a valid number (or default to 0.01)
+        const expenseAmount = parseFloat(amount);
+        
+        // Create the expense - ensure amount is never negative
+        // Use 0.01 as minimum value to comply with your model's validation
         return Expense.create({
-          amount,
+          amount: isNaN(expenseAmount) ? 0.01 : Math.max(0.01, expenseAmount),
           description: `${categoryName} expense for ${name || event.name}`,
           date: formattedDate || event.date,
           categoryId: category.id,
           eventId: id,
           club_id,
-
         }, { transaction });
       });
       
       await Promise.all(expensePromises);
+    }
+
+    // If this budget event is linked to a general event, update the general event's budget_required flag
+    if (general_event_id) {
+      const generalEvent = await Event.findByPk(general_event_id);
+      if (generalEvent) {
+        await generalEvent.update({ 
+          budget_required: true 
+        }, { transaction });
+      }
     }
     
     // Commit the transaction
@@ -608,6 +777,10 @@ const updateEventBT = async (req, res) => {
           model: Expense,
           as: 'expenses',
           include: [{ model: Category, as: 'category' }]
+        },
+        {
+          model: Event,
+          as: 'generalEvent'
         }
       ]
     });
@@ -644,7 +817,8 @@ const updateEventBT = async (req, res) => {
       description: rawEvent.description,
       categories: responseCategories,
       club_id: rawEvent.club_id,
-
+      general_event_id: rawEvent.general_event_id,
+      is_general_event: !!rawEvent.general_event_id
     };
     
     return res.status(200).json(formattedEvent);
@@ -1052,30 +1226,35 @@ const syncGeneralEvents = async (req, res) => {
           general_event_id: genEvent.id
         }, { transaction });
         
-        // If budget details exist, create expenses
+        // If budget details exist, create expenses for each category
         if (genEvent.budget && typeof genEvent.budget === 'object') {
           for (const [categoryName, amount] of Object.entries(genEvent.budget)) {
-            if (!amount || parseFloat(amount) <= 0) continue;
-            
-            // Find the category
-            const category = await Category.findOne({
-              where: sequelize.where(
-                sequelize.fn('LOWER', sequelize.col('name')),
-                sequelize.fn('LOWER', categoryName)
-              )
-            });
-            
-            if (!category) continue;
-            
-            // Create expense
-            await Expense.create({
-              amount: parseFloat(amount),
-              description: `${categoryName} expense for ${genEvent.title}`,
-              date: formattedDate,
-              categoryId: category.id,
-              eventId: btEvent.id,
-              club_id: parseInt(club_id)
-            }, { transaction });
+            try {
+              // Find the category
+              const category = await Category.findOne({
+                where: sequelize.where(
+                  sequelize.fn('LOWER', sequelize.col('name')),
+                  sequelize.fn('LOWER', categoryName)
+                )
+              });
+              
+              if (!category) continue;
+              
+              // Create expense with a minimum of 0.01 to satisfy model validation
+              const expenseAmount = amount ? parseFloat(amount) : 0.01;
+              
+              await Expense.create({
+                amount: Math.max(0.01, expenseAmount),
+                description: `${categoryName} expense for ${genEvent.title}`,
+                date: formattedDate,
+                categoryId: category.id,
+                eventId: btEvent.id,
+                club_id: parseInt(club_id)
+              }, { transaction });
+            } catch (categoryError) {
+              console.error(`Error creating expense for category ${categoryName}:`, categoryError);
+              // Continue with other categories even if one fails
+            }
           }
         }
         

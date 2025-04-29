@@ -9,7 +9,7 @@ const LatestEventsList = ({ events: propEvents }) => {
   const [error, setError] = useState(null);
 
   // Get the API URL from environment
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
   useEffect(() => {
     // If events are provided as props, use them

@@ -8,7 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa';
 
 function EventCards() {
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState([]);
   const canvasRefs = useRef([]);

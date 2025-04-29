@@ -9,7 +9,7 @@ const ImageEEvents = () => {
   const navigate = useNavigate();
   const canvasRef = useRef(null);
   const [image, setImage] = useState(null);
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
   const [settings, setSettings] = useState({
     brightness: 100,
     saturation: 100,

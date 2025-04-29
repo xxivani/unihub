@@ -5,7 +5,7 @@ import {FaEdit, FaTrash, FaPencilAlt, FaTimes, FaChevronLeft, FaChevronRight, Fa
 
 
 const E4CommitteeEvents = () =>{
-    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const previousPage = queryParams.get("page");
@@ -159,7 +159,7 @@ const E4CommitteeEvents = () =>{
       };
       const handleFollowClick = async (eventId) => {
         try {
-          const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+          const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001";
           const follow = followed.includes(eventId);
           const response = await fetch(`${apiUrl}/events/${follow ? 'unfollow' : 'follow'}/${eventId}`, {
           method: 'POST',

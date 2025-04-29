@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import SidebarSettings from "./sidebarSettings";
 import "./followed.css";
 
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 const Followed = () => {
   const [userId, setUserId] = useState(null);

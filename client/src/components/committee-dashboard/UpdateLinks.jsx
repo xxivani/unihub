@@ -3,7 +3,7 @@ import { FiEdit2 } from "react-icons/fi";
 import { FaPhone, FaEnvelope, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import "./UpdateLinks.css";
 
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 const UpdateLinks = ({ selectedClubId }) => {
   const [isEditing, setIsEditing] = useState(false);

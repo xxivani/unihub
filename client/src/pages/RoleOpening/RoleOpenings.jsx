@@ -4,7 +4,7 @@ import RoleOpeningCard from "../../components/viewRO/RoleOpeningCard";
 import Pagination from "../../components/viewRO/Pagination";
 import ongoingRolesSample from "../../components/viewRO/ongoing-roles"; // fallback sample data
 
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 const RoleOpenings = () => {
   const [currentPage, setCurrentPage] = useState(1);

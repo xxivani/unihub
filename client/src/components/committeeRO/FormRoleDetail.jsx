@@ -4,7 +4,7 @@ import Pagination from '../viewRO/Pagination';
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 const FormRoleDetail = () => {
   const { id: role_opening_id } = useParams();
@@ -136,7 +136,7 @@ const FormRoleDetail = () => {
 
           {currentSubmission.applicant_cv_url ? (
             <a
-              href={`${(import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/api\/?$/, '')}${currentSubmission.applicant_cv_url}`}
+              href={`${(import.meta.env.VITE_API_URL || "http://localhost:5001").replace(/\/api\/?$/, '')}${currentSubmission.applicant_cv_url}`}
               className="download-btn"
               download
               target="_blank"

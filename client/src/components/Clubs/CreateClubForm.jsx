@@ -8,7 +8,7 @@ const CreateClubForm = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [category, setCategory] = useState("");
 
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
   const handleSubmit = async (e) => {
     e.preventDefault();

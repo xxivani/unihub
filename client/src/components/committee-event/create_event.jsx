@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const E4EventCreate = () => {
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
   const navigate = useNavigate();
   const [lockName, setLockName] = useState(false);
   const [user, setUser] = useState(null);

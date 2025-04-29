@@ -8,7 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import { Alert, Space, Spin } from 'antd';
 
 const EventExpenses = () => {
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
   const [allEvents, setAllEvents] = useState([]); // Store all events for client-side filtering
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -55,11 +55,11 @@ const EventExpenses = () => {
   }, [clubId]);
   
   // Fetch all events and store them for client-side filtering
-  const fetchAllEvents = async () => {
+  const fetchAllEvents = async (syncEvents = false) => {
     try {
       setLoading(true);
       setError(null);
-
+  
       // Validate clubId
       if (!clubId) {
         console.error('No Club ID found');
@@ -69,10 +69,11 @@ const EventExpenses = () => {
         setLoading(false);
         return;
       }
-
-      // Create URL with club_id parameter
-      const url = `${apiUrl}/bt_eventRoute?club_id=${clubId}`;
-      console.log("Fetching events from:", url);
+  
+      // Create URL with club_id parameter and explicit sync_events control
+      const syncParam = syncEvents ? '&sync_events=true' : '&sync_events=false';
+      const url = `${apiUrl}/bt_eventRoute?club_id=${clubId}${syncParam}`;
+      console.log(`Fetching events from: ${url}`);
       
       const response = await fetch(url);
       if (!response.ok) {
@@ -81,18 +82,18 @@ const EventExpenses = () => {
       
       const events = await response.json();
       console.log("Events fetched:", events);
-
+  
       // Only keep events that belong to this club
       const clubSpecificEvents = events.filter(event => 
         String(event.club_id) === String(clubId)
       );
-
+  
       console.log("✅ Club-specific events:", clubSpecificEvents);
       
       if (clubSpecificEvents.length === 0) {
         console.warn("No events found for this club!");
       }
-
+  
       // Store all events for client-side filtering
       setAllEvents(clubSpecificEvents);
       setFilteredEvents(clubSpecificEvents);
@@ -104,6 +105,37 @@ const EventExpenses = () => {
       setError(`Failed to load events: ${error.message}`);
     } finally {
       setLoading(false);
+    }
+  };
+  
+  // Then modify the syncGeneralEvents function to explicitly request sync:
+  const syncGeneralEvents = async () => {
+    try {
+      setSyncing(true);
+      
+      // First call the sync endpoint
+      const response = await fetch(`${apiUrl}/bt_eventRoute/sync-general-events`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ club_id: clubId })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to sync events: ${response.status}`);
+      }
+      
+      // Then refresh events with sync_events=true to show the newly synced events
+      await fetchAllEvents(true);
+      
+      // Show success message
+      alert("Events synchronized successfully!");
+    } catch (error) {
+      console.error('Error syncing events:', error);
+      alert(`Failed to sync events: ${error.message}`);
+    } finally {
+      setSyncing(false);
     }
   };
   
@@ -177,35 +209,35 @@ const EventExpenses = () => {
   };
   
   // Sync general events with budget tracker
-  const syncGeneralEvents = async () => {
-    try {
-      setSyncing(true);
+  // const syncGeneralEvents = async () => {
+  //   try {
+  //     setSyncing(true);
       
-      // Call the new sync endpoint
-      const response = await fetch(`${apiUrl}/bt_eventRoute/sync-general-events`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ club_id: clubId })
-      });
+  //     // Call the new sync endpoint
+  //     const response = await fetch(`${apiUrl}/bt_eventRoute/sync-general-events`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify({ club_id: clubId })
+  //     });
       
-      if (!response.ok) {
-        throw new Error(`Failed to sync events: ${response.status}`);
-      }
+  //     if (!response.ok) {
+  //       throw new Error(`Failed to sync events: ${response.status}`);
+  //     }
       
-      // Refresh events after sync
-      await fetchAllEvents();
+  //     // Refresh events after sync
+  //     await fetchAllEvents();
       
-      // Show success message
-      alert("Events synchronized successfully!");
-    } catch (error) {
-      console.error('Error syncing events:', error);
-      alert(`Failed to sync events: ${error.message}`);
-    } finally {
-      setSyncing(false);
-    }
-  };
+  //     // Show success message
+  //     alert("Events synchronized successfully!");
+  //   } catch (error) {
+  //     console.error('Error syncing events:', error);
+  //     alert(`Failed to sync events: ${error.message}`);
+  //   } finally {
+  //     setSyncing(false);
+  //   }
+  // };
   
   // Handle filter changes from FilterBar
   const handleFilterChange = async (status) => {

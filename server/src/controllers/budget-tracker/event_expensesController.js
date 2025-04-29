@@ -86,7 +86,7 @@ const getAllEventsBT = async (req, res) => {
     const { club_id } = req.query;
     console.log('Get all events - club_id:', club_id);
     
-    // Require club_id parameter - don't allow fetching events without a club_id
+    // Require club_id parameter
     if (!club_id) {
       return res.status(400).json({ 
         message: 'club_id parameter is required' 
@@ -114,47 +114,89 @@ const getAllEventsBT = async (req, res) => {
       order: [['date', 'DESC']]
     });
 
-    // Fetch general events that require a budget but don't have a BTevent yet
-    const generalEvents = await Event.findAll({
-      where: {
-        budget_required: true,
-        club: { 
-          [Op.iLike]: `%${await getClubNameById(club_id)}%` 
-        },
-        id: {
-          [Op.notIn]: btEvents.filter(event => event.general_event_id !== null)
-                            .map(event => event.general_event_id)
+    // Track which general events are already linked to BT events
+    const linkedGeneralEventIds = btEvents
+      .filter(event => event.general_event_id !== null)
+      .map(event => event.general_event_id);
+    
+    console.log('Existing linked general event IDs:', linkedGeneralEventIds);
+
+    // Check if automatic sync is requested - only create new BT events for general events 
+    // when explicitly requested via a query parameter
+    const shouldSyncEvents = req.query.sync_events === 'true';
+    
+    // Only fetch and create BT events for unlinked general events if sync is requested
+    let newBTEvents = [];
+    if (shouldSyncEvents) {
+      console.log('Automatic sync requested, checking for unlinked general events');
+      
+      // Fetch general events that require a budget but don't have a BTevent yet
+      const generalEvents = await Event.findAll({
+        where: {
+          budget_required: true,
+          club: { 
+            [Op.iLike]: `%${await getClubNameById(club_id)}%` 
+          },
+          id: {
+            [Op.notIn]: linkedGeneralEventIds
+          }
+        }
+      });
+      
+      console.log(`Found ${generalEvents.length} unlinked general events`);
+
+      // Create BTevent instances for general events that don't have one yet
+      for (const genEvent of generalEvents) {
+        try {
+          // Parse date string if it's in DD/MM/YYYY format
+          let formattedDate = genEvent.date;
+          if (formattedDate.includes('/')) {
+            const [day, month, year] = formattedDate.split('/');
+            formattedDate = `${year}-${month}-${day}`;
+          }
+          
+          // Create the BTevent
+          const newBTEvent = await BTevent.create({
+            name: genEvent.title,
+            date: formattedDate,
+            status: 'ONGOING',
+            description: genEvent.description || '',
+            club_id: parseInt(club_id),
+            general_event_id: genEvent.id
+          });
+          
+          newBTEvents.push(newBTEvent);
+          console.log(`Created new BT event for general event ${genEvent.id}`);
+        } catch (error) {
+          console.error(`Error creating BTevent for general event ${genEvent.id}:`, error);
         }
       }
-    });
-
-    // Create BTevent instances for general events that don't have one yet
-    for (const genEvent of generalEvents) {
-      try {
-        // Parse date string if it's in DD/MM/YYYY format
-        let formattedDate = genEvent.date;
-        if (formattedDate.includes('/')) {
-          const [day, month, year] = formattedDate.split('/');
-          formattedDate = `${year}-${month}-${day}`;
-        }
+      
+      if (newBTEvents.length > 0) {
+        console.log(`Created ${newBTEvents.length} new BT events from general events`);
         
-        // Create the BTevent
-        await BTevent.create({
-          name: genEvent.title,
-          date: formattedDate,
-          status: 'ONGOING',
-          description: genEvent.description || '',
-          club_id: parseInt(club_id),
-          general_event_id: genEvent.id
+        // If we created new events, we need to re-fetch all events
+        const updatedBtEvents = await BTevent.findAll({
+          where: whereClause,
+          include: [
+            {
+              model: Expense,
+              as: 'expenses',
+              include: [{ model: Category, as: 'category' }]
+            },
+            {
+              model: Event,
+              as: 'generalEvent'
+            }
+          ],
+          order: [['date', 'DESC']]
         });
-      } catch (error) {
-        console.error(`Error creating BTevent for general event ${genEvent.id}:`, error);
+        
+        btEvents.length = 0; // Clear array
+        btEvents.push(...updatedBtEvents); // Add the updated events
       }
-    }
-
-    // Refetch if we created new BTevents
-    if (generalEvents.length > 0) {
-      return getAllEventsBT(req, res);
+    } else {
+      console.log('Automatic sync not requested, skipping general event check');
     }
 
     // Format the data to match the frontend's expected structure
@@ -456,12 +498,12 @@ const createEventBT = async (req, res) => {
           throw new Error(`Category not found: ${categoryName}`);
         }
         
-        // Ensure amount is a positive number or minimum of 0.01
+        // Ensure amount is a positive number or minimum of 0
         const expenseAmount = parseFloat(amount);
         
         // Create the expense with minimum valid amount
         return Expense.create({
-          amount: isNaN(expenseAmount) ? 0.01 : Math.max(0.01, expenseAmount),
+          amount: isNaN(expenseAmount) ? 0 : Math.max(0, expenseAmount),
           description: `${categoryName} expense for ${name}`,
           date: formattedDate,
           categoryId: category.id,
@@ -739,13 +781,13 @@ const updateEventBT = async (req, res) => {
           throw new Error(`Category not found: ${categoryName}`);
         }
         
-        // Ensure amount is a valid number (or default to 0.01)
+        // Ensure amount is a valid number (or default to 0)
         const expenseAmount = parseFloat(amount);
         
         // Create the expense - ensure amount is never negative
-        // Use 0.01 as minimum value to comply with your model's validation
+        // Use 0 as minimum value to comply with your model's validation
         return Expense.create({
-          amount: isNaN(expenseAmount) ? 0.01 : Math.max(0.01, expenseAmount),
+          amount: isNaN(expenseAmount) ? 0 : Math.max(0, expenseAmount),
           description: `${categoryName} expense for ${name || event.name}`,
           date: formattedDate || event.date,
           categoryId: category.id,
@@ -832,37 +874,73 @@ const updateEventBT = async (req, res) => {
 
 // Delete an event
 const deleteEventBT = async (req, res) => {
-  const transaction = await sequelize.transaction();
-  
   try {
     const { id } = req.params;
+    console.log(`DELETE request received for BT event ID: ${id}`);
     
     // Find the event
     const event = await BTevent.findByPk(id);
     
     if (!event) {
-      await transaction.rollback();
+      console.log(`BTevent with ID ${id} not found`);
       return res.status(404).json({ message: 'BTevent not found' });
     }
     
-    // Delete all associated expenses first
-    await Expense.destroy({
-      where: { eventId: id },
-      transaction
+    // Store general_event_id before deleting (for logging)
+    const generalEventId = event.general_event_id;
+    const wasLinked = !!generalEventId;
+    
+    console.log(`Found BT event: ${event.name}, linked to general event: ${wasLinked ? generalEventId : 'No'}`);
+    
+    // Delete all associated expenses first without using transaction
+    const deletedExpenses = await Expense.destroy({
+      where: { eventId: id }
     });
     
-    // Then delete the event
-    await event.destroy({ transaction });
+    console.log(`Deleted ${deletedExpenses} expenses for event ID: ${id}`);
     
-    // Commit the transaction
-    await transaction.commit();
+    // Then delete the BT event itself without using transaction
+    const deleteResult = await BTevent.destroy({
+      where: { id }
+    });
     
-    return res.status(200).json({ message: 'BTevent deleted successfully' });
+    if (deleteResult === 0) {
+      console.error(`Failed to delete BT event ID: ${id}`);
+      return res.status(500).json({ message: 'Failed to delete event' });
+    }
+    
+    console.log(`Successfully deleted BT event ID: ${id}`);
+    
+    // If this BT event was linked to a general event, we need to update the "deleted" flag
+    // This prevents the event from being auto-recreated during sync
+    if (wasLinked) {
+      console.log(`Marking general event ${generalEventId} as having its BT event deleted`);
+      try {
+        // Updating a hidden field in the general event to track deletion status
+        // (You'll need to add this field to your Event model if it doesn't exist)
+        await Event.update(
+          { bt_event_deleted: true },
+          { where: { id: generalEventId } }
+        );
+      } catch (updateError) {
+        console.error(`Warning: Failed to update general event deletion status: ${updateError.message}`);
+        // We continue with the successful deletion even if this update fails
+      }
+    }
+    
+    return res.status(200).json({ 
+      message: 'BTevent deleted successfully',
+      id: id,
+      expenses_deleted: deletedExpenses,
+      was_linked: wasLinked
+    });
   } catch (error) {
-    // Rollback the transaction on error
-    await transaction.rollback();
-    console.error('Error deleting event:', error);
-    return res.status(500).json({ message: 'Failed to delete event', error: error.message });
+    console.error(`Error deleting BT event: ${error.message}`);
+    console.error(error.stack);
+    return res.status(500).json({ 
+      message: 'Failed to delete event', 
+      error: error.message 
+    });
   }
 };
 
@@ -1240,11 +1318,11 @@ const syncGeneralEvents = async (req, res) => {
               
               if (!category) continue;
               
-              // Create expense with a minimum of 0.01 to satisfy model validation
-              const expenseAmount = amount ? parseFloat(amount) : 0.01;
+              // Create expense with a minimum of 0 to satisfy model validation
+              const expenseAmount = amount ? parseFloat(amount) : 0;
               
               await Expense.create({
-                amount: Math.max(0.01, expenseAmount),
+                amount: Math.max(0, expenseAmount),
                 description: `${categoryName} expense for ${genEvent.title}`,
                 date: formattedDate,
                 categoryId: category.id,

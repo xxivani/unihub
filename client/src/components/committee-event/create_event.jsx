@@ -10,7 +10,7 @@ const E4EventCreate = () => {
   const [budgetCategories, setBudgetCategories] = useState({
     catering: false,
     materials: false,
-    price: false,
+    prize: false,
     transportation: false,
     venue: false
   });
@@ -146,7 +146,7 @@ const E4EventCreate = () => {
         formData.append("budget", JSON.stringify({
           catering: budgetCategories.catering,
           materials: budgetCategories.materials,
-          price: budgetCategories.price,
+          prize: budgetCategories.prize,
           transportation: budgetCategories.transportation,
           venue: budgetCategories.venue
         }));
@@ -358,11 +358,11 @@ const E4EventCreate = () => {
                   <div className="e4-checkbox-item">
                     <input
                       type="checkbox"
-                      id="budgetCategoriesPrice"
-                      checked={budgetCategories.price}
-                      onChange={handleBudgetCategoryChange('price')}
+                      id="budgetCategoriesPrize"
+                      checked={budgetCategories.prize}
+                      onChange={handleBudgetCategoryChange('prize')}
                     />
-                    <label htmlFor="e4-eventBudgetPrice">Price</label>
+                    <label htmlFor="e4-eventBudgetPrize">Prize</label>
                   </div>
                   
                   <div className="e4-checkbox-item">

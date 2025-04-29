@@ -175,7 +175,7 @@ function EventAddExpenseButton({ onAddEvent }) {
           const lowerCategory = category.toLowerCase();
           // Only add categories from the budget
           if (categories.some(cat => cat.value === lowerCategory)) {
-            // Use 0.01 as minimum amount for validation
+            // Use 0 as minimum amount for validation
             const numAmount = parseFloat(amount);
             eventCategories[lowerCategory] = (numAmount && numAmount > 0) ? 
               amount.toString() : "";
@@ -231,7 +231,7 @@ function EventAddExpenseButton({ onAddEvent }) {
       const categoriesData = Object.entries(selectedCategories)
         .map(([name, amount]) => ({
           name,
-          amount: Number(amount) || 0 // Ensure minimum value of 0.01
+          amount: Number(amount) || 0 // Ensure minimum value of 0
         }));
 
       // Create event data

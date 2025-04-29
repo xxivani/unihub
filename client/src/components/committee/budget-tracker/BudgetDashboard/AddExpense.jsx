@@ -160,7 +160,7 @@ function AddExpenseButton({ onUpdateExpenses, chartData }) {
                       placeholder="Enter amount"
                       value={selectedCategories[lowerCategory]}
                       onChange={(e) => handleAmountChange(lowerCategory, e.target.value)}
-                      min="0.01"
+                      min="0"
                       step="0.01"
                       style={{ width: "100%", marginTop: "5px" }}
                     />

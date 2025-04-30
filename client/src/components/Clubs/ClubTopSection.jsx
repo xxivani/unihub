@@ -8,7 +8,7 @@ const ClubTopSection = ({ club }) => {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [userMemberships, setUserMemberships] = useState([]);
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5050/api";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
   const fallbackImage = "https://picsum.photos/200";
 
   

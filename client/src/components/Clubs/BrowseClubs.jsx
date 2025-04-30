@@ -16,7 +16,7 @@ const BrowseClubs = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingClub, setEditingClub] = useState(null);
   const clubsPerPage = 4;
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5050/api";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
   useEffect(() => {
     const loadUserAndMemberships = () => {

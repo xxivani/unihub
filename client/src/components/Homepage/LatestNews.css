@@ -14,7 +14,7 @@
 .latest-news-title {
     font-size: 24px;
     font-weight: bold;
-    color: #FFF;
+    color: #FFF !important;
 }
 
 .latest-news-container {

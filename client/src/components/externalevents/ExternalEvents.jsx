@@ -317,7 +317,7 @@ const ExternalEvents = () => {
 
 	
 	const promptLogin = () => {
-		alert("Please log in to follow or view event details.");
+		alert("Please log in to follow event.");
 		
 	};
 
@@ -779,28 +779,28 @@ const ExternalEvents = () => {
 							</div>
 						</div>
 						<div className="extevent-actions">
-						{followedEvents.includes(Number(event.external_event_id)) ? (
-                <button
-                  className="view-button"
-                  onClick={() => handleUnfollowClick(event.external_event_id)}
-                >
-                  Unfollow
-                </button>
-              ) : (
-                <button
-                  className="view-button"
-                  onClick={() => user ? handleFollowClick(event.external_event_id) : promptLogin()}
-                >
-                  Follow
-                </button>
-              )}
-              <button
-                className="apply-button"
-                onClick={() => user ? handleDetailClick(event.external_event_id) : promptLogin()}
-              >
-                Details
-              </button>
-            </div>
+							{followedEvents.includes(Number(event.external_event_id)) ? (
+								<button
+									className="view-button"
+									onClick={() => user ? handleUnfollowClick(event.external_event_id) : promptLogin()}
+								>
+									Unfollow
+								</button>
+							) : (
+								<button
+									className="view-button"
+									onClick={() => user ? handleFollowClick(event.external_event_id) : promptLogin()}
+								>
+									Follow
+								</button>
+							)}
+							<button
+								className="apply-button"
+								onClick={() => handleDetailClick(event.external_event_id)}
+							>
+								Details
+							</button>
+						</div>
 					</div>
 				))}
 			</div>

@@ -97,7 +97,6 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
 
 const ExternalEvents = () => {
 	const [currentPage, setCurrentPage] = useState(1);
-	const [isFormVisible, setIsFormVisible] = useState(false);
 	const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 	const [user, setUser] = useState(null);
 	const [isEditMode, setIsEditMode] = useState(false);
@@ -107,7 +106,6 @@ const ExternalEvents = () => {
 	const [loading, setLoading] = useState(true);
 	const [refresh, setRefresh] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState('');
-	const [selectedEventId, setSelectedEventId] = useState(null);
 	const [isEventFullModalVisible, setIsEventFullModalVisible] = useState(false);
 	const [isUnfollowModalVisible, setIsUnfollowModalVisible] = useState(false);
 	const [followedEvents, setFollowedEvents] = useState([]);
@@ -302,8 +300,15 @@ const ExternalEvents = () => {
 					image: mainImage ? mainImage.URL : null
 				};
 			});
+
+			// Sort events by date in descending order (newest first)
+			const sortedEvents = updatedEvents.sort((a, b) => {
+				const dateA = new Date(a.external_event_date);
+				const dateB = new Date(b.external_event_date);
+				return dateB - dateA;
+			});
 			
-			setEvents(updatedEvents);
+			setEvents(sortedEvents);
 		} catch (error) {
 			console.error("Error fetching events:", error);
 		} finally {
@@ -364,13 +369,56 @@ const ExternalEvents = () => {
 	  }, [selectedCategory]);
 	  
 
-	const handleFollowClick = (eventId) => {
+	const handleFollowClick = async (eventId) => {
 		if (!user) {
-		  promptLogin();
-		  return;
+			promptLogin();
+			return;
 		}
-		setSelectedEventId(Number(eventId)); 
-		setIsFormVisible(true);
+
+		const numericEventId = Number(eventId);
+
+		try {
+			const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+			const response = await fetch(`${apiUrl}/external-events/${numericEventId}/signup`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					userId: user.id,
+					eventId: numericEventId,
+					name: user.name,
+					studentId: user.studentId,
+					year: user.year,
+					email: user.email
+				}),
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				if (response.status === 400 && errorData.error === 'Event is full') {
+					setIsEventFullModalVisible(true);
+					return;
+				}
+				throw new Error(`Failed to follow: ${errorData.error || 'Unknown error'}`);
+			}
+
+			const updatedEvent = await response.json();
+			setEvents(prevEvents =>
+				prevEvents.map(event =>
+					event.external_event_id === numericEventId
+						? { ...event, external_event_number_of_attendees: updatedEvent.external_event_number_of_attendees }
+						: event
+				)
+			);
+			setFollowedEvents(prev => {
+				const updated = [...prev, numericEventId];
+				localStorage.setItem(`followedEvents_${user.id}`, JSON.stringify(updated));
+				return updated;
+			});
+			setIsSuccessModalVisible(true);
+		} catch (error) {
+			console.error('Error following event:', error);
+			alert(`Failed to follow: ${error.message}`);
+		}
 	};
 
 	const handleUnfollowClick = async (eventId) => {
@@ -810,50 +858,13 @@ const ExternalEvents = () => {
 				onPageChange={(page) => setCurrentPage(page)}
 			/>
 
-			{/* Sign-Up Form */}
-			{isFormVisible && (
-				<div className="event-form-overlay">
-					<div className="event-form-container">
-						<button
-							className="close-form-button"
-							onClick={handleCloseForm}
-							aria-label="Close form"
-						>
-							<FaTimes />
-						</button>
-						<h3>Sign Up to Follow Event</h3>
-						<form className="event-signup-form" onSubmit={handleFormSubmit}>
-							<div className="event-form-group">
-								<label htmlFor="name">Name</label>
-								<input type="text" id="name" name="name" required />
-							</div>
-							<div className="event-form-group">
-								<label htmlFor="studentId">Student ID</label>
-								<input type="text" id="studentId" name="studentId" required />
-							</div>
-							<div className="event-form-group">
-								<label htmlFor="year">Year of Study</label>
-								<input type="text" id="year" name="year" required />
-							</div>
-							<div className="event-form-group">
-								<label htmlFor="email">Email</label>
-								<input type="email" id="email" name="email" required />
-							</div>
-							<div className="event-form-actions">
-								<button type="submit" className="event-submit-button">Submit</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			)}
-
 			{/* Success Modal */}
 			{isSuccessModalVisible && (
 				<div className="event-form-overlay">
 					<div className="success-modal">
 						<button
 							className="close-form-button"
-							onClick={handleCloseSuccessModal}
+							onClick={() => setIsSuccessModalVisible(false)}
 							aria-label="Close modal"
 						>
 							<FaTimes />
@@ -865,7 +876,7 @@ const ExternalEvents = () => {
 						</p>
 						<button
 							className="return-button"
-							onClick={handleCloseSuccessModal}
+							onClick={() => setIsSuccessModalVisible(false)}
 						>
 							Return to Event List
 						</button>

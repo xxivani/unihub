@@ -5,6 +5,11 @@ const bcrypt = require('bcrypt');
 module.exports = (sequelize, DataTypes) => {
   class Event extends Model {
     static associate(models) {
+      //new
+      Event.hasOne(models.BTevent, {
+        foreignKey: 'general_event_id',
+        as: 'budgetEvent'
+      });
     }
   }
 
@@ -46,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     deadline: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       allowNull: true
     },
     capacity: {

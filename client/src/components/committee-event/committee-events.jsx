@@ -155,6 +155,7 @@ const E4CommitteeEvents = () =>{
         setCurrentPage(pageNumber);
         searchParams.set('page', pageNumber);
         setSearchParams(searchParams);
+        window.scrollTo({ top: 0, behavior: 'instant' });
       };
       const handleFollowClick = async (eventId) => {
         try {
@@ -245,15 +246,40 @@ const E4CommitteeEvents = () =>{
           alert("Time format incorrect.\nFormat: HH:MM - HH:MM");
           return;
         }
+        let deadline;
+        const current = new Date();
+        const today = current.toDateString();
+        const selectedDate = new Date(currentEditEvent.date);
+        const [startTIme] = currentEditEvent.time.split("-");
+        const [hours, minutes] = startTIme.split(":").map(Number);
+        selectedDate.setHours(hours);
+        selectedDate.setMinutes(minutes);
+        selectedDate.setSeconds(0);
+        selectedDate.setMilliseconds(0);
+        const timeDifference = Math.floor((selectedDate - current) / (1000 * 60 * 60 * 24));
+        if (selectedDate.toDateString() === today) {
+          selectedDate.setHours(selectedDate.getHours() - 1);
+          deadline = selectedDate.toISOString();
+        } else if (timeDifference == 1) {
+          selectedDate.setHours(selectedDate.getHours() - 5);
+          deadline = selectedDate.toISOString();
+        } else {
+          selectedDate.setDate(selectedDate.getDate() - 1);
+          deadline = selectedDate.toISOString();
+        };
+        const updatedEvent = {
+          ...currentEditEvent,
+          deadline: deadline
+        };
         const response = await fetch(`${apiUrl}/events/${currentEditEvent.id}`, {
           method: 'PUT',
           headers: {
               'Content-Type': 'application/json',
           },
-          body: JSON.stringify(currentEditEvent),
+          body: JSON.stringify(updatedEvent),
       });
         const updatedEvents = events.map(event => 
-            event.id === currentEditEvent.id ? currentEditEvent : event
+            event.id === updatedEvent.id ? updatedEvent : event
           );
           setEvents(updatedEvents);
           localStorage.setItem('eventsList', JSON.stringify(updatedEvents));
@@ -354,7 +380,7 @@ const E4CommitteeEvents = () =>{
       }, [selectedClubs, search, currentPage]);
         if (loading) return <h3 style={{
           position: "absolute",
-          top: "35%",
+          top: "20%",
           left: "38vw",
           margin: 0,
         }}>Loading events...</h3>;
@@ -458,7 +484,7 @@ const E4CommitteeEvents = () =>{
               <div className="e4c-browse-events-list">
               {filteredEvents.slice((0 + (currentPage - 1) * 5), (5 + (currentPage - 1) * 5)).map(event => (
                   <div className="e4c-events-list" key={event.id}><div className="e4c-event-format">
-                      <div className="e4c-event-image"><canvas id="canvas" ref={(el) => canvasRefs.current[event.id * 10] = el} onClick={() => window.location.href=`/event-details?eventid=${event.id}`}/>
+                      <div className="e4c-event-image"><canvas ref={(el) => canvasRefs.current[event.id * 10] = el} onClick={() => window.location.href=`/event-details?eventid=${event.id}`}/>
                       {isEditMode && (
                         <>
                           <button 
@@ -496,10 +522,10 @@ const E4CommitteeEvents = () =>{
               ))}
               </div>
               {totalPages == 0 && <h3 style={{
-                  position: "absolute",
-                  top: "-10%",
-                  left: "36vw",
-                  margin: 0,
+                  position: "relative",
+                  width: "100%",
+                  textAlign: "center",
+                  margin: "2px",
                 }}>404: No matching events found...</h3>}
               {/*edit*/}
               {isEditFormVisible && currentEditEvent && (
@@ -521,9 +547,10 @@ const E4CommitteeEvents = () =>{
                                   type="text"
                                   id="edit-title"
                                   value={currentEditEvent.title}
-                                  onChange={(e) => applyChange('title', e.target.value)}
+                                  /*onChange={(e) => applyChange('title', e.target.value)}*/
                                   maxLength="100"
                                   required
+                                  disabled
                                 />
                                 <small>{currentEditEvent.title.length} / 100</small>
                               </div>

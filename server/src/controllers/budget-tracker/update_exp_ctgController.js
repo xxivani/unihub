@@ -40,8 +40,8 @@ const updateCategoryExpenses = async (req, res) => {
         const newAmount = parseFloat(amount);
         
         // Add validation for minimum amount
-        if (newAmount < 0.01) {
-          console.warn(`Skipping category ${categoryName} - amount ${newAmount} is less than minimum allowed (0.01)`);
+        if (newAmount < 0) {
+          console.warn(`Skipping category ${categoryName} - amount ${newAmount} is less than minimum allowed (0)`);
           continue;
         }
         
@@ -173,8 +173,8 @@ const updateMonthlyExpenses = async (req, res) => {
     const newAmount = parseFloat(amount);
     
     // Validate minimum amount
-    if (newAmount < 0.01 && newAmount !== 0) {
-      return res.status(400).json({ message: 'Amount must be at least 0.01 or exactly 0' });
+    if (newAmount < 0 && newAmount !== 0) {
+      return res.status(400).json({ message: 'Amount must be at least 0 or exactly 0' });
     }
     
     // Begin a transaction

@@ -10,7 +10,7 @@ const E4EventCreate = () => {
   const [budgetCategories, setBudgetCategories] = useState({
     catering: false,
     materials: false,
-    price: false,
+    prize: false,
     transportation: false,
     venue: false
   });
@@ -105,7 +105,6 @@ const E4EventCreate = () => {
             image6: image.find(img => img.position == 7)?.URL || "",
             image7: image.find(img => img.position == 8)?.URL || "",
           });
-
         } catch (error) {
           console.error("Error fetching images:", error);
         }
@@ -115,16 +114,29 @@ const E4EventCreate = () => {
         formData.append("time", eventData.eventTime);
         formData.append("club", eventData.eventClub);
         formData.append("date", eventData.eventDate);
+        //Deadline
         let deadline;
-        const today = new Date().toDateString();
+        const current = new Date();
+        const today = current.toDateString();
         const selectedDate = new Date(eventData.eventDate);
-
+        const [startTIme] = eventData.eventTime.split("-");
+        const [hours, minutes] = startTIme.split(":").map(Number);
+        selectedDate.setHours(hours);
+        selectedDate.setMinutes(minutes);
+        selectedDate.setSeconds(0);
+        selectedDate.setMilliseconds(0);
+        const timeDifference = Math.floor((selectedDate - current) / (1000 * 60 * 60 * 24));
         if (selectedDate.toDateString() === today) {
+          selectedDate.setHours(selectedDate.getHours() - 1);
+          deadline = selectedDate.toISOString();
+        } else if (timeDifference == 1) {
+          selectedDate.setHours(selectedDate.getHours() - 5);
           deadline = selectedDate.toISOString();
         } else {
           selectedDate.setDate(selectedDate.getDate() - 1);
           deadline = selectedDate.toISOString();
         };
+        //Deadline
         formData.append("deadline", deadline);
         formData.append("capacity", eventData.eventCapacity);
         formData.append("followed", 0);
@@ -134,15 +146,15 @@ const E4EventCreate = () => {
         formData.append("budget", JSON.stringify({
           catering: budgetCategories.catering,
           materials: budgetCategories.materials,
-          price: budgetCategories.price,
+          prize: budgetCategories.prize,
           transportation: budgetCategories.transportation,
           venue: budgetCategories.venue
         }));
         formData.append("team", JSON.stringify([
-            {role: "organizer", name: eventData.eventOrganizer || ""},
-            {role: "coOrganizer", name: eventData.eventCoOrganizer || ""},
-            {role: "manager", name: eventData.eventManager || ""},
-            {role: "speaker", name: eventData.eventSpeaker || ""}
+            {role: "Organizer", name: eventData.eventOrganizer || ""},
+            {role: "Co-organizer", name: eventData.eventCoOrganizer || ""},
+            {role: "Manager", name: eventData.eventManager || ""},
+            {role: "Speaker", name: eventData.eventSpeaker || ""}
         ]));
         formData.append("follower", JSON.stringify([]));
         const response = await fetch(`${apiUrl}/events`, {
@@ -156,6 +168,7 @@ const E4EventCreate = () => {
         navigate("/committee/events");
       } catch (error) {
         alert("Wrong format in some fields.");
+        console.error("Format error:", error);
     }
   };
   const fetchData = async () => {
@@ -345,11 +358,11 @@ const E4EventCreate = () => {
                   <div className="e4-checkbox-item">
                     <input
                       type="checkbox"
-                      id="budgetCategoriesPrice"
-                      checked={budgetCategories.price}
-                      onChange={handleBudgetCategoryChange('price')}
+                      id="budgetCategoriesPrize"
+                      checked={budgetCategories.prize}
+                      onChange={handleBudgetCategoryChange('prize')}
                     />
-                    <label htmlFor="e4-eventBudgetPrice">Price</label>
+                    <label htmlFor="e4-eventBudgetPrize">Prize</label>
                   </div>
                   
                   <div className="e4-checkbox-item">

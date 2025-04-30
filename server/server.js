@@ -92,6 +92,8 @@ app.use('/image-management', imageRoutes);
 
 const clubRoutes = require('./src/routes/clubs');
 app.use('/api/clubs', clubRoutes); 
+app.use('/clubs', clubRoutes); 
+
 
 const budgetRoutes = require('./src/routes/budgetRoute');
 app.use('/api/budgetRoute', budgetRoutes);

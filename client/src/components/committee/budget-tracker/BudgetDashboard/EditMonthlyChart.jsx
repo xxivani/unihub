@@ -195,7 +195,7 @@ function EditMonthlyChart({ chartData1, chartData2, onUpdateChartData }) {
                 placeholder="Enter amount"
                 value={selectedMonth.amount}
                 onChange={handleAmountChange}
-                min="0.01"
+                min="0"
                 step="0.01"
                 style={{ width: "100%" }}
               />

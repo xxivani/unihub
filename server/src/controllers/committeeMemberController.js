@@ -85,10 +85,32 @@ const getCommitteeMemberByUserId = async (req, res) => {
       res.status(500).json({ error: error.message });
     }
 };
+
+// Get committee members by club ID
+const getCommitteeMembersByClubId = async (req, res) => {
+  try {
+    const { clubId } = req.params;
+    
+    if (!clubId) {
+      return res.status(400).json({ message: 'Club ID is required' });
+    }
+    
+    const members = await CommitteeMember.findAll({
+      where: { club_id: clubId },
+      include: [{ model: CommitteeMemberPermission, as: 'permissions' }]
+    });
+    
+    res.status(200).json(members);
+  } catch (error) {
+    console.error('Error fetching committee members by club ID:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
   
 module.exports = {
   createCommitteeMember,
   getAllCommitteeMembers,
   deleteCommitteeMember,
-  getCommitteeMemberByUserId
+  getCommitteeMemberByUserId,
+  getCommitteeMembersByClubId
 };

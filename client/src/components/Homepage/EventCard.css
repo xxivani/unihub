@@ -26,6 +26,7 @@
 }
 
 .events-card-group {
+  width: 100%;
   display: flex;
   gap: 40px;
   justify-content: center;
@@ -35,7 +36,8 @@
 .event-card {
   border: none !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease-in-out;
+  background-color: var(--e4-search) !important;
+  transition: transform 0.3s ease-in-out, background-color 0.4s ease;
   max-width: 370px;
   width: 100%;
   margin-bottom: 20px;
@@ -48,18 +50,28 @@
 .event-img {
   height: 200px;
   object-fit: cover;
+  overflow: hidden;
 }
 
 .event-title-link {
   text-decoration: none;
   font-weight: bold;
-  color: #333;
+  color: var(--e4-button)/*#333*/;
   font-size: 1.2rem;
   text-align: left;
+  transition: color 0.4s ease;
 }
 
 .event-title-link:hover {
   color: #e0b000;
+}
+
+.e4-card-icon {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 1.2rem;
+  color: var(--e4-more) !important;
+  transition: color 0.4s ease;
 }
 
 .event-details {
@@ -72,14 +84,17 @@
   align-items: center;
   gap: 10px;
   font-size: 0.9rem;
-  color: #555;
+  background-color: var(--e4-search) !important;
+  color: var(--e4-more) !important/*#555*/;
   border: none !important;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 .event-description {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--e4-less) !important/*#666*/;
   padding: 0 15px 15px;
+  transition: color 0.4s ease;
 }
 
 .view-all-events-button {
@@ -90,7 +105,7 @@
   font-weight: bold;
   margin-top: 60px;
   text-decoration: none;
-  transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 

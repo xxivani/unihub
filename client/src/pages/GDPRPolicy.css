@@ -1,7 +1,7 @@
-
+/* ✅ GDPR Policy Styling */
 .gdpr-container {
     max-width: 800px;
-    margin: 80px auto 40px; 
+    margin: 80px auto 40px; /* 🔥 Adds top margin to push content below navbar */
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;

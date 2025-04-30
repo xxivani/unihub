@@ -7,6 +7,8 @@
   --e4-button-active: rgb(50, 50, 50);
   --e4-gold: rgb(130, 100, 50);
   --e4-filter: rgb(200, 200, 200);
+  --e4-less: rgb(100, 100, 100);
+  --e4-more: rgb(80, 80, 80);
 }
 
 [data-theme="dark"] {
@@ -17,15 +19,17 @@
   --e4-button-hover: rgb(240, 240, 240);
   --e4-button-active: rgb(220, 220, 220);
   --e4-gold: rgb(180, 150, 100);
-  --e4-filter: rgb(80, 80, 80)
+  --e4-filter: rgb(80, 80, 80);
+  --e4-less: rgb(150, 150, 150);
+  --e4-more: rgb(180, 180, 180);
 }
 
 /*Main container of the top scetion*/
 .e4c-top-container {
     min-width: 1300px;
-    height: 20vh;
+    /*height: 20vh;*/
     min-height: 180px;
-    max-height: 400px;
+    max-height: 600px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -505,8 +509,8 @@
 
 .e4c-edit-event-form-container {
   position: fixed;
-  top: 10%;
-  left: 30%;
+  /*top: 10%;
+  left: 30%;*/
   background-color: var(--e4-search)/*white*/;
   transition: background-color 0.4s ease;
   padding: 30px;
@@ -514,6 +518,7 @@
   box-shadow: 2px 2px rgba(0, 0, 0, 0.2);
   width: 40%;
   height: 80%;
+  margin-top: 5%;
   justify-content: center;
   align-items: center;
   overflow-y: auto;
@@ -701,7 +706,7 @@
 }
 
 .e4c-event-follow-button {
-  background-color: rgb(230, 214, 156);
+  background-color: rgb(222, 197, 133)/*rgb(230, 214, 156)*/;
   border-radius: 5px;
   border: 5px solid rgba(0, 0, 0, 0);
   color: black;
@@ -719,30 +724,17 @@
 }
 
 .e4c-event-follow-button:hover {
-  background-color: rgb(240, 224, 166);
+  background-color: rgb(232, 207, 143)/*rgb(240, 224, 166)*/;
 }
 
 .e4c-event-follow-button:hover:active {
-  background-color: rgb(235, 219, 161);
+  background-color: rgb(227, 202, 138)/*rgb(235, 219, 161)*/;
   box-shadow: 2px 0px rgba(0, 0, 0, 0.2);
   margin-top: 2px;
   margin-bottom: -2px;
 }
 
 /*Sign up Form*/
-
-.e4c-event-form-overlay { 
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
 
 .e4c-event-form-container {
   display: flex;
@@ -1002,7 +994,6 @@
   cursor: not-allowed;
 }
 
-
 @media only screen and (min-width: 2300px) and (max-width: 2310px) and (min-height: 650px) and (max-height: 700px) {
   .e4c-event-image {
     border: 5px solid #13eda8;
@@ -1039,4 +1030,170 @@
   .e4c-event-pagination-number.active {
     background-color: #13eda8;
   }
+}
+
+  /* Mobile Responsiveness */
+  @media screen and (max-width: 768px) {
+    .e4c-top-container {
+        min-width: 200px;
+        width: 100vw;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 10px;
+        margin-top: 80px;
+    }
+
+    .e4c-top-title {
+        min-width: 200px;
+        width: 100%;
+        justify-content: center;
+        margin-left: 2rem;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .e4c-search-container {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .e4c-top-search {
+        min-width: 80px;
+        width: 45vw;
+        justify-content: center;
+        align-items: center;
+        max-width: none;
+    }
+
+    .e4c-top-button {
+        justify-content: space-between;
+    }
+
+    .e4c-top-create-button, .e4c-top-edit-button {
+      margin-left: 0;
+      justify-content: right;
+    }
+
+    .e4c-browse-events {
+        min-width: 200px;
+        width: 90vw;
+        max-height: none;
+        margin: 5vw;
+    }
+
+    .e4c-browse-events-list {
+        min-width: 200px;
+        width: 90vw;
+        max-height: none;
+        padding: 3vw;
+    }
+
+    .e4c-events-list {
+        min-width: 200px;
+        width: 90vw;
+        max-height: none;
+    }
+
+    .e4c-event-format {
+        min-width: none;
+        width: 100%;
+        flex-direction: column;
+        max-height: none;
+    }
+
+    .e4c-event-image {
+        width: 100%;
+        height: 200px;
+    }
+
+    .e4c-event-image canvas {
+        width: 100% !important;
+        height: 200px;
+    }
+
+    .e4c-event-info-container {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .e4c-event-button-container {
+        width: 100%;
+        margin: 0.5rem 0;
+        justify-content: center;
+        align-items: stretch;
+    }
+
+    .e4c-event-up-down-container {
+        width: 100%;
+        margin-left: 0px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+
+    .e4c-event-follow-button, .e4c-event-detail-button {
+        width: 100%;
+    }
+
+    .e4c-event-time {
+        font-size: 0.9rem;
+    }
+
+    .e4c-event-title {
+        font-size: 1.1rem;
+    }
+
+    .e4c-event-description {
+        font-size: 0.9rem;
+  }
+
+    .e4c-edit-event-form-container {
+        position: relative;
+        width: 95vw;
+        padding: 15px;
+
+    }
+
+    .e4c-edit-form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .e4c-edit-form-group {
+        width: 100%;
+    }
+
+    .e4c-edit-form-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .e4c-event-pagination {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .e4c-event-pagination-number {
+        padding: 0.5rem;
+    }
+
+    .e4c-event-pagination-arrow {
+        padding: 0.5rem;
+    }
+
+    .e4c-delete-button, .e4c-edit-button, .e4c-image-button {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0.75rem;
+        margin-top: 0;
+        font-size: 0.9rem;
+    }
+
+    .e4c-edit-button.active {
+        background-color: #dc3545;
+        color: white;
+    }
 }

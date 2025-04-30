@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         isDecimal: true,
-        min: 0.01,
+        min: 0,
         notNull: true
       }
     },

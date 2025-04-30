@@ -3,6 +3,7 @@ import { FiArrowRight } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { Bar, Doughnut } from "react-chartjs-2";
 import { useEffect, useState } from "react";
+import { Spin } from "antd";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -18,10 +19,17 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tool
 
 const ClubStatistics = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [statsData, setStatsData] = useState(null);
 
+  // Theme handling
   const getInitialTheme = () => document.body.getAttribute("data-theme") || "light";
   const [theme, setTheme] = useState(getInitialTheme());
   const isDarkTheme = theme === "dark";
+
+  // API URL
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -33,19 +41,54 @@ const ClubStatistics = () => {
     return () => observer.disconnect();
   }, []);
 
-  const data1 = {
-    labels: ["Sep", "Oct", "Nov"],
+  // Fetch club budget statistics
+  useEffect(() => {
+    const fetchClubStats = async () => {
+      try {
+        setLoading(true);
+        
+        // Get club ID from session storage or URL
+        const queryParams = new URLSearchParams(window.location.search);
+        const urlClubId = queryParams.get('club_id');
+        const storedClubId = sessionStorage.getItem("selectedClubId");
+        const clubId = urlClubId || storedClubId || "1"; // Default to club 1 if none found
+        
+        // Make API request
+        const response = await fetch(`${apiUrl}/club-stats/budget?club_id=${clubId}`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch club stats: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setStatsData(data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching club statistics:", err);
+        setError("Failed to load club statistics");
+        // Don't set fallback data here as we'll handle it in the render
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchClubStats();
+  }, [apiUrl]);
+
+  // Prepare chart data
+  const barChartData = {
+    labels: statsData?.recentExpenses?.labels || ["Sep", "Oct", "Nov"],
     datasets: [
       {
         label: "Amount Spent (AED)",
-        data: [1200, 1900, 800],
+        data: statsData?.recentExpenses?.data ,
         backgroundColor: "#0D2535",
         borderRadius: 10,
       },
     ],
   };
 
-  const options1 = {
+  const barChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -73,12 +116,17 @@ const ClubStatistics = () => {
     },
   };
 
-  const data2 = {
-    labels: ["Total Budget", "Remaining Budget"],
+  // Prepare doughnut chart data
+  const totalBudget = statsData?.budgetSummary?.totalBudget ;
+  const totalSpent = statsData?.budgetSummary?.totalSpent ;
+  const remaining = statsData?.budgetSummary?.remaining ;
+
+  const doughnutChartData = {
+    labels: ["Remaining Budget", "Total Budget" ],
     datasets: [
       {
-        label: "Amount Spent",
-        data: [2500, 1400],
+        label: "Amount",
+        data: [totalSpent, remaining],
         backgroundColor: ["#0f2b3e", "#67869c"], // original colors
         borderColor: ["#0f2b3e"],
         borderWidth: 1,
@@ -86,7 +134,7 @@ const ClubStatistics = () => {
     ],
   };
 
-  const options2 = {
+  const doughnutChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     cutout: "65%",
@@ -101,6 +149,19 @@ const ClubStatistics = () => {
     },
   };
 
+  if (loading) {
+    return (
+      <div className="entity6-cs">
+        <div className="entity6-cs-header">
+          <h3>Club Statistics</h3>
+        </div>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "250px" }}>
+          <Spin tip="Loading statistics..." />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="entity6-cs">
       <div className="entity6-cs-header">
@@ -112,12 +173,12 @@ const ClubStatistics = () => {
       <h5>Engagement over the last 3 months</h5>
       <div className="charts-container">
         <div className="bar-chart">
-          <Bar key={theme + "-bar"} data={data1} options={options1} />
+          <Bar key={theme + "-bar"} data={barChartData} options={barChartOptions} />
         </div>
         <div className="doughnut-chart">
-          <Doughnut key={theme + "-doughnut"} data={data2} options={options2} />
+          <Doughnut key={theme + "-doughnut"} data={doughnutChartData} options={doughnutChartOptions} />
           <div className="entity6-doughnut-chart-label">
-            <p>1100</p>
+            <p>{totalSpent.toLocaleString()}</p>
             <span>Budget Spent</span>
           </div>
         </div>

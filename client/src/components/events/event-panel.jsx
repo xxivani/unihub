@@ -20,32 +20,9 @@ function E4EventPanel() {
   const [hovered, setHovered] = useState(false);
   const [hovered2, setHovered2] = useState(false);
   const [hovered3, setHovered3] = useState(false);
-  const [currentImage, setCurrentImage] = useState(1);
-  const canvasRefs = useRef([]);
-  const renderImage = (eventIndex, col) => {
-    let canvas = null;
-    const event = eventData;
-    canvas = canvasRefs.current[eventID * 10 + col];
-
-    if (!canvas || !event.image[`image${col}`]) return;
-    const canvasCtx = canvas?.getContext("2d");
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = `${apiUrl}${event.image[`image${col}`]}`;
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      canvasCtx.filter = `
-        brightness(${event.image[`imageBr${col}`]}%) 
-        saturate(${event.image[`imageSa${col}`]}%) 
-        blur(${event.image[`imageBl${col}`]}px) 
-        invert(${event.image[`imageIn${col}`]}%)`;
-      canvasCtx.drawImage(img, 0, 0);
-    };
-  };
   const [eventData, setEventData] = useState({
     title: "Plant and Animal Social",
-    image: {"image0": "/assets/images/logo-paws.jpeg", "image1": "/assets/images/picnic.webp"},
+    image: {"imageA": "/assets/images/logo-paws.jpeg", "imageB": "/assets/images/picnic.webp"},
     description: "Join our Student Rep Social Event to connect, share ideas, and collaborate on making student life better. A great chance to meet reps and engage in meaningful discussions!",
     club: "Nature & Ecosystem Society",
     location: "Second floor quiet room",
@@ -62,6 +39,40 @@ function E4EventPanel() {
       { role: "Speaker", name: "Kanye Goodman" }
     ]
   });
+  const [currentImage, setCurrentImage] = useState(1);
+  const canvasRefs = useRef([]);
+  const renderImage = (eventIndex, col) => {
+    let canvas = null;
+    const event = eventData;
+    canvas = canvasRefs.current[eventID * 10 + col];
+    if (!canvas) return;
+          /*console.error("Image at: (" + eventIndex + ", " + col + ") does not exist.")*/
+    if (!event.image[`image${col}`] || event.image[`image${col}`] == "") {
+      const canvasCtx = canvas?.getContext("2d");
+      const img = new Image();
+      img.src = "/assets/images/event_template.png";
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvasCtx.drawImage(img, 0, 0);
+      }
+      return;
+    }
+    const canvasCtx = canvas?.getContext("2d");
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = `${apiUrl}${event.image[`image${col}`]}`;
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvasCtx.filter = `
+        brightness(${event.image[`imageBr${col}`]}%) 
+        saturate(${event.image[`imageSa${col}`]}%) 
+        blur(${event.image[`imageBl${col}`]}px) 
+        invert(${event.image[`imageIn${col}`]}%)`;
+      canvasCtx.drawImage(img, 0, 0);
+    };
+  };
   const handleImage = (direction) => {
     const total = 7;
     let nextImage = currentImage;
@@ -117,7 +128,7 @@ function E4EventPanel() {
     try {
       const response = await fetch(`${apiUrl}/events/${eventID}`);
       const data = await response.json();
-      setEventData(JSON.parse(JSON.stringify(data, null, 2)));
+      setEventData(data);
       const user = JSON.parse(sessionStorage.getItem("user"));
       setUser(user);
       const followed = data.follower?.some(follower => Number(follower.id) === Number(user?.id)) ? [data.id] : [];
@@ -153,9 +164,7 @@ function E4EventPanel() {
   useEffect(() => {
     if (!loading) {
       for (let col = 0; col <= 7; col++) {
-        if (eventData.image[`image${col}`]) {
-          renderImage(eventID, col);
-        }
+        renderImage(eventID, col);
       }
     }
   }, [loading, eventData, currentImage]);
@@ -234,7 +243,7 @@ function E4EventPanel() {
             )}
       <div className="e4d-back-button" onClick={() => navigate(-1)}>Back</div>
       <div className="e4d-top-container1">
-        <canvas id="canvas" className="e4d-top-image" ref={(el) => canvasRefs.current[Number(eventID) * 10] = el}/>
+        <canvas id="canvas" className="e4d-top-image" ref={(el) => canvasRefs.current[eventID * 10] = el}/>
         <h1 className="e4d-top-title1">{eventData.title}</h1>
             <div className="e4d-top-buttons-container">
                 <button className="e4d-follow-button" onClick={() => user ? handleFollowClick(Number(eventID)) : window.location.href=`/auth`}>{followed.includes(Number(eventID)) ? "Unfollow" : "Follow"}</button>
@@ -247,7 +256,7 @@ function E4EventPanel() {
                     className="e4d-description-panel" style={{transform: hovered ? "scale(1.005)" : "scale(1)", transition: "transform 0.2s ease, background-color 0.4s ease, color 0.4s ease"}}>
               <div className="e4d-description-image">
                 <button onClick={() => handleImage(false)} className="e4d-arrow"><FaChevronLeft/></button>
-                <canvas id="canvas" className="e4d-event-description-image" ref={(el) => canvasRefs.current[Number(eventID) * 10 + currentImage] = el}/>
+                <canvas className="e4d-event-description-image" ref={(el) => canvasRefs.current[eventID * 10 + currentImage] = el}/>
                 <button onClick={() => handleImage(true)} className="e4d-arrow"><FaChevronRight/></button>
                 {/*<img
                   src={eventData.image.prev}

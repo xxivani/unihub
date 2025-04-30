@@ -280,16 +280,17 @@
     margin-right: 10px;
     position: relative;
     object-fit: cover;
+    overflow: hidden;
     transition: margin-right 0.2s ease;
   }
 
   .e4-event-image canvas {
-    width: 100% !important;
-    max-width: calc(120px + var(--base-font-size) * 6) !important;
-    height: 100% !important;
-    max-height: calc(120px + var(--base-font-size) * 6) !important;
-    overflow: hidden !important;
+    width: 100%;
+    max-width: calc(220px + var(--base-font-size) * 10);
+    height: 100%;
+    max-height: calc(220px + var(--base-font-size) * 10);
     object-fit: cover !important;
+    overflow: hidden !important;
   }
 
   .e4-event-image:hover {
@@ -775,7 +776,12 @@
     .e4-event-image {
         width: 100%;
         height: 200px;
+        margin-right: 0px;
     }
+
+    .e4-event-image:hover {
+      margin-right: 0px;
+  }
 
     .e4-event-image canvas {
         width: 100% !important;

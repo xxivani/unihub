@@ -1,6 +1,6 @@
 .e4d-main-detail-container {
-  width: 100%;
-  min-width: 1300px;
+  width: 95vw;
+  min-width: 1000px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -20,7 +20,7 @@
   max-width: 2500px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   text-align: center;
   padding: 3vh 5vw 3vh 5vw;
   flex-direction: row;
@@ -44,7 +44,8 @@ margin-right: 3vw;
 width: 45%;
 min-width: 300px;
 height: 100%;
-padding-top: 8vh;
+align-items: center;
+display: flex;
 text-align: left;
 border: 5px solid rgba(0, 0, 0, 0);
 color: rgb(30, 30, 30);
@@ -177,19 +178,21 @@ overflow: hidden;
 .e4d-main-container {
   min-width: 700px;
   width: 100%;
+  max-width: 2400px;
   display: flex;
   grid-template-columns: 1fr;
-  gap: 5vw;
+  gap: 3rem;
   margin: 2vh 2vw 2vh 2vw;
-  padding: 3vh 5vw 3vh 5vw;
+  padding: 3vh 2vw;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
+  box-sizing: border-box; 
 }
 
 /*Main description panel*/
 .e4d-description-panel {
-  width: 50%;
-  min-width: 600px;
+  width: 45%;
+  min-width: 500px;
   height: 100%;
   background-color: var(--card-bg)/*#f4f4f4*/;
   border-radius: 10px;

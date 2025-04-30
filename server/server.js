@@ -118,6 +118,12 @@ app.use('/club-contacts', clubContactRoutes);
 const clubMembershipRoutes = require('./src/routes/clubMembership');
 app.use('/api/club-memberships', clubMembershipRoutes);
 
+const clubStatisticsRoutes = require('./src/routes/clubStatisticsRoute');
+app.use('/api/club-stats', clubStatisticsRoutes);
+app.use('/club-stats', clubStatisticsRoutes);
+
+
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

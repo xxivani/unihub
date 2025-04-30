@@ -37,7 +37,7 @@ const MonthlyExpensesChart = ({ data }) => {
     datasets: [
       {
         label: "Amount Spent (AED)",
-        data: [1200, 1900, 800, 1500],
+        // data: [1200, 1900, 800, 1500],
         // backgroundColor: "#000",
         backgroundColor: getBarColor(),
         // borderColor: isDarkTheme ? "white" : "white",
@@ -47,11 +47,11 @@ const MonthlyExpensesChart = ({ data }) => {
   };
   
   const defaultData2 = {
-    labels: ["Jan", "Feb", "March", "April"],
+    labels: ["Jan", "Feb", "March", "April", "May", "June"],
     datasets: [
       {
         label: "Amount Spent (AED)",
-        data: [1400, 1800, 1000, 1200],
+        // data: [1400, 1800, 1000, 1200],
         // backgroundColor: "#000",
         backgroundColor: getBarColor(),
         borderRadius: 10,

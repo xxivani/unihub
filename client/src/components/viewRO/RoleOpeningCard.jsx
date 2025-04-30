@@ -12,6 +12,7 @@ const RoleOpeningCard = ({ role, index }) => {
     const [showLoginError, setShowLoginError] = useState(false);
 
     useEffect(() => {
+        console.log("Role object:", role);
         const storedUser = sessionStorage.getItem("user");
         if (storedUser) {
             // setUser(JSON.parse(storedUser));
@@ -44,7 +45,7 @@ const RoleOpeningCard = ({ role, index }) => {
                     <p><strong>Deadline:</strong> {role.deadline}</p>
                 </div>
                 <div className="entity6-card-buttons">
-                    <Link to="/club-details" className="entity6-view-button">
+                    <Link to={`/club-details/${role.club_id}`} className="entity6-view-button">
                         View {role.title.split("for")[1]?.trim() || "Club"}
                     </Link>
 

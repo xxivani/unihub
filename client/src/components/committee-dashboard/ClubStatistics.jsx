@@ -1,9 +1,8 @@
 import "./ClubStatistics.css";
 import { FiArrowRight } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Bar, Doughnut } from "react-chartjs-2";
-import { useEffect, useState } from "react";
-import { Spin } from "antd";
+import { useEffect, useState, useCallback } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -19,9 +18,13 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tool
 
 const ClubStatistics = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [statsData, setStatsData] = useState(null);
+  const [selectedClubId, setSelectedClubId] = useState(null);
+  
+
 
   // Theme handling
   const getInitialTheme = () => document.body.getAttribute("data-theme") || "light";
@@ -31,6 +34,7 @@ const ClubStatistics = () => {
   // API URL
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+  // Track theme changes
   useEffect(() => {
     const observer = new MutationObserver(() => {
       const newTheme = document.body.getAttribute("data-theme");
@@ -41,39 +45,75 @@ const ClubStatistics = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Fetch club budget statistics
+  // Get the current club ID from URL or sessionStorage
+  const getCurrentClubId = useCallback(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const urlClubId = queryParams.get('club_id');
+    const storedClubId = sessionStorage.getItem("selectedClubId");
+    return urlClubId || storedClubId || "1"; // Default to club 1 if none found
+  }, [location.search]);
+
+  // Listen for changes to selectedClubId in storage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newClubId = sessionStorage.getItem("selectedClubId");
+      if (newClubId && newClubId !== selectedClubId) {
+        setSelectedClubId(newClubId);
+      }
+    };
+
+    // Listen for storage events
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also check for changes every 1 second (as a fallback)
+    const intervalId = setInterval(() => {
+      const currentClubId = getCurrentClubId();
+      if (currentClubId !== selectedClubId) {
+        setSelectedClubId(currentClubId);
+      }
+    }, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(intervalId);
+    };
+  }, [getCurrentClubId, selectedClubId]);
+
+  // Set initial club ID and listen for URL changes
+  useEffect(() => {
+    const clubId = getCurrentClubId();
+    setSelectedClubId(clubId);
+  }, [getCurrentClubId, location.search]);
+
+  // Fetch club budget statistics when selectedClubId changes
   useEffect(() => {
     const fetchClubStats = async () => {
+      if (!selectedClubId) return;
+
       try {
         setLoading(true);
-        
-        // Get club ID from session storage or URL
-        const queryParams = new URLSearchParams(window.location.search);
-        const urlClubId = queryParams.get('club_id');
-        const storedClubId = sessionStorage.getItem("selectedClubId");
-        const clubId = urlClubId || storedClubId || "1"; // Default to club 1 if none found
-        
-        // Make API request
-        const response = await fetch(`${apiUrl}/club-stats/budget?club_id=${clubId}`);
-        
+
+        // Make API request with the current club ID
+        const response = await fetch(`${apiUrl}/club-stats/budget?club_id=${selectedClubId}`);
+
         if (!response.ok) {
           throw new Error(`Failed to fetch club stats: ${response.status}`);
         }
-        
+
         const data = await response.json();
+        console.log(`Loaded stats for club ${selectedClubId}:`, data);
         setStatsData(data);
         setError(null);
       } catch (err) {
-        console.error("Error fetching club statistics:", err);
+        console.error(`Error fetching club statistics for club ${selectedClubId}:`, err);
         setError("Failed to load club statistics");
-        // Don't set fallback data here as we'll handle it in the render
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchClubStats();
-  }, [apiUrl]);
+  }, [apiUrl, selectedClubId]);
 
   // Prepare chart data
   const barChartData = {
@@ -81,7 +121,7 @@ const ClubStatistics = () => {
     datasets: [
       {
         label: "Amount Spent (AED)",
-        data: statsData?.recentExpenses?.data ,
+        data: statsData?.recentExpenses?.data || [0, 0, 0],
         backgroundColor: "#0D2535",
         borderRadius: 10,
       },
@@ -117,12 +157,12 @@ const ClubStatistics = () => {
   };
 
   // Prepare doughnut chart data
-  const totalBudget = statsData?.budgetSummary?.totalBudget ;
-  const totalSpent = statsData?.budgetSummary?.totalSpent ;
-  const remaining = statsData?.budgetSummary?.remaining ;
+  const totalBudget = statsData?.budgetSummary?.totalBudget || 0;
+  const totalSpent = statsData?.budgetSummary?.totalSpent || 0;
+  const remaining = statsData?.budgetSummary?.remaining || 0;
 
   const doughnutChartData = {
-    labels: ["Remaining Budget", "Total Budget" ],
+    labels: ["Remaining Budget", "Total Budget"],
     datasets: [
       {
         label: "Amount",
@@ -155,9 +195,6 @@ const ClubStatistics = () => {
         <div className="entity6-cs-header">
           <h3>Club Statistics</h3>
         </div>
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "250px" }}>
-          <Spin tip="Loading statistics..." />
-        </div>
       </div>
     );
   }
@@ -173,10 +210,10 @@ const ClubStatistics = () => {
       <h5>Engagement over the last 3 months</h5>
       <div className="charts-container">
         <div className="bar-chart">
-          <Bar key={theme + "-bar"} data={barChartData} options={barChartOptions} />
+          <Bar key={`${theme}-${selectedClubId}-bar`} data={barChartData} options={barChartOptions} />
         </div>
         <div className="doughnut-chart">
-          <Doughnut key={theme + "-doughnut"} data={doughnutChartData} options={doughnutChartOptions} />
+          <Doughnut key={`${theme}-${selectedClubId}-doughnut`} data={doughnutChartData} options={doughnutChartOptions} />
           <div className="entity6-doughnut-chart-label">
             <p>{totalSpent.toLocaleString()}</p>
             <span>Budget Spent</span>

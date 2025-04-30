@@ -110,7 +110,6 @@ const EventExpenses = () => {
   // Apply server-side filtering by status
   const applyServerFilter = async (status) => {
     if (status === 'all') {
-      // If filtering by "all", use the cached events
       setFilteredEvents(allEvents);
       return;
     }

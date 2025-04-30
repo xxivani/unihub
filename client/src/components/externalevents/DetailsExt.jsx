@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './DetailsExt.css';
-import { FaBell, FaUsers, FaMapMarkerAlt, FaCalendarAlt, FaClock, FaUserFriends, FaTicketAlt, FaUserCircle, FaTimes } from 'react-icons/fa';
+import { FaUsers, FaMapMarkerAlt, FaCalendarAlt, FaClock, FaUserFriends, FaTicketAlt, FaUserCircle, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -232,9 +232,6 @@ useEffect(() => {
             ) : (
               <button className="follow-button-details-ext" onClick={handleFollowClick}>Follow</button>
             )}
-            <button className="notification-button-details-ext">
-              <FaBell />
-            </button>
           </div>
         </header>
 

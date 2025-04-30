@@ -55,7 +55,7 @@ const EventExpenses = () => {
   }, [clubId]);
   
   // Fetch all events and store them for client-side filtering
-  const fetchAllEvents = async (syncEvents = false) => {
+  const fetchAllEvents = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -70,9 +70,8 @@ const EventExpenses = () => {
         return;
       }
   
-      // Create URL with club_id parameter and explicit sync_events control
-      const syncParam = syncEvents ? '&sync_events=true' : '&sync_events=false';
-      const url = `${apiUrl}/bt_eventRoute?club_id=${clubId}${syncParam}`;
+      // Create URL with club_id parameter
+      const url = `${apiUrl}/bt_eventRoute?club_id=${clubId}`;
       console.log(`Fetching events from: ${url}`);
       
       const response = await fetch(url);
@@ -105,37 +104,6 @@ const EventExpenses = () => {
       setError(`Failed to load events: ${error.message}`);
     } finally {
       setLoading(false);
-    }
-  };
-  
-  // Then modify the syncGeneralEvents function to explicitly request sync:
-  const syncGeneralEvents = async () => {
-    try {
-      setSyncing(true);
-      
-      // First call the sync endpoint
-      const response = await fetch(`${apiUrl}/bt_eventRoute/sync-general-events`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ club_id: clubId })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to sync events: ${response.status}`);
-      }
-      
-      // Then refresh events with sync_events=true to show the newly synced events
-      await fetchAllEvents(true);
-      
-      // Show success message
-      alert("Events synchronized successfully!");
-    } catch (error) {
-      console.error('Error syncing events:', error);
-      alert(`Failed to sync events: ${error.message}`);
-    } finally {
-      setSyncing(false);
     }
   };
   
@@ -207,38 +175,7 @@ const EventExpenses = () => {
     
     setFilteredEvents(searchResults);
   };
-  
-  // Sync general events with budget tracker
-  // const syncGeneralEvents = async () => {
-  //   try {
-  //     setSyncing(true);
-      
-  //     // Call the new sync endpoint
-  //     const response = await fetch(`${apiUrl}/bt_eventRoute/sync-general-events`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify({ club_id: clubId })
-  //     });
-      
-  //     if (!response.ok) {
-  //       throw new Error(`Failed to sync events: ${response.status}`);
-  //     }
-      
-  //     // Refresh events after sync
-  //     await fetchAllEvents();
-      
-  //     // Show success message
-  //     alert("Events synchronized successfully!");
-  //   } catch (error) {
-  //     console.error('Error syncing events:', error);
-  //     alert(`Failed to sync events: ${error.message}`);
-  //   } finally {
-  //     setSyncing(false);
-  //   }
-  // };
-  
+    
   // Handle filter changes from FilterBar
   const handleFilterChange = async (status) => {
     setActiveFilter(status); // Update active filter state
@@ -320,14 +257,14 @@ const EventExpenses = () => {
               <FilterBar onFilterChange={handleFilterChange} initialFilter={activeFilter} />
             </div>
             <div className="event-expenses-header">
-              <button 
+              {/* <button 
                 className="sync-events-button" 
                 onClick={syncGeneralEvents}
                 disabled={syncing}
-              >
-                <FaSync className={syncing ? "spinning" : ""} />
-                {syncing ? "Syncing..." : "Sync Events"}
-              </button>
+              > */}
+                {/* <FaSync className={syncing ? "spinning" : ""} /> */}
+                {/* {syncing ? "Syncing..." : "Sync Events"} */}
+              {/* </button> */}
             </div>
           </div>
           <div className="event-expenses-search-bar">

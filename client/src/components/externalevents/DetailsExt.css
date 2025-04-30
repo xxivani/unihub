@@ -42,6 +42,8 @@
     font-size: 1.75rem;
     font-weight: bold;
     color: #333;
+    margin: 0;
+    line-height: 1;
 }
 
 .detail-buttons-details-ext {
@@ -569,4 +571,43 @@
 
 .additional-image:hover {
   transform: scale(1.05);
+}
+
+.title-with-back {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+  }
+
+  .back-button {
+	background: none;
+	border: none;
+	font-size: 1.5rem;
+	cursor: pointer;
+	color: #333; /* or your theme color */
+	padding: 0;
+	margin: 6rem;
+	margin-left: 2rem;
+  }
+
+.back-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .back-button {
+  color: var(--text-primary, #f5f2f2);
+}
+
+[data-theme="dark"] .back-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Style for unfollow button (already in your component) */
+.follow-button-details-ext.unfollow {
+  background-color: #ff4444;
+  color: white;
+}
+
+.follow-button-details-ext.unfollow:hover {
+  background-color: #cc0000;
 }

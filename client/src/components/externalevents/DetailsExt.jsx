@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './DetailsExt.css';
-import { FaUsers, FaMapMarkerAlt, FaCalendarAlt, FaClock, FaUserFriends, FaTicketAlt, FaUserCircle, FaTimes } from 'react-icons/fa';
+import { FaChevronLeft, FaUsers, FaMapMarkerAlt, FaCalendarAlt, FaClock, FaUserFriends, FaTicketAlt, FaUserCircle, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -106,6 +106,11 @@ function DetailsExt() {
       handleDirectFollow();
     }
   };
+
+  const handleBackClick = () => {
+	navigate('/external-events');
+  };
+  
 
   const handleDirectFollow = async () => {
     if (!user) return;
@@ -219,8 +224,17 @@ function DetailsExt() {
       <div className="content-wrapper-details-ext">
         <header className="detail-header-details-ext">
           <div className="detail-title-details-ext">
+		  	<div className="title-with-back">
+              <button 
+                className="back-button" 
+                onClick={handleBackClick} 
+                aria-label="Back to events"
+              >
+                <FaChevronLeft />
+              </button>
             <h1 className="event-title-details-ext">{detailEventData.external_event_name}</h1>
-          </div>
+			</div>
+		  </div>
           <div className="detail-buttons-details-ext">
             {followedEvents.includes(Number(id)) ? (
               <button className="follow-button-details-ext" onClick={handleUnfollow}>Unfollow</button>

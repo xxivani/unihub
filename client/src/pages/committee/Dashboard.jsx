@@ -11,8 +11,6 @@ const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const Dashboard = () => {
   const [userRole, setUserRole] = useState("");
-  const [events, setEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState(null);
   const [clubs, setClubs] = useState([]);
   const [selectedClubId, setSelectedClubId] = useState(null);
 
@@ -29,10 +27,7 @@ const Dashboard = () => {
     }
   }, []);
 
-  useEffect(() => {
-    fetchEvent();
-  }, [selectedClubId]);
-
+  /*
   const fetchEvent = async () => {
     try {
       const response = await fetch(`${apiUrl}/events`);
@@ -49,12 +44,7 @@ const Dashboard = () => {
         console.error("Error fetching events:", error);
       };
   }
-
-  const handleEventChange = (e) => {
-    setSelectedEvent(e.target.value);
-    sessionStorage.setItem("selectedEventDB", e.target.value);
-    console.log("SELCEDED:"+ e.target.value);
-  };
+  */
 
   const fetchClubs = async () => {
     try {
@@ -92,22 +82,15 @@ const Dashboard = () => {
 
     return (
       <div className="entity6-dashboard">
-        <div className="select-club-container">
-          {events.length > 1 && (
-          <select className="select-club-dropdown" value={selectedEvent || ""} onChange={handleEventChange}>
-              {events.map(event => (
-                <option key={event.id} value={event.title}>{event.title}</option>
-              ))}
-            </select>
-          )}
           {userRole === "admin" && (
+            <div className="select-club-container">
               <select className="select-club-dropdown" value={selectedClubId || ""} onChange={handleClubChange}>
                 {clubs.map(club => (
                   <option key={club.club_id} value={club.club_id}>{club.club_name}</option>
                 ))}
               </select>
+            </div>
           )}
-          </div>
       <div className="dashboard-header">
         <Title />
       </div>

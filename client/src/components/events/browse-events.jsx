@@ -127,9 +127,19 @@ const BrowseEvents = () =>{
       let canvas = null;
       event = events[eventIndex];
       canvas = canvasRefs.current[event.id * 10 + col];
-
-      if (!canvas || !event.image[`image${col}`]) return;
-
+      if (!canvas) return;
+          /*console.error("Image at: (" + eventIndex + ", " + col + ") does not exist.")*/
+      if (!event.image[`image${col}`] || event.image[`image${col}`] == "") {
+        const canvasCtx = canvas?.getContext("2d");
+        const img = new Image();
+        img.src = "/assets/images/event_template.png";
+        img.onload = () => {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          canvasCtx.drawImage(img, 0, 0);
+        }
+        return;
+      }
       const canvasCtx = canvas?.getContext("2d");
       const img = new Image();
       img.crossOrigin = 'anonymous';
@@ -238,9 +248,7 @@ const BrowseEvents = () =>{
       if (!loading) {
         events.forEach((event, rowIndex) => {
           for (let col = 0; col == 0; col++) {
-            if (event.image[`image${col}`]) {
-              renderImage(rowIndex, col);
-            }
+            renderImage(rowIndex, col);
           }
         });
       }

@@ -349,10 +349,10 @@ const BudgetDashboard = () => {
 
     // Default budget values if no data
     const budgetSummary = dashboardData?.budgetSummary || {
-        totalBudget: 2000,
+        // totalBudget: 2000,
         // totalSpent: 600,
         // remaining: 400,
-        fiscalYear: '2024-2025'
+        // fiscalYear: '2024-2025'
     };
 
     

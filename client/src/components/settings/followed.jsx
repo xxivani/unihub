@@ -17,7 +17,7 @@ const Followed = () => {
       setUserId(userData.id);
       fetchFollowedRoles(userData.id);
       fetchFollowedEvents(userData.id);
-      fetchUserClubs(userData.id); // ✅ fetch clubs
+      fetchUserClubs(userData.id); 
     }
   }, []);
 

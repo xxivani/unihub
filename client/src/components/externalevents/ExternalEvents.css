@@ -130,7 +130,7 @@
     overflow: hidden;
     border: 1px solid #eee;
     width: 100%; 
-    max-width: 1400px;
+    /* max-width: 1400px; */
     min-height: 100px; 
     max-height: 200px; 
 }

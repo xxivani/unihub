@@ -14,12 +14,10 @@ const CreateExternalEvents = () => {
   const [coOrganizer, setCoOrganizer] = useState("");
   const [manager, setManager] = useState("");
   const [speaker, setSpeaker] = useState("");
-  // New event category state
   const [eventCategory, setEventCategory] = useState("");
   
   const navigate = useNavigate();
 
-  // Event categories
   const EVENT_CATEGORIES = [
     "HACKATHON",
     "WORKSHOP",
@@ -75,7 +73,6 @@ const CreateExternalEvents = () => {
     setSpeaker(e.target.value);
   };
   
-  // New handler for event category
   const handleEventCategoryChange = (e) => {
     setEventCategory(e.target.value);
   };
@@ -147,7 +144,7 @@ const CreateExternalEvents = () => {
       console.log("Response Status:", response.status);
     
       if (!response.ok) {
-        const errorText = await response.text(); // Get error message from the backend
+        const errorText = await response.text(); 
         throw new Error(`Failed to create event. Status: ${response.status}, Server says: ${errorText}`);
       }
     

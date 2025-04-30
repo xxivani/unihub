@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Add this import
+import { useNavigate } from 'react-router-dom'; 
 import './Verify.css';
 
 function Verify() {
@@ -11,10 +11,10 @@ function Verify() {
   };
 
   const handleHomeClick = () => {
-    navigate('/'); // Go back to the home page
+    navigate('/'); 
   };
   const handleBackClick = () => {
-    navigate(-1); // Go back to the previous page
+    navigate(-1); 
   };
   const handleVerifyClick = () => {
     navigate("/accountverified");

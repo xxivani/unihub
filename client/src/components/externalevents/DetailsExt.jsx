@@ -5,19 +5,21 @@ import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 
+const DEFAULT_IMAGE = "/assets/images/default-extevent.png";
 
 function DetailsExt() {
-  const { id } = useParams(); // <-- grabs the event ID from URL
+  const { id } = useParams(); 
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
-  const [isEventFullModalVisible, setIsEventFullModalVisible] = useState(false); // New state for "Event is full" modal
-  const [user, setUser] = useState(null); // Added user state
+  const [isEventFullModalVisible, setIsEventFullModalVisible] = useState(false); 
+  const [user, setUser] = useState(null); 
   const navigate = useNavigate();
   const [detailEventData, setdetailEventData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [remainingSlots, setRemainingSlots] = useState(null);
   const [isUnfollowModalVisible, setIsUnfollowModalVisible] = useState(false);
   const [followedEvents, setFollowedEvents] = useState([]);
+  const [additionalImages, setAdditionalImages] = useState([]); 
 
   useEffect(() => {
 	const fetchEvent = async () => {
@@ -25,12 +27,46 @@ function DetailsExt() {
 		const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 		const response = await fetch(`${apiUrl}/external-events/${id}`);
 		const data = await response.json();
-		setdetailEventData(data);
+		
+		const initialEventData = {
+		  ...data,
+		  imageUrl: DEFAULT_IMAGE
+		};
+		setdetailEventData(initialEventData);
+		
 		const remaining = data.external_event_max_number_of_attendees - (data.external_event_number_of_attendees || 0);
-      	setRemainingSlots(remaining);
+		setRemainingSlots(remaining);
+
+		const imgResponse = await fetch(`${apiUrl}/image-management/`);
+		if (imgResponse.ok) {
+		  const imgData = await imgResponse.json();
+		  const mainImage = imgData.find(img => 
+			img.eventName === data.external_event_name && 
+			img.eventType === "External" && 
+			img.position === 1
+		  );
+		  
+		  if (mainImage && mainImage.URL) {
+			setdetailEventData(prev => ({
+			  ...prev,
+			  imageUrl: mainImage.URL.startsWith('/uploads') 
+				? `${apiUrl}${mainImage.URL}` 
+				: mainImage.URL
+			}));
+		  }
+
+		  const eventImages = imgData.filter(img => 
+			img.eventName === data.external_event_name && 
+			img.eventType === "External" && 
+			img.position >= 2
+		  );
+		  setAdditionalImages(eventImages);
+		}
+		
 		setLoading(false);
 		} catch (error) {
 		console.error("Failed to fetch event data:", error);
+		setLoading(false);
 		}
 	};
 	fetchEvent();
@@ -206,9 +242,13 @@ useEffect(() => {
           <div className="detail-description-details-ext">
             <div className="description-image-details-ext">
               <img
-                src={detailEventData.imageUrl}
+                src={detailEventData?.imageUrl || DEFAULT_IMAGE}
                 alt="Event"
                 className="event-description-image-details-ext"
+                onError={(e) => {
+                  e.target.src = DEFAULT_IMAGE;
+                  e.target.onerror = null;
+                }}
               />
             </div>
             <p className="description-text-details-ext">{detailEventData.external_event_description}</p>
@@ -252,13 +292,7 @@ useEffect(() => {
                 <div className="availability-item-details-ext">
                   <FaTicketAlt className="icon-green-details-ext" />
 				  <span>Remaining Slots: {remainingSlots >= 0 ? remainingSlots : 'N/A'}</span>
-
                 </div> 
-				
-                {/* <div className="availability-item-details-ext">
-                  <FaUsers className="icon-green-details-ext" />
-                  <span>Waiting in line: {detailEventData.waitingLine}</span>
-                </div> */}
               </div>
             </div>
 
@@ -280,6 +314,27 @@ useEffect(() => {
             </div>
           </div>
         </main>
+
+        <div className="additional-images-container">
+          <h3 className="additional-images-title">Event Gallery</h3>
+          <div className="additional-images-grid">
+            {additionalImages.map((img, index) => (
+              <div key={index} className="additional-image-item">
+                <img
+                  src={img.URL && img.URL.startsWith('/uploads') 
+                    ? `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}${img.URL}` 
+                    : img.URL || DEFAULT_IMAGE}
+                  alt={`Event image ${index + 2}`}
+                  className="additional-image"
+                  onError={(e) => {
+                    e.target.src = DEFAULT_IMAGE;
+                    e.target.onerror = null;
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Sign-Up Form */}

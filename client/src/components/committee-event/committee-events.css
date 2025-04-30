@@ -394,11 +394,11 @@
 }
 
 .e4c-event-image{
-  width: calc(220px + var(--base-font-size) * 10);
+  width: calc(120px + var(--base-font-size) * 6);
   min-width: 100px;
-  max-width: calc(220px + var(--base-font-size) * 10);
-  height: calc(220px + var(--base-font-size) * 10);
-  max-height: calc(220px + var(--base-font-size) * 10);
+  max-width: calc(120px + var(--base-font-size) * 6);
+  height: calc(120px + var(--base-font-size) * 6);
+  max-height: calc(120px + var(--base-font-size) * 6);
   margin-right: 10px;
   position: relative;
   object-fit: cover;

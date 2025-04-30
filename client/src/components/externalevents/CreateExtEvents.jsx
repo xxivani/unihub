@@ -50,7 +50,11 @@ const CreateExternalEvents = () => {
   };
 
   const handlePriceChange = (e) => {
-    setPrice(e.target.value);
+    const value = e.target.value;
+    // Only allow numbers and decimal point
+    if (/^\d*\.?\d*$/.test(value)) {
+      setPrice(value);
+    }
   };
 
   const handleMaxAttendeesChange = (e) => {
@@ -77,40 +81,6 @@ const CreateExternalEvents = () => {
     setEventCategory(e.target.value);
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   const formData = new FormData();
-  //   formData.append("eventName", eventName);
-  //   formData.append("description", description);
-  //   formData.append("eventDate", eventDate);
-  //   formData.append("eventTime", eventTime);
-  //   formData.append("location", location);
-  //   formData.append("price", price);
-  //   formData.append("maxAttendees", maxAttendees);
-  //   formData.append("organizer", organizer);
-  //   formData.append("coOrganizer", coOrganizer);
-  //   formData.append("manager", manager);
-  //   formData.append("speaker", speaker);
-  //   formData.append("imageUrl", defaultImageUrl);
-  //   formData.append("eventCategory", eventCategory);
-
-  //   console.log({ 
-  //     eventName, 
-  //     description, 
-  //     eventDate, 
-  //     eventTime, 
-  //     location, 
-  //     price,
-  //     maxAttendees,
-  //     organizer,
-  //     coOrganizer,
-  //     manager,
-  //     speaker,
-  //     eventCategory
-  //   });
-    
-  //   navigate("/external-events");
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -234,14 +204,13 @@ const CreateExternalEvents = () => {
             </div>
             
             <div className="extform-group">
-              <label htmlFor="event-price">Ticket Price (AED):</label>
+              <label htmlFor="price">Ticket Price (AED):</label>
               <input
-                type="number"
-                id="event-price"
-                min="0"
-                step="0.01"
+                type="text"
+                id="price"
                 value={price}
                 onChange={handlePriceChange}
+                placeholder="Enter ticket price"
                 required
               />
             </div>

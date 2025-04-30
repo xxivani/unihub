@@ -17,7 +17,7 @@ const Followed = () => {
       setUserId(userData.id);
       fetchFollowedRoles(userData.id);
       fetchFollowedEvents(userData.id);
-      fetchUserClubs(userData.id); 
+      fetchUserClubs(userData.id); // ✅ fetch clubs
     }
   }, []);
 
@@ -145,7 +145,7 @@ const Followed = () => {
           </ul>
         )}
 
-        <h2 style={{ marginTop: '2rem' }}>Joined clubs</h2>
+        <h2 style={{ marginTop: '2rem' }}>Clubs You're a Member Of</h2>
         {userClubs.length === 0 ? (
           <p>You are not a member of any clubs yet.</p>
         ) : (

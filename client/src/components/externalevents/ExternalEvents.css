@@ -434,7 +434,6 @@
     transform: scale(1.05);
   }
   
-  /* Edit mode button */
 .extevent-edit-button {
     display: flex;
     align-items: center;
@@ -461,7 +460,6 @@
     background-color: #c82333;
   }
   
-  /* Delete button */
   .delete-extevent-button {
     position: absolute;
     top: 10px;
@@ -512,7 +510,6 @@
   transform: scale(1.1);
 }
 
-/* Edit form overlay and container */
 .edit-event-form-container {
   position: relative;
   background-color: white;
@@ -627,7 +624,7 @@
 .event-category-select {
   height: 42px;
   cursor: pointer;
-  appearance: menulist; /* This forces standard dropdown appearance */
+  appearance: menulist; 
   -webkit-appearance: menulist;
   -moz-appearance: menulist;
 }
@@ -659,7 +656,7 @@
   }
 
   .follow-button-details-ext.unfollow {
-	background-color: #ff4444; /* Red for unfollow */
+	background-color: #ff4444; 
 	color: white;
   }
   
@@ -667,7 +664,6 @@
 	background-color: #cc0000;
   }
   
-  /* Mobile Responsiveness */
 @media screen and (max-width: 768px) {
     .extevent-page-header {
         flex-direction: column;
@@ -694,12 +690,34 @@
 
     .extevent-action-buttons {
         width: 100%;
-        justify-content: space-between;
+        flex-wrap: wrap; 
+        justify-content: flex-start; 
+        gap: 0.5rem; 
+    }
+
+    .extevent-filter-button,
+    .extevent-calendar-button,
+    .extevent-edit-button {
+        flex: 1 1 100%; 
+        max-width: 100%; 
+        padding: 0.5rem; 
+        font-size: 0.9rem; 
+        text-align: center; 
+    }
+
+    .extevent-filter-dropdown,
+    .clear-filter-button {
+        width: 100%; 
+        max-width: 100%;
+        padding: 0.5rem;
+        font-size: 0.9rem;
     }
 
     .extevent-card {
         flex-direction: column;
         max-height: none;
+        position: relative;
+        padding-top: 50px;
     }
 
     .extevent-image {
@@ -717,7 +735,8 @@
         align-items: stretch;
     }
 
-    .view-button, .apply-button {
+    .view-button,
+    .apply-button {
         width: 100%;
     }
 
@@ -745,6 +764,7 @@
 
     .edit-form-group {
         width: 100%;
+        width: auto !important;
     }
 
     .edit-form-actions {
@@ -752,7 +772,8 @@
         gap: 10px;
     }
 
-    .cancel-button, .update-event-button {
+    .cancel-button,
+    .update-event-button {
         width: 100%;
     }
 
@@ -769,84 +790,22 @@
         padding: 0.5rem;
     }
 
-    .extevent-edit-button {
-        position: relative;
-        width: 100%;
-        margin-top: 1rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 0.75rem;
-        font-size: 0.9rem;
-    }
-
-    .extevent-edit-button.active {
-        background-color: #dc3545;
-        color: white;
-    }
-
     .edit-extevent-button {
         position: absolute;
-        right: 10px;
         top: 10px;
-        background-color: #f8d030;
-        color: #333;
-        border: none;
-        border-radius: 50%;
+        right: 60px;
         width: 36px;
         height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        opacity: 0.9;
-        transition: all 0.3s ease;
         z-index: 10;
     }
 
     .delete-extevent-button {
         position: absolute;
         top: 10px;
-        right: 50px;
-        background-color: rgba(220, 53, 69, 0.8);
-        color: white;
-        border: none;
-        border-radius: 50%;
+        right: 15px;
         width: 36px;
         height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background-color 0.3s;
+        z-index: 10;
     }
 }
-
-@media screen and (max-width: 480px) {
-    .extevent-page-title {
-        font-size: 1.3rem;
-    }
-
-    .extevent-image {
-        height: 150px;
-    }
-
-    .extevent-card {
-        min-height: auto;
-    }
-
-    .pagination {
-        flex-wrap: wrap;
-        gap: 0.25rem;
-    }
-
-    .pagination-number {
-        padding: 0.25rem 0.5rem;
-    }
-
-    .pagination-arrow {
-        padding: 0.25rem;
-    }
-}
-  
   

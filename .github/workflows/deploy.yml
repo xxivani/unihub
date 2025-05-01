@@ -90,6 +90,13 @@ jobs:
         run: |
           ssh-keyscan -H ${{ secrets.DEPLOY_IP }} >> ~/.ssh/known_hosts
 
+      - name: Stop NGINX before deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Stop NGINX container if it exists
+            docker rm -f team77-nginx || true
+          "
+
       - name: Clear previous deployment on VM (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "rm -rf ~/team-project-dev || true"
@@ -237,6 +244,11 @@ jobs:
             docker system prune --force --filter 'until=24h'
           "
 
+      - name: Deploy nginx for Development
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project-dev && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"
+
   deploy-prod:
     name: Deploy Production
     needs: deploy-dev
@@ -263,6 +275,13 @@ jobs:
       - name: Add SSH known hosts
         run: |
           ssh-keyscan -H ${{ secrets.DEPLOY_IP }} >> ~/.ssh/known_hosts
+
+      - name: Stop nginx before deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Stop NGINX container if it exists
+            docker rm -f team77-nginx || true
+          "
 
       - name: Clear previous deployment on VM (Prod)
         run: |
@@ -320,9 +339,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
             # Stop and remove all containers in the prod project
             docker compose -f ~/team-project-prod/prd.yml -p team77-prod down --volumes --remove-orphans || true
-            
-            # Stop NGINX container as well
-            docker rm -f team77-nginx || true
             
             # Explicitly remove volumes
             docker volume rm team77-prod-db-data team77-prod-uploads || true
@@ -414,6 +430,6 @@ jobs:
             docker system prune --force --filter 'until=24h'
           "
 
-      - name: Deploy Reverse Proxy
+      - name: Deploy nginx (Production)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project-prod && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"

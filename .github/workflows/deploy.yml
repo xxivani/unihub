@@ -105,7 +105,7 @@ jobs:
           POSTGRES_DB=${{ secrets.DEV_DB_NAME }}
           EOL"
                     
-          # Create server.env file with proper DB connection info for development
+          # Create server.env file with proper DB connection info
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/server.env << 'EOL'
           NODE_ENV=development
           PORT=8080
@@ -140,8 +140,12 @@ jobs:
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
             # Make sure the common-network exists but don't recreate it if it does
             docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
-            # Make sure the team77-dev-network exists but don't recreate it if it does
-            docker network inspect team77-dev-network >/dev/null 2>&1 || docker network create team77-dev-network
+            
+            # Remove any existing team77-dev-network to avoid conflicts
+            docker network rm team77-dev-network >/dev/null 2>&1 || true
+            
+            # Create a fresh team77-dev-network
+            docker network create team77-dev-network
           "
 
       - name: Clean up old containers on VM (Dev)
@@ -297,8 +301,12 @@ jobs:
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
             # Make sure the common-network exists but don't recreate it if it does
             docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
-            # Make sure the team77-prod-network exists but don't recreate it if it does
-            docker network inspect team77-prod-network >/dev/null 2>&1 || docker network create team77-prod-network
+            
+            # Remove any existing team77-prod-network to avoid conflicts
+            docker network rm team77-prod-network >/dev/null 2>&1 || true
+            
+            # Create a fresh team77-prod-network
+            docker network create team77-prod-network
           "
 
       - name: Clean up old containers on VM (Prod)

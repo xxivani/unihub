@@ -1,6 +1,4 @@
 # dev.yml
-version: "3.8"
-
 services:
   db:
     image: postgres:14-alpine
@@ -51,7 +49,7 @@ services:
 
 networks:
   team77-dev-network:
-    name: team77-dev-network
+    external: true  
   common-network:
     external: true
 

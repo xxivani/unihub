@@ -145,7 +145,7 @@ const Followed = () => {
           </ul>
         )}
 
-        <h2 style={{ marginTop: '2rem' }}>Clubs You're a Member Of</h2>
+        <h2 style={{ marginTop: '2rem' }}>Followed Clubs</h2>
         {userClubs.length === 0 ? (
           <p>You are not a member of any clubs yet.</p>
         ) : (

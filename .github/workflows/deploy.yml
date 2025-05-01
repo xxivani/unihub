@@ -98,24 +98,23 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-dev"
           
-          # Create dev.env file with all required variables
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/dev.env << 'EOL'
-          # Database configuration
+          # Create db.env file
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/db.env << 'EOL'
           POSTGRES_USER=${{ secrets.DEV_DB_USER }}
           POSTGRES_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}
           POSTGRES_DB=${{ secrets.DEV_DB_NAME }}
-          DB_HOST=db
-          DB_PORT=5432
-          DATABASE_URL=postgres://${{ secrets.DEV_DB_USER }}:${{ secrets.DEV_DB_PASSWORD }}@db:5432/${{ secrets.DEV_DB_NAME }}
-
-          # Node.js environment
+          EOL"
+          
+          # Create server.env file
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/server.env << 'EOL'
           NODE_ENV=development
-
-          # Server configuration
           PORT=8080
           JWT_SECRET=${{ secrets.DEV_JWT_SECRET }}
-
-          # Client configuration
+          DATABASE_URL=postgres://${{ secrets.DEV_DB_USER }}:${{ secrets.DEV_DB_PASSWORD }}@db:5432/${{ secrets.DEV_DB_NAME }}
+          EOL"
+          
+          # Create client.env file
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/client.env << 'EOL'
           REACT_APP_API_URL=${{ secrets.DEV_API_URL }}
           VITE_API_URL=${{ secrets.DEV_API_URL }}
           EOL"
@@ -130,28 +129,13 @@ jobs:
           scp -o StrictHostKeyChecking=no -r ./server/src/seeders $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/seeders
           scp -o StrictHostKeyChecking=no -r ./server/src/models $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/models
 
-      - name: Create required networks (Dev)
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Make sure the common-network exists but don't recreate it if it does
-            docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
-            
-            # Check if team77-dev-network exists
-            if docker network inspect team77-dev-network >/dev/null 2>&1; then
-              echo 'Network team77-dev-network already exists, using existing network'
-            else
-              echo 'Creating team77-dev-network'
-              docker network create team77-dev-network
-            fi
-          "
-
       - name: Clean up old containers and volumes on VM (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
             # Stop and remove all containers in the dev project
             docker compose -f ~/team-project-dev/dev.yml -p team77-dev down --volumes --remove-orphans || true
             
-            # Explicitly remove volumes even if they're not in compose
+            # Explicitly remove volumes
             docker volume rm team77-dev-db-data team77-dev-uploads || true
             
             # Prune unused containers
@@ -167,6 +151,13 @@ jobs:
               -v team77-dev-uploads:/app/uploads \
               alpine:latest \
               sh -c 'mkdir -p /app/uploads/{images,pdfs,misc} && chmod -R 777 /app/uploads'
+          "
+
+      - name: Create required network
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Make sure the common-network exists but don't recreate it if it does
+            docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
           "
 
       - name: Start Database Container (Dev)
@@ -199,7 +190,7 @@ jobs:
       - name: Run Migrations and Seeders (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create temporary config file with hardcoded credentials
+            # Create temporary config file with configuration
             mkdir -p ~/team-project-dev/config
             cat > ~/team-project-dev/config/config.js << 'EOL'
             module.exports = {
@@ -222,9 +213,9 @@ jobs:
             };
             EOL
             
-            # Create a temporary container to run migrations with fixed configuration
+            # Create a temporary container to run migrations
             docker run --rm --name team77-migrations-dev \
-              --network team77-dev-network \
+              --network common-network \
               -v ~/team-project-dev/migrations:/app/migrations \
               -v ~/team-project-dev/seeders:/app/seeders \
               -v ~/team-project-dev/models:/app/models \
@@ -240,18 +231,6 @@ jobs:
             docker compose -f ~/team-project-dev/dev.yml -p team77-dev up -d && 
             docker system prune --force --filter 'until=24h'
           "
-
-      - name: Wait for Dev Stack to be Ready
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "sleep 30"
-
-      - name: Remove Previous Reverse Proxy (if any)
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker rm -f team77-nginx || true"
-
-      - name: Deploy Reverse Proxy (Dev)
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project-dev && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"
 
   deploy-prod:
     name: Deploy Production
@@ -288,24 +267,23 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-prod"
           
-          # Create a single consolidated env file for production
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-prod/prod.env << 'EOL'
-          # Database configuration
+          # Create db.env file
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-prod/db.env << 'EOL'
           POSTGRES_USER=${{ secrets.PROD_DB_USER }}
           POSTGRES_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}
           POSTGRES_DB=${{ secrets.PROD_DB_NAME }}
-          DB_HOST=db
-          DB_PORT=5432
-          DATABASE_URL=postgres://${{ secrets.PROD_DB_USER }}:${{ secrets.PROD_DB_PASSWORD }}@db:5432/${{ secrets.PROD_DB_NAME }}
-
-          # Node.js environment
+          EOL"
+          
+          # Create server.env file
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-prod/server.env << 'EOL'
           NODE_ENV=production
-
-          # Server configuration
           PORT=8080
           JWT_SECRET=${{ secrets.PROD_JWT_SECRET }}
-
-          # Client configuration
+          DATABASE_URL=postgres://${{ secrets.PROD_DB_USER }}:${{ secrets.PROD_DB_PASSWORD }}@db:5432/${{ secrets.PROD_DB_NAME }}
+          EOL"
+          
+          # Create client.env file
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-prod/client.env << 'EOL'
           REACT_APP_API_URL=${{ secrets.PROD_API_URL }}
           VITE_API_URL=${{ secrets.PROD_API_URL }}
           EOL"
@@ -320,28 +298,16 @@ jobs:
           scp -o StrictHostKeyChecking=no -r ./server/src/seeders $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/seeders
           scp -o StrictHostKeyChecking=no -r ./server/src/models $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/models
 
-      - name: Create required networks (Prod)
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Make sure the common-network exists but don't recreate it if it does
-            docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
-            
-            # Check if team77-prod-network exists
-            if docker network inspect team77-prod-network >/dev/null 2>&1; then
-              echo 'Network team77-prod-network already exists, using existing network'
-            else
-              echo 'Creating team77-prod-network'
-              docker network create team77-prod-network
-            fi
-          "
-
       - name: Clean up old containers and volumes on VM (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
             # Stop and remove all containers in the prod project
             docker compose -f ~/team-project-prod/prd.yml -p team77-prod down --volumes --remove-orphans || true
             
-            # Explicitly remove volumes even if they're not in compose
+            # Stop NGINX container as well
+            docker rm -f team77-nginx || true
+            
+            # Explicitly remove volumes
             docker volume rm team77-prod-db-data team77-prod-uploads || true
             
             # Prune unused containers
@@ -357,6 +323,13 @@ jobs:
               -v team77-prod-uploads:/app/uploads \
               alpine:latest \
               sh -c 'mkdir -p /app/uploads/{images,pdfs,misc} && chmod -R 777 /app/uploads'
+          "
+
+      - name: Create required network
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Make sure the common-network exists but don't recreate it if it does
+            docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
           "
 
       - name: Start Database Container (Prod)
@@ -389,7 +362,7 @@ jobs:
       - name: Run Migrations and Seeders (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create temporary config file with hardcoded credentials
+            # Create temporary config file with configuration
             mkdir -p ~/team-project-prod/config
             cat > ~/team-project-prod/config/config.js << 'EOL'
             module.exports = {
@@ -412,9 +385,9 @@ jobs:
             };
             EOL
             
-            # Create a temporary container to run migrations with fixed configuration
+            # Create a temporary container to run migrations
             docker run --rm --name team77-migrations-prod \
-              --network team77-prod-network \
+              --network common-network \
               -v ~/team-project-prod/migrations:/app/migrations \
               -v ~/team-project-prod/seeders:/app/seeders \
               -v ~/team-project-prod/models:/app/models \
@@ -431,14 +404,6 @@ jobs:
             docker system prune --force --filter 'until=24h'
           "
 
-      - name: Wait for Prod Stack to be Ready
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "sleep 20"
-
-      - name: Remove Previous Reverse Proxy (if any)
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker rm -f team77-nginx || true"
-
-      - name: Deploy Reverse Proxy (Prod)
+      - name: Deploy Reverse Proxy
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project-prod && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"

@@ -1,27 +1,19 @@
-version: '3.8'
-
+version: "3.8"
 services:
   nginx:
-    image: nginx:alpine
     container_name: team77-nginx
+    image: nginx:alpine
     restart: always
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - /etc/nginx/ssl/dev:/etc/nginx/ssl/dev
-      - /etc/nginx/ssl/prod:/etc/nginx/ssl/prod
       - /var/www/letsencrypt:/var/www/letsencrypt
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/nginx/ssl/dev:/etc/nginx/ssl/dev:ro
+      - /etc/nginx/ssl/prod:/etc/nginx/ssl/prod:ro
     networks:
       - common-network
-      - team77-dev-network
-      - team77-prod-network
-
 networks:
   common-network:
-    external: true
-  team77-dev-network:
-    external: true
-  team77-prod-network:
     external: true

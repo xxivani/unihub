@@ -4,10 +4,6 @@ services:
     image: postgres:14-alpine
     container_name: team77-dev-db
     restart: always
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER:-team77_dev}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secure_dev_password}
-      - POSTGRES_DB=${POSTGRES_DB:-team77_dev}
     env_file:
       - ./dev.env
     volumes:

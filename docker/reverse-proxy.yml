@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   nginx:
-    container_name: ${NGINX_CONTAINER_NAME:-team77-nginx}
+    container_name: team77-nginx
     image: nginx:alpine
     restart: always
     ports:

@@ -625,13 +625,17 @@ body[data-theme="dark"] .select-club-dropdown-bt {
 @media screen and (min-width: 1200px) {
     .budget-boxes {
         width: 100%;
+        
+    }
+    .budget-box3 {
+        margin-right: 20px;
+        width: 100%;
     }
 
     .budget-box1,
-    .budget-box2,
-    .budget-box3 {
+    .budget-box2 {
         width: 100%;
-        margin-right: 15px;
+
     }
 
     .monthly-expense {

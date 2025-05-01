@@ -4,58 +4,53 @@ services:
     container_name: team77-dev-db
     restart: always
     env_file:
-      - ./dev_db.env
+      - ./db.env  
     volumes:
       - dev-db-data:/var/lib/postgresql/data
     networks:
-      - team77-dev-network
       - common-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
-      
   team77-dev-server:
     container_name: team77-dev-server
     image: ghcr.io/uob-team-project/team77-server:latest
     restart: always
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - DB_HOST=team77-dev-db
+      - DB_PORT=5432
     env_file:
-      - ./dev_server.env
+      - ./server.env
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     volumes:
       - dev-uploads:/app/uploads
     networks:
-      - team77-dev-network
       - common-network
     ports:
       - "8080:8080"
-      
   team77-dev-client:
     container_name: team77-dev-client
     image: ghcr.io/uob-team-project/team77-client:latest
     restart: always
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
     env_file:
-      - ./dev_client.env
+      - ./client-dev.env
     depends_on:
       - team77-dev-server
     networks:
-      - team77-dev-network
       - common-network
     ports:
       - "3000:3000"
-      
 networks:
-  team77-dev-network:
-    external: true
   common-network:
     external: true
-    
 volumes:
   dev-db-data:
-    name: team77-dev-db-data
   dev-uploads:
-    name: team77-dev-uploads
-    external: true

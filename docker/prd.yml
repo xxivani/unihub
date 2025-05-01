@@ -1,61 +1,58 @@
+version: "3.8"
 services:
   db:
     image: postgres:14-alpine
     container_name: team77-prod-db
     restart: always
     env_file:
-      - ./prod_db.env
+      - ./db.env  
     volumes:
       - prod-db-data:/var/lib/postgresql/data
     networks:
-      - team77-prod-network
       - common-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]  
       interval: 10s
       timeout: 5s
       retries: 5
-      
   team77-prd-server:
     container_name: team77-prd-server
     image: ghcr.io/uob-team-project/team77-server:latest
     restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - DB_HOST=team77-prod-db
+      - DB_PORT=5432
     env_file:
-      - ./prod_server.env
+      - ./server.env
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     volumes:
       - prod-uploads:/app/uploads
     networks:
-      - team77-prod-network
       - common-network
     ports:
       - "9090:8080"
-      
   team77-prd-client:
     container_name: team77-prd-client
     image: ghcr.io/uob-team-project/team77-client:latest
     restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=80
     env_file:
-      - ./prod_client.env
+      - ./client-prod.env
     depends_on:
       - team77-prd-server
     networks:
-      - team77-prod-network
       - common-network
     expose:
-      - "8080"
+      - "80"
       
 networks:
-  team77-prod-network:
-    external: true
   common-network:
     external: true
-    
 volumes:
   prod-db-data:
-    name: team77-prod-db-data
   prod-uploads:
-    name: team77-prod-uploads
-    external: true

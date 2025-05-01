@@ -98,29 +98,24 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-dev"
           
-          # Create db.env file for development
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/db.env << 'EOL'
-          POSTGRES_USER=${{ secrets.DEV_DB_USER }}
-          POSTGRES_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}
-          POSTGRES_DB=${{ secrets.DEV_DB_NAME }}
-          EOL"
-                    
-          # Create server.env file with proper DB connection info
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/server.env << 'EOL'
-          NODE_ENV=development
-          PORT=8080
+          # Create consolidated env file for development
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/dev.env << 'EOL'
+          # Database configuration
           POSTGRES_USER=${{ secrets.DEV_DB_USER }}
           POSTGRES_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}
           POSTGRES_DB=${{ secrets.DEV_DB_NAME }}
           DB_HOST=db
           DB_PORT=5432
           DATABASE_URL=postgres://${{ secrets.DEV_DB_USER }}:${{ secrets.DEV_DB_PASSWORD }}@db:5432/${{ secrets.DEV_DB_NAME }}
-          JWT_SECRET=${{ secrets.DEV_JWT_SECRET }}
-          EOL"
 
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/client.env << 'EOL'
+          # Node.js environment
           NODE_ENV=development
-          PORT=3000
+
+          # Server configuration
+          PORT=8080
+          JWT_SECRET=${{ secrets.DEV_JWT_SECRET }}
+
+          # Client configuration
           REACT_APP_API_URL=${{ secrets.DEV_API_URL }}
           VITE_API_URL=${{ secrets.DEV_API_URL }}
           EOL"
@@ -152,6 +147,14 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project-dev/dev.yml -p team77-dev down --volumes --remove-orphans || true && docker container prune -f"
 
+      - name: Create required volumes (Dev)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Create or recreate the uploads volume with proper ownership
+            docker volume rm team77-dev-uploads >/dev/null 2>&1 || true
+            docker volume create team77-dev-uploads
+          "
+
       - name: Start Database Container (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
@@ -182,7 +185,7 @@ jobs:
             # Create a temporary container to run migrations
             docker run --rm --name team77-migrations-dev \
               --network team77-dev-network \
-              --env-file ~/team-project-dev/server.env \
+              --env-file ~/team-project-dev/dev.env \
               -v ~/team-project-dev/migrations:/app/migrations \
               -v ~/team-project-dev/seeders:/app/seeders \
               -v ~/team-project-dev/models:/app/models \
@@ -190,12 +193,9 @@ jobs:
               sh -c 'cd /app && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all'
           "
 
-      - name: Clean and Init Upload Directory (Dev)
+      - name: Init Upload Directory (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Remove the old volumes if they exist
-            docker volume rm team77-dev-uploads || true
-            
             # Create temporary container to initialize upload directories
             docker run --rm \
               --name upload-init-dev \
@@ -258,30 +258,24 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-prod"
           
-          # Create db.env file for production
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-prod/db.env << 'EOL'
-          POSTGRES_USER=${{ secrets.PROD_DB_USER }}
-          POSTGRES_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}
-          POSTGRES_DB=${{ secrets.PROD_DB_NAME }}
-          EOL"
-          
-          # Create server.env file with proper DB connection for production
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-prod/server.env << 'EOL'
-          NODE_ENV=production
-          PORT=8080
+          # Create consolidated env file for production
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-prod/prod.env << 'EOL'
+          # Database configuration
           POSTGRES_USER=${{ secrets.PROD_DB_USER }}
           POSTGRES_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}
           POSTGRES_DB=${{ secrets.PROD_DB_NAME }}
           DB_HOST=db
           DB_PORT=5432
           DATABASE_URL=postgres://${{ secrets.PROD_DB_USER }}:${{ secrets.PROD_DB_PASSWORD }}@db:5432/${{ secrets.PROD_DB_NAME }}
-          JWT_SECRET=${{ secrets.PROD_JWT_SECRET }}
-          EOL"
 
-          # Create client.env file for production
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-prod/client.env << 'EOL'
+          # Node.js environment
           NODE_ENV=production
-          PORT=80
+
+          # Server configuration
+          PORT=8080
+          JWT_SECRET=${{ secrets.PROD_JWT_SECRET }}
+
+          # Client configuration
           REACT_APP_API_URL=${{ secrets.PROD_API_URL }}
           VITE_API_URL=${{ secrets.PROD_API_URL }}
           EOL"
@@ -314,6 +308,14 @@ jobs:
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
             "docker compose -f ~/team-project-prod/prd.yml -p team77-prod down --volumes --remove-orphans || true && docker container prune -f"
 
+      - name: Create required volumes (Prod)
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Create or recreate the uploads volume with proper ownership
+            docker volume rm team77-prod-uploads >/dev/null 2>&1 || true
+            docker volume create team77-prod-uploads
+          "
+
       - name: Start Database Container (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
@@ -343,7 +345,7 @@ jobs:
             # Create a temporary container to run migrations
             docker run --rm --name team77-migrations-prod \
               --network team77-prod-network \
-              --env-file ~/team-project-prod/server.env \
+              --env-file ~/team-project-prod/prod.env \
               -v ~/team-project-prod/migrations:/app/migrations \
               -v ~/team-project-prod/seeders:/app/seeders \
               -v ~/team-project-prod/models:/app/models \
@@ -351,12 +353,9 @@ jobs:
               sh -c 'cd /app && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all'
           "
 
-      - name: Clean and Init Upload Directory (Prod)
+      - name: Init Upload Directory (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Remove the old volumes if they exist
-            docker volume rm team77-prod-uploads || true
-            
             # Create temporary container to initialize upload directories
             docker run --rm \
               --name upload-init-prod \

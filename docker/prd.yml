@@ -5,7 +5,7 @@ services:
     container_name: team77-prod-db
     restart: always
     env_file:
-      - ./db.env
+      - ./prod.env
     volumes:
       - prod-db-data:/var/lib/postgresql/data
     networks:
@@ -21,7 +21,7 @@ services:
     image: ghcr.io/uob-team-project/team77-server:latest
     restart: always
     env_file:
-      - ./server.env
+      - ./prod.env
     depends_on:
       db:
         condition: service_healthy
@@ -38,7 +38,7 @@ services:
     image: ghcr.io/uob-team-project/team77-client:latest
     restart: always
     env_file:
-      - ./client.env
+      - ./prod.env
     depends_on:
       - team77-prd-server
     networks:
@@ -49,7 +49,7 @@ services:
       
 networks:
   team77-prod-network:
-    external: true 
+    external: true
   common-network:
     external: true
 
@@ -58,3 +58,4 @@ volumes:
     name: team77-prod-db-data
   prod-uploads:
     name: team77-prod-uploads
+    external: true

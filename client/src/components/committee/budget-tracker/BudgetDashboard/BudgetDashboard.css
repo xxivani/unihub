@@ -3,8 +3,10 @@
     margin-top: 90px;
     height: 1000px;
 }
+
 .budget-dashboard-sidebar {
     margin-right: 15px;
+    margin-left: 3px;
     /* margin-top: 150px; */
     padding: 10px;
 }
@@ -365,10 +367,14 @@ body[data-theme="dark"] .select-club-dropdown-bt {
         width: 90%;
     }
 
-    .monthly-expense, 
+    .monthly-expense {
+        width: 100%;
+        margin-left: 0;
+    } 
     .latest-event-expense {
         width: 100%;
         margin-left: 0;
+        margin-bottom: 15px;
     }
 
     .expense-breakdown-chart, 
@@ -383,9 +389,6 @@ body[data-theme="dark"] .select-club-dropdown-bt {
     }
 }
 
-/* Responsive styles for screens between 768px and 1024px */
-
-
 /* Responsive for mobile devices (480px and below) */
 @media screen and (max-width: 480px) {
     .budget-dashboard-title {
@@ -394,8 +397,12 @@ body[data-theme="dark"] .select-club-dropdown-bt {
         margin-left: 0;
     }
 
+    .main-budget-dash {
+        margin-bottom: 20px;
+    }
+
     .budget-boxes {
-        width: 100%;
+        width: 90%;
         height: fit-content;
     }
 
@@ -403,16 +410,24 @@ body[data-theme="dark"] .select-club-dropdown-bt {
         width: 100%;
     }
 
-    .monthly-expense, 
+    .monthly-expense {
+        height: 100%;
+    } 
     .latest-event-expense {
-        width: 95%;
+        width: 100%;
         padding: 15px;
+        margin-bottom: 10px;
     }
 
-    .expense-breakdown-chart, 
     .budget-committee-members {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .expense-breakdown-chart {
         width: 95%;
         padding: 15px;
+
     }
 
     .amount {
@@ -424,9 +439,12 @@ body[data-theme="dark"] .select-club-dropdown-bt {
         height: 40px;
         font-size: 40px !important;
     }
+
+    .select-club-dropdown-bt {
+        margin-bottom: 10px;
+    }
 }
 
-/* Responsive styles for screens between 768px and 1200px */
 /* Responsive styles for screens between 768px and 1200px */
 @media screen and (min-width: 769px) and (max-width: 1200px) {
     .budget-dashboard {
@@ -494,6 +512,7 @@ body[data-theme="dark"] .select-club-dropdown-bt {
         margin-left: 0;
         margin-top: 20px;
         height: auto;
+        margin-bottom: 15px;
     }
 
     .expense-breakdown {
@@ -507,12 +526,12 @@ body[data-theme="dark"] .select-club-dropdown-bt {
 
     .expense-breakdown-chart {
         width: 90%;
-        margin: 0;
+        margin-left: 0;
     }
 
     .budget-committee-members {
         width: 90%;
-        margin: 0;
+        margin-left: 0;
     }
 
     .budget-next-button {

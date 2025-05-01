@@ -23,6 +23,43 @@ const ExpenseBreakdownChart = ({ data }) => {
     return () => observer.disconnect();
   }, []);
 
+  // Add state to track window width
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  // Add resize event listener with debounce
+  useEffect(() => {
+    // Debounce function to limit how often the resize handler is called
+    const debounce = (func, delay) => {
+      let timeoutId;
+      return (...args) => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(() => {
+          func(...args);
+        }, delay);
+      };
+    };
+
+    // Resize handler with debounce
+    const handleResize = debounce(() => {
+      setWindowWidth(window.innerWidth);
+    }); // 100ms delay
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Also trigger on orientation change for mobile devices
+    window.addEventListener('orientationchange', handleResize);
+
+    // Clean up the event listeners
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []); // Empty dependency array means this effect runs once on mount
+
+
   // Define color palettes for light and dark modes
   // const lightModeColors = [
   //   '#2d4526', // Catering - Dark green
@@ -51,7 +88,6 @@ const ExpenseBreakdownChart = ({ data }) => {
     datasets: [
       {
         label: 'Amount Spent',
-        data: [600, 400, 250, 300, 450],
         backgroundColor: [
           '#2d4526',
           '#1C2833',
@@ -122,10 +158,25 @@ const ExpenseBreakdownChart = ({ data }) => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "right",
-        align: "center",
+        position: windowWidth <= 1200 ? "bottom" : "right",
+
+        labels: {
+          boxWidth: 15,
+          // padding: 10,
+          padding: 768 <= windowWidth <= 1200 ? 14 : 10,
+          font: {
+            size: windowWidth <= 1200 ? 14 : 12
+
+          }
+        }
       },
     },
+    layout: {
+      padding: {
+        right: 20,
+        left: 20
+      }
+    }
   };
 
   // This function is simplified to only update local state

@@ -50,16 +50,17 @@ const getUserMemberships = async (req, res) => {
 
   try {
     const memberships = await ClubMembership.findAll({
-      where: { userId }
+      where: { userId },
+      attributes: ['clubId', 'createdAt'] 
     });
 
-    const clubIds = memberships.map((membership) => membership.clubId);
-    res.json(clubIds); 
+    res.json(memberships); 
   } catch (error) {
     console.error("Error fetching user memberships:", error);
     res.status(500).json({ error: "Failed to fetch memberships" });
   }
 };
+
 
 module.exports = {
   joinClub,

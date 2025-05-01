@@ -97,34 +97,31 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
 
 const ExternalEvents = () => {
 	const [currentPage, setCurrentPage] = useState(1);
-	const [isFormVisible, setIsFormVisible] = useState(false);
 	const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 	const [user, setUser] = useState(null);
 	const [isEditMode, setIsEditMode] = useState(false);
 	const [isEditFormVisible, setIsEditFormVisible] = useState(false);
 	const [currentEditEvent, setCurrentEditEvent] = useState(null);
 	const [events, setEvents] = useState([]);
+	const [loading, setLoading] = useState(true);
 	const [refresh, setRefresh] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState('');
-	const [selectedEventId, setSelectedEventId] = useState(null);
 	const [isEventFullModalVisible, setIsEventFullModalVisible] = useState(false);
 	const [isUnfollowModalVisible, setIsUnfollowModalVisible] = useState(false);
 	const [followedEvents, setFollowedEvents] = useState([]);
 	const [searchQuery, setSearchQuery] = useState('');
 	const itemsPerPage = 4;
 	const location = useLocation();
+	const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 	const filteredEvents = events.filter((event) => {
-		// Apply category filter
 		if (selectedCategory && event.external_event_category !== selectedCategory) {
 			return false;
 		}
 		
-		// Apply search filter
 		if (searchQuery) {
 			const query = searchQuery.toLowerCase();
 			
-			// Format date and time for searching
 			const eventDate = event.external_event_date ? new Date(event.external_event_date).toLocaleDateString('en-US', {
 				year: 'numeric',
 				month: 'long',
@@ -137,14 +134,12 @@ const ExternalEvents = () => {
 				hour12: true,
 			}).toLowerCase() : '';
 
-			// Also check for numeric date formats (e.g., "2/20/2025" or "02/20/2025")
 			const numericDate = event.external_event_date ? new Date(event.external_event_date).toLocaleDateString('en-US', {
 				year: 'numeric',
 				month: '2-digit',
 				day: '2-digit',
 			}).toLowerCase() : '';
 
-			// Check for 24-hour time format
 			const time24Hour = event.external_event_time ? new Date(event.external_event_time).toLocaleTimeString('en-US', {
 				hour: '2-digit',
 				minute: '2-digit',
@@ -269,19 +264,6 @@ const ExternalEvents = () => {
 		}
 	];
 
-
-	// const handleFollowClick = () => {
-	// 	if (!user) {
-	// 	  promptLogin();
-	// 	  return;
-	// 	}
-
-	// 	setIsFormVisible(true);
-	//   };
-
-
-
-	// We define some categories here, so ESLint doesn't flag them as unused.
 	const EVENT_CATEGORIES = [
 		"HACKATHON",
 		"WORKSHOP",
@@ -293,32 +275,55 @@ const ExternalEvents = () => {
 		"VOLUNTEERING"
 	];
 
-	// Fetch events from API
 	const fetchEvents = async () => {
 		try {
-			const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-			const response = await fetch(`${apiUrl}/external-events`);
+			const response = await fetch(`${API_URL}/external-events/`);
 			if (!response.ok) {
 				throw new Error('Failed to fetch external events');
 			}
 			const data = await response.json();
-			console.log("Fetched Events:", data);
-			setEvents(data);
+			
+			const imgResponse = await fetch(`${API_URL}/image-management/`);
+			if (!imgResponse.ok) {
+				throw new Error('Failed to fetch images');
+			}
+			const imgData = await imgResponse.json();
+			
+			const extImages = imgData.filter(img => img.eventType === "External");
+			
+			const updatedEvents = data.map(event => {
+				const eventImages = extImages.filter(img => img.eventName === event.external_event_name);
+				const mainImage = eventImages.find(img => img.position === 1); // Get the first position image
+				
+				return {
+					...event,
+					image: mainImage ? mainImage.URL : null
+				};
+			});
+
+			// Sort events by date in descending order (newest first)
+			const sortedEvents = updatedEvents.sort((a, b) => {
+				const dateA = new Date(a.external_event_date);
+				const dateB = new Date(b.external_event_date);
+				return dateB - dateA;
+			});
+			
+			setEvents(sortedEvents);
 		} catch (error) {
-			console.error('Error fetching events:', error);
-			setEvents(dummyEvents);
+			console.error("Error fetching events:", error);
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	useEffect(() => {
 		fetchEvents();
-	}, [refresh]);
+	}, []);
 
 	
 	const promptLogin = () => {
-		alert("Please log in to follow or view event details.");
-		// Alternatively, redirect to login page:
-		// navigate("/login");
+		alert("Please log in to follow event.");
+		
 	};
 
 
@@ -338,7 +343,6 @@ const ExternalEvents = () => {
 	
 		loadUserAndFollowedEvents();
 	
-		// Sync with localStorage changes from other tabs
 		const handleStorageChange = (e) => {
 		  if (e.key === `followedEvents_${user?.id}`) {
 			const followed = JSON.parse(localStorage.getItem(`followedEvents_${user?.id}`)) || [];
@@ -347,7 +351,7 @@ const ExternalEvents = () => {
 		};
 	
 		window.addEventListener('storage', handleStorageChange);
-		window.addEventListener('focus', loadUserAndFollowedEvents); // Refresh on tab focus
+		window.addEventListener('focus', loadUserAndFollowedEvents); 
 	
 		return () => {
 		  window.removeEventListener('storage', handleStorageChange);
@@ -355,7 +359,6 @@ const ExternalEvents = () => {
 		};
 	  }, [location.pathname]);
 
-	// Pagination
 	const totalPages = 2;
 	const handlePageChange = (pageNumber) => {
 		setCurrentPage(pageNumber);
@@ -366,14 +369,56 @@ const ExternalEvents = () => {
 	  }, [selectedCategory]);
 	  
 
-	// Form & Modal Handlers
-	const handleFollowClick = (eventId) => {
+	const handleFollowClick = async (eventId) => {
 		if (!user) {
-		  promptLogin();
-		  return;
+			promptLogin();
+			return;
 		}
-		setSelectedEventId(Number(eventId)); // Store the event ID being signed up for
-		setIsFormVisible(true);
+
+		const numericEventId = Number(eventId);
+
+		try {
+			const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+			const response = await fetch(`${apiUrl}/external-events/${numericEventId}/signup`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					userId: user.id,
+					eventId: numericEventId,
+					name: user.name,
+					studentId: user.studentId,
+					year: user.year,
+					email: user.email
+				}),
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				if (response.status === 400 && errorData.error === 'Event is full') {
+					setIsEventFullModalVisible(true);
+					return;
+				}
+				throw new Error(`Failed to follow: ${errorData.error || 'Unknown error'}`);
+			}
+
+			const updatedEvent = await response.json();
+			setEvents(prevEvents =>
+				prevEvents.map(event =>
+					event.external_event_id === numericEventId
+						? { ...event, external_event_number_of_attendees: updatedEvent.external_event_number_of_attendees }
+						: event
+				)
+			);
+			setFollowedEvents(prev => {
+				const updated = [...prev, numericEventId];
+				localStorage.setItem(`followedEvents_${user.id}`, JSON.stringify(updated));
+				return updated;
+			});
+			setIsSuccessModalVisible(true);
+		} catch (error) {
+			console.error('Error following event:', error);
+			alert(`Failed to follow: ${error.message}`);
+		}
 	};
 
 	const handleUnfollowClick = async (eventId) => {
@@ -382,7 +427,7 @@ const ExternalEvents = () => {
 		  return;
 		}
 	
-		const numericEventId = Number(eventId); // Ensure number type
+		const numericEventId = Number(eventId); 
 	
 		try {
 		  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -429,7 +474,7 @@ const ExternalEvents = () => {
 		e.preventDefault();
 		if (!selectedEventId || !user) return;
 	
-		const numericEventId = Number(selectedEventId); // Ensure number type
+		const numericEventId = Number(selectedEventId);
 	
 		const formData = {
 		  name: e.target.name.value,
@@ -478,19 +523,7 @@ const ExternalEvents = () => {
 		  alert(`Failed to sign up: ${error.message}`);
 		}
 	  };
-	//   const handleFormSubmit = () => {
-	// 	const storageKey = `followedEvents_${user.id}`;
-	// 	const followedEvents = JSON.parse(localStorage.getItem(storageKey)) || [];
-
-	// 	if (!followedEvents.includes(selectedEventId)) {
-	// 	  followedEvents.push(selectedEventId);
-	// 	  localStorage.setItem(storageKey, JSON.stringify(followedEvents));
-	// 	}
-
-	// 	setIsFollowing((prev) => [...prev, selectedEventId]); // Update state
-	// 	setIsFormVisible(false); // Hide form after submission
-	//   };
-
+	
 
 	const handleCloseSuccessModal = () => {
 		setIsSuccessModalVisible(false);
@@ -501,7 +534,6 @@ const ExternalEvents = () => {
 	};
 	const handleCloseUnfollowModal = () => setIsUnfollowModalVisible(false);
 
-	// Admin-only Buttons
 	const handleCreateEventClick = () => {
 		navigate('/create-external-event');
 	};
@@ -541,12 +573,6 @@ const ExternalEvents = () => {
 	const handleEditIconClick = (event) => {
 		console.log("Editing event:", event);
 
-		// Create a copy of the event with formatted time if it's a timestamp
-		// const formattedEvent = {
-		//   ...event,
-		//   time: event.external_event_time ? formatTimestamp(event.external_event_time) : event.time,
-		//   date: event.external_event_date ? formatDate(event.external_event_date) : event.date
-		// };
 		const formattedEvent = {
 			...event,
 
@@ -557,12 +583,10 @@ const ExternalEvents = () => {
 			location: event.external_event_location || event.location || '',
 			description: event.external_event_description || event.description || '',
 
-			// ✅ Corrected fields using appropriate external keys
 			capacity: event.external_event_max_number_of_attendees?.toString() || event.capacity?.toString() || '',
 			price: event.external_event_ticket_amount?.toString() || event.price?.toString() || '',
 			category: event.external_event_category || event.category || '',
 
-			// Also storing external versions if needed
 			external_event_name: event.external_event_name || event.title || '',
 			external_event_date: event.external_event_date || event.date || '',
 			external_event_time: event.external_event_time || event.time || '',
@@ -577,7 +601,6 @@ const ExternalEvents = () => {
 			external_event_manager: event.external_event_manager || '',
 			external_event_speaker: event.external_event_speaker || '',
 
-			// Team fallback
 			team: Array.isArray(event.team) ? event.team : [],
 		};
 
@@ -618,46 +641,34 @@ const ExternalEvents = () => {
 
 		const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-		// Create a copy of the current edit event
 		const updatedEvent = { ...currentEditEvent };
 
 		try {
-			// Handle time conversion - convert "12:30" format to ISO string
 			if (updatedEvent.external_event_time && typeof updatedEvent.external_event_time === 'string') {
-				// Check if it's in "HH:MM" format
 				if (/^\d{1,2}:\d{2}$/.test(updatedEvent.external_event_time)) {
-					// Parse time parts
 					const [hours, minutes] = updatedEvent.external_event_time.split(':').map(Number);
 
-					// Create a new Date object for today
 					const timeDate = new Date();
 
-					// Set hours and minutes
 					timeDate.setHours(hours, minutes, 0, 0);
 
-					// Convert to ISO string
 					updatedEvent.external_event_time = timeDate.toISOString();
 				}
 			}
 
-			// Handle date conversion if needed
 			if (updatedEvent.external_event_date && typeof updatedEvent.external_event_date === 'string') {
-				// Try to parse a date like "20 February 2025" back to a Date object
 				const dateParts = updatedEvent.external_event_date.split(' ');
 				if (dateParts.length === 3) {
 					const day = parseInt(dateParts[0], 10);
 					const month = dateParts[1]; // February
 					const year = parseInt(dateParts[2], 10);
 
-					// Get month number (0-based)
 					const monthNames = ["January", "February", "March", "April", "May", "June",
 						"July", "August", "September", "October", "November", "December"];
 					const monthIndex = monthNames.findIndex(m => m === month);
 
 					if (monthIndex !== -1 && !isNaN(day) && !isNaN(year)) {
-						// Create a new date object
 						const dateObj = new Date(year, monthIndex, day);
-						// Convert to ISO string
 						updatedEvent.external_event_date = dateObj.toISOString();
 					}
 				}
@@ -673,11 +684,9 @@ const ExternalEvents = () => {
 
 			if (!response.ok) throw new Error("Failed to update event");
 
-			// Get the updated event data from the response
 			const updatedEventData = await response.json();
 			console.log("Event updated (from backend):", updatedEventData);
 
-			// Update the events state with the new data
 			setEvents(prevEvents =>
 				prevEvents.map(event =>
 					event.external_event_id === updatedEventData.external_event_id
@@ -686,10 +695,8 @@ const ExternalEvents = () => {
 				)
 			);
 
-			// Force a UI refresh
 			setRefresh(prev => !prev);
 
-			// Close edit form
 			setIsEditFormVisible(false);
 			setCurrentEditEvent(null);
 
@@ -761,17 +768,16 @@ const ExternalEvents = () => {
 				{paginatedEvents.map((event) => (
 					<div className="extevent-card" key={event.id}>
 						<div className="extevent-image">
-							{/* <img src={event.image} alt={event.title} /> */}
 							<img
 								src={
 									event.image && event.image.startsWith('/uploads')
-										? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${event.image}`
-										: event.image || "https://picsum.photos/200/150?random=1"
+										? `${API_URL}${event.image}`
+										: event.image || "/assets/images/default-extevent.png"
 								}
-								alt={event.title}
+								alt={event.external_event_name}
 								onError={(e) => {
-									e.target.src = "https://picsum.photos/200/150?random=1"; // Fallback image
-									e.target.onerror = null; // Disable further error handling
+									e.target.src = "/assets/images/default-extevent.png"; 
+									e.target.onerror = null; 
 								}}
 							/>
 							{isEditMode && user && user.role === "admin" && (
@@ -821,28 +827,28 @@ const ExternalEvents = () => {
 							</div>
 						</div>
 						<div className="extevent-actions">
-						{followedEvents.includes(Number(event.external_event_id)) ? (
-                <button
-                  className="view-button"
-                  onClick={() => handleUnfollowClick(event.external_event_id)}
-                >
-                  Unfollow
-                </button>
-              ) : (
-                <button
-                  className="view-button"
-                  onClick={() => user ? handleFollowClick(event.external_event_id) : promptLogin()}
-                >
-                  Follow
-                </button>
-              )}
-              <button
-                className="apply-button"
-                onClick={() => user ? handleDetailClick(event.external_event_id) : promptLogin()}
-              >
-                Details
-              </button>
-            </div>
+							{followedEvents.includes(Number(event.external_event_id)) ? (
+								<button
+									className="view-button"
+									onClick={() => user ? handleUnfollowClick(event.external_event_id) : promptLogin()}
+								>
+									Unfollow
+								</button>
+							) : (
+								<button
+									className="view-button"
+									onClick={() => user ? handleFollowClick(event.external_event_id) : promptLogin()}
+								>
+									Follow
+								</button>
+							)}
+							<button
+								className="apply-button"
+								onClick={() => handleDetailClick(event.external_event_id)}
+							>
+								Details
+							</button>
+						</div>
 					</div>
 				))}
 			</div>
@@ -852,50 +858,13 @@ const ExternalEvents = () => {
 				onPageChange={(page) => setCurrentPage(page)}
 			/>
 
-			{/* Sign-Up Form */}
-			{isFormVisible && (
-				<div className="event-form-overlay">
-					<div className="event-form-container">
-						<button
-							className="close-form-button"
-							onClick={handleCloseForm}
-							aria-label="Close form"
-						>
-							<FaTimes />
-						</button>
-						<h3>Sign Up to Follow Event</h3>
-						<form className="event-signup-form" onSubmit={handleFormSubmit}>
-							<div className="event-form-group">
-								<label htmlFor="name">Name</label>
-								<input type="text" id="name" name="name" required />
-							</div>
-							<div className="event-form-group">
-								<label htmlFor="studentId">Student ID</label>
-								<input type="text" id="studentId" name="studentId" required />
-							</div>
-							<div className="event-form-group">
-								<label htmlFor="year">Year of Study</label>
-								<input type="text" id="year" name="year" required />
-							</div>
-							<div className="event-form-group">
-								<label htmlFor="email">Email</label>
-								<input type="email" id="email" name="email" required />
-							</div>
-							<div className="event-form-actions">
-								<button type="submit" className="event-submit-button">Submit</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			)}
-
 			{/* Success Modal */}
 			{isSuccessModalVisible && (
 				<div className="event-form-overlay">
 					<div className="success-modal">
 						<button
 							className="close-form-button"
-							onClick={handleCloseSuccessModal}
+							onClick={() => setIsSuccessModalVisible(false)}
 							aria-label="Close modal"
 						>
 							<FaTimes />
@@ -907,7 +876,7 @@ const ExternalEvents = () => {
 						</p>
 						<button
 							className="return-button"
-							onClick={handleCloseSuccessModal}
+							onClick={() => setIsSuccessModalVisible(false)}
 						>
 							Return to Event List
 						</button>
@@ -975,7 +944,7 @@ const ExternalEvents = () => {
 											setCurrentEditEvent({
 												...currentEditEvent,
 												external_event_name: e.target.value,
-												title: e.target.value // Keep both for compatibility
+												title: e.target.value 
 											})
 										}
 										maxLength="100"
@@ -995,7 +964,7 @@ const ExternalEvents = () => {
 											setCurrentEditEvent({
 												...currentEditEvent,
 												external_event_date: e.target.value,
-												date: e.target.value // Keep both for compatibility
+												date: e.target.value
 											})
 										}
 									/>
@@ -1011,7 +980,7 @@ const ExternalEvents = () => {
 											setCurrentEditEvent({
 												...currentEditEvent,
 												external_event_time: e.target.value,
-												time: e.target.value // Keep both for compatibility
+												time: e.target.value
 											})
 										}
 									/>
@@ -1028,7 +997,7 @@ const ExternalEvents = () => {
 										setCurrentEditEvent({
 											...currentEditEvent,
 											external_event_location: e.target.value,
-											location: e.target.value // Keep both for compatibility
+											location: e.target.value
 										})
 									}
 								/>
@@ -1045,7 +1014,7 @@ const ExternalEvents = () => {
 											setCurrentEditEvent({
 												...currentEditEvent,
 												external_event_max_number_of_attendees: e.target.value,
-												capacity: e.target.value // Keep both for compatibility
+												capacity: e.target.value 
 											})
 										}
 									/>
@@ -1061,7 +1030,7 @@ const ExternalEvents = () => {
 											setCurrentEditEvent({
 												...currentEditEvent,
 												external_event_ticket_amount: e.target.value,
-												price: e.target.value // Keep both for compatibility
+												price: e.target.value 
 											})
 										}
 									/>
@@ -1077,7 +1046,7 @@ const ExternalEvents = () => {
 										setCurrentEditEvent({
 											...currentEditEvent,
 											external_event_category: e.target.value,
-											category: e.target.value // Keep both for compatibility
+											category: e.target.value
 										})
 									}
 									className="event-category-select"
@@ -1100,7 +1069,7 @@ const ExternalEvents = () => {
 										setCurrentEditEvent({
 											...currentEditEvent,
 											external_event_description: e.target.value,
-											description: e.target.value // Keep both for compatibility
+											description: e.target.value 
 										})
 									}
 									maxLength="1000"

@@ -3,19 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import './Student.css';
 
 function Student() {
-    const navigate = useNavigate(); // Hook to access navigation
+    const navigate = useNavigate(); 
 
   const handleLoginClick = () => {
-    navigate('/login'); // Navigate to the student page
+    navigate('/login'); 
   };
   const handleVerifyClick = () => {
-    navigate('/verify'); // Navigate to the student page
+    navigate('/verify'); 
   };
   const handleBackClick = () => {
-    navigate(-1); // Go back to the previous page
+    navigate(-1); 
 };
 const handleHomeClick = () => {
-    navigate('/'); // Go back to the previous page
+    navigate('/'); 
 };
 
   const [yearOptions] = useState([

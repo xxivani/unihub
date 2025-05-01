@@ -1,9 +1,9 @@
 .imageE-main-container {
     width: 100%;
-    min-width: 1200px;
     min-height: 680px;
+    height: 770px;
     margin: 0 auto;
-
+    overflow: scroll;
 }
 
 .imageE-header {
@@ -34,6 +34,9 @@
     margin-right: 10px;
 }
 
+.imageE-go-back-button:hover {
+    filter: brightness(110%);
+}
 
 
 .imageE-container {
@@ -72,6 +75,10 @@
     margin-right: auto;
     text-align: center;
     margin-top:15px;
+}
+
+.imageE-update-button:hover {
+    filter: brightness(110%);
 }
 
 .imageE-editor {

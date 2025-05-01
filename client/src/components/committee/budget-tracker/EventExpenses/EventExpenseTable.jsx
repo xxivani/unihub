@@ -52,35 +52,7 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
     }, [events]);
 
     // handle delete
-    // const handleDelete = async (record) => {
-    //     // Confirm before deleting
-    //     if (window.confirm(`Are you sure you want to delete this event${record.general_event_id ? ' from budget tracking' : ''}?`)) {
-    //         try {
-    //             const response = await fetch(`${apiUrl}/bt_eventRoute/${record.id}`, {
-    //                 method: 'DELETE'
-    //             });
 
-    //             if (!response.ok) {
-    //                 throw new Error("Failed to delete event");
-    //             }
-
-    //             // update local state after deletion
-    //             const updatedData = data.filter(item => item.id !== record.id);
-    //             setData(updatedData);
-
-    //             // Notify parent component if provided
-    //             if (onEventUpdate) {
-    //                 onEventUpdate();
-    //             }
-
-    //             alert("Event deleted successfully from event expenses table!");
-
-    //         } catch (error) {
-    //             console.error("Error deleting event:", error);
-    //             alert("Failed to delete event: " + error.message);
-    //         }
-    //     }
-    // };
 
     // Add this enhanced version of handleDelete to your EventExpensesTable component
     const handleDelete = async (record) => {

@@ -7,8 +7,9 @@ const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const Followed = () => {
   const [userId, setUserId] = useState(null);
   const [followedRoles, setFollowedRoles] = useState([]);
+  const [events, setEvents] = useState([]);
   const [followedEvents, setFollowedEvents] = useState([]);
-  const [userClubs, setUserClubs] = useState([]);
+  const [loadingInt, setLoadingInt] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,15 +17,42 @@ const Followed = () => {
     if (userData?.id) {
       setUserId(userData.id);
       fetchFollowedRoles(userData.id);
+      fetchEvents(userData.id);
       fetchFollowedEvents(userData.id);
+<<<<<<< HEAD
       fetchUserClubs(userData.id); 
+=======
+>>>>>>> a598a9c308672bda1e59e35335ea3435a84d7473
     }
   }, []);
+
+  const fetchEvents = async (userId) => {
+    try {
+      const response = await fetch(`${apiUrl}/events`);
+      const data = await response.json();
+
+      const followed = data.filter(event => 
+        event.follower.some(f => f.id == userId)
+      ).map(event => ({
+        id: event.id,
+        name: event.title,
+        date: event.date,
+        location: event.location
+      }));
+
+      setEvents(followed);
+    } catch (err) {
+      console.error("Error fetching internal events:", err);
+    } finally {
+      setLoadingInt(false);
+    }
+  };
 
   const fetchFollowedEvents = async (userId) => {
     try {
       const followedEventsIds = JSON.parse(localStorage.getItem(`followedEvents_${userId}`)) || [];
-
+      console.log("Followed Events IDs:", followedEventsIds); // Debug log
+      
       if (followedEventsIds.length === 0) {
         setFollowedEvents([]);
         setLoading(false);
@@ -33,6 +61,7 @@ const Followed = () => {
 
       const eventsRes = await fetch(`${apiUrl}/external-events`);
       const eventsData = await eventsRes.json();
+      console.log("All Events:", eventsData); // Debug log
 
       const userFollowedEvents = eventsData.filter(event => 
         followedEventsIds.includes(Number(event.external_event_id))
@@ -43,6 +72,7 @@ const Followed = () => {
         location: event.external_event_location
       }));
 
+      console.log("User Followed Events:", userFollowedEvents); // Debug log
       setFollowedEvents(userFollowedEvents);
     } catch (err) {
       console.error("Error fetching followed events:", err);
@@ -52,6 +82,7 @@ const Followed = () => {
   };
 
   const fetchFollowedRoles = async (userId) => {
+    console.log("User-id: ", userId);
     try {
       const [rolesRes, registrationsRes, clubsRes] = await Promise.all([
         fetch(`${apiUrl}/role-openings`),
@@ -65,6 +96,11 @@ const Followed = () => {
         clubsRes.json()
       ]);
 
+    console.log("Roles:", rolesData);
+    console.log("Registrations:", registrationsData);
+    console.log("Clubs:", clubsData);
+    console.log("Current User ID:", userId);
+
       const clubMap = Object.fromEntries(
         clubsData.map(club => [club.club_id, club.club_name])
       );
@@ -72,6 +108,8 @@ const Followed = () => {
       const userRegistrations = registrationsData.filter(
         reg => reg.user_id == userId
       );
+
+      console.log("Filtered Registrations for user:", userRegistrations);
 
       const mappedRoles = userRegistrations.map(reg => {
         const role = rolesData.find(r => r.role_opening_id === reg.role_opening_id);
@@ -90,6 +128,7 @@ const Followed = () => {
     }
   };
 
+<<<<<<< HEAD
   const fetchUserClubs = async (userId) => {
     try {
       const [membershipRes, clubsRes] = await Promise.all([
@@ -117,6 +156,8 @@ const Followed = () => {
   };
   
 
+=======
+>>>>>>> a598a9c308672bda1e59e35335ea3435a84d7473
   const formatDate = (dateString) => {
     if (!dateString) return "Date not set";
     const date = new Date(dateString);
@@ -133,6 +174,7 @@ const Followed = () => {
 
       <div className="followed-page">
         <h2>Followed Role Openings</h2>
+
         {followedRoles.length === 0 ? (
           <p>You haven't applied to any role openings yet.</p>
         ) : (
@@ -145,11 +187,15 @@ const Followed = () => {
                 <span className={`status ${role.status.toLowerCase()}`}>
                   {role.status}
                 </span>
+                {/* <h3>{role.position}</h3>
+                <p><strong>Club:</strong> {role.club}</p>
+                <p><strong>Status:</strong> {role.status}</p> */}
               </li>
             ))}
           </ul>
         )}
 
+<<<<<<< HEAD
         <h2 style={{ marginTop: '2rem' }}>Followed Clubs</h2>
         {userClubs.length === 0 ? (
           <p>You are not a member of any clubs yet.</p>
@@ -164,6 +210,27 @@ const Followed = () => {
             ))}
           </ul>
         )}
+=======
+        <h2 style={{ marginTop: '2rem' }}>Followed Events</h2>
+          {loadingInt ? (
+            <p>Loading events...</p>
+          ) : events.length === 0 ? (
+            <p>You haven't followed any events yet.</p>
+          ) : (
+            <ul className="followed-list">
+              {events.map((event, idx) => (
+                <li key={idx} className="followed-item">
+                  <span className="role-info">
+                    {event.name} at {event.location}
+                  </span>
+                  <span className="status">
+                    {formatDate(event.date)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+>>>>>>> a598a9c308672bda1e59e35335ea3435a84d7473
 
         <h2 style={{ marginTop: '2rem' }}>Followed External Events</h2>
         {loading ? (

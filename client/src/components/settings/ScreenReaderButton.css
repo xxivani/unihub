@@ -1,0 +1,22 @@
+.screen-reader-button {
+    background-color: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    height: 80px;
+    width: 40px;
+  }
+  
+  .screen-reader-button:hover {
+    background-color: #333;
+  }
+  
+  .screen-reader-button svg {
+    color: white;
+    width: 20px;
+    height: 20px;
+    align-items: center;
+    margin-left: -10px;
+  }
+  

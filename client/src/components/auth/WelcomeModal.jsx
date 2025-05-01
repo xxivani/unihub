@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import './WelcomeModal.css';
 
 function WelcomeModal() {
-    const navigate = useNavigate(); // Hook to access navigation
+    const navigate = useNavigate(); 
 
   const handleStudentClick = () => {
-    navigate('/student'); // Navigate to the student page
+    navigate('/student'); 
   };
   const handleBackClick = () => {
-    navigate(-1); // Go back to the previous page
+    navigate(-1); 
   };
   const handleCommiteeClick = () => {
-    navigate('/commiteelogin'); // Go back to the previous page
+    navigate('/commiteelogin'); 
 };
   return (
     <>

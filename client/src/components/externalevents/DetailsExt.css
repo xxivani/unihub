@@ -42,6 +42,8 @@
     font-size: 1.75rem;
     font-weight: bold;
     color: #333;
+    margin: 0;
+    line-height: 1;
 }
 
 .detail-buttons-details-ext {
@@ -192,6 +194,13 @@
     margin-bottom: 0.5rem;
 }
 
+[data-theme="dark"] .availability-item-details-ext {
+    color: var(--text-primary, #ffffff);
+}
+
+[data-theme="dark"] .availability-item-details-ext span {
+    color: var(--text-primary, #ffffff);
+}
 
 /* Event Team Box */
 .event-team-box-details-ext {
@@ -515,4 +524,97 @@
     .details-ext-team-member p {
         font-size: 0.8rem;
     }
+}
+
+/* Additional Images Gallery */
+.additional-images-container {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+              0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .additional-images-container {
+  background-color: var(--bg-secondary, #1e1e1e);
+}
+
+.additional-images-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+[data-theme="dark"] .additional-images-title {
+  color: var(--text-primary, #f5f2f2);
+}
+
+.additional-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.additional-image-item {
+  position: relative;
+  padding-top: 75%; /* 4:3 Aspect Ratio */
+  overflow: hidden;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.additional-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.additional-image:hover {
+  transform: scale(1.05);
+}
+
+.title-with-back {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+  }
+
+  .back-button {
+	background: none;
+	border: none;
+	font-size: 1.5rem;
+	cursor: pointer;
+	color: #333; /* or your theme color */
+	padding: 0;
+	margin: 6rem;
+	margin-left: 2rem;
+  }
+
+.back-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .back-button {
+  color: var(--text-primary, #f5f2f2);
+}
+
+[data-theme="dark"] .back-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Style for unfollow button (already in your component) */
+.follow-button-details-ext.unfollow {
+  background-color: #ff4444;
+  color: white;
+}
+
+.follow-button-details-ext.unfollow:hover {
+  background-color: #cc0000;
 }

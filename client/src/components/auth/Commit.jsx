@@ -3,22 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import './Commit.css';
 
 function CommitLogin() {
-    const navigate = useNavigate(); // Hook to access navigation
+    const navigate = useNavigate(); 
 
     const handleLoginClick = () => {
-        navigate('/login'); // Navigate to the student page
+        navigate('/login');
     };
 
     const handleVerifyClick = () => {
-        navigate('/verify'); // Navigate to the verify page
+        navigate('/verify'); 
     };
 
     const handleBackClick = () => {
-        navigate(-1); // Go back to the previous page
+        navigate(-1); 
     };
 
     const handleHomeClick = () => {
-        navigate('/'); // Go back to the home page
+        navigate('/'); 
     };
 
     const [yearOptions] = useState([
@@ -39,7 +39,6 @@ function CommitLogin() {
         "Drama Club"
     ]);
 
-    // Add role options
     const [roleOptions] = useState([
         "President",
         "Vice President",

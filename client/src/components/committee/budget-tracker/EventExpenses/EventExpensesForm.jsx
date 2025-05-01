@@ -1,4 +1,4 @@
-import { Button, Form, Input, Modal, DatePicker, Select, Radio, Checkbox, Spin } from 'antd';
+import { Button, Form, Input, Modal, DatePicker, Select, Radio, Checkbox, Spin, message } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { LinkOutlined } from '@ant-design/icons';
@@ -10,7 +10,8 @@ function EventAddExpenseButton({ onAddEvent }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState({});
   const [clubName, setClubName] = useState('');
-  // Add missing state variables
+
+  // State for linking to existing events
   const [generalEvents, setGeneralEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [selectedGeneralEvent, setSelectedGeneralEvent] = useState(null);
@@ -57,7 +58,7 @@ function EventAddExpenseButton({ onAddEvent }) {
   // Fetch club name if available
   const fetchClubName = async (id) => {
     try {
-      const response = await fetch(`${apiUrl}/api/clubs/${id}`);
+      const response = await fetch(`${apiUrl}/clubs/${id}`);
       if (response.ok) {
         const data = await response.json();
         setClubName(data.club_name || `Club ${id}`);
@@ -79,7 +80,7 @@ function EventAddExpenseButton({ onAddEvent }) {
       // Get club name first for filtering
       let club = clubName;
       if (!club) {
-        const clubResponse = await fetch(`${apiUrl}/api/clubs/${clubId}`);
+        const clubResponse = await fetch(`${apiUrl}/clubs/${clubId}`);
         if (clubResponse.ok) {
           const clubData = await clubResponse.json();
           club = clubData.club_name;
@@ -91,10 +92,10 @@ function EventAddExpenseButton({ onAddEvent }) {
       if (response.ok) {
         const allEvents = await response.json();
 
-        // Filter events by club and budget_required flag
+        // Filter events by club 
+        // Note: We're not filtering by budget_required to show all events
         const filteredEvents = allEvents.filter(event =>
-          event.club && event.club.toLowerCase().includes((club || '').toLowerCase()) &&
-          event.budget_required === true
+          event.club && event.club.toLowerCase().includes((club || '').toLowerCase())
         );
 
         // Further filter to exclude events that are already linked
@@ -116,6 +117,7 @@ function EventAddExpenseButton({ onAddEvent }) {
       }
     } catch (error) {
       console.error("Error fetching general events:", error);
+      message.error("Failed to load events. Please try again.");
     } finally {
       setLoadingEvents(false);
     }
@@ -125,7 +127,7 @@ function EventAddExpenseButton({ onAddEvent }) {
   const showModal = () => {
     // Check if a club is selected
     if (!clubId) {
-      alert('Please select a club first before adding an expense');
+      message.error('Please select a club first before adding an expense');
       return;
     }
 
@@ -134,12 +136,12 @@ function EventAddExpenseButton({ onAddEvent }) {
     setLinkToExistingEvent(false);
     setSelectedGeneralEvent(null);
     form.resetFields();
-    
+
     // // Set default event status
     // form.setFieldsValue({
     //   eventStatus: 'ONGOING'
     // });
-    
+
     // Fetch available general events for linking
     fetchGeneralEvents();
   };
@@ -159,30 +161,29 @@ function EventAddExpenseButton({ onAddEvent }) {
     setSelectedGeneralEvent(event);
 
     if (event) {
-      // Pre-fill form with event data
+      // Set form values WITHOUT the date field
       form.setFieldsValue({
         eventName: event.title,
-        eventDate: event.date, // May need date formatting
         description: event.description || '',
-        // eventStatus: event.status
+        eventStatus: event.status
       });
 
-      // If event has budget data, only select those categories
+      // Process budget categories
       if (event.budget && typeof event.budget === 'object') {
         const eventCategories = {};
-        
+
         Object.entries(event.budget).forEach(([category, amount]) => {
           const lowerCategory = category.toLowerCase();
-          // Only add categories from the budget
           if (categories.some(cat => cat.value === lowerCategory)) {
-            // Use 0 as minimum amount for validation
             const numAmount = parseFloat(amount);
-            eventCategories[lowerCategory] = (numAmount && numAmount > 0) ? 
+            eventCategories[lowerCategory] = (numAmount && numAmount > 0) ?
               amount.toString() : "";
           }
         });
-        
+
         setSelectedCategories(eventCategories);
+      } else {
+        setSelectedCategories({});
       }
     }
   };
@@ -193,7 +194,7 @@ function EventAddExpenseButton({ onAddEvent }) {
       if (checked) {
         return {
           ...prev,
-          [category]: "" // Initialize with a valid minimum amount
+          [category]: "" // Initialize with an empty string
         };
       } else {
         const newCategories = { ...prev };
@@ -216,41 +217,60 @@ function EventAddExpenseButton({ onAddEvent }) {
     try {
       // Validate club selection
       if (!clubId) {
-        alert('Please select a club first');
+        message.error('Please select a club first');
         return;
       }
-
+  
       // Validate at least one category is selected
       if (Object.keys(selectedCategories).length === 0) {
-        alert('Please select at least one expense category');
+        message.error('Please select at least one expense category');
         return;
       }
-
-      // Convert categories to the format expected by the API
-      // Only include categories that were selected
-      const categoriesData = Object.entries(selectedCategories)
-        .map(([name, amount]) => ({
-          name,
-          amount: Number(amount) || 0 // Ensure minimum value of 0
-        }));
-
+  
+      // Check for date and format it correctly
+      let formattedDate = null;
+      if (values.eventDate) {
+        // If it's already a string, use it directly
+        if (typeof values.eventDate === 'string') {
+          formattedDate = values.eventDate;
+        }
+        // If it has a format method (moment or dayjs object), use it
+        else if (values.eventDate.format) {
+          formattedDate = values.eventDate.format('YYYY-MM-DD');
+        }
+        // Otherwise, try to convert to ISO string and extract the date part
+        else {
+          formattedDate = new Date(values.eventDate).toISOString().split('T')[0];
+        }
+      }
+  
+      // If we still don't have a valid date, show an error
+      if (!formattedDate) {
+        message.error('Please select a valid date');
+        return;
+      }
+  
       // Create event data
       const eventData = {
         name: values.eventName,
-        date: values.eventDate.format('YYYY-MM-DD'),
+        date: formattedDate,
         status: values.eventStatus,
         description: values.description || '',
-        categories: categoriesData,
-        club_id: clubId // Use the clubId from state
+        categories: Object.entries(selectedCategories)
+          .map(([name, amount]) => ({
+            name,
+            amount: Number(amount) || 0
+          })),
+        club_id: clubId
       };
-
+  
       // If linking to a general event, add its ID
       if (linkToExistingEvent && selectedGeneralEvent) {
         eventData.general_event_id = selectedGeneralEvent.id;
       }
-
+  
       console.log("Creating new event with data:", eventData);
-
+  
       // Send POST request to create event
       const eventResponse = await fetch(`${apiUrl}/bt_eventRoute`, {
         method: 'POST',
@@ -259,20 +279,21 @@ function EventAddExpenseButton({ onAddEvent }) {
         },
         body: JSON.stringify(eventData)
       });
-
+  
       if (!eventResponse.ok) {
-        throw new Error(`Failed to create event: ${eventResponse.status}`);
+        const errorData = await eventResponse.json();
+        throw new Error(errorData.message || `Failed to create event: ${eventResponse.status}`);
       }
-
+  
       const createdEvent = await eventResponse.json();
       console.log("Created event:", createdEvent);
-
+  
       // Call the parent function to refresh data
       if (onAddEvent) {
         onAddEvent();
       }
-
-      alert('Event added successfully');
+  
+      message.success('Event added successfully');
       form.resetFields();
       setSelectedCategories({});
       setLinkToExistingEvent(false);
@@ -280,7 +301,7 @@ function EventAddExpenseButton({ onAddEvent }) {
       setIsModalOpen(false);
     } catch (error) {
       console.error('Error creating event:', error);
-      alert(`Failed to create event: ${error.message}`);
+      message.error(`Failed to create event: ${error.message}`);
     }
   };
 
@@ -289,8 +310,8 @@ function EventAddExpenseButton({ onAddEvent }) {
     setLinkToExistingEvent(checked);
     if (!checked) {
       setSelectedGeneralEvent(null);
-      form.resetFields(['eventName', 'description']);
-      
+      form.resetFields(['eventName', 'description', 'eventDate']);
+
       // Clear selected categories when unlinking
       setSelectedCategories({});
     }
@@ -334,17 +355,22 @@ function EventAddExpenseButton({ onAddEvent }) {
             <Form.Item
               label="Select Event"
               required
-              help="Only events with budget requirements are shown"
+              help="Events from this club are shown"
             >
               {loadingEvents ? (
                 <div style={{ textAlign: 'center', padding: '10px' }}>
-                  <Spin /> Loading events...
+                  {/* <Spin /> Loading events... */}
                 </div>
               ) : generalEvents.length > 0 ? (
                 <Select
                   placeholder="Select an event to link"
                   style={{ width: '100%' }}
                   onChange={handleGeneralEventChange}
+                  optionFilterProp="children"
+                  showSearch
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
                 >
                   {generalEvents.map(event => (
                     <Select.Option key={event.id} value={event.id}>
@@ -367,18 +393,31 @@ function EventAddExpenseButton({ onAddEvent }) {
           </Form.Item>
 
           <Form.Item
-            label="Event Date"
+            label={
+              <span>
+                Event Date
+                {linkToExistingEvent && selectedGeneralEvent && (
+                  <span style={{ fontWeight: 'normal', marginLeft: '8px', fontSize: '12px' }}>
+                    (Original: {selectedGeneralEvent.date})
+                  </span>
+                )}
+              </span>
+            }
             name="eventDate"
             rules={[{ required: true, message: 'Please select a date' }]}
+            extra={linkToExistingEvent && selectedGeneralEvent ? "Please select the date manually" : ""}
           >
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker
+              style={{ width: '100%' }}
+              format="YYYY-MM-DD"
+            />
           </Form.Item>
 
           <Form.Item
             label="Event Description"
             name="description"
           >
-            <Input />
+            <Input.TextArea rows={3} />
           </Form.Item>
 
           <Form.Item
@@ -430,7 +469,7 @@ function EventAddExpenseButton({ onAddEvent }) {
               className='event-expense-form-submit-button'
               type="primary"
               htmlType="submit"
-              disabled={Object.keys(selectedCategories).length === 0 || (linkToExistingEvent && !selectedGeneralEvent)}
+              disabled={Object.keys(selectedCategories).length === 0}
             >
               Submit
             </Button>

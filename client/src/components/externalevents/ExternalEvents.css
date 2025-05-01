@@ -7,7 +7,7 @@
     flex-direction: column;
     min-height: 100vh;
     position: relative;
-    z-index: 1; /* Ensure this container is above any background elements */
+    z-index: 1; 
 }
 
 .extevent-page-header {
@@ -16,7 +16,7 @@
     justify-content: space-between;
     padding: 0 20px;
     margin-bottom: 2rem;
-    margin-top: 110px; /* Adjust as needed */
+    margin-top: 110px;
     background-color: white;
 }
 
@@ -30,16 +30,16 @@
     margin-left: 20px;
     font-size: 2rem;
     color: #333;
-    flex-shrink: 0; /* Prevent title from shrinking */
+    flex-shrink: 0; 
 }
 
 .extevent-search-filter-container {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 0; /* Remove bottom margin */
+    margin-bottom: 0;
     flex-grow: 1;
-    justify-content: flex-end; /* Align to the right */
+    justify-content: flex-end; 
 }
 
 .extevent-search-bar {
@@ -49,7 +49,7 @@
     border: 1px solid #ccc;
     border-radius: 20px;
     overflow: hidden;
-    margin: 0 auto; /* Adjusted margin */
+    margin: 0 auto; 
     flex-grow: 1;
     text-align: center;
 }
@@ -109,10 +109,9 @@
   }
 
 .extevent-filter-button:hover, .extevent-calendar-button:hover {
-    border: 2px solid black; /* Border color change on hover */
+    border: 2px solid black; 
 }
 
-/* Event Cards Styles - Updated to match image */
 .extevents-container {
     display: flex;
     flex-direction: column;
@@ -130,9 +129,9 @@
     position: relative;
     overflow: hidden;
     border: 1px solid #eee;
-    width: 100%; /* Make the card take full width */
-    max-width: 1400px;
-    min-height: 100px; /* Ensures it doesn't get too small */
+    width: 100%; 
+    /* max-width: 1400px; */
+    min-height: 100px; 
     max-height: 200px; 
 }
 
@@ -201,9 +200,9 @@
 .extevent-actions {
     display: flex;
     flex-direction: column;
-    align-items: flex-end; /* Align to the right */
-    gap: 10px; /* Space between buttons */
-    position: relative; /* Changed from absolute to relative */
+    align-items: flex-end; 
+    gap: 10px; 
+    position: relative; 
     margin-right: 20px;
     margin-bottom: 10px;
     align-self: center;
@@ -211,11 +210,11 @@
 }
 
 .view-button, .apply-button {
-    width: 250px; /* Increase width */
-    height: 40px; /* Increase height */
-    font-size: 15px; /* Make text bigger */
-    padding: 10px 15px; /* Adjust padding */
-    color: white; /* Optional: text color */
+    width: 250px; 
+    height: 40px;
+    font-size: 15px; 
+    padding: 10px 15px; 
+    color: white; 
     border: none;
     cursor: pointer;
 }
@@ -238,7 +237,6 @@
     background-color: var(--bg, #1c3047) !important;
 }
 
-/* Improved Pagination Styles */
 .pagination {
     display: flex;
     justify-content: center;
@@ -246,7 +244,7 @@
     gap: 0.5rem;
     margin: 2rem 0;
     padding: 1rem 0;
-    background-color: transparent; /* Remove the temporary background */
+    background-color: transparent; 
 }
 
 .pagination-arrow, .pagination-number {
@@ -274,7 +272,7 @@
 }
 
 .pagination-number.active {
-    background-color: #333; /* Changed to match your apply button color */
+    background-color: #333; 
     color: white;
     border-color: #333;
     font-weight: 500;
@@ -288,7 +286,6 @@
     height: 40px;
 }
 
-/* Disable styles for inactive arrows if needed */
 .pagination-arrow.disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -300,7 +297,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    background-color: rgba(0, 0, 0, 0.5); 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -314,11 +311,11 @@
     align-items: center;
     justify-content: flex-start; 
     background-color: white;
-    padding: 20px;  /* Adjust padding */
+    padding: 20px; 
     width: 40% !important;
-    max-width: 800px; /* Increased width */
-    max-height: 440px; /* Set a maximum height for the form */
-    height: 500px; /* Let the height adjust based on content */
+    max-width: 800px; 
+    max-height: 440px; 
+    height: 500px; 
     /* overflow-y: auto; Allows scrolling if the content exceeds max-height */
     padding-bottom: 30px;
 }
@@ -340,7 +337,7 @@
   
   .event-form-group label {
     font-weight: bold;
-    font-size: 14px; /* Smaller font size for labels */
+    font-size: 14px; 
   }
 
   [data-theme="dark"] .event-form-container {
@@ -349,34 +346,34 @@
   }
 
   .event-form-group input {
-    padding: 8px;  /* Reduced padding for smaller input fields */
+    padding: 8px;  
     width: 500px !important;
     border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 14px; /* Adjusted input font size */
+    font-size: 14px;
   }
   
   .event-form-actions {
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centers the buttons horizontally */
-    align-items: center;     /* Centers the buttons vertically */
-    gap: 20px;               /* Adjusts the gap between buttons */
-    margin-bottom: 20px !important;   /* Space below the buttons */
+    justify-content: center; 
+    align-items: center;    
+    gap: 20px;              
+    margin-bottom: 20px !important; 
     margin-top: 20px;
     
   }
   
   .event-submit-button, .close-button {
-    padding: 8px 20px; /* Smaller button padding */
-    font-size: 14px; /* Adjusted button font size */
+    padding: 8px 20px; 
+    font-size: 14px; 
     background-color:#dec585;
-    width: 250px; /* Increase width */
+    width: 250px;
     height: 40px;
   }
   
   .event-form-actions button[type="submit"] {
-    margin-bottom: 20px;  /* Increase space between the submit button and the form */
+    margin-bottom: 20px;  
     border: none;
 }
   
@@ -486,14 +483,11 @@
     background-color: rgb(220, 53, 69);
   }
   
-  /* Position relative for image container to position the delete button */
   .extevent-image {
     position: relative;
   }
 
-  /* Add these styles to your ExternalEvents.css file */
 
-/* Edit icon button */
 .edit-extevent-button {
   position: absolute;
   right: 10px;
@@ -630,7 +624,6 @@
   background-color: #dec585;
 }
 
-/* Make sure the event category dropdown appears downward */
 .event-category-select {
   height: 42px;
   cursor: pointer;
@@ -639,7 +632,6 @@
   -moz-appearance: menulist;
 }
 
-/* Ensure dropdown appears below instead of above */
 .edit-form-group select {
   position: relative;
   z-index: 5;

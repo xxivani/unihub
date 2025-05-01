@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useTheme } from "../../ThemeContext";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { Button } from "react-bootstrap";
+import ScreenReaderButton from "../settings/ScreenReaderButton";
 
 const CustomNavbar = () => {
   const [user, setUser] = useState(null);
@@ -54,6 +55,7 @@ const CustomNavbar = () => {
           </Nav>
 
           <Nav>
+            <ScreenReaderButton/>
             <Button variant="outline-light" onClick={toggleTheme} className="me-2">
               {theme === "light" ? <FaMoon /> : <FaSun />}
             </Button>

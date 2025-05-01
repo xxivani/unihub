@@ -240,7 +240,7 @@ const updateEvent = async (req, res) => {
   
   try {
     const eventId = req.params.id;
-    const {title, location, time, club, date, deadline, capacity, team, budget_required, budget} = req.body;
+    const {title, location, time, club, date, deadline, capacity, price, team, budget_required, budget} = req.body;
     
     const event = await Event.findByPk(eventId, {
       include: [{ model: BTevent, as: 'budgetEvent' }],
@@ -260,6 +260,7 @@ const updateEvent = async (req, res) => {
       date: date || event.date,
       deadline: deadline || event.deadline,
       capacity: capacity || event.capacity,
+      price: price || event.price,
       team: team || event.team,
       budget_required: budget_required !== undefined ? budget_required : event.budget_required,
       budget: budget ? budget : event.budget,

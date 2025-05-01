@@ -293,66 +293,6 @@ body[data-theme="dark"] .error-container {
   }
 }
 
-/* Sync button styles */
-.sync-events-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background-color: #f5c13d !important;
-  color: black !important;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
-}
-
-.sync-events-button:hover {
-  background-color: #e0b000 !important;
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
-}
-
-.sync-events-button:active {
-  transform: translateY(0);
-}
-
-.sync-events-button:disabled {
-  background-color: #cccccc !important;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: translateY(0);
-}
-
-/* Spinning animation for sync icon */
-.spinning {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-      transform: rotate(0deg);
-  }
-  to {
-      transform: rotate(360deg);
-  }
-}
-
-.loading-indicator {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 300px;
-  font-size: 18px;
-  color: #666;
-}
-
-body[data-theme="dark"] .loading-indicator {
-  color: #ccc;
-}
-
 /* Dark mode form styling for EventExpenses.css */
 
 /* Form text colors in dark mode */
@@ -484,18 +424,20 @@ body[data-theme="dark"] .ant-notification-notice-description {
 
   .event-expenses-controls {
       flex-direction: column;
-      gap: 10px;
-  }
-
-  .event-expenses-search-bar {
-      width: 100%;
-      margin-left: 0;
-      margin-top: 10px;
+      gap: 5px; /* Reduced gap between controls */
   }
 
   .event-expenses-header {
       width: 100%;
       justify-content: center;
+      height: auto; /* Remove fixed height */
+      padding: 10px; /* Reduced padding */
+  }
+
+  .event-expenses-search-bar {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 5px; /* Reduced margin */
   }
 
   .event-expenses-table {

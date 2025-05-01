@@ -183,6 +183,7 @@ jobs:
             for i in \$(seq 1 60); do
               echo \"Attempt \$i: Checking database readiness...\"
               
+              # Simpler check - just verify the server is accepting connections
               if docker exec team77-dev-db pg_isready; then
                 echo \"Database is accepting connections!\"
                 # Give it a little extra time to fully initialize
@@ -195,17 +196,40 @@ jobs:
             done
           "
 
-
       - name: Run Migrations and Seeders (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create a temporary container to run migrations
+            # Create temporary config file with hardcoded credentials
+            mkdir -p ~/team-project-dev/config
+            cat > ~/team-project-dev/config/config.js << 'EOL'
+            module.exports = {
+              development: {
+                username: '${{ secrets.DEV_DB_USER }}',
+                password: '${{ secrets.DEV_DB_PASSWORD }}',
+                database: '${{ secrets.DEV_DB_NAME }}',
+                host: 'db',
+                dialect: 'postgres',
+                dialectOptions: {
+                  useUTC: false,
+                  prependSearchPath: true
+                },
+                searchPath: 'public',
+                define: {
+                  freezeTableName: true,
+                  underscored: false
+                }
+              }
+            };
+            EOL
+            
+            # Create a temporary container to run migrations with fixed configuration
             docker run --rm --name team77-migrations-dev \
               --network team77-dev-network \
-              --env-file ~/team-project-dev/dev.env \
               -v ~/team-project-dev/migrations:/app/migrations \
               -v ~/team-project-dev/seeders:/app/seeders \
               -v ~/team-project-dev/models:/app/models \
+              -v ~/team-project-dev/config:/app/src/config \
+              -e NODE_ENV=development \
               ghcr.io/uob-team-project/team77-server:latest \
               sh -c 'cd /app && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all'
           "
@@ -365,13 +389,37 @@ jobs:
       - name: Run Migrations and Seeders (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create a temporary container to run migrations
+            # Create temporary config file with hardcoded credentials
+            mkdir -p ~/team-project-prod/config
+            cat > ~/team-project-prod/config/config.js << 'EOL'
+            module.exports = {
+              production: {
+                username: '${{ secrets.PROD_DB_USER }}',
+                password: '${{ secrets.PROD_DB_PASSWORD }}',
+                database: '${{ secrets.PROD_DB_NAME }}',
+                host: 'db',
+                dialect: 'postgres',
+                dialectOptions: {
+                  useUTC: false,
+                  prependSearchPath: true
+                },
+                searchPath: 'public',
+                define: {
+                  freezeTableName: true,
+                  underscored: false
+                }
+              }
+            };
+            EOL
+            
+            # Create a temporary container to run migrations with fixed configuration
             docker run --rm --name team77-migrations-prod \
               --network team77-prod-network \
-              --env-file ~/team-project-prod/prod.env \
               -v ~/team-project-prod/migrations:/app/migrations \
               -v ~/team-project-prod/seeders:/app/seeders \
               -v ~/team-project-prod/models:/app/models \
+              -v ~/team-project-prod/config:/app/src/config \
+              -e NODE_ENV=production \
               ghcr.io/uob-team-project/team77-server:latest \
               sh -c 'cd /app && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all'
           "

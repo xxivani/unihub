@@ -10,10 +10,11 @@ services:
     networks:
       - common-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
+
   team77-dev-server:
     container_name: team77-dev-server
     image: ghcr.io/uob-team-project/team77-server:latest

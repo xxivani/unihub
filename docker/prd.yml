@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   db:
     image: postgres:14-alpine
@@ -11,10 +10,11 @@ services:
     networks:
       - common-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]  
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
+
   team77-prd-server:
     container_name: team77-prd-server
     image: ghcr.io/uob-team-project/team77-server:latest
@@ -34,6 +34,7 @@ services:
       - common-network
     ports:
       - "9090:8080"
+
   team77-prd-client:
     container_name: team77-prd-client
     image: ghcr.io/uob-team-project/team77-client:latest
@@ -49,10 +50,11 @@ services:
       - common-network
     expose:
       - "80"
-      
+
 networks:
   common-network:
     external: true
+
 volumes:
   prod-db-data:
   prod-uploads:

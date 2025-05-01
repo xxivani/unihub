@@ -24,7 +24,41 @@ const ClubStatistics = () => {
   const [statsData, setStatsData] = useState(null);
   const [selectedClubId, setSelectedClubId] = useState(null);
   
-
+  // Add state to track window width
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  
+    // Add resize event listener with debounce
+    useEffect(() => {
+      // Debounce function to limit how often the resize handler is called
+      const debounce = (func, delay) => {
+        let timeoutId;
+        return (...args) => {
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+          }
+          timeoutId = setTimeout(() => {
+            func(...args);
+          }, delay);
+        };
+      };
+  
+      // Resize handler with debounce
+      const handleResize = debounce(() => {
+        setWindowWidth(window.innerWidth);
+      }); // 100ms delay
+  
+      // Add event listener
+      window.addEventListener('resize', handleResize);
+  
+      // Also trigger on orientation change for mobile devices
+      window.addEventListener('orientationchange', handleResize);
+  
+      // Clean up the event listeners
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        window.removeEventListener('orientationchange', handleResize);
+      };
+    }, []); // Empty dependency array means this effect runs once on mount
 
   // Theme handling
   const getInitialTheme = () => document.body.getAttribute("data-theme") || "light";
@@ -180,11 +214,19 @@ const ClubStatistics = () => {
     cutout: "65%",
     plugins: {
       legend: {
-        position: "bottom",
+        position: windowWidth <= 480 ? "bottom" : "right",
         align: "start",
         labels: {
           color: isDarkTheme ? "#ffffff" : "#000000",
+          boxWidth: 15,
+          padding: windowWidth <= 480 ? 10 : 5,
+          font: {
+            size: windowWidth <= 480 ? 12 : 10
+          }
         },
+        // Ensure text doesn't overflow
+        fullWidth: false,
+        maxWidth: windowWidth <= 480 ? undefined : 150
       },
     },
   };

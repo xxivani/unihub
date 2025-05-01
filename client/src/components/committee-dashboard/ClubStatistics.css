@@ -94,3 +94,30 @@ body[data-theme="dark"] .entity6-doughnut-chart-label span {
 body[data-theme="dark"] .entity6-doughnut-chart-label span {
   color: #ddd;
 }
+
+@media screen and (max-width: 480px) {
+    .entity6-doughnut-chart-label p {
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .entity6-doughnut-chart-label span {
+        font-size: 10px;
+    }
+
+    .doughnut-chart {
+        width: 45%;
+        height: 250px;
+        margin-right: 10px;
+        max-width: 100%;
+    }
+
+    .charts-container {
+        gap: 10px;
+        
+    }
+    
+    .entity6-cs {
+        width: 100%;
+    }
+}

@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { joinClub, leaveClub, getUserMemberships } = require('../controllers/clubMembershipController');
+const {
+  joinClub,
+  leaveClub,
+  getUserMemberships,
+  getDetailedMemberships
+} = require('../controllers/clubMembershipController');
 
 /**
  * @swagger
@@ -96,6 +101,39 @@ router.post('/leave', leaveClub);
  */
 router.get('/user/:userId', getUserMemberships);
 
-
+/**
+ * @swagger
+ * /club-memberships/details/{userId}:
+ *   get:
+ *     summary: Get detailed club membership info for a user
+ *     tags: [ClubMembership]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the user
+ *     responses:
+ *       200:
+ *         description: Detailed membership info
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   clubId:
+ *                     type: integer
+ *                     description: ID of the club
+ *                   joinedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Date the user joined the club
+ *       500:
+ *         description: Server error
+ */
+router.get('/details/:userId', getDetailedMemberships);
 
 module.exports = router;

@@ -118,9 +118,6 @@ app.use('/club-contacts', clubContactRoutes);
 const clubMembershipRoutes = require('./src/routes/clubMembership');
 app.use('/api/club-memberships', clubMembershipRoutes);
 
-<<<<<<< HEAD
-const PORT = process.env.PORT || 5050;
-=======
 const clubStatisticsRoutes = require('./src/routes/clubStatisticsRoute');
 app.use('/api/club-stats', clubStatisticsRoutes);
 app.use('/club-stats', clubStatisticsRoutes);
@@ -128,7 +125,6 @@ app.use('/club-stats', clubStatisticsRoutes);
 
 
 const PORT = process.env.PORT || 5000;
->>>>>>> a598a9c308672bda1e59e35335ea3435a84d7473
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

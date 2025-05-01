@@ -45,7 +45,7 @@ services:
     networks:
       - team77-prod-network
       - common-network
-    expose:
+    ports:
       - "80"
       
 networks:

@@ -17,7 +17,7 @@ const Followed = () => {
       setUserId(userData.id);
       fetchFollowedRoles(userData.id);
       fetchFollowedEvents(userData.id);
-      fetchUserClubs(userData.id); // ✅ fetch clubs
+      fetchUserClubs(userData.id); 
     }
   }, []);
 
@@ -96,21 +96,26 @@ const Followed = () => {
         fetch(`${apiUrl}/club-memberships/user/${userId}`),
         fetch(`${apiUrl}/clubs`)
       ]);
-
-      const [membershipIds, allClubs] = await Promise.all([
-        membershipRes.json(),
-        clubsRes.json()
-      ]);
-
-      const userClubs = allClubs.filter(club =>
-        membershipIds.includes(Number(club.club_id))
-      );
-
+  
+      const memberships = await membershipRes.json(); // Now has clubId + createdAt
+      const allClubs = await clubsRes.json();
+  
+      const userClubs = memberships.map(membership => {
+        const club = allClubs.find(club => club.club_id === membership.clubId);
+        return club
+          ? {
+              ...club,
+              joinedAt: membership.createdAt
+            }
+          : null;
+      }).filter(Boolean);
+  
       setUserClubs(userClubs);
     } catch (err) {
       console.error("Error fetching user clubs:", err);
     }
   };
+  
 
   const formatDate = (dateString) => {
     if (!dateString) return "Date not set";

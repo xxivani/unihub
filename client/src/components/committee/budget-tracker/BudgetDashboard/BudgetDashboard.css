@@ -35,9 +35,12 @@
     height: 150px;
     margin-top: 15px;
     margin-left: 20px;
-    
+
 }
-.budget-box1, .budget-box2, .budget-box3 {
+
+.budget-box1,
+.budget-box2,
+.budget-box3 {
     border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     height: 150px;
@@ -46,7 +49,7 @@
     overflow: hidden;
     position: relative;
     /* color: var(--text-color); */
-    
+
 }
 
 .budget-box-title {
@@ -54,30 +57,34 @@
     gap: 10px;
     opacity: 0.7;
 }
+
 .budget-icon {
     font-size: 22px;
     margin-left: 10px;
     opacity: 0.7;
     margin-top: 3px;
-    
+
 }
+
 .icon {
     display: flex;
     flex-direction: row;
 }
+
 .amount {
     font-size: 25px;
     font-weight: bold;
     text-align: center;
 }
+
 .graph-overlay {
     position: absolute;
     padding: 10px;
-    bottom: 0; 
+    bottom: 0;
     left: 50%;
     width: 95%;
     height: 45%;
-    background-image: url('./Image-removebg-preview.png'); 
+    background-image: url('./Image-removebg-preview.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -100,27 +107,30 @@
     background-color: #88b663;
 
 }
+
 /* body[data-theme="dark"] .budget-box1 {
     background-color: #3a4d2a;
 } */
 
 .budget-box2 {
     background-color: #d9cdbe;
-    
+
 }
+
 /* body[data-theme="dark"] .budget-box2 {
     background-color: #4e4538;
 } */
 
 .budget-box3 {
     background-color: #f6c955;
-   
+
 }
+
 /* body[data-theme="dark"] .budget-box3 {
     background-color: #8a7221;
 } */
 
-.monthly-expense{
+.monthly-expense {
     background-color: white;
     height: 370px;
     width: 800px;
@@ -131,6 +141,7 @@
     padding: 20px;
     border-radius: 10px;
 }
+
 body[data-theme="dark"] .monthly-expense {
     /* background-color: #404040; */
     background-color: #9abdf5;
@@ -163,7 +174,8 @@ body[data-theme="dark"] .monthly-expense {
     border-radius: 10px;
 
 }
-body[data-theme = "dark"] .latest-event-expense {
+
+body[data-theme="dark"] .latest-event-expense {
     background-color: #F5C29A;
 }
 
@@ -173,8 +185,9 @@ body[data-theme = "dark"] .latest-event-expense {
     flex-direction: column;
     gap: 10px;
     /* margin-top: 25px; */
-    
+
 }
+
 .expense-breakdown-chart {
     background-color: white;
     padding: 20px;
@@ -186,6 +199,7 @@ body[data-theme = "dark"] .latest-event-expense {
     margin-right: 10px;
     position: relative;
 }
+
 body[data-theme="dark"] .expense-breakdown-chart {
     background-color: #9abdf5;
 }
@@ -195,18 +209,28 @@ body[data-theme="dark"] .expense-breakdown-chart {
 }
 
 .add-expense-icon {
-    position: absolute; /* Position the icon absolutely */
-    top: 10px; /* Adjust the distance from the top */
-    right: 10px; /* Adjust the distance from the right */
-    display: flex; /* Use flex to center the icon inside the button */
-    align-items: center; /* Center the icon vertically */
-    justify-content: center; /* Center the icon horizontally */
+    position: absolute;
+    /* Position the icon absolutely */
+    top: 10px;
+    /* Adjust the distance from the top */
+    right: 10px;
+    /* Adjust the distance from the right */
+    display: flex;
+    /* Use flex to center the icon inside the button */
+    align-items: center;
+    /* Center the icon vertically */
+    justify-content: center;
+    /* Center the icon horizontally */
     /* background-color: #e0b000; */
     background-color: #162230;
-    width: 43px; /* Set a fixed width */
-    height: 43px; /* Set a fixed height to make it a perfect circle */
-    border: none; /* Ensure there's no border around the button */
-    border-radius: 50%; /* To make it a perfect circle */
+    width: 43px;
+    /* Set a fixed width */
+    height: 43px;
+    /* Set a fixed height to make it a perfect circle */
+    border: none;
+    /* Ensure there's no border around the button */
+    border-radius: 50%;
+    /* To make it a perfect circle */
     cursor: pointer;
     transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -219,6 +243,7 @@ body[data-theme="dark"] .expense-breakdown-chart {
 
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
 }
+
 .add-expense-icon::after {
     position: absolute;
     content: "Edit Expense";
@@ -235,6 +260,7 @@ body[data-theme="dark"] .expense-breakdown-chart {
     visibility: hidden;
     transition: opacity 0.2s ease-in-out;
 }
+
 .add-expense-icon:hover::after {
     opacity: 1;
     visibility: visible;
@@ -250,6 +276,7 @@ body[data-theme="dark"] .expense-breakdown-chart {
     margin-left: 10px;
     margin-right: 10px;
 }
+
 body[data-theme="dark"] .budget-committee-members {
     background-color: #3e5629;
 }
@@ -258,6 +285,7 @@ body[data-theme="dark"] .budget-committee-members {
     margin-top: 10px;
     margin-left: 20px;
 }
+
 .budget-next-button {
     margin-left: 300px;
     padding: 10px 20px;
@@ -278,6 +306,7 @@ body[data-theme="dark"] .budget-committee-members {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     font-size: 15px;
 }
+
 .budget-next-button:hover {
     background-color: #e0b000;
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
@@ -299,11 +328,11 @@ body[data-theme="dark"] .budget-next-button {
     color: #314521;
     font-size: 16px;
 }
-  
+
 .edit-budget-button:hover .edit-budget-spent-button:hover {
     color: #000;
 }
-  
+
 .updating-overlay {
     position: absolute;
     top: 0;
@@ -317,11 +346,13 @@ body[data-theme="dark"] .budget-next-button {
     font-weight: bold;
     z-index: 10;
 }
+
 .select-club-container-bt {
     position: relative;
     margin-left: 15px;
     margin-top: 10px;
 }
+
 body[data-theme="dark"] .select-club-dropdown-bt {
     background-color: #fad5b9;
 }
@@ -334,6 +365,20 @@ body[data-theme="dark"] .select-club-dropdown-bt {
     background-color: white;
     cursor: pointer;
 }
+
+.access-denied {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
 
 /* media responsivesness */
 
@@ -365,21 +410,24 @@ body[data-theme="dark"] .select-club-dropdown-bt {
         height: fit-content;
     }
 
-    .budget-box1, .budget-box2, .budget-box3 {
+    .budget-box1,
+    .budget-box2,
+    .budget-box3 {
         width: 90%;
     }
 
     .monthly-expense {
         width: 100%;
         margin-left: 0;
-    } 
+    }
+
     .latest-event-expense {
         width: 100%;
         margin-left: 0;
         margin-bottom: 15px;
     }
 
-    .expense-breakdown-chart, 
+    .expense-breakdown-chart,
     .budget-committee-members {
         width: 90%;
         margin: 10px auto;
@@ -389,6 +437,7 @@ body[data-theme="dark"] .select-club-dropdown-bt {
         margin-left: 0;
         margin-top: 20px;
     }
+
 }
 
 /* Responsive for mobile devices (480px and below) */
@@ -408,13 +457,16 @@ body[data-theme="dark"] .select-club-dropdown-bt {
         height: fit-content;
     }
 
-    .budget-box1, .budget-box2, .budget-box3 {
+    .budget-box1,
+    .budget-box2,
+    .budget-box3 {
         width: 100%;
     }
 
     .monthly-expense {
         height: 100%;
-    } 
+    }
+
     .latest-event-expense {
         width: 100%;
         padding: 15px;
@@ -445,6 +497,7 @@ body[data-theme="dark"] .select-club-dropdown-bt {
     .select-club-dropdown-bt {
         margin-bottom: 10px;
     }
+
 }
 
 /* Responsive styles for screens between 768px and 1200px */
@@ -462,7 +515,7 @@ body[data-theme="dark"] .select-club-dropdown-bt {
         margin-bottom: 20px;
         display: flex;
         align-items: center;
-        gap: 20px; 
+        gap: 20px;
         padding: 10px;
         position: absolute;
         overflow-y: visible;
@@ -495,8 +548,8 @@ body[data-theme="dark"] .select-club-dropdown-bt {
         gap: 20px;
     }
 
-    .budget-box1, 
-    .budget-box2, 
+    .budget-box1,
+    .budget-box2,
     .budget-box3 {
         width: 250px;
         height: 165px;
@@ -550,8 +603,8 @@ body[data-theme="dark"] .select-club-dropdown-bt {
         gap: 30px;
     }
 
-    .budget-box1, 
-    .budget-box2, 
+    .budget-box1,
+    .budget-box2,
     .budget-box3 {
         width: 270px;
         height: 170px;
@@ -574,7 +627,9 @@ body[data-theme="dark"] .select-club-dropdown-bt {
         width: 100%;
     }
 
-    .budget-box1, .budget-box2, .budget-box3 {
+    .budget-box1,
+    .budget-box2,
+    .budget-box3 {
         width: 100%;
         margin-right: 15px;
     }

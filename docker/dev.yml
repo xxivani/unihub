@@ -1,15 +1,17 @@
 # dev.yml
+version: "3.8"
+
 services:
   db:
     image: postgres:14-alpine
     container_name: team77-dev-db
     restart: always
     env_file:
-      - ./db.env  
+      - ./db.env
     volumes:
       - dev-db-data:/var/lib/postgresql/data
     networks:
-      - common-network
+      - team77-dev-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
@@ -23,10 +25,12 @@ services:
     env_file:
       - ./server.env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - dev-uploads:/app/uploads
     networks:
+      - team77-dev-network
       - common-network
     ports:
       - "8080:8080"
@@ -40,14 +44,19 @@ services:
     depends_on:
       - team77-dev-server
     networks:
+      - team77-dev-network
       - common-network
     ports:
       - "3000:3000"
 
 networks:
+  team77-dev-network:
+    name: team77-dev-network
   common-network:
     external: true
 
 volumes:
   dev-db-data:
+    name: team77-dev-db-data
   dev-uploads:
+    name: team77-dev-uploads

@@ -6,13 +6,13 @@ services:
     container_name: team77-prod-db
     restart: always
     env_file:
-      - ./db.env  
+      - ./db.env
     volumes:
       - prod-db-data:/var/lib/postgresql/data
     networks:
-      - common-network
+      - team77-prod-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]  
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,10 +24,12 @@ services:
     env_file:
       - ./server.env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - prod-uploads:/app/uploads
     networks:
+      - team77-prod-network
       - common-network
     ports:
       - "9090:8080"
@@ -41,14 +43,19 @@ services:
     depends_on:
       - team77-prd-server
     networks:
+      - team77-prod-network
       - common-network
     expose:
       - "80"
       
 networks:
+  team77-prod-network:
+    name: team77-prod-network
   common-network:
     external: true
 
 volumes:
   prod-db-data:
+    name: team77-prod-db-data
   prod-uploads:
+    name: team77-prod-uploads

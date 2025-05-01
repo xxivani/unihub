@@ -105,12 +105,17 @@ jobs:
           POSTGRES_DB=${{ secrets.DEV_DB_NAME }}
           EOL"
           
-          # Create server.env file
+          # Create server.env file with proper database connection parameters
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/server.env << 'EOL'
           NODE_ENV=development
           PORT=8080
           JWT_SECRET=${{ secrets.DEV_JWT_SECRET }}
           DATABASE_URL=postgres://${{ secrets.DEV_DB_USER }}:${{ secrets.DEV_DB_PASSWORD }}@db:5432/${{ secrets.DEV_DB_NAME }}
+          DB_HOST=db
+          DB_PORT=5432
+          POSTGRES_USER=${{ secrets.DEV_DB_USER }}
+          POSTGRES_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}
+          POSTGRES_DB=${{ secrets.DEV_DB_NAME }}
           EOL"
           
           # Create client.env file
@@ -128,6 +133,13 @@ jobs:
           scp -o StrictHostKeyChecking=no -r ./server/src/migrations $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/migrations
           scp -o StrictHostKeyChecking=no -r ./server/src/seeders $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/seeders
           scp -o StrictHostKeyChecking=no -r ./server/src/models $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/models
+
+      - name: Create required network
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Make sure the common-network exists but don't recreate it if it does
+            docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
+          "
 
       - name: Clean up old containers and volumes on VM (Dev)
         run: |
@@ -151,13 +163,6 @@ jobs:
               -v team77-dev-uploads:/app/uploads \
               alpine:latest \
               sh -c 'mkdir -p /app/uploads/{images,pdfs,misc} && chmod -R 777 /app/uploads'
-          "
-
-      - name: Create required network
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Make sure the common-network exists but don't recreate it if it does
-            docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
           "
 
       - name: Start Database Container (Dev)
@@ -190,7 +195,7 @@ jobs:
       - name: Run Migrations and Seeders (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create temporary config file with configuration
+            # Create temporary config file with database connection
             mkdir -p ~/team-project-dev/config
             cat > ~/team-project-dev/config/config.js << 'EOL'
             module.exports = {
@@ -274,12 +279,17 @@ jobs:
           POSTGRES_DB=${{ secrets.PROD_DB_NAME }}
           EOL"
           
-          # Create server.env file
+          # Create server.env file with proper database connection parameters
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-prod/server.env << 'EOL'
           NODE_ENV=production
           PORT=8080
           JWT_SECRET=${{ secrets.PROD_JWT_SECRET }}
           DATABASE_URL=postgres://${{ secrets.PROD_DB_USER }}:${{ secrets.PROD_DB_PASSWORD }}@db:5432/${{ secrets.PROD_DB_NAME }}
+          DB_HOST=db
+          DB_PORT=5432
+          POSTGRES_USER=${{ secrets.PROD_DB_USER }}
+          POSTGRES_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}
+          POSTGRES_DB=${{ secrets.PROD_DB_NAME }}
           EOL"
           
           # Create client.env file
@@ -297,6 +307,13 @@ jobs:
           scp -o StrictHostKeyChecking=no -r ./server/src/migrations $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/migrations
           scp -o StrictHostKeyChecking=no -r ./server/src/seeders $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/seeders
           scp -o StrictHostKeyChecking=no -r ./server/src/models $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/models
+
+      - name: Create required network
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Make sure the common-network exists but don't recreate it if it does
+            docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
+          "
 
       - name: Clean up old containers and volumes on VM (Prod)
         run: |
@@ -323,13 +340,6 @@ jobs:
               -v team77-prod-uploads:/app/uploads \
               alpine:latest \
               sh -c 'mkdir -p /app/uploads/{images,pdfs,misc} && chmod -R 777 /app/uploads'
-          "
-
-      - name: Create required network
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Make sure the common-network exists but don't recreate it if it does
-            docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
           "
 
       - name: Start Database Container (Prod)
@@ -362,7 +372,7 @@ jobs:
       - name: Run Migrations and Seeders (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create temporary config file with configuration
+            # Create temporary config file with database connection
             mkdir -p ~/team-project-prod/config
             cat > ~/team-project-prod/config/config.js << 'EOL'
             module.exports = {

@@ -249,19 +249,9 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker rm -f team77-nginx || true"
 
-      - name: Configure NGINX for Direct IP Access (Dev)
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            chmod +x ~/team-project-dev/docker/discover-ips.sh
-            cd ~/team-project-dev && ./docker/discover-ips.sh
-          "
-
       - name: Deploy Reverse Proxy (Dev)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            docker rm -f team77-nginx || true
-            cd ~/team-project-dev && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans
-          "
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project-dev && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"
 
   deploy-prod:
     name: Deploy Production
@@ -449,16 +439,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker rm -f team77-nginx || true"
 
-      - name: Configure NGINX for Direct IP Access (Prod)
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            chmod +x ~/team-project-prod/docker/discover-ips.sh
-            cd ~/team-project-prod && ./docker/discover-ips.sh
-          "
-
       - name: Deploy Reverse Proxy (Prod)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            docker rm -f team77-nginx || true
-            cd ~/team-project-prod && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans
-          "
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project-prod && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"

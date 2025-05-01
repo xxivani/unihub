@@ -93,8 +93,14 @@ jobs:
       - name: Stop NGINX before deployment
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Stop NGINX container if it exists
+            # Force kill the container if it exists
+            docker kill team77-nginx || true
+            # Sleep to ensure it's fully stopped
+            sleep 5
+            # Force remove the container
             docker rm -f team77-nginx || true
+            # Sleep again to ensure Docker has released the resources
+            sleep 5
           "
 
       - name: Clear previous deployment on VM (Dev)
@@ -279,8 +285,14 @@ jobs:
       - name: Stop nginx before deployment
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Stop NGINX container if it exists
+            # Force kill the container if it exists
+            docker kill team77-nginx || true
+            # Sleep to ensure it's fully stopped
+            sleep 5
+            # Force remove the container
             docker rm -f team77-nginx || true
+            # Sleep again to ensure Docker has released the resources
+            sleep 5
           "
 
       - name: Clear previous deployment on VM (Prod)

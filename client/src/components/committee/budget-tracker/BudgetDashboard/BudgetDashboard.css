@@ -2,6 +2,7 @@
     display: flex;
     margin-top: 90px;
     height: 1000px;
+    /* width: 100%; */
 }
 
 .budget-dashboard-sidebar {
@@ -17,6 +18,7 @@
     padding: 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
+    width: 50%;
 
 }
 
@@ -564,5 +566,40 @@ body[data-theme="dark"] .select-club-dropdown-bt {
     .expense-breakdown-chart,
     .budget-committee-members {
         width: 95%;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    .budget-boxes {
+        width: 100%;
+    }
+
+    .budget-box1, .budget-box2, .budget-box3 {
+        width: 100%;
+        margin-right: 15px;
+    }
+
+    .monthly-expense {
+        width: 98%;
+    }
+
+    .latest-event-expense {
+        width: 98%;
+    }
+
+    .expense-breakdown-chart,
+    .budget-committee-members {
+        width: 95%;
+        position: relative;
+    }
+
+    .budget-next-button {
+        right: 0;
+        margin-right: 20px;
+        margin-top: 20px;
+        align-self: flex-end;
+        width: fit-content;
+        display: inline-block;
+        white-space: nowrap;
     }
 }

@@ -63,6 +63,10 @@ const ImageSEvents = () => {//This is for creating image the first time
         return;
       }
 
+      if (events[`image${selectedColumn}`] != null && events[`image${selectedColumn}`] !== '') {
+        await handleDelete();
+      };
+
       const formData = new FormData();
       formData.append("image", file);
       formData.append('eventType', event_type);
@@ -307,7 +311,6 @@ const ImageSEvents = () => {//This is for creating image the first time
   return (
     <div className="imageS-main-container">
       <div className="imageS-header">
-        <h1 className="imageS-title">Event Name</h1>
         <button
           className="imageS-go-back-button"
           onClick={() => navigate(-1)}
@@ -416,9 +419,7 @@ const ImageSEvents = () => {//This is for creating image the first time
             </div>
           </div>
 
-          <button type="submit" className="imageS-update-button">
-            Update
-          </button>
+
         </div>
       </div>
     </div>

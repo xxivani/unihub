@@ -124,6 +124,10 @@ const ImageMEvents = () => {
       return;
     }
 
+    if (events.find(ev => ev.row === selectedRow)?.[`image${selectedColumn}`] != null && events.find(ev => ev.row === selectedRow)?.[`image${selectedColumn}`] !== '') {
+      await handleDelete();
+    };
+
     const formData = new FormData();
     formData.append("image", file);
     formData.append('eventType', events.find(ev => ev.row === selectedRow)?.eventType);
@@ -181,6 +185,7 @@ const ImageMEvents = () => {
       setSelectedRow(null);
       setSelectedColumn(null);
 
+      window.location.reload();
       fetchImages();
     } catch (error) {
       console.error("Delete image error:", error);
@@ -307,8 +312,12 @@ const ImageMEvents = () => {
       setIsInMoveMode(false);
       setSelectedImage(null);
       setIsPopupMode(false);
+      setCurrentPreview(null);
+      setSelectedRow(null);
+      setSelectedColumn(null);
 
       await fetchImages();
+      window.location.reload();
     }
   };
 
@@ -348,6 +357,32 @@ const ImageMEvents = () => {
 
           setEvents(externalEvents);
 
+        } else {
+          const response = await fetch(`${API_URL}/events/`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch internal events');
+          }
+          const data = await response.json();
+          try {
+            const response1 = await fetch(`${API_URL}/committee-members/by-user/${user.id}`);
+            const data1 = await response1.json();  
+            try {
+              const response2 = await fetch(`${API_URL}/clubs/${data1.club_id}`);
+              const data2 = await response2.json();
+              const events = data.filter(event => event.club == data2.club_name);
+              const internalEvents = events.map((event, index) => ({
+                row: index + 1,
+                title: event.title,
+                eventType: "Internal", 
+                ...Object.fromEntries([...Array(8)].map((_, i) => [`image${i}`, ""]))
+              }));
+              setEvents(internalEvents);
+              } catch(error) {
+                  console.error("Error fetching clubs:", error);
+              }; 
+          } catch (error) {
+            console.error("Error fetching committees:", error);
+          } 
         }
         const response = await fetch(`${API_URL}/image-management/`);
         if (!response.ok) {

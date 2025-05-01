@@ -151,7 +151,8 @@ const deleteImage = async (req, res) => {
     }
     
     if (images.URL) {
-      const imagePath = path.join(__dirname, '../../', images.URL);
+      const basePath = fs.existsSync('/app/uploads') ? '/app' : path.resolve(__dirname, '../../');
+      const imagePath = path.join(basePath, images.URL);
       if (fs.existsSync(imagePath)) {
         fs.unlinkSync(imagePath);
       }

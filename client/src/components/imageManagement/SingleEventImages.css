@@ -1,12 +1,12 @@
 .imageS-main-container {
-    min-width: 1600px
+    overflow: scroll;
 }
 
 .imageS-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 60%;
+    min-width: 1600px;
     margin: 80px auto 20px auto;
     padding: 15px;
 }
@@ -67,18 +67,19 @@
     font-size: 1rem;
     cursor: pointer;
     margin-top:30px;
-    margin-right: 90px;
+    margin-bottom: -50px;
+    margin-left: 1140px;
 }
 
 .imageS-go-back-button:hover {
-    background-color: #333;
+    filter: brightness(110%);
 }
 
 .imageS-container {
     display: flex;
     justify-content: center;
     margin-top: 20px;
-    width: 100%;
+    min-width: 1600px;
 }
 
 .imageS-update-button {
@@ -105,6 +106,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-end;
+    align-items: center;
     overflow: hidden;
 }
 

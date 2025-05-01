@@ -26,6 +26,25 @@ const MonthlyExpensesChart = ({ data }) => {
     return () => observer.disconnect();
   }, []);
 
+  // Add state to track window width
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  // Add resize event listener
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Clean up the event listener
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []); // Empty dependency array means this effect runs once on mount
+
+
   // Get the bar color based on the current theme
   // const getBarColor = () => isDarkTheme ? "#bfbfbf" : "#000000";
   const getBarColor = () => isDarkTheme ? "#0b3474" : "#000000";
@@ -287,6 +306,32 @@ const MonthlyExpensesChart = ({ data }) => {
   };
 
   return (
+    // <div style={{
+    //   fontSize: "18px",
+    //   fontWeight: "bold",
+    //   marginBottom: "10px",
+    //   textAlign: "center",
+    //   position: "relative",
+    //   color: isDarkTheme ? "#09295d" : "#000000",
+    // }}>
+    //   {isUpdating && <div className="updating-overlay">Updating...</div>}
+    //   Year {fiscalYear}
+    //   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    //     <div style={{ width: "48%", height: "300px" }}>
+    //       <Bar data={data1} options={options1} />
+    //     </div>
+    //     <div style={{ width: "48%", height: "300px" }}>
+    //       <Bar data={data2} options={options2} />
+    //     </div>
+    //   </div>
+    //   {/* Add the edit button component */}
+    //   <EditMonthlyChart
+    //     chartData1={data1}
+    //     chartData2={data2}
+    //     onUpdateChartData={() => fetchDashboardData()}
+    //   />
+    // </div>
+
     <div style={{
       fontSize: "18px",
       fontWeight: "bold",
@@ -297,11 +342,29 @@ const MonthlyExpensesChart = ({ data }) => {
     }}>
       {isUpdating && <div className="updating-overlay">Updating...</div>}
       Year {fiscalYear}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ width: "48%", height: "300px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexDirection: windowWidth <= 480 ? "column" : "row"
+        }}
+      >
+        <div
+          style={{
+            width: windowWidth <= 480 ? "100%" : "48%",
+            height: windowWidth <= 480 ? "250px" : "300px",
+            marginBottom: windowWidth <= 480 ? "20px" : "0"
+          }}
+        >
           <Bar data={data1} options={options1} />
         </div>
-        <div style={{ width: "48%", height: "300px" }}>
+        <div
+          style={{
+            width: windowWidth <= 480 ? "100%" : "48%",
+            height: windowWidth <= 480 ? "250px" : "300px"
+          }}
+        >
           <Bar data={data2} options={options2} />
         </div>
       </div>

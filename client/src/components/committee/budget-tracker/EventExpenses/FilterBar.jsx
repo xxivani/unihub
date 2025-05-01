@@ -68,7 +68,7 @@ const FilterBar = ({ onFilterChange, initialFilter = 'all' }) => {
         selectedKeys={[current]}
         mode="horizontal"
         style={{
-          width: '400px',
+          width: '330px',
           backgroundColor: isDarkTheme ? "#121212" : "#ffffff",
         }}
       >
@@ -78,7 +78,7 @@ const FilterBar = ({ onFilterChange, initialFilter = 'all' }) => {
             style={{
               fontWeight: current === item.key ? 'bold' : 'normal',
               fontSize: "16px",
-              padding: '0px 20px',
+              padding: '0px 15px',
               backgroundColor: 'transparent',
             }}
           >

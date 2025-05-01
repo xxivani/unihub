@@ -2,10 +2,10 @@ import "./EventExpenses.css"
 import EventExpensesTable from "./EventExpenseTable";
 import EventAddExpenseButton from "./EventExpensesForm";
 import FilterBar from "./FilterBar";
-import { FaSearch, FaSync } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { Alert, Space, Spin } from 'antd';
+import { Alert, Spin } from 'antd';
 
 const EventExpenses = () => {
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -15,8 +15,8 @@ const EventExpenses = () => {
   const [loading, setLoading] = useState(true);
   const [dataLoading, setDataLoading] = useState(false); // For smoother transitions
   const [error, setError] = useState(null);
-  const [syncing, setSyncing] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [clubName, setClubName] = useState('');
   
   // Create a debounce timer ref for search
   const searchTimeout = useRef(null);
@@ -49,10 +49,27 @@ const EventExpenses = () => {
   useEffect(() => {
     if (clubId) {
       fetchAllEvents();
+      fetchClubName();
     } else {
       setLoading(false);
     }
   }, [clubId]);
+  
+  // Fetch club name
+  const fetchClubName = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/clubs/${clubId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setClubName(data.club_name || `Club ${clubId}`);
+      } else {
+        setClubName(`Club ${clubId}`);
+      }
+    } catch (error) {
+      console.error("Error fetching club name:", error);
+      setClubName(`Club ${clubId}`);
+    }
+  };
   
   // Fetch all events and store them for client-side filtering
   const fetchAllEvents = async () => {
@@ -110,7 +127,6 @@ const EventExpenses = () => {
   // Apply server-side filtering by status
   const applyServerFilter = async (status) => {
     if (status === 'all') {
-      // If filtering by "all", use the cached events
       setFilteredEvents(allEvents);
       return;
     }
@@ -225,19 +241,13 @@ const EventExpenses = () => {
       </div>
     </div>;
   }
-
-  // Display club name if available
-  const getClubName = () => {
-    // This could be enhanced to fetch and display the actual club name
-    return clubId ? `Club ${clubId}` : '';
-  };
   
   return (
     <div className="event-expenses-page">
       <div className="main-event-expenses">
         <div>
           <div className="event-expenses-title">
-            <h2>Event Expenses{clubId ? ` for ${getClubName()}` : ''}</h2>
+            <h2>Event Expenses{clubName ? ` for ${clubName}` : ''}</h2>
           </div>
           
           {error && (
@@ -256,16 +266,6 @@ const EventExpenses = () => {
             <div className="event-expenses-filter-bar">
               <FilterBar onFilterChange={handleFilterChange} initialFilter={activeFilter} />
             </div>
-            <div className="event-expenses-header">
-              {/* <button 
-                className="sync-events-button" 
-                onClick={syncGeneralEvents}
-                disabled={syncing}
-              > */}
-                {/* <FaSync className={syncing ? "spinning" : ""} /> */}
-                {/* {syncing ? "Syncing..." : "Sync Events"} */}
-              {/* </button> */}
-            </div>
           </div>
           <div className="event-expenses-search-bar">
             <FaSearch className="event-expenses-search-icon"/>
@@ -282,7 +282,7 @@ const EventExpenses = () => {
           <div className="event-expenses-table">
             {dataLoading ? (
               <div className="table-loading-overlay">
-                <Spin tip="Loading..." />
+                {/* <Spin tip="Loading..." /> */}
               </div>
             ) : null}
             <div className={dataLoading ? "table-container faded" : "table-container"}>

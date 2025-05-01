@@ -19,6 +19,10 @@ const Followed = () => {
       fetchFollowedRoles(userData.id);
       fetchEvents(userData.id);
       fetchFollowedEvents(userData.id);
+<<<<<<< HEAD
+      fetchUserClubs(userData.id); 
+=======
+>>>>>>> a598a9c308672bda1e59e35335ea3435a84d7473
     }
   }, []);
 
@@ -124,6 +128,36 @@ const Followed = () => {
     }
   };
 
+<<<<<<< HEAD
+  const fetchUserClubs = async (userId) => {
+    try {
+      const [membershipRes, clubsRes] = await Promise.all([
+        fetch(`${apiUrl}/club-memberships/user/${userId}`),
+        fetch(`${apiUrl}/clubs`)
+      ]);
+  
+      const memberships = await membershipRes.json(); // Now has clubId + createdAt
+      const allClubs = await clubsRes.json();
+  
+      const userClubs = memberships.map(membership => {
+        const club = allClubs.find(club => club.club_id === membership.clubId);
+        return club
+          ? {
+              ...club,
+              joinedAt: membership.createdAt
+            }
+          : null;
+      }).filter(Boolean);
+  
+      setUserClubs(userClubs);
+    } catch (err) {
+      console.error("Error fetching user clubs:", err);
+    }
+  };
+  
+
+=======
+>>>>>>> a598a9c308672bda1e59e35335ea3435a84d7473
   const formatDate = (dateString) => {
     if (!dateString) return "Date not set";
     const date = new Date(dateString);
@@ -161,6 +195,22 @@ const Followed = () => {
           </ul>
         )}
 
+<<<<<<< HEAD
+        <h2 style={{ marginTop: '2rem' }}>Followed Clubs</h2>
+        {userClubs.length === 0 ? (
+          <p>You are not a member of any clubs yet.</p>
+        ) : (
+          <ul className="followed-list">
+            {userClubs.map((club, idx) => (
+              <li key={idx} className="followed-item">
+                <span className="role-info">
+                  {club.club_name}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+=======
         <h2 style={{ marginTop: '2rem' }}>Followed Events</h2>
           {loadingInt ? (
             <p>Loading events...</p>
@@ -180,6 +230,7 @@ const Followed = () => {
               ))}
             </ul>
           )}
+>>>>>>> a598a9c308672bda1e59e35335ea3435a84d7473
 
         <h2 style={{ marginTop: '2rem' }}>Followed External Events</h2>
         {loading ? (

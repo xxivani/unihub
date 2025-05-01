@@ -4,10 +4,7 @@ const Expense = db.Expense;
 const sequelize = db.sequelize;
 const { Op } = require('sequelize');
 
-/**
- * Get budget statistics for a specific club
- * This API is designed to provide data for the ClubStatistics component
- */
+
 const getClubBudgetStats = async (req, res) => {
     try {
         const { club_id } = req.query;
@@ -21,23 +18,14 @@ const getClubBudgetStats = async (req, res) => {
         const whereClause = club_id ? { club_id } : {};
 
         // Get the latest budget for the club
-        const budget = await Budget.findOne({
+        const latestBudget = await Budget.findOne({
             where: whereClause,
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
         });
 
-        if (!budget) {
+        if (!latestBudget) {
             return res.status(404).json({ message: 'No budget found for this club' });
         }
-
-        // Get total expenses
-        // const totalSpentResult = await Expense.findOne({
-        //   attributes: [
-        //     [sequelize.fn('SUM', sequelize.col('amount')), 'totalSpent']
-        //   ],
-        //   where: whereClause,
-        //   raw: true
-        // });
 
         const totalExpensesResult = await Expense.findOne({
             attributes: [
@@ -47,16 +35,14 @@ const getClubBudgetStats = async (req, res) => {
             raw: true
         });
 
-        const totalBudget = parseFloat(budget.totalAmount);
-        // const totalSpent = totalSpentResult ? parseFloat(totalSpentResult.getDataValue('totalSpent') || 0) : 0;
+        const totalBudget = parseFloat(latestBudget.totalAmount);
         const totalSpent = parseFloat(totalExpensesResult.totalSpent) || 0;
-
         const remaining = totalBudget - totalSpent;
 
         // Get recent monthly expenses (last 3 months)
         // First, determine which months to include based on current date
         const now = new Date();
-        const currentMonth = now.getMonth() + 1; // JavaScript months are 0-indexed
+        const currentMonth = now.getMonth() + 1;
 
         // Get the 3 most recent months (including current month)
         const recentMonths = [];
@@ -111,7 +97,7 @@ const getClubBudgetStats = async (req, res) => {
                 totalBudget,
                 totalSpent,
                 remaining,
-                fiscalYear: budget.fiscalYear
+                fiscalYear: latestBudget.fiscalYear
             },
             recentExpenses: monthlyExpenses
         };

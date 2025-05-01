@@ -1,4 +1,4 @@
-.entity6-cs{
+.entity6-cs {
     background-color: #D9CDBE;
     /* height: 520px; */
     height: auto;
@@ -13,9 +13,9 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-body[data-theme="dark"] .entity6-cs{
+body[data-theme="dark"] .entity6-cs {
     background-color: #605547;
-}  
+}
 
 .entity6-cs-header {
     display: flex;
@@ -31,7 +31,7 @@ body[data-theme="dark"] .entity6-cs{
     transition: color 0.3s ease;
 }
 
-body[data-theme="dark"] .entity6-arrow-btn{
+body[data-theme="dark"] .entity6-arrow-btn {
     color: white;
 }
 
@@ -48,29 +48,31 @@ body[data-theme="dark"] .entity6-arrow-btn{
     width: 45%;
     height: 300px;
 }
+
 .doughnut-chart {
     width: 35%;
     height: 250px;
     position: relative;
     display: flex;
-    /* justify-content: center; */
-    /* align-items: center; */
+    justify-content: center;
+    align-items: center;
     margin-right: 30px;
 }
 
+/* Updated to perfectly center the text */
 .entity6-doughnut-chart-label {
     position: absolute;
-    top: 39%;
+    top: 40%;
     left: 50%;
-    transform: translate(-50%, -50%); /* Ensures perfect centering */
+    transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
     text-align: center;
     pointer-events: none;
+    width: auto;
+    height: auto;
 }
 
 .entity6-doughnut-chart-label p {
@@ -88,11 +90,11 @@ body[data-theme="dark"] .entity6-cs h3,
 body[data-theme="dark"] .entity6-cs h5,
 body[data-theme="dark"] .entity6-doughnut-chart-label p,
 body[data-theme="dark"] .entity6-doughnut-chart-label span {
-  color: #ffffff;
+    color: #ffffff;
 }
 
 body[data-theme="dark"] .entity6-doughnut-chart-label span {
-  color: #ddd;
+    color: #ddd;
 }
 
 @media screen and (max-width: 480px) {
@@ -114,10 +116,13 @@ body[data-theme="dark"] .entity6-doughnut-chart-label span {
 
     .charts-container {
         gap: 10px;
-        
     }
-    
+
     .entity6-cs {
         width: 100%;
+    }
+
+    .entity6-doughnut-chart-label {
+        top: 40%;
     }
 }

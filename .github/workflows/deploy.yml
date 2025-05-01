@@ -130,17 +130,20 @@ jobs:
           scp -o StrictHostKeyChecking=no -r ./server/src/seeders $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/seeders
           scp -o StrictHostKeyChecking=no -r ./server/src/models $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/models
 
+
       - name: Create required networks (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
             # Make sure the common-network exists but don't recreate it if it does
             docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
             
-            # Remove any existing team77-dev-network to avoid conflicts
-            docker network rm team77-dev-network >/dev/null 2>&1 || true
-            
-            # Create a fresh team77-dev-network
-            docker network create team77-dev-network
+            # Check if team77-dev-network exists
+            if docker network inspect team77-dev-network >/dev/null 2>&1; then
+              echo 'Network team77-dev-network already exists, using existing network'
+            else
+              echo 'Creating team77-dev-network'
+              docker network create team77-dev-network
+            fi
           "
 
       - name: Clean up old containers on VM (Dev)
@@ -296,11 +299,13 @@ jobs:
             # Make sure the common-network exists but don't recreate it if it does
             docker network inspect common-network >/dev/null 2>&1 || docker network create common-network
             
-            # Remove any existing team77-prod-network to avoid conflicts
-            docker network rm team77-prod-network >/dev/null 2>&1 || true
-            
-            # Create a fresh team77-prod-network
-            docker network create team77-prod-network
+            # Check if team77-prod-network exists
+            if docker network inspect team77-prod-network >/dev/null 2>&1; then
+              echo 'Network team77-prod-network already exists, using existing network'
+            else
+              echo 'Creating team77-prod-network'
+              docker network create team77-prod-network
+            fi
           "
 
       - name: Clean up old containers on VM (Prod)

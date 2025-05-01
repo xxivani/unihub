@@ -1,18 +1,17 @@
-version: "3.8"
 services:
   db:
     image: postgres:14-alpine
     container_name: team77-dev-db
     restart: always
     env_file:
-      - ./db.env  
+      - ./db.env
     volumes:
       - dev-db-data:/var/lib/postgresql/data
     networks:
       - team77-dev-network
       - common-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U team77_dev"]
+      test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,7 +23,8 @@ services:
     env_file:
       - ./server.env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - dev-uploads:/app/uploads
     networks:
@@ -55,4 +55,7 @@ networks:
     
 volumes:
   dev-db-data:
+    name: team77-dev-db-data
   dev-uploads:
+    name: team77-dev-uploads
+    external: true

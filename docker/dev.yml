@@ -4,7 +4,7 @@ services:
     container_name: team77-dev-db
     restart: always
     env_file:
-      - ./db.env
+      - ./dev_db.env
     volumes:
       - dev-db-data:/var/lib/postgresql/data
     networks:
@@ -21,7 +21,7 @@ services:
     image: ghcr.io/uob-team-project/team77-server:latest
     restart: always
     env_file:
-      - ./server.env
+      - ./dev_server.env
     depends_on:
       db:
         condition: service_healthy
@@ -38,7 +38,7 @@ services:
     image: ghcr.io/uob-team-project/team77-client:latest
     restart: always
     env_file:
-      - ./client.env
+      - ./dev_client.env
     depends_on:
       - team77-dev-server
     networks:

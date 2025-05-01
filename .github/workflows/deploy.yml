@@ -182,16 +182,19 @@ jobs:
             # Wait for the database to be properly initialized
             for i in \$(seq 1 60); do
               echo \"Attempt \$i: Checking database readiness...\"
-              if docker exec team77-dev-db pg_isready -U ${{ secrets.DEV_DB_USER }} -d ${{ secrets.DEV_DB_NAME }} && 
-                docker exec team77-dev-db psql -U ${{ secrets.DEV_DB_USER }} -d ${{ secrets.DEV_DB_NAME }} -c 'SELECT 1' > /dev/null 2>&1; then
-                echo \"Database is ready and can execute queries!\"
-                sleep 5 
+              
+              if docker exec team77-dev-db pg_isready; then
+                echo \"Database is accepting connections!\"
+                # Give it a little extra time to fully initialize
+                sleep 10
                 break
               fi
+              
               echo \"Database not ready yet. Waiting...\"
               sleep 5
             done
           "
+
 
       - name: Run Migrations and Seeders (Dev)
         run: |
@@ -345,11 +348,15 @@ jobs:
             # Wait for the database to be properly initialized
             for i in \$(seq 1 60); do
               echo \"Attempt \$i: Checking database readiness...\"
-              if docker exec team77-prod-db pg_isready -U ${{ secrets.PROD_DB_USER }} -d ${{ secrets.PROD_DB_NAME }}; then
-                echo \"Database is ready!\"
-                sleep 5  # Give it a little extra time to be fully initialized
+              
+              # Simpler check - just verify the server is accepting connections
+              if docker exec team77-prod-db pg_isready; then
+                echo \"Database is accepting connections!\"
+                # Give it a little extra time to fully initialize
+                sleep 10
                 break
               fi
+              
               echo \"Database not ready yet. Waiting...\"
               sleep 5
             done

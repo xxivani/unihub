@@ -9,9 +9,10 @@ services:
     volumes:
       - prod-db-data:/var/lib/postgresql/data
     networks:
+      - team77-prod-network
       - common-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U team77_prod"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,6 +28,7 @@ services:
     volumes:
       - prod-uploads:/app/uploads
     networks:
+      - team77-prod-network
       - common-network
     ports:
       - "9090:8080"
@@ -40,11 +42,14 @@ services:
     depends_on:
       - team77-prd-server
     networks:
+      - team77-prod-network
       - common-network
-    expose:
-      - "80"
+    ports:
+      - "80:80"
       
 networks:
+  team77-prod-network:
+    external: true
   common-network:
     external: true
     

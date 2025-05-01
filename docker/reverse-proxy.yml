@@ -14,6 +14,13 @@ services:
       - /etc/nginx/ssl/prod:/etc/nginx/ssl/prod:ro
     networks:
       - common-network
+      - team77-dev-network
+      - team77-prod-network
+
 networks:
   common-network:
+    external: true
+  team77-dev-network:
+    external: true
+  team77-prod-network:
     external: true

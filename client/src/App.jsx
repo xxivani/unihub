@@ -115,8 +115,24 @@ function AppContent() {
 
           {/* News Routes */}
           <Route path="/news" element={<NewsSection />} />
-          <Route path="/news/create-news-post" element={<CreateNewsPost />} />
-          <Route path="/news/edit/:id" element={<EditNewsForm />} />
+          <Route
+            path="/news/create-news-post"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <CreateNewsPost />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/news/edit/:id"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <EditNewsForm />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="/gdpr-policy" element={<GDPRPolicy />} />
 
           {/* Protected Committee Routes */}

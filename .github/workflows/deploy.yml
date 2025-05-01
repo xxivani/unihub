@@ -98,7 +98,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-dev"
           
-          # Create consolidated env file for development
+          # Create dev.env file with all required variables
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/dev.env << 'EOL'
           # Database configuration
           POSTGRES_USER=${{ secrets.DEV_DB_USER }}
@@ -130,7 +130,6 @@ jobs:
           scp -o StrictHostKeyChecking=no -r ./server/src/seeders $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/seeders
           scp -o StrictHostKeyChecking=no -r ./server/src/models $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/models
 
-
       - name: Create required networks (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
@@ -148,14 +147,23 @@ jobs:
 
       - name: Clean up old containers on VM (Dev)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project-dev/dev.yml -p team77-dev down --volumes --remove-orphans || true && docker container prune -f"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project-dev/dev.yml -p team77-dev down --remove-orphans || true && docker container prune -f"
 
-      - name: Create required volumes (Dev)
+      - name: Prepare volumes (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create or recreate the uploads volume with proper ownership
-            docker volume rm team77-dev-uploads >/dev/null 2>&1 || true
-            docker volume create team77-dev-uploads
+            # Check if dev-uploads volume exists
+            if ! docker volume inspect team77-dev-uploads >/dev/null 2>&1; then
+              echo 'Creating team77-dev-uploads volume'
+              docker volume create team77-dev-uploads
+            fi
+            
+            # Initialize upload directories
+            docker run --rm \
+              --name upload-init-dev \
+              -v team77-dev-uploads:/app/uploads \
+              alpine:latest \
+              sh -c 'mkdir -p /app/uploads/{images,pdfs,misc} && chmod -R 777 /app/uploads'
           "
 
       - name: Start Database Container (Dev)
@@ -194,17 +202,6 @@ jobs:
               -v ~/team-project-dev/models:/app/models \
               ghcr.io/uob-team-project/team77-server:latest \
               sh -c 'cd /app && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all'
-          "
-
-      - name: Init Upload Directory (Dev)
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create temporary container to initialize upload directories
-            docker run --rm \
-              --name upload-init-dev \
-              -v team77-dev-uploads:/app/uploads \
-              alpine:latest \
-              sh -c 'mkdir -p /app/uploads/{images,pdfs,misc} && chmod -R 777 /app/uploads'
           "
 
       - name: Start Remaining Services (Dev)
@@ -261,7 +258,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-prod"
           
-          # Create consolidated env file for production
+          # Create a single consolidated env file for production
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-prod/prod.env << 'EOL'
           # Database configuration
           POSTGRES_USER=${{ secrets.PROD_DB_USER }}
@@ -311,14 +308,23 @@ jobs:
       - name: Clean up old containers on VM (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP \
-            "docker compose -f ~/team-project-prod/prd.yml -p team77-prod down --volumes --remove-orphans || true && docker container prune -f"
+            "docker compose -f ~/team-project-prod/prd.yml -p team77-prod down --remove-orphans || true && docker container prune -f"
 
-      - name: Create required volumes (Prod)
+      - name: Prepare volumes (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create or recreate the uploads volume with proper ownership
-            docker volume rm team77-prod-uploads >/dev/null 2>&1 || true
-            docker volume create team77-prod-uploads
+            # Check if prod-uploads volume exists
+            if ! docker volume inspect team77-prod-uploads >/dev/null 2>&1; then
+              echo 'Creating team77-prod-uploads volume'
+              docker volume create team77-prod-uploads
+            fi
+            
+            # Initialize upload directories
+            docker run --rm \
+              --name upload-init-prod \
+              -v team77-prod-uploads:/app/uploads \
+              alpine:latest \
+              sh -c 'mkdir -p /app/uploads/{images,pdfs,misc} && chmod -R 777 /app/uploads'
           "
 
       - name: Start Database Container (Prod)
@@ -356,17 +362,6 @@ jobs:
               -v ~/team-project-prod/models:/app/models \
               ghcr.io/uob-team-project/team77-server:latest \
               sh -c 'cd /app && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all'
-          "
-
-      - name: Init Upload Directory (Prod)
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create temporary container to initialize upload directories
-            docker run --rm \
-              --name upload-init-prod \
-              -v team77-prod-uploads:/app/uploads \
-              alpine:latest \
-              sh -c 'mkdir -p /app/uploads/{images,pdfs,misc} && chmod -R 777 /app/uploads'
           "
 
       - name: Start Remaining Services (Prod)

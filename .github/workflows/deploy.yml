@@ -90,28 +90,20 @@ jobs:
         run: |
           ssh-keyscan -H ${{ secrets.DEPLOY_IP }} >> ~/.ssh/known_hosts
 
-      - name: Clear previous deployment on VM (Dev)
+      - name: Create directory on VM (Dev)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create directory with proper permissions if it doesn't exist
-            mkdir -p ~/team-project-dev
-            chmod 755 ~/team-project-dev
-            
-            # Remove previous files but keep the directory
-            rm -rf ~/team-project-dev/*
-          "
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-dev"
 
       - name: Create environment files on VM (Dev)
         run: |
-          # Create db.env file for development with proper permissions
+          # Create db.env file for development
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/db.env << 'EOL'
           POSTGRES_USER=${{ secrets.DEV_DB_USER }}
           POSTGRES_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}
           POSTGRES_DB=${{ secrets.DEV_DB_NAME }}
-          EOL
-          chmod 644 ~/team-project-dev/db.env"
+          EOL"
           
-          # Create server.env file with proper permissions
+          # Create server.env file
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/server.env << 'EOL'
           NODE_ENV=development
           PORT=8080
@@ -122,30 +114,31 @@ jobs:
           DB_PORT=5432
           DATABASE_URL=postgres://${{ secrets.DEV_DB_USER }}:${{ secrets.DEV_DB_PASSWORD }}@db:5432/${{ secrets.DEV_DB_NAME }}
           JWT_SECRET=${{ secrets.DEV_JWT_SECRET }}
-          EOL
-          chmod 644 ~/team-project-dev/server.env"
+          EOL"
           
-          # Create client.env file with proper permissions
+          # Create client.env file
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-dev/client.env << 'EOL'
           NODE_ENV=development
           PORT=3000
           REACT_APP_API_URL=${{ secrets.DEV_API_URL }}
           VITE_API_URL=${{ secrets.DEV_API_URL }}
-          EOL
-          chmod 644 ~/team-project-dev/client.env"
+          EOL"
 
       - name: Transfer deployment files to VM (Dev)
         run: |
           scp -o StrictHostKeyChecking=no -r ./docker/dev.yml $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/
           scp -o StrictHostKeyChecking=no -r ./docker/reverse-proxy.yml $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/
           scp -o StrictHostKeyChecking=no -r ./docker/nginx.conf $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/
-          # Transfer migration helpers with recursive flag for directories
-          scp -o StrictHostKeyChecking=no -r ./server/src/migrations $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/migrations
-          scp -o StrictHostKeyChecking=no -r ./server/src/seeders $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/seeders
-          scp -o StrictHostKeyChecking=no -r ./server/src/models $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/models
           
-          # Ensure correct permissions
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "chmod 644 ~/team-project-dev/*.yml ~/team-project-dev/nginx.conf"
+          # Create directories first
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-dev/migrations"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-dev/seeders"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-dev/models"
+          
+          # Transfer migration helpers
+          scp -o StrictHostKeyChecking=no -r ./server/src/migrations/* $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/migrations/
+          scp -o StrictHostKeyChecking=no -r ./server/src/seeders/* $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/seeders/
+          scp -o StrictHostKeyChecking=no -r ./server/src/models/* $DEPLOY_USER@$DEPLOY_IP:~/team-project-dev/models/
 
       - name: Create required networks (Dev)
         run: |
@@ -160,16 +153,17 @@ jobs:
             docker network inspect team77-prod-network >/dev/null 2>&1 || docker network create team77-prod-network
           "
 
-      - name: Clean up old containers on VM (Dev)
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project-dev/dev.yml -p team77-dev down --volumes --remove-orphans || true && docker container prune -f"
-
-      - name: Create volumes (Dev)
+      - name: Clean up old containers and volumes on VM (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create volumes if they don't exist
-            docker volume create team77-dev-db-data || true
-            docker volume create team77-dev-uploads || true
+            # Stop and remove all containers, networks, and VOLUMES
+            docker compose -f ~/team-project-dev/dev.yml -p team77-dev down --volumes --remove-orphans || true
+            
+            docker volume rm team77-dev-db-data team77-dev-uploads || true
+            
+            # Prune unused containers and volumes
+            docker container prune -f
+            docker volume prune -f
           "
 
       - name: Start Database Container (Dev)
@@ -187,7 +181,7 @@ jobs:
               echo \"Attempt \$i: Checking database readiness...\"
               if docker exec team77-dev-db pg_isready; then
                 echo \"Database is accepting connections!\"
-                sleep 10  # Give it a little extra time to fully initialize
+                sleep 10
                 break
               fi
               echo \"Database not ready yet. Waiting...\"
@@ -198,8 +192,10 @@ jobs:
       - name: Run Migrations and Seeders (Dev)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create temporary config file with secrets from environment
+            # Create directories
             mkdir -p ~/team-project-dev/config
+            
+            # Create temporary config file
             cat > ~/team-project-dev/config/config.js << 'EOL'
             module.exports = {
               development: {
@@ -221,7 +217,7 @@ jobs:
             };
             EOL
             
-            # Create a temporary container to run migrations
+            # Run migrations
             docker run --rm --name team77-migrations-dev \
               --network team77-dev-network \
               -v ~/team-project-dev/migrations:/app/migrations \
@@ -255,21 +251,15 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "sleep 30"
 
-      - name: Remove Previous Reverse Proxy (if any)
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Stop any processes using ports 80 or 443
-            sudo fuser -k 80/tcp || true
-            sudo fuser -k 443/tcp || true
-            sleep 5
-            
-            # Remove the NGINX container if it exists
-            docker rm -f team77-nginx || true
-          "
-
       - name: Deploy Reverse Proxy (Dev)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project-dev && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Remove the NGINX container if it exists
+            docker rm -f team77-nginx || true
+            
+            # Start the reverse proxy
+            cd ~/team-project-dev && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans
+          "
 
   deploy-prod:
     name: Deploy Production
@@ -298,28 +288,21 @@ jobs:
         run: |
           ssh-keyscan -H ${{ secrets.DEPLOY_IP }} >> ~/.ssh/known_hosts
 
-      - name: Clear previous deployment on VM (Prod)
+      - name: Create directory on VM (Prod)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create directory with proper permissions if it doesn't exist
-            mkdir -p ~/team-project-prod
-            chmod 755 ~/team-project-prod
-            
-            # Remove previous files but keep the directory
-            rm -rf ~/team-project-prod/*
-          "
+          # Just create the directory, don't try to delete or change permissions
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-prod"
 
       - name: Create environment files on VM (Prod)
         run: |
-          # Create db.env file for production with proper permissions
+          # Create db.env file for production
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-prod/db.env << 'EOL'
           POSTGRES_USER=${{ secrets.PROD_DB_USER }}
           POSTGRES_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}
           POSTGRES_DB=${{ secrets.PROD_DB_NAME }}
-          EOL
-          chmod 644 ~/team-project-prod/db.env"
+          EOL"
           
-          # Create server.env file with proper permissions
+          # Create server.env file
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-prod/server.env << 'EOL'
           NODE_ENV=production
           PORT=8080
@@ -330,30 +313,31 @@ jobs:
           DB_PORT=5432
           DATABASE_URL=postgres://${{ secrets.PROD_DB_USER }}:${{ secrets.PROD_DB_PASSWORD }}@db:5432/${{ secrets.PROD_DB_NAME }}
           JWT_SECRET=${{ secrets.PROD_JWT_SECRET }}
-          EOL
-          chmod 644 ~/team-project-prod/server.env"
+          EOL"
           
-          # Create client.env file with proper permissions
+          # Create client.env file
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cat > ~/team-project-prod/client.env << 'EOL'
           NODE_ENV=production
           PORT=8080
           REACT_APP_API_URL=${{ secrets.PROD_API_URL }}
           VITE_API_URL=${{ secrets.PROD_API_URL }}
-          EOL
-          chmod 644 ~/team-project-prod/client.env"
+          EOL"
           
       - name: Transfer deployment files to VM (Prod)
         run: |
           scp -o StrictHostKeyChecking=no -r ./docker/prd.yml $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/
           scp -o StrictHostKeyChecking=no -r ./docker/reverse-proxy.yml $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/
           scp -o StrictHostKeyChecking=no -r ./docker/nginx.conf $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/
-          # Transfer migration helpers with recursive flag for directories
-          scp -o StrictHostKeyChecking=no -r ./server/src/migrations $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/migrations
-          scp -o StrictHostKeyChecking=no -r ./server/src/seeders $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/seeders
-          scp -o StrictHostKeyChecking=no -r ./server/src/models $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/models
           
-          # Ensure correct permissions
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "chmod 644 ~/team-project-prod/*.yml ~/team-project-prod/nginx.conf"
+          # Create directories first
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-prod/migrations"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-prod/seeders"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "mkdir -p ~/team-project-prod/models"
+          
+          # Transfer migration helpers
+          scp -o StrictHostKeyChecking=no -r ./server/src/migrations/* $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/migrations/
+          scp -o StrictHostKeyChecking=no -r ./server/src/seeders/* $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/seeders/
+          scp -o StrictHostKeyChecking=no -r ./server/src/models/* $DEPLOY_USER@$DEPLOY_IP:~/team-project-prod/models/
 
       - name: Create required networks (Prod)
         run: |
@@ -365,16 +349,18 @@ jobs:
             docker network inspect team77-prod-network >/dev/null 2>&1 || docker network create team77-prod-network
           "
 
-      - name: Clean up old containers on VM (Prod)
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "docker compose -f ~/team-project-prod/prd.yml -p team77-prod down --volumes --remove-orphans || true && docker container prune -f"
-
-      - name: Create volumes (Prod)
+      - name: Clean up old containers and volumes on VM (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create volumes if they don't exist
-            docker volume create team77-prod-db-data || true
-            docker volume create team77-prod-uploads || true
+            # Stop and remove all containers, networks, and VOLUMES
+            docker compose -f ~/team-project-prod/prd.yml -p team77-prod down --volumes --remove-orphans || true
+            
+            # Explicitly remove volumes even if they weren't removed by docker compose
+            docker volume rm team77-prod-db-data team77-prod-uploads || true
+            
+            # Prune unused containers and volumes
+            docker container prune -f
+            docker volume prune -f
           "
 
       - name: Start Database Container (Prod)
@@ -392,7 +378,7 @@ jobs:
               echo \"Attempt \$i: Checking database readiness...\"
               if docker exec team77-prod-db pg_isready; then
                 echo \"Database is accepting connections!\"
-                sleep 10  # Give it a little extra time to fully initialize
+                sleep 10
                 break
               fi
               echo \"Database not ready yet. Waiting...\"
@@ -403,8 +389,10 @@ jobs:
       - name: Run Migrations and Seeders (Prod)
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Create temporary config file with secrets from environment
+            # Create directories
             mkdir -p ~/team-project-prod/config
+            
+            # Create temporary config file
             cat > ~/team-project-prod/config/config.js << 'EOL'
             module.exports = {
               production: {
@@ -426,7 +414,7 @@ jobs:
             };
             EOL
             
-            # Create a temporary container to run migrations
+            # Run migrations
             docker run --rm --name team77-migrations-prod \
               --network team77-prod-network \
               -v ~/team-project-prod/migrations:/app/migrations \
@@ -460,18 +448,12 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "sleep 20"
 
-      - name: Remove Previous Reverse Proxy (if any)
-        run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Stop any processes using ports 80 or 443
-            sudo fuser -k 80/tcp || true
-            sudo fuser -k 443/tcp || true
-            sleep 5
-            
-            # Remove the NGINX container if it exists
-            docker rm -f team77-nginx || true
-          "
-
       - name: Deploy Reverse Proxy (Prod)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project-prod && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
+            # Remove the NGINX container if it exists
+            docker rm -f team77-nginx || true
+            
+            # Start the reverse proxy
+            cd ~/team-project-prod && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans
+          "

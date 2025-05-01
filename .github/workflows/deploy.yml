@@ -93,13 +93,13 @@ jobs:
       - name: Stop NGINX before deployment
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Force kill the container if it exists
-            docker kill team77-nginx || true
-            # Sleep to ensure it's fully stopped
-            sleep 5
-            # Force remove the container
-            docker rm -f team77-nginx || true
-            # Sleep again to ensure Docker has released the resources
+            # Force kill dev container if it exists
+            docker kill team77-nginx-dev || true
+            docker rm -f team77-nginx-dev || true
+            # Force kill prod container if it exists
+            docker kill team77-nginx-prod || true
+            docker rm -f team77-nginx-prod || true
+            # Sleep to ensure resources are released
             sleep 5
           "
 
@@ -253,7 +253,7 @@ jobs:
       - name: Deploy nginx for Development
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project-dev && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project-dev && NGINX_CONTAINER_NAME=team77-nginx-dev docker compose -f reverse-proxy.yml -p team77-proxy-dev up -d --remove-orphans"
 
   deploy-prod:
     name: Deploy Production
@@ -285,13 +285,13 @@ jobs:
       - name: Stop nginx before deployment
         run: |
           ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "
-            # Force kill the container if it exists
-            docker kill team77-nginx || true
-            # Sleep to ensure it's fully stopped
-            sleep 5
-            # Force remove the container
-            docker rm -f team77-nginx || true
-            # Sleep again to ensure Docker has released the resources
+            # Force kill dev container if it exists
+            docker kill team77-nginx-dev || true
+            docker rm -f team77-nginx-dev || true
+            # Force kill prod container if it exists
+            docker kill team77-nginx-prod || true
+            docker rm -f team77-nginx-prod || true
+            # Sleep to ensure resources are released
             sleep 5
           "
 
@@ -444,4 +444,4 @@ jobs:
 
       - name: Deploy nginx (Production)
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project-prod && docker compose -f reverse-proxy.yml -p team77-proxy up -d --remove-orphans"
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_IP "cd ~/team-project-prod && NGINX_CONTAINER_NAME=team77-nginx-prod docker compose -f reverse-proxy.yml -p team77-proxy-prod up -d --remove-orphans"

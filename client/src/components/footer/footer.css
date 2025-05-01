@@ -10,6 +10,17 @@
     /* gap: 2rem; */
   }
   
+  .unihub-text-container {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+  }
+
+  .unihub-very-cool-best-best-logo-fr-fr {
+    max-height: 200px;
+    max-width: 200px;
+  }
+
   .UniHub-text {
     color: #fff !important;
     font-size: 40px;
@@ -55,6 +66,11 @@
       align-items: center;
       padding: 30px 20px;
       text-align: center;
+    }
+
+    .unihub-very-cool-best-best-logo-fr-fr {
+      max-height: 100px;
+      max-width: 100px;
     }
   
     .text-containers {

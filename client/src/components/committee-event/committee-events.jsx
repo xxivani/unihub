@@ -534,7 +534,7 @@ const E4CommitteeEvents = () =>{
                   width: "100%",
                   textAlign: "center",
                   margin: "2px",
-                }}>404: No matching events found...</h3>}
+                }}>There are no events with the current settings...</h3>}
               {/*edit*/}
               {isEditFormVisible && currentEditEvent && (
                       <div className="e4c-event-form-overlay">

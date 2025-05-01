@@ -3,8 +3,9 @@ import "./footer.css";
 const Footer = () => {
   return (
     <div className="Footer-container">
-      <div className="Unihub-text-container">
+      <div className="unihub-text-container">
         <h1 className="UniHub-text">UniHub</h1>
+        <img className="unihub-very-cool-best-best-logo-fr-fr" src="/assets/images/uni_hub.png" alt="BEST BEST LOGO"/>
       </div>
       <div className="text-containers">
         <div className="text-container-1">

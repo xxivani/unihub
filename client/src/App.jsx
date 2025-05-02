@@ -39,11 +39,11 @@ import ApplyRoleOpening from "./pages/RoleOpening/ApplyRoleOpening";
 import ViewRoleDetail from "./pages/committee/commitee-Roles/ViewRoleDetail";
 
 import Student from "./components/auth/Student";
-import Welcome from "./components/auth/WelcomeModal";
+// import Welcome from "./components/auth/WelcomeModal";
 import Login from "./components/auth/Login";
-import Verify from "./components/auth/Verify";
-import AccountVerified from "./components/auth/AccountVerified";
-import CommiteeLogin from "./components/auth/Commit";
+// import Verify from "./components/auth/Verify";
+// import AccountVerified from "./components/auth/AccountVerified";
+// import CommiteeLogin from "./components/auth/Commit";
 import DetailsExt from "./components/externalevents/DetailsExt";
 import EditNewsForm from "./components/news/EditNewsPost";
 
@@ -265,11 +265,11 @@ function AppContent() {
 
           {/* Auth Routes */}
           <Route path="/student" element={<Student />} />
-          <Route path="/welcome" element={<Welcome />} />
+          {/* <Route path="/welcome" element={<Welcome />} /> */}
           <Route path="/login" element={<Login />} />
-          <Route path="/verify" element={<Verify />} />
-          <Route path="/accountverified" element={<AccountVerified />} />
-          <Route path="/commiteelogin" element={<CommiteeLogin />} />
+          {/* <Route path="/verify" element={<Verify />} /> */}
+          {/* <Route path="/accountverified" element={<AccountVerified />} /> */}
+          {/* <Route path="/commiteelogin" element={<CommiteeLogin />} /> */}
         </Routes>
       </div>
       {!isAuthPage && !isWelcomePage && !isCommitteePage && !isAccountVerifyPage && !isStudentPage && !isLoginPage && !isVerifyPage && <Footer />}

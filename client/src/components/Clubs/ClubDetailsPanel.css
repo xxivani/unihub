@@ -215,7 +215,7 @@ body[data-theme="dark"] .team-list p {
   .view-event-btn {
     margin-top: 0.5rem;
     padding: 0.4rem 0.8rem;
-    background-color: #007bff;
+    background-color: #dec585;
     color: white;
     border: none;
     border-radius: 6px;
@@ -225,6 +225,6 @@ body[data-theme="dark"] .team-list p {
   }
   
   .view-event-btn:hover {
-    background-color: #0056b3;
+    background-color: #c9af74;
   }
   

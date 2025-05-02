@@ -62,6 +62,15 @@ const ClubDetailsPanel = ({ activeTab, club }) => {
 
   const membersToShow = committeeMembers.length > 0 ? committeeMembers : fallbackMembers;
 
+  const formatRole = (role) => {
+    if (!role) return "";
+    return role
+      .toLowerCase()
+      .split("_")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   return (
     <main className="club-details-container">
       <section className="club-info-panel">
@@ -76,7 +85,7 @@ const ClubDetailsPanel = ({ activeTab, club }) => {
             <div className="team-list">
               {membersToShow.map((member, index) => (
                 <div key={index} className="team-card">
-                  <p><strong>{member.committee_member_position}:</strong> {member.committee_member_name}</p>
+                  <p><strong>{formatRole(member.committee_member_position)}:</strong> {member.committee_member_name}</p>
                   <p>Email: <a href={`mailto:${member.committee_member_email}`}>{member.committee_member_email}</a></p>
                 </div>
               ))}
@@ -97,7 +106,7 @@ const ClubDetailsPanel = ({ activeTab, club }) => {
                     </div>
                     <button
                       className="view-event-btn"
-                      onClick={() => navigate(`/event-details/${event.id}`)}
+                      onClick={() => navigate(`/event-details?eventid=${event.id}`)}
                     >
                       View Event
                     </button>
@@ -118,7 +127,7 @@ const ClubDetailsPanel = ({ activeTab, club }) => {
             <div key={index} className="team-member">
               <FaUserCircle className="member-avatar" />
               <div className="member-info">
-                <div className="member-role">{member.committee_member_position}</div>
+                <div className="member-role">{formatRole(member.committee_member_position)}</div>
                 <div className="member-name">{member.committee_member_name}</div>
               </div>
             </div>

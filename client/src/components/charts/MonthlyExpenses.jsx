@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
-import EditMonthlyChart from "../committee/budget-tracker/BudgetDashboard/EditMonthlyChart";
-import axios from "axios";
 import { useTheme } from "../../ThemeContext";
-// import { toast } from "react-toastify"; // Optional, for notifications
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -219,118 +216,7 @@ const MonthlyExpensesChart = ({ data }) => {
     },
   };
 
-  // Handler for updating chart data
-  const handleUpdateChartData = async (newData, semesterNumber) => {
-    try {
-      setIsUpdating(true);
-      
-      // Update local state first
-      if (semesterNumber === 1) {
-        setChartData1(newData);
-      } else {
-        setChartData2(newData);
-      }
-
-      // Find which month was updated by comparing the data
-      const originalData = semesterNumber === 1 ? data1 : data2;
-      const updatedIndex = newData.datasets[0].data.findIndex((value, index) => {
-        return value !== originalData.datasets[0].data[index];
-      });
-      
-      if (updatedIndex !== -1) {
-        const month = newData.labels[updatedIndex];
-        const amount = newData.datasets[0].data[updatedIndex];
-        
-        // Send update to backend
-        await axios.post('/api/expense-updates/monthly', {
-          month,
-          amount,
-          semester: semesterNumber
-        });
-        
-        // Show success message
-        if (toast) {
-          toast.success(`${month} expenses updated successfully`);
-        } else {
-          console.log(`${month} expenses updated successfully`);
-        }
-      }
-    } catch (error) {
-      console.error('Error updating monthly expenses:', error);
-      
-      // Show error message
-      if (toast) {
-        toast.error('Failed to update monthly expenses');
-      } else {
-        console.error('Failed to update monthly expenses');
-      }
-      
-      // Revert UI changes on error by refetching data
-      try {
-        const response = await axios.get('/api/bt_dashboard/monthly-expenses');
-        if (response.data) {
-          // Split the refreshed data into semesters
-          const refreshedData1 = {
-            labels: response.data.labels.slice(0, 4),
-            datasets: [
-              {
-                label: "Amount Spent (AED)",
-                data: response.data.data.slice(0, 4),
-                backgroundColor: "#000",
-                borderRadius: 10,
-              },
-            ],
-          };
-          
-          const refreshedData2 = {
-            labels: response.data.labels.slice(4),
-            datasets: [
-              {
-                label: "Amount Spent (AED)",
-                data: response.data.data.slice(4),
-                backgroundColor: "#000",
-                borderRadius: 10,
-              },
-            ],
-          };
-          
-          setChartData1(refreshedData1);
-          setChartData2(refreshedData2);
-        }
-      } catch (refreshError) {
-        console.error('Error refreshing data:', refreshError);
-      }
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
   return (
-    // <div style={{
-    //   fontSize: "18px",
-    //   fontWeight: "bold",
-    //   marginBottom: "10px",
-    //   textAlign: "center",
-    //   position: "relative",
-    //   color: isDarkTheme ? "#09295d" : "#000000",
-    // }}>
-    //   {isUpdating && <div className="updating-overlay">Updating...</div>}
-    //   Year {fiscalYear}
-    //   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-    //     <div style={{ width: "48%", height: "300px" }}>
-    //       <Bar data={data1} options={options1} />
-    //     </div>
-    //     <div style={{ width: "48%", height: "300px" }}>
-    //       <Bar data={data2} options={options2} />
-    //     </div>
-    //   </div>
-    //   {/* Add the edit button component */}
-    //   <EditMonthlyChart
-    //     chartData1={data1}
-    //     chartData2={data2}
-    //     onUpdateChartData={() => fetchDashboardData()}
-    //   />
-    // </div>
 
     <div style={{
       fontSize: "18px",
@@ -368,12 +254,6 @@ const MonthlyExpensesChart = ({ data }) => {
           <Bar data={data2} options={options2} />
         </div>
       </div>
-      {/* Add the edit button component */}
-      <EditMonthlyChart
-        chartData1={data1}
-        chartData2={data2}
-        onUpdateChartData={() => fetchDashboardData()}
-      />
     </div>
   );
 };

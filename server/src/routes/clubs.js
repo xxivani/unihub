@@ -1,31 +1,34 @@
-// server/src/routes/clubs.js
 const express = require('express');
 const router = express.Router();
 const {
   createClub,
   getAllClubs,
+  getClubById,
   updateClub,
-  deleteClub,
-  getClubById
+  deleteClub
 } = require('../controllers/clubController');
+
+const { upload } = require('../middleware/upload'); 
 
 /**
  * @swagger
  * tags:
  *   name: Clubs
- *   description: Club management endpoints
+ *   description: Club management
  */
 
 /**
  * @swagger
  * /clubs:
  *   post:
- *     summary: Create a new club (Admin only)
+ *     summary: Create a new club
  *     tags: [Clubs]
+ *     consumes:
+ *       - multipart/form-data
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -33,25 +36,24 @@ const {
  *                 type: string
  *               club_description:
  *                 type: string
- *               club_thumbnail_url:
- *                 type: string
  *               club_category:
  *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: Club created successfully
- *       400:
- *         description: Missing required fields
  *       500:
  *         description: Server error
  */
-router.post('/', createClub);
+router.post('/', upload, createClub);
 
 /**
  * @swagger
  * /clubs:
  *   get:
- *     summary: Retrieve all clubs
+ *     summary: Get all clubs
  *     tags: [Clubs]
  *     responses:
  *       200:
@@ -64,8 +66,8 @@ router.get('/', getAllClubs);
 /**
  * @swagger
  * /clubs/{id}:
- *   put:
- *     summary: Update a club by ID (Admin only)
+ *   get:
+ *     summary: Get a single club by ID
  *     tags: [Clubs]
  *     parameters:
  *       - in: path
@@ -73,11 +75,32 @@ router.get('/', getAllClubs);
  *         required: true
  *         schema:
  *           type: integer
- *         description: Club ID
+ *     responses:
+ *       200:
+ *         description: Club data
+ *       404:
+ *         description: Club not found
+ */
+router.get('/:id', getClubById);
+
+/**
+ * @swagger
+ * /clubs/{id}:
+ *   put:
+ *     summary: Update a club
+ *     tags: [Clubs]
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -85,10 +108,11 @@ router.get('/', getAllClubs);
  *                 type: string
  *               club_description:
  *                 type: string
- *               club_thumbnail_url:
- *                 type: string
  *               club_category:
  *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Club updated successfully
@@ -97,13 +121,13 @@ router.get('/', getAllClubs);
  *       500:
  *         description: Server error
  */
-router.put('/:id', updateClub);
+router.put('/:id', upload, updateClub);
 
 /**
  * @swagger
  * /clubs/{id}:
  *   delete:
- *     summary: Delete a club by ID (Admin only)
+ *     summary: Delete a club
  *     tags: [Clubs]
  *     parameters:
  *       - in: path
@@ -111,17 +135,14 @@ router.put('/:id', updateClub);
  *         required: true
  *         schema:
  *           type: integer
- *         description: Club ID
  *     responses:
  *       200:
- *         description: Club deleted successfully
+ *         description: Club deleted
  *       404:
  *         description: Club not found
  *       500:
  *         description: Server error
  */
 router.delete('/:id', deleteClub);
-
-router.get('/:id', getClubById);
 
 module.exports = router;

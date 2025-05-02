@@ -9,9 +9,9 @@ const ClubTopSection = ({ club }) => {
   const [user, setUser] = useState(null);
   const [userMemberships, setUserMemberships] = useState([]);
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const base = apiUrl.replace(/\/api$/, ""); 
   const fallbackImage = "https://picsum.photos/200";
 
-  
   useEffect(() => {
     const loadUserAndMemberships = () => {
       const storedUser = sessionStorage.getItem("user");
@@ -68,7 +68,6 @@ const ClubTopSection = ({ club }) => {
 
   const isMember = userMemberships.includes(Number(club.club_id));
 
-  
   const handleJoinClub = async () => {
     if (!user) {
       alert("Please log in first.");
@@ -125,7 +124,6 @@ const ClubTopSection = ({ club }) => {
     }
   };
 
-  
   return (
     <div className="club-top-container">
       <button className="exit-button" onClick={() => navigate("/clubs")}>
@@ -134,13 +132,18 @@ const ClubTopSection = ({ club }) => {
 
       <img
         className="club-logo"
-        src={club.club_thumbnail_url || fallbackImage}
+        src={
+          club.club_thumbnail_url?.startsWith("/uploads")
+            ? `${base}${club.club_thumbnail_url}`
+            : club.club_thumbnail_url || fallbackImage
+        }
         alt={club.club_name}
         onError={(e) => {
           e.target.src = fallbackImage;
           e.target.onerror = null;
         }}
       />
+
       <h1 className="club-title">{club.club_name}</h1>
 
       <div className="club-actions">

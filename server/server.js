@@ -36,7 +36,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 app.use('/uploads', express.static('/app/uploads'));
 app.use('/api/uploads', express.static('/app/uploads'));
-/*app.use('/uploads', express.static(path.join(__dirname, 'uploads'));*/
+//app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 app.get('/health', (req, res) => {  
   res.status(200).json({
@@ -122,7 +123,13 @@ const clubStatisticsRoutes = require('./src/routes/clubStatisticsRoute');
 app.use('/api/club-stats', clubStatisticsRoutes);
 app.use('/club-stats', clubStatisticsRoutes);
 
+<<<<<<< HEAD
 const PORT = process.env.PORT || 5000;
+=======
+
+
+const PORT = process.env.PORT || 5050;
+>>>>>>> de46d6f (Added club logo upload and edit functionality)
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

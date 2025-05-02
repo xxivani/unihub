@@ -5,10 +5,29 @@ const CreateClubForm = () => {
   const [clubName, setClubName] = useState("");
   const [presidentName, setPresidentName] = useState("");
   const [description, setDescription] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
   const [category, setCategory] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [error, setError] = useState("");
+  const [previewImage, setPreviewImage] = useState(null);
 
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const apiUrl =
+    import.meta.env.VITE_API_URL ||
+    (window.location.hostname === "localhost"
+      ? `http://localhost:${import.meta.env.VITE_DEV_PORT || "5000"}/api`
+      : `https://${window.location.hostname}/api`);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.size > 10 * 1024 * 1024) {
+      setError("Image file is too large. Please select an image under 10MB.");
+      setImageFile(null);
+      setPreviewImage(null);
+      return;
+    }
+    setImageFile(file);
+    setPreviewImage(URL.createObjectURL(file));
+    setError("");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,32 +37,33 @@ const CreateClubForm = () => {
       return;
     }
 
-    const formData = {
-      club_name: clubName,
-      club_description: description,
-      club_thumbnail_url: imageUrl,
-      club_category: category,
-    };
+    const formData = new FormData();
+    formData.append("club_name", clubName);
+    formData.append("club_description", description);
+    formData.append("club_category", category);
+    if (imageFile) {
+      formData.append("image", imageFile); 
+    }
 
     try {
       const response = await fetch(`${apiUrl}/clubs`, {
         method: "POST",
+        body: formData,
         headers: {
-          "Content-Type": "application/json"
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
-        body: JSON.stringify(formData)
       });
 
       const result = await response.json();
 
       if (response.ok) {
         alert("Club created successfully!");
-        console.log(result);
         setClubName("");
         setPresidentName("");
         setDescription("");
-        setImageUrl("");
         setCategory("");
+        setImageFile(null);
+        setPreviewImage(null);
       } else {
         alert("Error: " + result.message);
       }
@@ -81,13 +101,17 @@ const CreateClubForm = () => {
           required
         ></textarea>
 
-        <label>Club Logo (Image URL):</label>
-        <input
-          type="text"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="Enter image URL..."
-        />
+        <label>Club Logo (Upload Image):</label>
+        <input type="file" accept="image/*" onChange={handleImageChange} />
+        {previewImage && (
+          <img
+            src={previewImage}
+            alt="Preview"
+            className="club-logo-preview"
+            style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "10px" }}
+          />
+        )}
+        {error && <p className="error-message">{error}</p>}
 
         <label>Club Category:</label>
         <select
@@ -105,7 +129,9 @@ const CreateClubForm = () => {
           <option value="Cultural">Cultural</option>
         </select>
 
-        <button type="submit" className="submit-button">Create Club</button>
+        <button type="submit" className="submit-button">
+          Create Club
+        </button>
       </form>
     </div>
   );

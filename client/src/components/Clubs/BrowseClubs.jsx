@@ -15,8 +15,14 @@ const BrowseClubs = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingClub, setEditingClub] = useState(null);
+  const [editImageFile, setEditImageFile] = useState(null);
   const clubsPerPage = 4;
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+  const API_URL = import.meta.env.VITE_API_URL ||
+    (window.location.hostname === "localhost"
+      ? `http://localhost:${import.meta.env.VITE_DEV_PORT || "5000"}/api`
+      : `https://${window.location.hostname}/api`);
+  const base = API_URL.replace(/\/api$/, "");
 
   useEffect(() => {
     const loadUserAndMemberships = () => {
@@ -46,18 +52,18 @@ const BrowseClubs = () => {
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('focus', loadUserAndMemberships);
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("focus", loadUserAndMemberships);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('focus', loadUserAndMemberships);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("focus", loadUserAndMemberships);
     };
   }, [location.pathname]);
 
   const fetchUserMemberships = async (userId) => {
     try {
-      const response = await fetch(`${apiUrl}/club-memberships/user/${userId}`);
+      const response = await fetch(`${API_URL}/club-memberships/user/${userId}`);
       const memberships = await response.json();
       setUserMemberships(memberships.map(Number));
       localStorage.setItem(`userMemberships_${userId}`, JSON.stringify(memberships));
@@ -75,7 +81,7 @@ const BrowseClubs = () => {
   useEffect(() => {
     const fetchClubs = async () => {
       try {
-        const response = await fetch(`${apiUrl}/clubs`);
+        const response = await fetch(`${API_URL}/clubs`);
         const data = await response.json();
         setClubs(data);
       } catch (error) {
@@ -93,7 +99,7 @@ const BrowseClubs = () => {
     }
 
     try {
-      const response = await fetch(`${apiUrl}/club-memberships`, {
+      const response = await fetch(`${API_URL}/club-memberships`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.id, clubId: Number(clubId) }),
@@ -122,7 +128,7 @@ const BrowseClubs = () => {
     }
 
     try {
-      const response = await fetch(`${apiUrl}/club-memberships/leave`, {
+      const response = await fetch(`${API_URL}/club-memberships/leave`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.id, clubId: Number(clubId) }),
@@ -146,7 +152,7 @@ const BrowseClubs = () => {
     if (!window.confirm("Are you sure you want to delete this club?")) return;
 
     try {
-      const response = await fetch(`${apiUrl}/clubs/${clubId}`, {
+      const response = await fetch(`${API_URL}/clubs/${clubId}`, {
         method: "DELETE",
       });
 
@@ -172,22 +178,26 @@ const BrowseClubs = () => {
 
   const handleEditFormSubmit = async (e) => {
     e.preventDefault();
-
+  
+    const formData = new FormData();
+    formData.append("club_name", editingClub.club_name);
+    formData.append("club_description", editingClub.club_description);
+    formData.append("club_category", editingClub.club_category || ""); 
+    if (editImageFile) {
+      formData.append("image", editImageFile);
+    }
+  
     try {
-      const response = await fetch(`${apiUrl}/clubs/${editingClub.club_id}`, {
+      const response = await fetch(`${API_URL}/clubs/${editingClub.club_id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          club_name: editingClub.club_name,
-          club_description: editingClub.club_description,
-          club_thumbnail_url: editingClub.club_thumbnail_url,
-        }),
+        body: formData, 
       });
-
+  
       if (response.ok) {
         alert("Club updated successfully!");
         setEditingClub(null);
-        window.location.reload();
+        setEditImageFile(null);
+        window.location.reload(); 
       } else {
         alert("Failed to update club.");
       }
@@ -196,7 +206,7 @@ const BrowseClubs = () => {
       alert("Error updating club.");
     }
   };
-
+  
   const filteredClubs = clubs.filter((club) => {
     const matchesSearch = club.club_name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "" || club.club_category === selectedCategory;
@@ -274,7 +284,11 @@ const BrowseClubs = () => {
               <div key={club.club_id} className="club-card">
                 <div className="club-image">
                   <img
-                    src={club.club_thumbnail_url || "https://picsum.photos/200/150?random=1"}
+                    src={
+                      club.club_thumbnail_url?.startsWith("/uploads")
+                        ? `${base}${club.club_thumbnail_url}`
+                        : club.club_thumbnail_url || "https://picsum.photos/200/150?random=1"
+                    }
                     alt={club.club_name}
                     onError={(e) => {
                       e.target.src = "https://picsum.photos/200/150?random=1";
@@ -374,11 +388,11 @@ const BrowseClubs = () => {
               </div>
 
               <div className="edit-form-group">
-                <label>Club Logo URL:</label>
+                <label>Upload New Club Logo:</label>
                 <input
-                  type="text"
-                  value={editingClub.club_thumbnail_url || ""}
-                  onChange={(e) => handleEditFormChange("club_thumbnail_url", e.target.value)}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setEditImageFile(e.target.files[0])}
                 />
               </div>
 

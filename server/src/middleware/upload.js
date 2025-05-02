@@ -69,3 +69,69 @@ module.exports = {
   upload: upload.fields(configuredUpload.fields),
   uploadMiddleware: upload
 };
+
+
+/*const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
+
+const ensureDirectoryExists = (dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+};
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    let subfolder;
+
+    if (file.fieldname === 'image') {
+      subfolder = 'images';
+    } else if (file.fieldname === 'pdf') {
+      subfolder = 'pdfs';
+    } else {
+      subfolder = 'misc';
+    }
+
+    const uploadPath = path.join(__dirname, '../../uploads', subfolder); // ✅ Safe dynamic path
+    ensureDirectoryExists(uploadPath);
+
+    console.log(`Saving ${file.fieldname} to: ${uploadPath}`);
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const filename = file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname);
+    console.log(`Generated filename: ${filename}`);
+    cb(null, filename);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  console.log('Processing file:', file.originalname, 'of type:', file.mimetype);
+
+  if (file.fieldname === 'image' && !file.mimetype.startsWith('image/')) {
+    return cb(new Error('Only image files are allowed!'), false);
+  }
+
+  if (file.fieldname === 'pdf' && file.mimetype !== 'application/pdf') {
+    return cb(new Error('Only PDF files are allowed!'), false);
+  }
+
+  cb(null, true);
+};
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter
+});
+
+module.exports = {
+  upload: upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'pdf', maxCount: 1 }
+  ]),
+  uploadMiddleware: upload
+};
+*/

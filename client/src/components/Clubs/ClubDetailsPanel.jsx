@@ -1,12 +1,65 @@
+import { useEffect, useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import "./ClubDetailsPanel.css";
 
 const ClubDetailsPanel = ({ activeTab, club }) => {
-  const teamMembers = [
-    { role: "President", name: "Dummy President", email: "president@example.com" },
-    { role: "Vice President", name: "Dummy VP", email: "vp@example.com" },
-    { role: "Treasurer", name: "Dummy Treasurer", email: "treasurer@example.com" },
+  const [committeeMembers, setCommitteeMembers] = useState([]);
+  const [clubEvents, setClubEvents] = useState([]);
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+  const fallbackMembers = [
+    {
+      committee_member_name: "Alex Johnson",
+      committee_member_email: "alex.johnson@example.com",
+      committee_member_position: "President",
+    },
+    {
+      committee_member_name: "Maria Lee",
+      committee_member_email: "maria.lee@example.com",
+      committee_member_position: "Treasurer",
+    },
+    {
+      committee_member_name: "Omar Hussein",
+      committee_member_email: "omar.hussein@example.com",
+      committee_member_position: "Events Officer",
+    }
   ];
+
+  useEffect(() => {
+    if (!club?.club_id) return;
+
+    const fetchCommitteeMembers = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/committee-members/by-club/${club.club_id}`);
+        const data = await response.json();
+        setCommitteeMembers(data);
+      } catch (error) {
+        console.error("Failed to load committee members", error);
+      }
+    };
+
+    fetchCommitteeMembers();
+  }, [club]);
+
+  useEffect(() => {
+    const fetchClubEvents = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/events`);
+        const allEvents = await response.json();
+
+        const filtered = allEvents.filter(event => event.club === club.club_name);
+        setClubEvents(filtered);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
+    if (club?.club_name) {
+      fetchClubEvents();
+    }
+  }, [club]);
+
+  const membersToShow = committeeMembers.length > 0 ? committeeMembers : fallbackMembers;
 
   return (
     <main className="club-details-container">
@@ -20,10 +73,10 @@ const ClubDetailsPanel = ({ activeTab, club }) => {
           <>
             <h2 className="club-info-title">Meet the Team</h2>
             <div className="team-list">
-              {teamMembers.map((member, index) => (
+              {membersToShow.map((member, index) => (
                 <div key={index} className="team-card">
-                  <p><strong>{member.role}:</strong> {member.name}</p>
-                  <p>Email: <a href={`mailto:${member.email}`}>{member.email}</a></p>
+                  <p><strong>{member.committee_member_position}:</strong> {member.committee_member_name}</p>
+                  <p>Email: <a href={`mailto:${member.committee_member_email}`}>{member.committee_member_email}</a></p>
                 </div>
               ))}
             </div>
@@ -31,7 +84,20 @@ const ClubDetailsPanel = ({ activeTab, club }) => {
         ) : (
           <>
             <h2 className="club-info-title">Events</h2>
-            <p>Events for this club will be shown here (coming soon).</p>
+            {clubEvents.length > 0 ? (
+              <ul className="event-list">
+                {clubEvents.map((event) => (
+                  <li key={event.id} className="event-item">
+                    <h3>{event.title}</h3>
+                    <p>{event.description}</p>
+                    <p><strong>Date:</strong> {event.date}</p>
+                    <p><strong>Location:</strong> {event.location}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No events available for this club.</p>
+            )}
           </>
         )}
       </section>
@@ -39,12 +105,12 @@ const ClubDetailsPanel = ({ activeTab, club }) => {
       <aside className="club-committee-panel">
         <h2 className="committee-title">Our Team</h2>
         <div className="committee-list">
-          {teamMembers.map((member, index) => (
+          {membersToShow.map((member, index) => (
             <div key={index} className="team-member">
-              <FaUserCircle className="member-avatar" /> 
+              <FaUserCircle className="member-avatar" />
               <div className="member-info">
-                <div className="member-role">{member.role}</div>
-                <div className="member-name">{member.name}</div>
+                <div className="member-role">{member.committee_member_position}</div>
+                <div className="member-name">{member.committee_member_name}</div>
               </div>
             </div>
           ))}

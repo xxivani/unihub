@@ -1,7 +1,6 @@
-import { Button, Form, Input, Modal, DatePicker, Select, Radio, Checkbox, Spin, message } from 'antd';
+import { Button, Form, Input, Modal, DatePicker, Radio, Checkbox, message } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { LinkOutlined } from '@ant-design/icons';
 import "./EventExpensesForm.css";
 
 function EventAddExpenseButton({ onAddEvent }) {
@@ -10,12 +9,6 @@ function EventAddExpenseButton({ onAddEvent }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState({});
   const [clubName, setClubName] = useState('');
-
-  // State for linking to existing events
-  const [generalEvents, setGeneralEvents] = useState([]);
-  const [loadingEvents, setLoadingEvents] = useState(false);
-  const [selectedGeneralEvent, setSelectedGeneralEvent] = useState(null);
-  const [linkToExistingEvent, setLinkToExistingEvent] = useState(false);
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -71,154 +64,6 @@ function EventAddExpenseButton({ onAddEvent }) {
     }
   };
 
-  // Fetch general events that could be linked
-  // const fetchGeneralEvents = async () => {
-  //   if (!clubId) return;
-
-  //   setLoadingEvents(true);
-  //   try {
-  //     // Get club name first for filtering
-  //     let club = clubName;
-  //     if (!club) {
-  //       const clubResponse = await fetch(`${apiUrl}/clubs/${clubId}`);
-  //       if (clubResponse.ok) {
-  //         const clubData = await clubResponse.json();
-  //         club = clubData.club_name;
-  //       }
-  //     }
-
-  //     // Fetch events filtering by club
-  //     const response = await fetch(`${apiUrl}/events`);
-  //     if (response.ok) {
-  //       const allEvents = await response.json();
-
-  //       // Filter events by club 
-  //       // Note: We're not filtering by budget_required to show all events
-  //       const filteredEvents = allEvents.filter(event =>
-  //         event.club && event.club.toLowerCase().includes((club || '').toLowerCase())
-  //       );
-
-  //       // Further filter to exclude events that are already linked
-  //       const btEventsResponse = await fetch(`${apiUrl}/bt_eventRoute?club_id=${clubId}`);
-  //       if (btEventsResponse.ok) {
-  //         const btEvents = await btEventsResponse.json();
-  //         const linkedEventIds = btEvents
-  //           .filter(btEvent => btEvent.general_event_id)
-  //           .map(btEvent => btEvent.general_event_id);
-
-  //         const availableEvents = filteredEvents.filter(
-  //           event => !linkedEventIds.includes(event.id)
-  //         );
-
-  //         setGeneralEvents(availableEvents);
-  //       } else {
-  //         setGeneralEvents(filteredEvents);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching general events:", error);
-  //     message.error("Failed to load events. Please try again.");
-  //   } finally {
-  //     setLoadingEvents(false);
-  //   }
-  // };
-
-
-  const fetchGeneralEvents = async () => {
-    if (!clubId) return;
-  
-    setLoadingEvents(true);
-    try {
-      // Get club name first for filtering
-      let club = clubName;
-      if (!club) {
-        const clubResponse = await fetch(`${apiUrl}/clubs/${clubId}`);
-        if (clubResponse.ok) {
-          const clubData = await clubResponse.json();
-          club = clubData.club_name;
-        }
-      }
-  
-      // Fetch events filtering by club
-      const response = await fetch(`${apiUrl}/events`);
-      if (response.ok) {
-        const allEvents = await response.json();
-  
-        // Filter events by club 
-        // Note: We're not filtering by budget_required to show all events
-        const filteredEvents = allEvents.filter(event =>
-          event.club && event.club.toLowerCase().includes((club || '').toLowerCase())
-        );
-  
-        // Further filter to exclude events that are already linked
-        const btEventsResponse = await fetch(`${apiUrl}/bt_eventRoute?club_id=${clubId}`);
-        if (btEventsResponse.ok) {
-          const btEvents = await btEventsResponse.json();
-          const linkedEventIds = btEvents
-            .filter(btEvent => btEvent.general_event_id)
-            .map(btEvent => btEvent.general_event_id);
-  
-          const availableEvents = filteredEvents.filter(
-            event => !linkedEventIds.includes(event.id)
-          );
-  
-          setGeneralEvents(availableEvents);
-        } else {
-          setGeneralEvents(filteredEvents);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching general events:", error);
-      message.error("Failed to load events. Please try again.");
-    } finally {
-      setLoadingEvents(false);
-    }
-  };
-
-  // Add this function to the EventExpensesForm component
-const handleCreateFromGeneral = async (generalEventId) => {
-  try {
-    // Validate club selection
-    if (!clubId) {
-      message.error('Please select a club first');
-      return;
-    }
-
-    // Call the API to create a BT event from the general event
-    const response = await fetch(`${apiUrl}/bt_eventRoute/create-from-general`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        club_id: clubId,
-        event_id: generalEventId
-      })
-    });
-
-    const data = await response.json();
-    
-    if (!response.ok) {
-      if (response.status === 400 && data.btEventId) {
-        message.info('This event is already in the budget tracker');
-      } else {
-        throw new Error(data.message || 'Failed to create event');
-      }
-    } else {
-      message.success('Event added to budget tracker successfully');
-      if (onAddEvent) {
-        onAddEvent();
-      }
-    }
-    
-    // Close the form modal
-    setIsModalOpen(false);
-  } catch (error) {
-    console.error('Error creating event from general event:', error);
-    message.error(`Failed to create event: ${error.message}`);
-  }
-};
-
   // Open Modal
   const showModal = () => {
     // Check if a club is selected
@@ -229,59 +74,19 @@ const handleCreateFromGeneral = async (generalEventId) => {
 
     setIsModalOpen(true);
     setSelectedCategories({});
-    setLinkToExistingEvent(false);
-    setSelectedGeneralEvent(null);
     form.resetFields();
 
-    // // Set default event status
-    // form.setFieldsValue({
-    //   eventStatus: 'ONGOING'
-    // });
-
-    // Fetch available general events for linking
-    fetchGeneralEvents();
+    // Set default event status
+    form.setFieldsValue({
+      eventStatus: 'ONGOING'
+    });
   };
 
   // Close Modal
   const handleCancel = () => {
     setIsModalOpen(false);
     setSelectedCategories({});
-    setLinkToExistingEvent(false);
-    setSelectedGeneralEvent(null);
     form.resetFields();
-  };
-
-  // Handle General Event Selection
-  const handleGeneralEventChange = (eventId) => {
-    const event = generalEvents.find(e => e.id === eventId);
-    setSelectedGeneralEvent(event);
-
-    if (event) {
-      // Set form values WITHOUT the date field
-      form.setFieldsValue({
-        eventName: event.title,
-        description: event.description || '',
-        eventStatus: event.status
-      });
-
-      // Process budget categories
-      if (event.budget && typeof event.budget === 'object') {
-        const eventCategories = {};
-
-        Object.entries(event.budget).forEach(([category, amount]) => {
-          const lowerCategory = category.toLowerCase();
-          if (categories.some(cat => cat.value === lowerCategory)) {
-            const numAmount = parseFloat(amount);
-            eventCategories[lowerCategory] = (numAmount && numAmount > 0) ?
-              amount.toString() : "";
-          }
-        });
-
-        setSelectedCategories(eventCategories);
-      } else {
-        setSelectedCategories({});
-      }
-    }
   };
 
   // Handle checkbox change for categories
@@ -360,11 +165,6 @@ const handleCreateFromGeneral = async (generalEventId) => {
         club_id: clubId
       };
   
-      // If linking to a general event, add its ID
-      if (linkToExistingEvent && selectedGeneralEvent) {
-        eventData.general_event_id = selectedGeneralEvent.id;
-      }
-  
       console.log("Creating new event with data:", eventData);
   
       // Send POST request to create event
@@ -392,24 +192,10 @@ const handleCreateFromGeneral = async (generalEventId) => {
       message.success('Event added successfully');
       form.resetFields();
       setSelectedCategories({});
-      setLinkToExistingEvent(false);
-      setSelectedGeneralEvent(null);
       setIsModalOpen(false);
     } catch (error) {
       console.error('Error creating event:', error);
       message.error(`Failed to create event: ${error.message}`);
-    }
-  };
-
-  // Toggle link to existing event
-  const handleToggleLinking = (checked) => {
-    setLinkToExistingEvent(checked);
-    if (!checked) {
-      setSelectedGeneralEvent(null);
-      form.resetFields(['eventName', 'description', 'eventDate']);
-
-      // Clear selected categories when unlinking
-      setSelectedCategories({});
     }
   };
 
@@ -435,73 +221,18 @@ const handleCreateFromGeneral = async (generalEventId) => {
           variant={variant || 'filled'}
           onFinish={handleSubmit}
         >
-          <Form.Item label="Link to existing event?" name="linkToEvent">
-            <Checkbox
-              checked={linkToExistingEvent}
-              onChange={(e) => handleToggleLinking(e.target.checked)}
-            >
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                <LinkOutlined style={{ marginRight: '5px' }} />
-                Link to an existing event from the main system
-              </span>
-            </Checkbox>
-          </Form.Item>
-
-          {linkToExistingEvent && (
-            <Form.Item
-              label="Select Event"
-              required
-              help="Events from this club are shown"
-            >
-              {loadingEvents ? (
-                <div style={{ textAlign: 'center', padding: '10px' }}>
-                  {/* <Spin /> Loading events... */}
-                </div>
-              ) : generalEvents.length > 0 ? (
-                <Select
-                  placeholder="Select an event to link"
-                  style={{ width: '100%' }}
-                  onChange={handleGeneralEventChange}
-                  optionFilterProp="children"
-                  showSearch
-                  filterOption={(input, option) =>
-                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  {generalEvents.map(event => (
-                    <Select.Option key={event.id} value={event.id}>
-                      {event.title}
-                    </Select.Option>
-                  ))}
-                </Select>
-              ) : (
-                <div>No available events found for linking.</div>
-              )}
-            </Form.Item>
-          )}
-
           <Form.Item
             label="Event Name"
             name="eventName"
             rules={[{ required: true, message: 'Please input event name' }]}
           >
-            <Input disabled={linkToExistingEvent && selectedGeneralEvent} />
+            <Input />
           </Form.Item>
 
           <Form.Item
-            label={
-              <span>
-                Event Date
-                {linkToExistingEvent && selectedGeneralEvent && (
-                  <span style={{ fontWeight: 'normal', marginLeft: '8px', fontSize: '12px' }}>
-                    (Original: {selectedGeneralEvent.date})
-                  </span>
-                )}
-              </span>
-            }
+            label="Event Date"
             name="eventDate"
             rules={[{ required: true, message: 'Please select a date' }]}
-            extra={linkToExistingEvent && selectedGeneralEvent ? "Please select the date manually" : ""}
           >
             <DatePicker
               style={{ width: '100%' }}

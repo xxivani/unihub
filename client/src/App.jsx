@@ -24,7 +24,6 @@ import UserPreferences from "./components/settings/userPreferences";
 import Dashboard from "./pages/committee/Dashboard";
 import BudgetTracker from "./pages/committee/BudgetTracker/BudgetTracker";
 import EventExpensesPage from "./pages/committee/BudgetTracker/EventExpenses";
-import RegisteredStudentsPage from "./pages/committee/BudgetTracker/RegisteredStudents";
 import MultiEventImages from "./pages/committee/ImageManagement";
 import SingleEventImages from "./pages/committee/ImageM-SingleEvent";
 import EditEventImages from "./pages/committee/ImageM-EditEvent";
@@ -191,14 +190,6 @@ function AppContent() {
             element={
               <ProtectedRoute allowedRoles={["committee", "admin"]}>
                 <EditEventImages />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/committee/budget-tracker/registered-students"
-            element={
-              <ProtectedRoute allowedRoles={["committee", "admin"]}>
-                <RegisteredStudentsPage />
               </ProtectedRoute>
             }
           />

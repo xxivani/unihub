@@ -93,7 +93,7 @@ const storage = multer.diskStorage({
       subfolder = 'misc';
     }
 
-    const uploadPath = path.join(__dirname, '../../uploads', subfolder); // ✅ Safe dynamic path
+    const uploadPath = path.join(__dirname, '../../uploads', subfolder); // 
     ensureDirectoryExists(uploadPath);
 
     console.log(`Saving ${file.fieldname} to: ${uploadPath}`);

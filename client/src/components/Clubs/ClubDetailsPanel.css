@@ -178,3 +178,53 @@ body[data-theme="dark"] .team-avatar {
 body[data-theme="dark"] .team-list p {
     color: #ccc;
 }
+
+.event-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin-top: 1rem;
+  }
+  
+  .event-card {
+    background: #f9f9f9;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  .event-info {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .event-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  
+  .event-description {
+    margin: 0.5rem 0;
+  }
+  
+  .view-event-btn {
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background-color: #dec585;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    align-self: flex-start;
+    white-space: nowrap;
+  }
+  
+  .view-event-btn:hover {
+    background-color: #c9af74;
+  }
+  

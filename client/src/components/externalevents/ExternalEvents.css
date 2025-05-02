@@ -103,6 +103,12 @@
     outline: none; 
 }
 
+
+[data-theme="dark"] .extevent-calendar-button {
+	background-color: var(--bg-secondary, #1e1e1e);
+	color: var(--text-primary, #f5f2f2) !important;
+  }
+
 [data-theme="dark"] .extevent-filter-button {
 	background-color: var(--bg-secondary, #1e1e1e);
 	color: var(--text-primary, #f5f2f2) !important;
@@ -640,6 +646,11 @@
 	border-radius: 5px;
 	background: white;
 	font-size: 1rem;
+  }
+
+  [data-theme="dark"] .extevent-filter-dropdown {
+	background-color: var(--bg-secondary, #1e1e1e);
+	color: var(--text-primary, #f5f2f2) !important;
   }
 
   .clear-filter-button {

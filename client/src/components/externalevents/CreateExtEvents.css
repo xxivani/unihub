@@ -10,6 +10,10 @@
   padding: 80px;
 }
 
+[data-theme="dark"] .create-external-event-form {
+	background-color: var(--bg, #000000);
+  }
+
 .create-external-event-container h1 {
   text-align: center;
   font-size: 29px;
@@ -23,6 +27,7 @@
   background-color: #fff;
 }
 
+
 .create-external-event-form {
   padding: 30px;
 }
@@ -33,11 +38,13 @@
   margin-bottom: 20px;
 }
 
+
 .extform-row {
   display: flex;
   gap: 20px;
   margin-bottom: 20px;
 }
+
 
 .extform-row .extform-group {
   flex: 1;
@@ -46,6 +53,10 @@
 
 .extform-group label {
   margin-bottom: 5px;
+}
+
+[data-theme="dark"] .extform-group label {
+	color: var(--text-primary, #fffcfc);
 }
 
 .extform-group input[type="text"],
@@ -130,6 +141,17 @@
 
 .go-back-button:hover {
   background-color: #444;
+}
+
+[data-theme="dark"] .extform-group input[type="text"],
+[data-theme="dark"] .extform-group input[type="date"],
+[data-theme="dark"] .extform-group input[type="time"],
+[data-theme="dark"] .extform-group input[type="number"],
+[data-theme="dark"] .extform-group textarea,
+[data-theme="dark"] .extform-group select {
+  background-color: #222; /* or any dark background */
+  color: #fff; /* light text for contrast */
+  border: 1px solid #444; /* optional: darker border */
 }
 
 /* Mobile Responsiveness */

@@ -66,7 +66,14 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'BTevent',
     // tableName: "Events"
-    tableName: "BTEvents"
+    tableName: "BTEvents",
+
+    indexes: [
+      {
+        unique: true,
+        fields: ['club_id', 'general_event_id']
+      }
+    ]
   });
   
   return BTevent;

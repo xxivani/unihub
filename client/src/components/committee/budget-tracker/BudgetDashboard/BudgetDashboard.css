@@ -438,6 +438,11 @@ body[data-theme="dark"] .select-club-dropdown-bt {
         margin-top: 20px;
     }
 
+    .select-club-dropdown-bt {
+        margin-top: 15px;
+        margin-bottom: 5px;
+    }
+
 }
 
 /* Responsive for mobile devices (480px and below) */

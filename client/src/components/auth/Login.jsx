@@ -196,9 +196,6 @@ function Login() {
                       <i className={`fas fa-${showPassword ? "eye-slash" : "eye"}`}></i>
                     </button>
                   </div>
-                  <a href="#" className="forgot-password">
-                    Forgot Password?
-                  </a>
                 </div>
                 <button 
                   type="submit" 

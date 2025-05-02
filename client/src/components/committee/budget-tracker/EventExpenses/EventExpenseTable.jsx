@@ -169,19 +169,32 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
         {
             title: "Actions",
             width: 150,
-            render: (_, record) => (
-                <Space size="middle">
-                    <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>Edit</Button>
-                    <Button
-                        type="link"
-                        icon={<DeleteOutlined />}
-                        danger
-                        onClick={() => handleDelete(record)}
-                    >
-                        Delete
-                    </Button>
-                </Space>
-            ),
+            render: (_, record) => {
+                // Calculate the total expense for this event
+                const totalExpense = record.categories
+                    ? record.categories.reduce((sum, category) => sum + Number(category.amount || 0), 0)
+                    : 0;
+
+                return (
+                    <Space size="middle">
+                        <Button
+                            type="link"
+                            icon={<EditOutlined />}
+                            onClick={() => handleEdit(record)}
+                        >
+                            {totalExpense === 0 ? "Add" : "Edit"}
+                        </Button>
+                        <Button
+                            type="link"
+                            icon={<DeleteOutlined />}
+                            danger
+                            onClick={() => handleDelete(record)}
+                        >
+                            Delete
+                        </Button>
+                    </Space>
+                );
+            },
         },
     ];
 
@@ -374,7 +387,10 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
 
             <Modal
                 title={<div className='event-expense-form-modal-title'>
-                    {editingEvent?.general_event_id ? 'Edit Linked Event' : 'Edit Event'}
+                    {editingEvent && editingEvent.categories &&
+                        editingEvent.categories.reduce((sum, category) => sum + Number(category.amount || 0), 0) > 0
+                        ? 'Edit Event'
+                        : 'Add Expenses to Event'}
                 </div>}
                 open={!!editingEvent}
                 onCancel={() => setEditingEvent(null)}

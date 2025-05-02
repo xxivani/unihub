@@ -123,13 +123,7 @@ const clubStatisticsRoutes = require('./src/routes/clubStatisticsRoute');
 app.use('/api/club-stats', clubStatisticsRoutes);
 app.use('/club-stats', clubStatisticsRoutes);
 
-<<<<<<< HEAD
 const PORT = process.env.PORT || 5000;
-=======
-
-
-const PORT = process.env.PORT || 5050;
->>>>>>> de46d6f (Added club logo upload and edit functionality)
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

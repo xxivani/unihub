@@ -14,6 +14,7 @@ module.exports = {
         external_event_created_at: new Date(),
         external_event_ticket_amount: 10, // Price in AED
         external_event_max_number_of_attendees: 150,
+		external_event_category: "SOCIAL_GATHERING",
         external_event_organizer: "Bob White",
         external_event_corganizer: "David Pinkman",
         external_event_manager: "Jake Schrader",
@@ -29,6 +30,7 @@ module.exports = {
         external_event_created_at: new Date(),
         external_event_ticket_amount: 15, // Price in AED
         external_event_max_number_of_attendees: 200,
+		external_event_category: "WORKSHOP",
         external_event_organizer: "John Smith",
         external_event_corganizer: "Emily Davis",
         external_event_manager: "Michael Johnson",
@@ -44,6 +46,7 @@ module.exports = {
         external_event_created_at: new Date(),
         external_event_ticket_amount: 5, // Price in AED
         external_event_max_number_of_attendees: 100,
+		external_event_category: "SPORTS",
         external_event_organizer: "Lisa Johnson",
         external_event_corganizer: "Mark Brown",
         external_event_manager: "Sophie Taylor",
@@ -59,6 +62,7 @@ module.exports = {
         external_event_created_at: new Date(),
         external_event_ticket_amount: 10, // Price in AED
         external_event_max_number_of_attendees: 50,
+		external_event_category: "SOCIAL_GATHERING",
         external_event_organizer: "James Wilson",
         external_event_corganizer: null,
         external_event_manager: "Emma Roberts",
@@ -74,6 +78,7 @@ module.exports = {
         external_event_created_at: new Date(),
         external_event_ticket_amount: 8, // Price in AED
         external_event_max_number_of_attendees: 75,
+		external_event_category: "SOCIAL_GATHERING",
         external_event_organizer: "Bob White",
         external_event_corganizer: "David Pinkman",
         external_event_manager: "Jake Schrader",

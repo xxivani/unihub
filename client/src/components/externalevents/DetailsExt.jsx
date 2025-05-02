@@ -321,26 +321,28 @@ function DetailsExt() {
           </div>
         </main>
 
-        <div className="additional-images-container">
-          <h3 className="additional-images-title">Event Gallery</h3>
-          <div className="additional-images-grid">
-            {additionalImages.map((img, index) => (
-              <div key={index} className="additional-image-item">
-                <img
-                  src={img.URL && img.URL.startsWith('/uploads') 
-                    ? `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}${img.URL}` 
-                    : img.URL || DEFAULT_IMAGE}
-                  alt={`Event image ${index + 2}`}
-                  className="additional-image"
-                  onError={(e) => {
-                    e.target.src = DEFAULT_IMAGE;
-                    e.target.onerror = null;
-                  }}
-                />
-              </div>
-            ))}
+        {additionalImages.length > 0 && (
+          <div className="additional-images-container">
+            <h3 className="additional-images-title">Event Gallery</h3>
+            <div className="additional-images-grid">
+              {additionalImages.map((img, index) => (
+                <div key={index} className="additional-image-item">
+                  <img
+                    src={img.URL && img.URL.startsWith('/uploads') 
+                      ? `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}${img.URL}` 
+                      : img.URL || DEFAULT_IMAGE}
+                    alt={`Event image ${index + 2}`}
+                    className="additional-image"
+                    onError={(e) => {
+                      e.target.src = DEFAULT_IMAGE;
+                      e.target.onerror = null;
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Success Modal for Following */}

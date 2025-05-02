@@ -196,7 +196,7 @@ const ClubStatistics = () => {
   const remaining = statsData?.budgetSummary?.remaining || 0;
 
   const doughnutChartData = {
-    labels: ["Remaining Budget", "Total Budget"],
+    labels: ["Budget Spent", "Remaining Budget"],
     datasets: [
       {
         label: "Amount",
@@ -255,8 +255,8 @@ const ClubStatistics = () => {
         <div className="doughnut-chart">
           <Doughnut key={`${theme}-${selectedClubId}-doughnut`} data={doughnutChartData} options={doughnutChartOptions} />
           <div className="entity6-doughnut-chart-label">
-            <p>{totalSpent.toLocaleString()}</p>
-            <span>Budget Spent</span>
+            <p>{totalBudget.toLocaleString()}</p>
+            <span>Total Budget</span>
           </div>
         </div>
       </div>

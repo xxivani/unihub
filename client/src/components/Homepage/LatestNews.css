@@ -45,7 +45,7 @@
 .latest-news-heading {
     font-size: 20px;
     font-weight: bold;
-    color: #FFCC00;
+    color: #FFCC00 !important;
     text-decoration: none;
     margin: 0; 
 }

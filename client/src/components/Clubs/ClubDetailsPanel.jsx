@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import "./ClubDetailsPanel.css";
 
 const ClubDetailsPanel = ({ activeTab, club }) => {
+  const navigate = useNavigate();
   const [committeeMembers, setCommitteeMembers] = useState([]);
   const [clubEvents, setClubEvents] = useState([]);
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -46,7 +48,6 @@ const ClubDetailsPanel = ({ activeTab, club }) => {
       try {
         const response = await fetch(`${apiUrl}/events`);
         const allEvents = await response.json();
-
         const filtered = allEvents.filter(event => event.club === club.club_name);
         setClubEvents(filtered);
       } catch (error) {
@@ -85,16 +86,24 @@ const ClubDetailsPanel = ({ activeTab, club }) => {
           <>
             <h2 className="club-info-title">Events</h2>
             {clubEvents.length > 0 ? (
-              <ul className="event-list">
+              <div className="event-card-list">
                 {clubEvents.map((event) => (
-                  <li key={event.id} className="event-item">
-                    <h3>{event.title}</h3>
-                    <p>{event.description}</p>
-                    <p><strong>Date:</strong> {event.date}</p>
-                    <p><strong>Location:</strong> {event.location}</p>
-                  </li>
+                  <div key={event.id} className="event-card">
+                    <div className="event-info">
+                      <h3 className="event-title">{event.title}</h3>
+                      <p className="event-description">{event.description}</p>
+                      <p><strong>Date:</strong> {event.date}</p>
+                      <p><strong>Location:</strong> {event.location}</p>
+                    </div>
+                    <button
+                      className="view-event-btn"
+                      onClick={() => navigate(`/event-details/${event.id}`)}
+                    >
+                      View Event
+                    </button>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
               <p>No events available for this club.</p>
             )}

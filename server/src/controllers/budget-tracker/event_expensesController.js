@@ -4,6 +4,91 @@ const { Op } = require('sequelize');
 
 //new
 // Get all events with expenses and categories - Updated to include linked general events
+// const getAllEventsBT = async (req, res) => {
+//   try {
+//     const { club_id } = req.query;
+//     console.log('Get all events - club_id:', club_id);
+    
+//     // Require club_id parameter
+//     if (!club_id) {
+//       return res.status(400).json({ 
+//         message: 'club_id parameter is required' 
+//       });
+//     }
+    
+//     // Use where clause with correct type conversion
+//     const whereClause = { club_id: parseInt(club_id) };
+//     console.log('Events where clause:', whereClause);
+
+//     // Get all budget-tracker specific events
+//     const btEvents = await BTevent.findAll({
+//       where: whereClause,
+//       include: [
+//         {
+//           model: Expense,
+//           as: 'expenses',
+//           include: [{ model: Category, as: 'category' }]
+//         },
+//         {
+//           model: Event,
+//           as: 'generalEvent'
+//         }
+//       ],
+//       order: [['date', 'DESC']]
+//     });
+
+//     // Format the data to match the frontend's expected structure
+//     const formattedEvents = btEvents.map(event => {
+//       const rawEvent = event.get({ plain: true });
+      
+//       // Calculate total expenses for the event
+//       const totalExpense = rawEvent.expenses.reduce(
+//         (sum, expense) => sum + parseFloat(expense.amount || 0), 0
+//       );
+      
+//       // Group expenses by category for the frontend tags
+//       const categoriesMap = {};
+//       rawEvent.expenses.forEach(expense => {
+//         if (expense.category) {
+//           const categoryName = expense.category.name.toLowerCase();
+//           if (!categoriesMap[categoryName]) {
+//             categoriesMap[categoryName] = 0;
+//           }
+//           categoriesMap[categoryName] += parseFloat(expense.amount || 0);
+//         }
+//       });
+      
+//       // Convert to array format for frontend
+//       const categories = Object.entries(categoriesMap).map(([name, amount]) => ({
+//         name,
+//         amount
+//       }));
+      
+//       return {
+//         id: rawEvent.id,
+//         key: rawEvent.id.toString(),
+//         name: rawEvent.name,
+//         date: new Date(rawEvent.date).toLocaleDateString('en-GB'),
+//         status: rawEvent.status,
+//         expense: `AED ${totalExpense.toFixed(2)}`,
+//         description: rawEvent.description,
+//         categories,
+//         club_id: rawEvent.club_id,
+//         general_event_id: rawEvent.general_event_id,
+//         is_general_event: !!rawEvent.general_event_id
+//       };
+//     });
+    
+//     console.log(`Returning ${formattedEvents.length} events for club_id: ${club_id}`);
+//     return res.status(200).json(formattedEvents);
+//   } catch (error) {
+//     console.error('Error getting all events:', error);
+//     return res.status(500).json({ message: 'Failed to retrieve events', error: error.message });
+//   }
+// };
+
+
+// Modify the getAllEventsBT function in event_expensesController.js
 const getAllEventsBT = async (req, res) => {
   try {
     const { club_id } = req.query;
@@ -37,7 +122,18 @@ const getAllEventsBT = async (req, res) => {
       order: [['date', 'DESC']]
     });
 
-    // Format the data to match the frontend's expected structure
+    // Since we need to also check for unlinked general events
+    // Get the club info for filtering
+    const club = await sequelize.models.Club.findByPk(club_id);
+    
+    // If we found any BT events that are linked
+    const linkedEventIds = btEvents
+      .filter(ev => ev.general_event_id !== null)
+      .map(ev => ev.general_event_id);
+    
+    console.log('Already linked event IDs:', linkedEventIds);
+    
+    // Format the existing BT events data to match the frontend's expected structure
     const formattedEvents = btEvents.map(event => {
       const rawEvent = event.get({ plain: true });
       
@@ -86,6 +182,50 @@ const getAllEventsBT = async (req, res) => {
     return res.status(500).json({ message: 'Failed to retrieve events', error: error.message });
   }
 };
+
+// // Helper function to format BT events for the frontend
+// const formatBTEvents = (btEvents) => {
+//   return btEvents.map(event => {
+//     const rawEvent = event.get({ plain: true });
+    
+//     // Calculate total expenses for the event
+//     const totalExpense = rawEvent.expenses.reduce(
+//       (sum, expense) => sum + parseFloat(expense.amount || 0), 0
+//     );
+    
+//     // Group expenses by category for the frontend tags
+//     const categoriesMap = {};
+//     rawEvent.expenses.forEach(expense => {
+//       if (expense.category) {
+//         const categoryName = expense.category.name.toLowerCase();
+//         if (!categoriesMap[categoryName]) {
+//           categoriesMap[categoryName] = 0;
+//         }
+//         categoriesMap[categoryName] += parseFloat(expense.amount || 0);
+//       }
+//     });
+    
+//     // Convert to array format for frontend
+//     const categories = Object.entries(categoriesMap).map(([name, amount]) => ({
+//       name,
+//       amount
+//     }));
+    
+//     return {
+//       id: rawEvent.id,
+//       key: rawEvent.id.toString(),
+//       name: rawEvent.name,
+//       date: new Date(rawEvent.date).toLocaleDateString('en-GB'),
+//       status: rawEvent.status,
+//       expense: `AED ${totalExpense.toFixed(2)}`,
+//       description: rawEvent.description,
+//       categories,
+//       club_id: rawEvent.club_id,
+//       general_event_id: rawEvent.general_event_id,
+//       is_general_event: !!rawEvent.general_event_id
+//     };
+//   });
+// };
 
 
 
@@ -717,6 +857,130 @@ const getLatestEventsByClub = async (req, res) => {
   }
 };
 
+// Add this function to your event_expensesController.js
+const createFromGeneral = async (req, res) => {
+  const transaction = await sequelize.transaction();
+  
+  try {
+    const { club_id, event_id } = req.body;
+    
+    // Validate parameters
+    if (!club_id) {
+      return res.status(400).json({ message: 'club_id is required' });
+    }
+    
+    if (!event_id) {
+      return res.status(400).json({ message: 'event_id is required' });
+    }
+    
+    // Get the general event
+    const generalEvent = await Event.findByPk(event_id, { transaction });
+    if (!generalEvent) {
+      await transaction.rollback();
+      return res.status(404).json({ message: 'General event not found' });
+    }
+    
+    // Check if a BT event already exists for this general event
+    const existingBTEvent = await BTevent.findOne({
+      where: { 
+        general_event_id: event_id,
+        club_id: parseInt(club_id)
+      },
+      transaction
+    });
+    
+    if (existingBTEvent) {
+      await transaction.rollback();
+      return res.status(400).json({ 
+        message: 'Budget tracking event already exists for this general event',
+        btEventId: existingBTEvent.id
+      });
+    }
+    
+    // Parse date if in DD/MM/YYYY format
+    let formattedDate = generalEvent.date;
+    if (generalEvent.date && generalEvent.date.includes('/')) {
+      const [day, month, year] = generalEvent.date.split('/');
+      formattedDate = `${year}-${month}-${day}`;
+    }
+    
+    // Create the BT event
+    const btEvent = await BTevent.create({
+      name: generalEvent.title,
+      date: formattedDate,
+      status: 'ONGOING',
+      description: generalEvent.description || '',
+      club_id: parseInt(club_id),
+      general_event_id: generalEvent.id
+    }, { transaction });
+    
+    // If event has budget info, create expenses
+    if (generalEvent.budget && typeof generalEvent.budget === 'object') {
+      const categoryPromises = [];
+      
+      for (const [categoryName, amount] of Object.entries(generalEvent.budget)) {
+        if (!amount || parseFloat(amount) <= 0) continue;
+        
+        // Find the category
+        const category = await Category.findOne({
+          where: {
+            name: sequelize.where(
+              sequelize.fn('LOWER', sequelize.col('name')), 
+              sequelize.fn('LOWER', categoryName)
+            )
+          },
+          transaction
+        });
+        
+        if (!category) continue;
+        
+        // Create expense
+        categoryPromises.push(
+          Expense.create({
+            amount: parseFloat(amount),
+            description: `${categoryName} expense for ${generalEvent.title}`,
+            date: formattedDate,
+            categoryId: category.id,
+            eventId: btEvent.id,
+            club_id: parseInt(club_id)
+          }, { transaction })
+        );
+      }
+      
+      await Promise.all(categoryPromises);
+    }
+    
+    // Update the general event to mark it as requiring budget
+    await generalEvent.update(
+      { budget_required: true },
+      { transaction }
+    );
+    
+    // Commit the transaction
+    await transaction.commit();
+    
+    // Return the new BT event
+    return res.status(201).json({
+      message: 'Budget tracking event created successfully',
+      id: btEvent.id,
+      name: btEvent.name,
+      date: btEvent.date,
+      status: btEvent.status,
+      description: btEvent.description,
+      club_id: btEvent.club_id,
+      general_event_id: btEvent.general_event_id
+    });
+  } catch (error) {
+    // Rollback the transaction on error
+    await transaction.rollback();
+    console.error('Error creating BT event from general event:', error);
+    return res.status(500).json({ 
+      message: 'Failed to create budget tracking event', 
+      error: error.message 
+    });
+  }
+};
+
 
 module.exports = {
   getAllEventsBT,
@@ -727,5 +991,6 @@ module.exports = {
   searchEventsBT,
   filterEventsByStatusBT,
   // syncGeneralEvents,
-  getLatestEventsByClub
+  getLatestEventsByClub,
+  createFromGeneral
 };

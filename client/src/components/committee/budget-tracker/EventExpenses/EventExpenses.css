@@ -293,6 +293,56 @@ body[data-theme="dark"] .error-container {
   }
 }
 
+.general-events-list {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+}
+
+.event-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.event-card {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.event-card h4 {
+  margin-top: 0;
+  color: #314521;
+}
+
+.import-button {
+  background-color: #314521;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.3s;
+}
+
+.import-button:hover {
+  background-color: #4a6831;
+}
+
+.no-events-message {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+}
+
 /* Dark mode form styling for EventExpenses.css */
 
 /* Form text colors in dark mode */

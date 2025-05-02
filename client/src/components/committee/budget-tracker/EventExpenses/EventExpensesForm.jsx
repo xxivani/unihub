@@ -72,61 +72,9 @@ function EventAddExpenseButton({ onAddEvent }) {
   };
 
   // Fetch general events that could be linked
-  // const fetchGeneralEvents = async () => {
-  //   if (!clubId) return;
-
-  //   setLoadingEvents(true);
-  //   try {
-  //     // Get club name first for filtering
-  //     let club = clubName;
-  //     if (!club) {
-  //       const clubResponse = await fetch(`${apiUrl}/clubs/${clubId}`);
-  //       if (clubResponse.ok) {
-  //         const clubData = await clubResponse.json();
-  //         club = clubData.club_name;
-  //       }
-  //     }
-
-  //     // Fetch events filtering by club
-  //     const response = await fetch(`${apiUrl}/events`);
-  //     if (response.ok) {
-  //       const allEvents = await response.json();
-
-  //       // Filter events by club 
-  //       // Note: We're not filtering by budget_required to show all events
-  //       const filteredEvents = allEvents.filter(event =>
-  //         event.club && event.club.toLowerCase().includes((club || '').toLowerCase())
-  //       );
-
-  //       // Further filter to exclude events that are already linked
-  //       const btEventsResponse = await fetch(`${apiUrl}/bt_eventRoute?club_id=${clubId}`);
-  //       if (btEventsResponse.ok) {
-  //         const btEvents = await btEventsResponse.json();
-  //         const linkedEventIds = btEvents
-  //           .filter(btEvent => btEvent.general_event_id)
-  //           .map(btEvent => btEvent.general_event_id);
-
-  //         const availableEvents = filteredEvents.filter(
-  //           event => !linkedEventIds.includes(event.id)
-  //         );
-
-  //         setGeneralEvents(availableEvents);
-  //       } else {
-  //         setGeneralEvents(filteredEvents);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching general events:", error);
-  //     message.error("Failed to load events. Please try again.");
-  //   } finally {
-  //     setLoadingEvents(false);
-  //   }
-  // };
-
-
   const fetchGeneralEvents = async () => {
     if (!clubId) return;
-  
+
     setLoadingEvents(true);
     try {
       // Get club name first for filtering
@@ -138,18 +86,18 @@ function EventAddExpenseButton({ onAddEvent }) {
           club = clubData.club_name;
         }
       }
-  
+
       // Fetch events filtering by club
       const response = await fetch(`${apiUrl}/events`);
       if (response.ok) {
         const allEvents = await response.json();
-  
+
         // Filter events by club 
         // Note: We're not filtering by budget_required to show all events
         const filteredEvents = allEvents.filter(event =>
           event.club && event.club.toLowerCase().includes((club || '').toLowerCase())
         );
-  
+
         // Further filter to exclude events that are already linked
         const btEventsResponse = await fetch(`${apiUrl}/bt_eventRoute?club_id=${clubId}`);
         if (btEventsResponse.ok) {
@@ -157,11 +105,11 @@ function EventAddExpenseButton({ onAddEvent }) {
           const linkedEventIds = btEvents
             .filter(btEvent => btEvent.general_event_id)
             .map(btEvent => btEvent.general_event_id);
-  
+
           const availableEvents = filteredEvents.filter(
             event => !linkedEventIds.includes(event.id)
           );
-  
+
           setGeneralEvents(availableEvents);
         } else {
           setGeneralEvents(filteredEvents);
@@ -174,50 +122,6 @@ function EventAddExpenseButton({ onAddEvent }) {
       setLoadingEvents(false);
     }
   };
-
-  // Add this function to the EventExpensesForm component
-const handleCreateFromGeneral = async (generalEventId) => {
-  try {
-    // Validate club selection
-    if (!clubId) {
-      message.error('Please select a club first');
-      return;
-    }
-
-    // Call the API to create a BT event from the general event
-    const response = await fetch(`${apiUrl}/bt_eventRoute/create-from-general`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        club_id: clubId,
-        event_id: generalEventId
-      })
-    });
-
-    const data = await response.json();
-    
-    if (!response.ok) {
-      if (response.status === 400 && data.btEventId) {
-        message.info('This event is already in the budget tracker');
-      } else {
-        throw new Error(data.message || 'Failed to create event');
-      }
-    } else {
-      message.success('Event added to budget tracker successfully');
-      if (onAddEvent) {
-        onAddEvent();
-      }
-    }
-    
-    // Close the form modal
-    setIsModalOpen(false);
-  } catch (error) {
-    console.error('Error creating event from general event:', error);
-    message.error(`Failed to create event: ${error.message}`);
-  }
-};
 
   // Open Modal
   const showModal = () => {

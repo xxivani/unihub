@@ -9,7 +9,6 @@ const {
     searchEventsBT,
     filterEventsByStatusBT,
     getLatestEventsByClub,
-    createFromGeneral
 } = require('../controllers/budget-tracker/event_expensesController');
 
 /**
@@ -243,8 +242,6 @@ router.delete('/:id', deleteEventBT);
  *         description: Server error.
  */
 router.get('/latest', getLatestEventsByClub);
-
-router.post('/create-from-general', createFromGeneral);
 
 
 module.exports = router;

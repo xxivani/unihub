@@ -175,6 +175,9 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                     ? record.categories.reduce((sum, category) => sum + Number(category.amount || 0), 0)
                     : 0;
 
+                const isLinked = !!record.general_event_id;
+
+
                 return (
                     <Space size="middle">
                         <Button
@@ -184,14 +187,16 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                         >
                             {totalExpense === 0 ? "Add" : "Edit"}
                         </Button>
-                        <Button
-                            type="link"
-                            icon={<DeleteOutlined />}
-                            danger
-                            onClick={() => handleDelete(record)}
-                        >
-                            Delete
-                        </Button>
+                        {!isLinked && (
+                            <Button
+                                type="link"
+                                icon={<DeleteOutlined />}
+                                danger
+                                onClick={() => handleDelete(record)}
+                            >
+                                Delete
+                            </Button>
+                        )}
                     </Space>
                 );
             },

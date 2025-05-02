@@ -104,13 +104,13 @@ function AppContent() {
           {/* Public Routes */}
           <Route path="/clubs" element={<Clubs />} />
           <Route path="/club-details/:id" element={<ClubDetailsPage />} />
-          <Route path="/create-club" element={<CreateClub />} />
+          {/* <Route path="/create-club" element={<CreateClub />} /> */}
           <Route path="/events" element={<Events />} />
           <Route path="/event-details" element={<EventDetails />} />
           <Route path="/roles" element={<RoleOpenings />} />
           <Route path="/roles/apply/:index" element={<ApplyRoleOpening />} />
           <Route path="/external-events" element={<ExternalEvents />} />
-          <Route path="/create-external-event" element={<CreateExternalEvents />} />
+          {/* <Route path="/create-external-event" element={<CreateExternalEvents />} /> */}
           <Route path="/external-events/:id" element={<DetailsExt />} />
 
           {/* News Routes */}
@@ -129,6 +129,24 @@ function AppContent() {
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <EditNewsForm />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/create-club"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <CreateClub />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/create-external-event"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <CreateExternalEvents />
               </ProtectedRoute>
             }
           />

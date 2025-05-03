@@ -38,70 +38,70 @@ const BudgetDashboard = () => {
         const checkBudgetAccess = async () => {
             try {
                 setPermissionLoading(true);
-                
+
                 // Get user info from session storage
                 const user = JSON.parse(sessionStorage.getItem("user"));
-                
+
                 if (!user || !user.id) {
                     console.log("No user found, redirecting to login");
                     navigate("/login");
                     return;
                 }
-                
+
                 // Check if user is admin (they have full access)
                 if (user.role === "admin") {
                     setHasAccess(true);
                     setPermissionLoading(false);
                     return;
                 }
-                
+
                 // For committee members, we need to check their permissions
                 // First get their committee_member_id
                 const committeeMemberRes = await fetch(`${apiUrl}/committee-members/by-user/${user.id}`);
-                
+
                 if (!committeeMemberRes.ok) {
                     console.error("Failed to fetch committee member info");
                     setHasAccess(false);
                     setPermissionLoading(false);
                     message.error("You don't have permission to access the Budget Tracker.");
-                  
+
                 }
-                
+
                 const committeeMemberData = await committeeMemberRes.json();
-                
+
                 if (!committeeMemberData || !committeeMemberData.committee_member_id) {
                     console.error("No committee member ID found");
                     setHasAccess(false);
                     setPermissionLoading(false);
                     message.error("You don't have permission to access the Budget Tracker.");
-                   
+
                 }
-                
+
                 const committee_member_id = committeeMemberData.committee_member_id;
-                
+
                 // Now fetch the permissions for this committee member
                 const permissionsRes = await fetch(`${apiUrl}/committee-member-permissions/${committee_member_id}`);
-                
+
                 if (!permissionsRes.ok) {
                     console.error("Failed to fetch permissions");
                     setHasAccess(false);
                     setPermissionLoading(false);
                     message.error("You don't have permission to access the Budget Tracker.");
-                   
+
                 }
-                
+
                 const permissions = await permissionsRes.json();
-                
+
                 // Check if the user has the UpdateBudget permission
                 const hasBudgetPermission = permissions.some(p => p.permission === "UpdateBudget");
-                
+
                 setHasAccess(hasBudgetPermission);
-                
+
                 // If no access, redirect to the committee dashboard
                 if (!hasBudgetPermission) {
                     console.log("User does not have budget access, redirecting");
                     message.error("You don't have permission to access the Budget Tracker.");
-                    
+
                 }
             } catch (error) {
                 console.error("Error checking budget access:", error);
@@ -111,7 +111,7 @@ const BudgetDashboard = () => {
                 setPermissionLoading(false);
             }
         };
-        
+
         checkBudgetAccess();
     }, [navigate, apiUrl]);
 
@@ -479,11 +479,16 @@ const BudgetDashboard = () => {
                 </div>
                 <h4 className="latest-event-expense-title">Latest Events</h4>
                 <div className="latest-event-expense">
-                    <LatestEventsList events={dashboardData?.latestEvents && dashboardData.latestEvents.map(event => ({
-                        id: event.id,
-                        name: event.name,
-                        amount: `AED ${(event.totalExpense || event.amount || 0).toLocaleString()}`
-                    }))} />
+                    <LatestEventsList
+                        events={dashboardData?.latestEvents && dashboardData.latestEvents.length > 0
+                            ? dashboardData.latestEvents.map(event => ({
+                                id: event.id,
+                                name: event.name,
+                                amount: `${(event.totalExpense || event.amount || 0).toLocaleString()}`
+                            }))
+                            : null
+                        }
+                    />
                 </div>
             </div>
 

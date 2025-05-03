@@ -1,21 +1,10 @@
 const { BTevent, Expense, Category, Event, sequelize } = require('../../models');
 const { Op } = require('sequelize');
 
-//new
-const requestCache = {};
-
-
 
 const getAllEventsBT = async (req, res) => {
   try {
     const { club_id } = req.query;
-
-    // Add a simple request cache mechanism
-    const cacheKey = `${req.originalUrl}-${Date.now() / 1000 | 0}`;
-    if (requestCache[cacheKey]) {
-      console.log('Duplicate request detected, skipping redundant processing');
-      return res.status(200).json(requestCache[cacheKey]);
-    }
 
     console.log('Get all events - club_id:', club_id);
 
@@ -758,6 +747,68 @@ const filterEventsByStatusBT = async (req, res) => {
 };
 
 // Get latest events for dashboard
+// const getLatestEventsByClub = async (req, res) => {
+//   try {
+//     const { club_id, limit = 3 } = req.query;
+//     console.log('Get latest events - club_id:', club_id, 'limit:', limit);
+
+//     // Require club_id parameter
+//     if (!club_id) {
+//       return res.status(400).json({
+//         message: 'club_id parameter is required'
+//       });
+//     }
+
+//     // Use where clause with correct type conversion
+//     const whereClause = { club_id: parseInt(club_id) };
+
+//     // Get events with proper ordering and limit
+//     const events = await BTevent.findAll({
+//       where: whereClause,
+//       include: [
+//         {
+//           model: Expense,
+//           as: 'expenses',
+//           include: [{ model: Category, as: 'category' }]
+//         },
+//         {
+//           model: Event,
+//           as: 'generalEvent'
+//         }
+//       ],
+//       order: [['date', 'DESC']],
+//       limit: parseInt(limit)
+//     });
+
+//     // Format the data to match the frontend's expected structure
+//     const formattedEvents = events.map(event => {
+//       const rawEvent = event.get({ plain: true });
+
+//       // Calculate total expenses for the event
+//       const totalExpense = rawEvent.expenses.reduce(
+//         (sum, expense) => sum + parseFloat(expense.amount || 0), 0
+//       );
+
+//       return {
+//         id: rawEvent.id,
+//         name: rawEvent.name,
+//         totalExpense,
+//         amount: `AED ${totalExpense.toLocaleString()}`,
+//         general_event_id: rawEvent.general_event_id,
+//         is_general_event: !!rawEvent.general_event_id,
+//         original_title: rawEvent.generalEvent ? rawEvent.generalEvent.title : null
+//       };
+//     });
+
+//     console.log(`Returning ${formattedEvents.length} latest events for club_id: ${club_id}`);
+//     return res.status(200).json(formattedEvents);
+//   } catch (error) {
+//     console.error('Error getting latest events:', error);
+//     return res.status(500).json({ message: 'Failed to retrieve latest events', error: error.message });
+//   }
+// };
+
+// Modification to getLatestEventsByClub in event_expensesController.js
 const getLatestEventsByClub = async (req, res) => {
   try {
     const { club_id, limit = 3 } = req.query;
@@ -770,10 +821,87 @@ const getLatestEventsByClub = async (req, res) => {
       });
     }
 
+    // First let's make sure we have all events synced with the general events
+    // This essentially does what getAllEventsBT does but we'll only get the latest ones
+    
+    // First get the club from Club table
+    const club = await sequelize.models.Club.findByPk(club_id);
+    if (!club) {
+      return res.status(404).json({
+        message: 'Club not found'
+      });
+    }
+
     // Use where clause with correct type conversion
     const whereClause = { club_id: parseInt(club_id) };
 
-    // Get events with proper ordering and limit
+    // Get all general events for the club using club name
+    const generalEvents = await Event.findAll({
+      where: { club: club.club_name },
+      order: [['date', 'DESC']]
+    });
+
+    // Get all budget-tracker specific events
+    const btEvents = await BTevent.findAll({
+      where: whereClause,
+      include: [
+        {
+          model: Expense,
+          as: 'expenses',
+          include: [{ model: Category, as: 'category' }]
+        },
+        {
+          model: Event,
+          as: 'generalEvent'
+        }
+      ],
+      order: [['date', 'DESC']]
+    });
+
+    // Get IDs of events that already have BT entries
+    const existingBTEventIds = btEvents
+      .map(btEvent => btEvent.general_event_id)
+      .filter(id => id !== null);
+
+    // Create BT events for general events that don't have them yet
+    const createdBTEvents = [];
+    for (const generalEvent of generalEvents) {
+      // Skip if this general event already has a BT event
+      if (existingBTEventIds.includes(generalEvent.id)) {
+        continue;
+      }
+
+      // Double-check if a BT event with this general_event_id already exists
+      const existingBTEvent = await BTevent.findOne({
+        where: {
+          general_event_id: generalEvent.id,
+          club_id: parseInt(club_id)
+        }
+      });
+
+      if (existingBTEvent) {
+        continue;
+      }
+
+      // Create a new BT event linked to this general event
+      try {
+        const newBTEvent = await BTevent.create({
+          name: generalEvent.title,
+          date: generalEvent.date,
+          status: 'ONGOING',
+          description: generalEvent.description || '',
+          club_id: parseInt(club_id),
+          general_event_id: generalEvent.id
+        });
+
+        createdBTEvents.push(newBTEvent);
+      } catch (createError) {
+        console.error(`Failed to create BT event for general event ${generalEvent.id}:`, createError);
+      }
+    }
+
+    // Now get the latest events with proper ordering and limit
+    // We'll re-fetch to include any newly created events
     const events = await BTevent.findAll({
       where: whereClause,
       include: [
@@ -796,9 +924,9 @@ const getLatestEventsByClub = async (req, res) => {
       const rawEvent = event.get({ plain: true });
 
       // Calculate total expenses for the event
-      const totalExpense = rawEvent.expenses.reduce(
+      const totalExpense = rawEvent.expenses ? rawEvent.expenses.reduce(
         (sum, expense) => sum + parseFloat(expense.amount || 0), 0
-      );
+      ) : 0;
 
       return {
         id: rawEvent.id,
@@ -812,6 +940,10 @@ const getLatestEventsByClub = async (req, res) => {
     });
 
     console.log(`Returning ${formattedEvents.length} latest events for club_id: ${club_id}`);
+    if (createdBTEvents.length > 0) {
+      console.log(`Created ${createdBTEvents.length} new BT events during latest events fetch`);
+    }
+    
     return res.status(200).json(formattedEvents);
   } catch (error) {
     console.error('Error getting latest events:', error);

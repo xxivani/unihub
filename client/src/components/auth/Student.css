@@ -6,7 +6,7 @@
     justify-content: center;
     background-color: #ffffff;
     padding: 2rem;
-    box-sizing: border-box; /* Added box-sizing */
+    box-sizing: border-box;
     overflow: hidden;
   }
   
@@ -56,8 +56,6 @@
     font-size: 20px;
   }
   
-
-  
   .welcome-content {
     text-align: center;
     width: 400px;
@@ -65,7 +63,7 @@
   
   .welcome-title {
     font-size: 40px;
-    color: white;
+    color: white !important;
     margin-bottom: 16px;
   }
   
@@ -106,7 +104,7 @@
     color: #1A1F24 !important;
     cursor: pointer !important;
     font-size: 30px !important;
-    z-index: 999 !important; /* Ensure it's above other elements */
+    z-index: 999 !important;
   }
   
   .form-container {
@@ -171,11 +169,10 @@
     transform: scale(1.05);
   }
 
-  
   .circle {
     width: 210px;
     height: 210px;
-    background-color: #3A4224; /* Change to any color */
+    background-color: #3A4224;
     border-radius: 50%;
     position: absolute;
     top: 0;
@@ -189,28 +186,27 @@
     position: absolute;
     top: 0;
     left: 0;
-    margin: -30px; /* Adds a small gap from the edges */
+    margin: -30px;
   
-    /* Create a right-facing triangle */
-    border-left: 180px solid #3A4224;  /* Triangle color */
+    border-left: 180px solid #3A4224;
     border-top: 170px solid transparent;
     border-bottom: 0 solid transparent;
   }
   
   .line {
     position: absolute;
-    top: 10px; /* Adjust to move up/down */
+    top: 10px;
     left: 50%;
-    transform: translateX(-50%) rotate(-45deg); /* Center & rotate */
+    transform: translateX(-50%) rotate(-45deg);
     
-    width: 380px;  /* Line length */
-    height: 1px;   /* Line thickness */
-    background-color: rgb(0, 0, 0); /* Line color */
+    width: 380px;
+    height: 1px;
+    background-color: rgb(0, 0, 0);
   }
   .circle1 {
     width: 210px;
     height: 210px;
-    background-color: #3A4224; /* Change to any color */
+    background-color: #3A4224;
     border-radius: 50%;
     position: absolute;
     bottom: 0;
@@ -220,7 +216,7 @@
   .circle2 {
     width: 210px;
     height: 210px;
-    background-color: #3A4224; /* Change to any color */
+    background-color: #3A4224;
     border-radius: 50%;
     position: absolute;
     bottom: 0;
@@ -229,109 +225,131 @@
   }
   .line1 {
     position: absolute;
-    bottom: 10px; /* Adjust to move up/down */
+    bottom: 10px;
     left: 50%;
-    transform: translateX(-50%) rotate(-45deg); /* Center & rotate */
+    transform: translateX(-50%) rotate(-45deg);
     
-    width: 290px;  /* Line length */
-    height: 1px;   /* Line thickness */
-    background-color: rgb(0, 0, 0); /* Line color */
+    width: 290px;
+    height: 1px;
+    background-color: rgb(0, 0, 0);
   }
 
-/* Mobile Responsiveness */
 @media screen and (max-width: 768px) {
-    .modal-container {
-        padding: 1rem;
-        margin-top: 60px;
-        height: calc(100vh - 60px); /* Ensure it fits within viewport */
-        width: 100vw;
-        overflow-y: auto; /* Enable vertical scrolling */
-        overflow-x: hidden; /* Prevent horizontal scrolling */
-        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-        box-sizing: border-box;
-    }
+  .modal-container {
+    flex-direction: column;
+    height: auto;
+    width: 100vw;
+    padding: 1.5rem 1rem;
+    overflow-y: auto;
+  }
 
-    .modal-content {
-        flex-direction: column;
-        width: 100%;
-        max-width: 100%; /* Ensure it doesn't exceed container */
-        height: auto; /* Let content determine height */
-        min-height: 0; /* Allow flexibility */
-        border-radius: 16px;
-        overflow: visible; /* Ensure content isn't clipped */
-    }
+  .modal-content {
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    box-shadow: none;
+  }
 
-    .left-panel,
-    .right-panel {
-        width: 100%;
-        height: auto; /* Allow panels to grow with content */
-        min-height: 200px; /* Minimum height for aesthetics */
-        padding: 24px; /* Reduced padding for smaller screens */
-        box-sizing: border-box;
-    }
+  .left-panel,
+  .right-panel {
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+    padding: 2rem 1rem;
+  }
 
-    .left-panel {
-        border-radius: 16px 16px 0 0; /* Top corners rounded */
-    }
+  .left-panel {
+    border-radius: 16px 16px 0 0;
+  }
 
-    .right-panel {
-        border-radius: 0 0 16px 16px; /* Bottom corners rounded */
-    }
+  .right-panel {
+    border-radius: 0 0 16px 16px;
+  }
 
-    /* Ensure buttons stay within scrollable area */
-    .back-button,
-    .studentclose-button {
-        position: absolute; /* Keep absolute for positioning within panels */
-        z-index: 1000; /* Ensure visibility */
-    }
+  .welcome-content {
+    width: 100%;
+    text-align: center;
+    padding: 0;
+  }
 
-    .back-button {
-        top: 16px;
-        left: 16px;
-    }
+  .welcome-title {
+    font-size: 28px;
+  }
 
-    .studentclose-button {
-        top: 16px;
-        right: 16px;
-    }
+  .welcome-subtitle,
+  .welcome-text {
+    font-size: 16px;
+  }
 
-    /* Adjust form container for smaller screens */
-    .form-container {
-        width: 100%;
-        max-width: 100%;
-        padding: 0;
-    }
+  .login-button {
+    font-size: 15px;
+    height: 44px;
+  }
 
-    .welcome-content {
-        width: 100%;
-        padding: 0 16px;
-        box-sizing: border-box;
-    }
+  .back-button,
+  .studentclose-button {
+    font-size: 20px;
+    top: 12px !important;
+  }
 
-    /* Ensure inputs don't overflow */
-    .input-group input,
-    .input-group select {
-        width: 100%;
-        box-sizing: border-box;
-    }
+  .back-button {
+    left: 12px !important;
+  }
 
-    /* Adjust decorative elements to prevent overflow */
-    .circle,
-    .circle1,
-    .circle2 {
-        width: 150px;
-        height: 150px;
-        margin: -30px; /* Reduce margin for smaller screens */
-    }
+  .studentclose-button {
+    right: 12px !important;
+    color: #1A1F24 !important;
+  }
 
-    .triangle {
-        border-left: 120px solid #3A4224;
-        border-top: 110px solid transparent;
-        margin: -20px;
-    }
+  .form-container {
+    width: 100%;
+    padding: 0;
+  }
 
-    .line,
-    .line1 {
-        width: 200px; /* Shorten lines for smaller screens */
-    }
+  .form-title {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .form-fields {
+    gap: 12px;
+  }
+
+  .input-group input,
+  .input-group select {
+    font-size: 15px;
+    height: 42px;
+    padding-left: 36px;
+  }
+
+  .input-group i {
+    font-size: 14px;
+    left: 12px;
+  }
+
+  .register-button {
+    font-size: 15px;
+    height: 44px;
+    margin-top: 12px;
+  }
+
+  .circle,
+  .circle1,
+  .circle2 {
+    width: 120px;
+    height: 120px;
+    margin: -20px;
+  }
+
+  .triangle {
+    border-left: 90px solid #3A4224;
+    border-top: 90px solid transparent;
+    margin: -20px;
+  }
+
+  .line,
+  .line1 {
+    width: 180px;
+  }
 }

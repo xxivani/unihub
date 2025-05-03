@@ -273,3 +273,57 @@ body[data-theme="dark"] .edit-form-group textarea {
   background-color: #c82333; 
 }
 
+@media screen and (max-width: 768px) {
+  .club-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .club-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .view-club-btn,
+  .join-club-btn,
+  .leave-club-btn {
+    width: 48%;
+  }
+
+  .delete-club-button,
+  .edit-club-button {
+    left: auto;
+    right: 10px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .club-image img {
+    width: 100%;
+    height: auto;
+  }
+
+  .club-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .view-club-btn,
+  .join-club-btn,
+  .leave-club-btn {
+    width: 100%;
+  }
+
+  .delete-club-button,
+  .edit-club-button {
+    top: 10px;
+    bottom: auto;
+    right: 10px;
+    left: auto;
+  }
+}
+
+

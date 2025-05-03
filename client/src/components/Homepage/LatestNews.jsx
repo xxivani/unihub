@@ -66,10 +66,9 @@ export default function LatestNews() {
               className="latest-news-img"
             />
             <div className="latest-news-content">
-            <h3 className="latest-news-heading">
-              {n.news_title}
-            </h3>
-            
+              <Link to={`/news/${n.news_id}`} className="latest-news-heading">
+                {n.news_title}
+              </Link>
               <p className="latest-news-description">
                 {n.news_content.length > 100
                   ? n.news_content.slice(0, 100) + "…"

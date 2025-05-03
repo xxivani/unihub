@@ -44,4 +44,35 @@
   .gdpr-container a:hover {
     text-decoration: underline;
   }
+
+ 
+body[data-theme="dark"] .gdpr-container {
+  background-color: #1e1e1e;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.05);
+}
+
+
+body[data-theme="dark"] .gdpr-container h1 {
+  color: #fff;
+}
+
+body[data-theme="dark"] .gdpr-container h2 {
+  color: #ddd;
+}
+
+
+body[data-theme="dark"] .gdpr-container p,
+body[data-theme="dark"] .gdpr-container ul {
+  color: #ccc;
+}
+
+
+body[data-theme="dark"] .gdpr-container a {
+  color: #80bfff;
+}
+
+body[data-theme="dark"] .gdpr-container a:hover {
+  color: #a8ceff;
+}
+
   

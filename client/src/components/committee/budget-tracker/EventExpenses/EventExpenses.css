@@ -1,4 +1,3 @@
-/* Keep the existing CSS */
 .event-expenses-page {
   display: flex;
   margin-top: 90px;
@@ -109,14 +108,13 @@ body[data-theme="dark"] .event-expenses-search-bar {
   margin-left: 10px;
   margin-top: 30px;
   height: max-content;
-  position: relative; /* For loading overlay */
+  position: relative;
 }
 
 body[data-theme="dark"] .event-expenses-table {
   background-color: #ebebed;
 }
 
-/* Table transitions and loading */
 .table-container {
   transition: opacity 0.3s ease;
 }
@@ -143,7 +141,6 @@ body[data-theme="dark"] .table-loading-overlay {
   background-color: rgba(0, 0, 0, 0.3);
 }
 
-/* Smooth transitions for table rows */
 .ant-table-row {
   transition: background-color 0.2s ease;
 }
@@ -222,12 +219,12 @@ body[data-theme="dark"] .event-expenses-back-button {
 .category-legend {
   flex-wrap: wrap;
 }
+
 body[data-theme="dark"] .event-expenses-table .category-legend .ant-typography,
 body[data-theme="dark"] .event-expenses-table .category-legend strong {
   color: #000 !important;
 }
 
-/* Tag animations */
 .ant-tag {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -237,7 +234,6 @@ body[data-theme="dark"] .event-expenses-table .category-legend strong {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Fixed error message styles */
 .error-container {
   margin: 15px 20px;
   padding: 15px;
@@ -277,19 +273,19 @@ body[data-theme="dark"] .error-container {
   margin: 0;
 }
 
-/* Animation for alerts */
 .ant-alert {
   animation: slideDown 0.3s ease-out;
 }
 
 @keyframes slideDown {
   from {
-      opacity: 0;
-      transform: translateY(-10px);
+    opacity: 0;
+    transform: translateY(-10px);
   }
+
   to {
-      opacity: 1;
-      transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -345,8 +341,7 @@ body[data-theme="dark"] .error-container {
 
 /* Dark mode form styling for EventExpenses.css */
 
-/* Form text colors in dark mode */
-body[data-theme="dark"] .ant-form-item-label > label {
+body[data-theme="dark"] .ant-form-item-label>label {
   color: #e0e0e0;
 }
 
@@ -362,7 +357,6 @@ body[data-theme="dark"] .ant-input-textarea {
   border-color: #555555;
 }
 
-/* Modal content in dark mode */
 body[data-theme="dark"] .ant-modal-content {
   background-color: #303030;
   color: #ffffff;
@@ -381,7 +375,6 @@ body[data-theme="dark"] .ant-modal-close {
   color: #e0e0e0;
 }
 
-/* Select dropdown in dark mode */
 body[data-theme="dark"] .ant-select-dropdown {
   background-color: #424242;
   border-color: #555555;
@@ -404,7 +397,6 @@ body[data-theme="dark"] .ant-select-arrow {
   color: #e0e0e0;
 }
 
-/* Form element focus states */
 body[data-theme="dark"] .ant-input:focus,
 body[data-theme="dark"] .ant-input-number:focus,
 body[data-theme="dark"] .ant-input-affix-wrapper:focus,
@@ -413,7 +405,6 @@ body[data-theme="dark"] .ant-input-affix-wrapper-focused {
   box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
 }
 
-/* Checkbox styling in dark mode */
 body[data-theme="dark"] .ant-checkbox-inner {
   background-color: #424242;
   border-color: #666666;
@@ -424,22 +415,18 @@ body[data-theme="dark"] .ant-checkbox-checked .ant-checkbox-inner {
   border-color: #4a6831;
 }
 
-/* Modal footer in dark mode */
 body[data-theme="dark"] .ant-modal-footer {
   border-top: 1px solid #424242;
 }
 
-/* Form validation messages */
 body[data-theme="dark"] .ant-form-item-explain-error {
   color: #ff7875;
 }
 
-/* Form item required asterisk */
 body[data-theme="dark"] .ant-form-item-required::before {
   color: #ff7875;
 }
 
-/* Ensure text is visible in notifications */
 body[data-theme="dark"] .ant-notification-notice {
   background-color: #303030;
   color: #ffffff;
@@ -457,137 +444,137 @@ body[data-theme="dark"] .ant-notification-notice-description {
 /* For devices up to 480px (mobile) */
 @media (max-width: 480px) {
   .event-expenses-page {
-      flex-direction: column;
-      margin-left: 10px;
-      margin-right: 10px;
-      height: auto;
+    flex-direction: column;
+    margin-left: 10px;
+    margin-right: 10px;
+    height: auto;
   }
 
   .main-event-expenses {
-      padding: 10px;
+    padding: 10px;
   }
 
   .event-expenses-title {
-      font-size: 20px;
-      margin-left: 10px;
+    font-size: 20px;
+    margin-left: 10px;
   }
 
   .event-expenses-controls {
-      flex-direction: column;
-      gap: 5px; /* Reduced gap between controls */
+    flex-direction: column;
+    gap: 5px;
   }
 
   .event-expenses-header {
-      width: 100%;
-      justify-content: center;
-      height: auto; /* Remove fixed height */
-      padding: 10px; /* Reduced padding */
+    width: 100%;
+    justify-content: center;
+    height: auto;
+    padding: 10px;
   }
 
   .event-expenses-search-bar {
-      width: 100%;
-      margin-left: 0;
-      margin-top: 5px; /* Reduced margin */
+    width: 100%;
+    margin-left: 0;
+    margin-top: 5px;
   }
 
   .event-expenses-table {
-      margin-left: 0;
-      padding: 10px;
+    margin-left: 0;
+    padding: 10px;
   }
 
   .event-expenses-button-container {
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
   }
 
   .event-expenses-next-button,
   .event-expenses-back-button {
-      font-size: 13px;
+    font-size: 13px;
   }
 
   .category-legend {
-      flex-direction: column;
-      align-items: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .category-legend .ant-space {
-      flex-wrap: wrap;
+    flex-wrap: wrap;
   }
 }
 
 /* For devices up to 768px (tablet) */
 @media (max-width: 768px) {
   .event-expenses-page {
-      flex-direction: column;
-      margin-left: 15px;
-      margin-right: 15px;
-      height: auto;
+    flex-direction: column;
+    margin-left: 15px;
+    margin-right: 15px;
+    height: auto;
   }
 
   .event-expenses-title {
-      font-size: 22px;
+    font-size: 22px;
   }
 
   .event-expenses-controls {
-      flex-direction: column;
-      gap: 15px;
+    flex-direction: column;
+    gap: 15px;
   }
 
   .event-expenses-search-bar {
-      width: 100%;
-      margin-left: 0;
+    width: 100%;
+    margin-left: 0;
   }
 
   .event-expenses-header {
-      width: 100%;
-      justify-content: center;
+    width: 100%;
+    justify-content: center;
   }
 
   .event-expenses-table {
-      margin-left: 0;
-      padding: 15px;
+    margin-left: 0;
+    padding: 15px;
   }
 
   .event-expenses-button-container {
-      flex-direction: column;
-      align-items: center;
+    flex-direction: column;
+    align-items: center;
   }
 
   .event-expenses-next-button,
   .event-expenses-back-button {
-      width: 80%;
-      margin: 10px 0;
+    width: 80%;
+    margin: 10px 0;
   }
 }
 
 /* For devices larger than 768px (desktop) */
 @media (min-width: 769px) {
   .event-expenses-page {
-      flex-direction: row;
+    flex-direction: row;
   }
 
   .event-expenses-controls {
-      flex-direction: row;
+    flex-direction: row;
   }
 
   .event-expenses-search-bar {
-      width: 400px;
-      margin-left: 30px;
+    width: 400px;
+    margin-left: 30px;
   }
 
   .event-expenses-header {
-      width: 200px;
+    width: 200px;
   }
 
   .event-expenses-button-container {
-      flex-direction: row;
-      justify-content: space-between;
+    flex-direction: row;
+    justify-content: space-between;
   }
 
   .event-expenses-next-button,
   .event-expenses-back-button {
-      width: auto;
-      margin-top: 20px;
+    width: auto;
+    margin-top: 20px;
   }
 }

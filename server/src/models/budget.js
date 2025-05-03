@@ -3,8 +3,6 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Budget extends Model {
     static associate(models) {
-      // A budget belongs to a fiscal period, if you want to track budgets by period
-
       //adding association to clubs
       Budget.belongsTo(models.Club, {
         foreignKey: 'club_id',
@@ -40,7 +38,9 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: 'clubs',
         key: 'club_id'
-      }
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
     },
   }, {
     sequelize,

@@ -2,13 +2,11 @@
     display: flex;
     margin-top: 90px;
     height: 1000px;
-    /* width: 100%; */
 }
 
 .budget-dashboard-sidebar {
     margin-right: 15px;
     margin-left: 3px;
-    /* margin-top: 150px; */
     padding: 10px;
 }
 
@@ -19,6 +17,7 @@
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     width: 50%;
+    margin-top: 10px;
 
 }
 
@@ -48,7 +47,6 @@
     padding: 15px;
     overflow: hidden;
     position: relative;
-    /* color: var(--text-color); */
 
 }
 
@@ -100,7 +98,6 @@
     flex-direction: column;
     position: relative;
     height: 100%;
-    /* color: var(--text-color); */
 }
 
 .budget-box1 {
@@ -108,27 +105,15 @@
 
 }
 
-/* body[data-theme="dark"] .budget-box1 {
-    background-color: #3a4d2a;
-} */
-
 .budget-box2 {
     background-color: #d9cdbe;
 
 }
 
-/* body[data-theme="dark"] .budget-box2 {
-    background-color: #4e4538;
-} */
-
 .budget-box3 {
     background-color: #f6c955;
 
 }
-
-/* body[data-theme="dark"] .budget-box3 {
-    background-color: #8a7221;
-} */
 
 .monthly-expense {
     background-color: white;
@@ -143,7 +128,6 @@
 }
 
 body[data-theme="dark"] .monthly-expense {
-    /* background-color: #404040; */
     background-color: #9abdf5;
 }
 
@@ -184,7 +168,6 @@ body[data-theme="dark"] .latest-event-expense {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    /* margin-top: 25px; */
 
 }
 
@@ -210,27 +193,16 @@ body[data-theme="dark"] .expense-breakdown-chart {
 
 .add-expense-icon {
     position: absolute;
-    /* Position the icon absolutely */
     top: 10px;
-    /* Adjust the distance from the top */
     right: 10px;
-    /* Adjust the distance from the right */
     display: flex;
-    /* Use flex to center the icon inside the button */
     align-items: center;
-    /* Center the icon vertically */
     justify-content: center;
-    /* Center the icon horizontally */
-    /* background-color: #e0b000; */
     background-color: #162230;
     width: 43px;
-    /* Set a fixed width */
     height: 43px;
-    /* Set a fixed height to make it a perfect circle */
     border: none;
-    /* Ensure there's no border around the button */
     border-radius: 50%;
-    /* To make it a perfect circle */
     cursor: pointer;
     transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -238,9 +210,7 @@ body[data-theme="dark"] .expense-breakdown-chart {
 }
 
 .add-expense-icon:hover {
-    /* background-color: #e0b000 !important; */
     background-color: #162230 !important;
-
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -317,7 +287,6 @@ body[data-theme="dark"] .budget-next-button {
     color: white;
 }
 
-/* Add to your BudgetDashboard.css */
 .edit-budget-button .edit-budget-spent-button {
     position: absolute;
     top: 10px;
@@ -364,6 +333,7 @@ body[data-theme="dark"] .select-club-dropdown-bt {
     border: 1px solid #ccc;
     background-color: white;
     cursor: pointer;
+    margin-top: 5px;
 }
 
 .access-denied {
@@ -436,6 +406,11 @@ body[data-theme="dark"] .select-club-dropdown-bt {
     .budget-next-button {
         margin-left: 0;
         margin-top: 20px;
+    }
+
+    .select-club-dropdown-bt {
+        margin-top: 15px;
+        margin-bottom: 5px;
     }
 
 }
@@ -625,8 +600,9 @@ body[data-theme="dark"] .select-club-dropdown-bt {
 @media screen and (min-width: 1200px) {
     .budget-boxes {
         width: 100%;
-        
+
     }
+
     .budget-box3 {
         margin-right: 20px;
         width: 100%;

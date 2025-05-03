@@ -14,7 +14,7 @@ function LoginRegister() {
   };
   
   const handleRegisterClick = () => {
-    navigate('/welcome');
+    navigate('/student');
   };
 
   return (

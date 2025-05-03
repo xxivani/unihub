@@ -94,4 +94,22 @@
     color: #fff;
     border: 1px solid #555;
   }
+
+  @media screen and (max-width: 768px) {
+    .create-club-form {
+      width: 90%;
+      padding: 20px;
+    }
+  
+    .create-club-form input,
+    .create-club-form textarea,
+    .create-club-form select.dropdown {
+      font-size: 1rem;
+    }
+  
+    .submit-button {
+      width: 100%;
+    }
+  }
+  
   

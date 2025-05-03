@@ -6,7 +6,8 @@ const {
   updateBudget,
   deleteBudget,
   getAllBudgets,
-  testBudget
+  testBudget,
+  getBudgetByClubId
 } = require('../controllers/budget-tracker/budgetController');
 
 /**
@@ -24,6 +25,8 @@ const {
  *         description: Server error.
  */
 router.get('/current', getCurrentBudget);
+
+router.get('/club/:club_id', getBudgetByClubId);
 
 /**
  * @swagger
@@ -133,8 +136,5 @@ router.put('/:id', updateBudget);
  *         description: Server error.
  */
 router.delete('/:id', deleteBudget);
-
-// In your budgetRoute.js file
-router.get('/test', testBudget);
 
 module.exports = router;

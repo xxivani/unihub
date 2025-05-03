@@ -1,10 +1,8 @@
 const { Expense, Category, Event, sequelize } = require('../../models');
 const { Op } = require('sequelize');
 
-// Get all expenses
 const getAllExpenses = async (req, res) => {
   try {
-
     const { club_id } = req.query;
     const expense_whereClause = club_id ? { club_id } : {};
 
@@ -24,7 +22,6 @@ const getAllExpenses = async (req, res) => {
   }
 };
 
-// Get expense by ID
 const getExpenseById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -46,28 +43,23 @@ const getExpenseById = async (req, res) => {
   }
 };
 
-// Create a new expense
 const createExpense = async (req, res) => {
   try {
     const { amount, description, date, categoryId, eventId, club_id } = req.body;
 
-    // Validate input
     if (!amount || !categoryId) {
       return res.status(400).json({ message: 'Amount and category are required' });
     }
 
-    // Ensure club_id is provided
     if (!club_id) {
       return res.status(400).json({ message: 'Club ID is required' });
     }
 
-    // Check if category exists
     const category = await Category.findByPk(categoryId);
     if (!category) {
       return res.status(404).json({ message: 'Category not found' });
     }
 
-    // Check if event exists if eventId is provided
     if (eventId) {
       const event = await Event.findByPk(eventId);
       if (!event) {
@@ -75,7 +67,6 @@ const createExpense = async (req, res) => {
       }
     }
 
-    // Create new expense
     const newExpense = await Expense.create({
       amount,
       description: description || '',
@@ -85,7 +76,6 @@ const createExpense = async (req, res) => {
       club_id
     });
 
-    // Get the created expense with its relations
     const createdExpense = await Expense.findByPk(newExpense.id, {
       include: [
         { model: Category, as: 'category' },
@@ -100,20 +90,17 @@ const createExpense = async (req, res) => {
   }
 };
 
-// Update existing expense
 const updateExpense = async (req, res) => {
   try {
     const { id } = req.params;
     const { amount, description, date, categoryId, eventId, club_id } = req.body;
 
-    // Find expense by ID
     const expense = await Expense.findByPk(id);
 
     if (!expense) {
       return res.status(404).json({ message: 'Expense not found' });
     }
 
-    // Check if category exists if categoryId is provided
     if (categoryId) {
       const category = await Category.findByPk(categoryId);
       if (!category) {
@@ -121,7 +108,6 @@ const updateExpense = async (req, res) => {
       }
     }
 
-    // Check if event exists if eventId is provided
     if (eventId) {
       const event = await Event.findByPk(eventId);
       if (!event) {
@@ -129,7 +115,6 @@ const updateExpense = async (req, res) => {
       }
     }
 
-    // Update expense
     await expense.update({
       amount: amount || expense.amount,
       description: description !== undefined ? description : expense.description,
@@ -139,7 +124,6 @@ const updateExpense = async (req, res) => {
       club_id: expense.club_id
     });
 
-    // Get the updated expense with its relations
     const updatedExpense = await Expense.findByPk(id, {
       include: [
         { model: Category, as: 'category' },
@@ -154,19 +138,16 @@ const updateExpense = async (req, res) => {
   }
 };
 
-// Delete expense
 const deleteExpense = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Find expense by ID
     const expense = await Expense.findByPk(id);
 
     if (!expense) {
       return res.status(404).json({ message: 'Expense not found' });
     }
 
-    // Delete expense
     await expense.destroy();
 
     return res.status(200).json({ message: 'Expense deleted successfully' });
@@ -176,18 +157,15 @@ const deleteExpense = async (req, res) => {
   }
 };
 
-// Get expenses by event
 const getExpensesByEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
 
-    // Check if event exists
     const event = await Event.findByPk(eventId);
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
 
-    // Get expenses for the event
     const expenses = await Expense.findAll({
       where: { eventId },
       include: [
@@ -203,18 +181,15 @@ const getExpensesByEvent = async (req, res) => {
   }
 };
 
-// Get expenses by category
 const getExpensesByCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
 
-    // Check if category exists
     const category = await Category.findByPk(categoryId);
     if (!category) {
       return res.status(404).json({ message: 'Category not found' });
     }
 
-    // Get expenses for the category
     const expenses = await Expense.findAll({
       where: { categoryId },
       include: [
@@ -230,7 +205,6 @@ const getExpensesByCategory = async (req, res) => {
   }
 };
 
-// Get expenses by date range
 const getExpensesByDateRange = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
@@ -239,7 +213,6 @@ const getExpensesByDateRange = async (req, res) => {
       return res.status(400).json({ message: 'Start date and end date are required' });
     }
 
-    // Get expenses within the date range
     const expenses = await Expense.findAll({
       where: {
         date: {

@@ -13,6 +13,7 @@
     margin-bottom: 5px;
     width: 100%;
 }
+
 body[data-theme="dark"] .event-item {
     background: #f1aa74;
 }
@@ -24,6 +25,7 @@ body[data-theme="dark"] .event-item {
 .event-amount {
     color: #888;
 }
+
 body[data-theme="dark"] .event-amount {
     color: #4f4230;
 }
@@ -45,9 +47,7 @@ body[data-theme="dark"] .event-amount {
     transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     font-size: 15px;
-    /* margin-left: 300px;  */
-    /* 350px in the middle */
-    /* 600 px on the right side */
+
 }
 
 .budget-view-all-events-button:hover {
@@ -63,20 +63,20 @@ body[data-theme="dark"] .budget-view-all-events-button {
 @media screen and (max-width: 480px) {
 
     .budget-view-all-events-button {
-        font-size: 13px; /* smaller text */
-        padding: 8px 16px; /* smaller padding */
+        font-size: 13px;
+        padding: 8px 16px;
     }
 
     .event-item {
-        padding: 8px; /* make event items a little tighter */
+        padding: 8px;
     }
 
     .event-name {
-        font-size: 14px; /* slightly smaller */
+        font-size: 14px;
     }
 
     .event-amount {
-        font-size: 13px; /* slightly smaller */
+        font-size: 13px;
     }
-    
+
 }

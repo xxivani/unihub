@@ -44,4 +44,23 @@
   body[data-theme="dark"] .go-back-button:hover {
     background-color: #c9af74;
   }
+
+  @media screen and (max-width: 768px) {
+    .create-club-header {
+      width: 90%;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+  
+    .go-back-button {
+      width: 100%;
+      text-align: center;
+    }
+  
+    .create-club-title {
+      font-size: 1.6rem;
+    }
+  }
+  
   

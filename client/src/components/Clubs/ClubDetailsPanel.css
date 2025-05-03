@@ -178,3 +178,112 @@ body[data-theme="dark"] .team-avatar {
 body[data-theme="dark"] .team-list p {
     color: #ccc;
 }
+
+.event-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin-top: 1rem;
+  }
+  
+  .event-card {
+    background: #f9f9f9;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  .event-info {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .event-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  
+  .event-description {
+    margin: 0.5rem 0;
+  }
+  
+  .view-event-btn {
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background-color: #dec585;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    align-self: flex-start;
+    white-space: nowrap;
+  }
+  
+  .view-event-btn:hover {
+    background-color: #c9af74;
+  }
+
+body[data-theme="dark"] .event-card {
+    background: #2a2a2a;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+  }
+  
+  
+  body[data-theme="dark"] .event-title,
+  body[data-theme="dark"] .event-description {
+    color: #ccc;
+  }
+  
+  
+  body[data-theme="dark"] .view-event-btn {
+    background-color: #a78e55;
+    color: white;
+  }
+  
+  body[data-theme="dark"] .view-event-btn:hover {
+    background-color: #8e7744;
+  }
+
+  body[data-theme="dark"] .event-info p,
+  body[data-theme="dark"] .event-info strong {
+  color: #ccc;
+}
+
+  @media screen and (max-width: 768px) {
+    .club-details-container {
+      flex-direction: column;
+      padding: 2rem 1rem;
+    }
+  
+    .club-info-panel,
+    .club-committee-panel {
+      padding: 1.5rem;
+    }
+  
+    .event-card {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  
+    .view-event-btn {
+      width: 100%;
+    }
+  
+    .team-member {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .committee-list,
+    .team-list {
+      gap: 1rem;
+    }
+  }
+  
+  
+  

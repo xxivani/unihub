@@ -2,7 +2,7 @@ import { Space, Table, Tag, Typography, Button, Form, Input, Select, Modal, Chec
 import Pagination from "../../../viewRO/Pagination";
 import { useState, useEffect } from 'react';
 import { EditOutlined, DeleteOutlined, LinkOutlined } from '@ant-design/icons';
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import EventAddExpenseButton from './EventExpensesForm';
 import './EventExpenses.css';
 import "./EventExpensesForm.css";
@@ -10,10 +10,9 @@ import "./EventExpensesForm.css";
 const { Text } = Typography;
 const { Option } = Select;
 
-// The component now accepts events as props from the parent
 const EventExpensesTable = ({ events, onEventUpdate }) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 5; // Number of rows per page
+    const pageSize = 5;
     const [editingEvent, setEditingEvent] = useState(null);
     const [form] = Form.useForm();
     const [selectedCategories, setSelectedCategories] = useState({});
@@ -51,20 +50,11 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
         }
     }, [events]);
 
-    // handle delete
-
-
-    // Add this enhanced version of handleDelete to your EventExpensesTable component
+    // Handle delete event
     const handleDelete = async (record) => {
-        console.log("Delete requested for event:", record);
-
-        // Confirm before deleting
         if (window.confirm(`Are you sure you want to delete this event from the budget tracker? ${record.general_event_id ? '\n\nNote: This will only remove it from budget tracking, not from the events system.' : ''}`)) {
             try {
-                console.log(`Attempting to delete event ID: ${record.id}`);
-
                 const url = `${apiUrl}/bt_eventRoute/${record.id}`;
-                console.log("DELETE request URL:", url);
 
                 const response = await fetch(url, {
                     method: 'DELETE',
@@ -73,31 +63,17 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                     }
                 });
 
-                console.log("Server response status:", response.status);
-
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error("Error response text:", errorText);
                     throw new Error(`Server returned status ${response.status}: ${errorText}`);
                 }
 
-                // Try to parse response as JSON
-                let result;
-                try {
-                    result = await response.json();
-                    console.log("Deletion result:", result);
-                } catch (jsonError) {
-                    console.log("Response wasn't JSON:", await response.text());
-                }
-
                 // Update local state after deletion
-                console.log("Updating local state after deletion");
                 const updatedData = data.filter(item => item.id !== record.id);
                 setData(updatedData);
 
                 // Notify parent component if provided
                 if (onEventUpdate) {
-                    console.log("Notifying parent of update");
                     onEventUpdate();
                 }
 
@@ -106,8 +82,6 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                 console.error("Error deleting event:", error);
                 alert(`Failed to delete event: ${error.message}`);
             }
-        } else {
-            console.log("User cancelled deletion");
         }
     };
 
@@ -169,19 +143,35 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
         {
             title: "Actions",
             width: 150,
-            render: (_, record) => (
-                <Space size="middle">
-                    <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>Edit</Button>
-                    <Button
-                        type="link"
-                        icon={<DeleteOutlined />}
-                        danger
-                        onClick={() => handleDelete(record)}
-                    >
-                        Delete
-                    </Button>
-                </Space>
-            ),
+            render: (_, record) => {
+                const totalExpense = record.categories
+                    ? record.categories.reduce((sum, category) => sum + Number(category.amount || 0), 0)
+                    : 0;
+
+                const isLinked = !!record.general_event_id;
+
+                return (
+                    <Space size="middle">
+                        <Button
+                            type="link"
+                            icon={<EditOutlined />}
+                            onClick={() => handleEdit(record)}
+                        >
+                            {totalExpense === 0 ? "Add" : "Edit"}
+                        </Button>
+                        {!isLinked && (
+                            <Button
+                                type="link"
+                                icon={<DeleteOutlined />}
+                                danger
+                                onClick={() => handleDelete(record)}
+                            >
+                                Delete
+                            </Button>
+                        )}
+                    </Space>
+                );
+            },
         },
     ];
 
@@ -200,13 +190,10 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
         const initialSelectedCategories = {};
         if (record.categories && record.categories.length > 0) {
             record.categories.forEach(({ name, amount }) => {
-                // Ensure amount is a string for the input field
                 initialSelectedCategories[name] = amount.toString();
             });
         }
         setSelectedCategories(initialSelectedCategories);
-
-        console.log("Editing event with categories:", initialSelectedCategories);
     };
 
     const handleSave = async () => {
@@ -215,7 +202,6 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                 setLoading(true);
 
                 // Convert selected categories to array format
-                // Ensure each amount is at least 0 to pass backend validation
                 const updatedCategories = Object.entries(selectedCategories).map(([name, amount]) => {
                     const numAmount = parseFloat(amount);
                     return {
@@ -231,13 +217,10 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                     status: values.status,
                     description: values.description || '',
                     categories: updatedCategories,
-                    club_id: clubId, // Make sure to include club_id in the update
+                    club_id: clubId,
                     general_event_id: editingEvent.general_event_id // Preserve the link to general event
                 };
 
-                console.log("Updating event with data:", updateData);
-
-                // Send PUT request to API
                 const response = await fetch(`${apiUrl}/bt_eventRoute/${editingEvent.id}`, {
                     method: 'PUT',
                     headers: {
@@ -251,7 +234,6 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                 }
 
                 const updatedEvent = await response.json();
-                console.log("Received updated event:", updatedEvent);
 
                 // Update local state with the returned data
                 const updatedData = data.map((item) =>
@@ -282,7 +264,7 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
             if (checked) {
                 return {
                     ...prev,
-                    [category]: "", // When checked, show the input field with a minimum valid value
+                    [category]: "", // When checked, show the input field with empty value
                 };
             } else {
                 const newCategories = { ...prev };
@@ -295,7 +277,7 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
     const handleAmountChange = (category, value) => {
         setSelectedCategories((prev) => ({
             ...prev,
-            [category]: value, // Store input value
+            [category]: value,
         }));
     };
 
@@ -335,7 +317,6 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                 justifyContent: 'space-between',
                 alignItems: 'center'
             }}>
-                {/* Left side with legend */}
                 <div className='category-legend' style={{ display: 'flex', alignItems: 'center' }}>
                     <Text strong style={{ marginRight: 8 }}>Category Legend: </Text>
                     <Space size="small">
@@ -347,7 +328,6 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
                     </Space>
                 </div>
 
-                {/* Right side with button */}
                 <EventAddExpenseButton onAddEvent={onEventUpdate || (() => { })} />
             </div>
 
@@ -374,7 +354,10 @@ const EventExpensesTable = ({ events, onEventUpdate }) => {
 
             <Modal
                 title={<div className='event-expense-form-modal-title'>
-                    {editingEvent?.general_event_id ? 'Edit Linked Event' : 'Edit Event'}
+                    {editingEvent && editingEvent.categories &&
+                        editingEvent.categories.reduce((sum, category) => sum + Number(category.amount || 0), 0) > 0
+                        ? 'Edit Event'
+                        : 'Add Expenses to Event'}
                 </div>}
                 open={!!editingEvent}
                 onCancel={() => setEditingEvent(null)}

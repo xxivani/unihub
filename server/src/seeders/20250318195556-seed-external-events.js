@@ -135,7 +135,7 @@ module.exports = {
 	  {
 		external_event_name: "The Psychology of Motivation",
 		external_event_date: new Date('2025-06-22'),
-		external_event_location: "Seminar Room B",
+		external_event_location: "Seminar Room A",
 		external_event_time: new Date('2025-04-22T11:00:00Z'),
 		external_event_description: "Join Dr. Leila Haddad for a talk on what drives human behavior, how to stay motivated during challenging times, and practical strategies for student success.",
 		external_event_created_by: "Nina Clarke",

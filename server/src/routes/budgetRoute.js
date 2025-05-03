@@ -137,7 +137,4 @@ router.put('/:id', updateBudget);
  */
 router.delete('/:id', deleteBudget);
 
-// In your budgetRoute.js file
-router.get('/test', testBudget);
-
 module.exports = router;

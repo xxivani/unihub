@@ -16,15 +16,6 @@ function EventAddExpenseButton({ onAddEvent }) {
 
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-  // Category colors for visual consistency with the table
-  const categoryColors = {
-    catering: "blue",
-    materials: "green",
-    prize: "gold",
-    venue: "purple",
-    transportation: "red",
-  };
-
   // Available categories
   const categories = [
     { label: 'Catering', value: 'catering' },
@@ -42,13 +33,10 @@ function EventAddExpenseButton({ onAddEvent }) {
     const id = clubIdFromUrl || clubIdFromSession;
     if (id) {
       setClubId(id);
-      // Fetch club name if needed
       fetchClubName(id);
     }
-    console.log("EventExpensesForm - Using Club ID:", id);
   }, [location.search]);
 
-  // Fetch club name if available
   const fetchClubName = async (id) => {
     try {
       const response = await fetch(`${apiUrl}/clubs/${id}`);
@@ -64,7 +52,6 @@ function EventAddExpenseButton({ onAddEvent }) {
     }
   };
 
-  // Open Modal
   const showModal = () => {
     // Check if a club is selected
     if (!clubId) {
@@ -76,13 +63,8 @@ function EventAddExpenseButton({ onAddEvent }) {
     setSelectedCategories({});
     form.resetFields();
 
-    // Set default event status
-    form.setFieldsValue({
-      eventStatus: 'ONGOING'
-    });
   };
 
-  // Close Modal
   const handleCancel = () => {
     setIsModalOpen(false);
     setSelectedCategories({});
@@ -95,7 +77,7 @@ function EventAddExpenseButton({ onAddEvent }) {
       if (checked) {
         return {
           ...prev,
-          [category]: "" // Initialize with an empty string
+          [category]: ""
         };
       } else {
         const newCategories = { ...prev };
@@ -105,7 +87,6 @@ function EventAddExpenseButton({ onAddEvent }) {
     });
   };
 
-  // Handle amount change for a category
   const handleAmountChange = (category, value) => {
     setSelectedCategories(prev => ({
       ...prev,
@@ -121,13 +102,13 @@ function EventAddExpenseButton({ onAddEvent }) {
         message.error('Please select a club first');
         return;
       }
-  
+
       // Validate at least one category is selected
       if (Object.keys(selectedCategories).length === 0) {
         message.error('Please select at least one expense category');
         return;
       }
-  
+
       // Check for date and format it correctly
       let formattedDate = null;
       if (values.eventDate) {
@@ -144,14 +125,13 @@ function EventAddExpenseButton({ onAddEvent }) {
           formattedDate = new Date(values.eventDate).toISOString().split('T')[0];
         }
       }
-  
+
       // If we still don't have a valid date, show an error
       if (!formattedDate) {
         message.error('Please select a valid date');
         return;
       }
-  
-      // Create event data
+
       const eventData = {
         name: values.eventName,
         date: formattedDate,
@@ -164,10 +144,7 @@ function EventAddExpenseButton({ onAddEvent }) {
           })),
         club_id: clubId
       };
-  
-      console.log("Creating new event with data:", eventData);
-  
-      // Send POST request to create event
+
       const eventResponse = await fetch(`${apiUrl}/bt_eventRoute`, {
         method: 'POST',
         headers: {
@@ -175,20 +152,19 @@ function EventAddExpenseButton({ onAddEvent }) {
         },
         body: JSON.stringify(eventData)
       });
-  
+
       if (!eventResponse.ok) {
         const errorData = await eventResponse.json();
         throw new Error(errorData.message || `Failed to create event: ${eventResponse.status}`);
       }
-  
+
       const createdEvent = await eventResponse.json();
-      console.log("Created event:", createdEvent);
-  
+
       // Call the parent function to refresh data
       if (onAddEvent) {
         onAddEvent();
       }
-  
+
       message.success('Event added successfully');
       form.resetFields();
       setSelectedCategories({});
@@ -201,12 +177,10 @@ function EventAddExpenseButton({ onAddEvent }) {
 
   return (
     <>
-      {/* Button to open Modal */}
       <Button className='event-add-expense-button' type="primary" onClick={showModal}>
         Add New Expense
       </Button>
 
-      {/* Modal */}
       <Modal
         title={<div className='event-expense-form-modal-title'>
           {clubName ? `Add Event Expense for ${clubName}` : 'Event Expense Form'}

@@ -65,7 +65,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'BTevent',
-    // tableName: "Events"
     tableName: "BTEvents",
 
     indexes: [

@@ -1,6 +1,5 @@
 const { Category, Expense, sequelize } = require('../../models');
 
-// Get all categories
 const getAllCategories = async (req, res) => {
   try {
     const categories = await Category.findAll({
@@ -14,7 +13,6 @@ const getAllCategories = async (req, res) => {
   }
 };
 
-// Get category by ID
 const getCategoryById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -31,17 +29,14 @@ const getCategoryById = async (req, res) => {
   }
 };
 
-// Create a new category
 const createCategory = async (req, res) => {
   try {
     const { name, color } = req.body;
 
-    // Validate input
     if (!name) {
       return res.status(400).json({ message: 'Category name is required' });
     }
 
-    // Create new category
     const newCategory = await Category.create({
       name,
       color: color || '#bdd6a8' // Use default color if none provided
@@ -54,20 +49,17 @@ const createCategory = async (req, res) => {
   }
 };
 
-// Update existing category
 const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, color } = req.body;
 
-    // Find category by ID
     const category = await Category.findByPk(id);
 
     if (!category) {
       return res.status(404).json({ message: 'Category not found' });
     }
 
-    // Update category
     await category.update({
       name: name || category.name,
       color: color || category.color
@@ -80,12 +72,10 @@ const updateCategory = async (req, res) => {
   }
 };
 
-// Delete category
 const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Find category by ID
     const category = await Category.findByPk(id);
 
     if (!category) {
@@ -98,12 +88,11 @@ const deleteCategory = async (req, res) => {
     });
 
     if (usedInExpenses) {
-      return res.status(400).json({ 
-        message: 'Cannot delete category that is used in expenses. Please reassign expenses first.' 
+      return res.status(400).json({
+        message: 'Cannot delete category that is used in expenses. Please reassign expenses first.'
       });
     }
 
-    // Delete category
     await category.destroy();
 
     return res.status(200).json({ message: 'Category deleted successfully' });
@@ -113,7 +102,6 @@ const deleteCategory = async (req, res) => {
   }
 };
 
-// Get categories with expense totals
 const getCategoriesWithTotals = async (req, res) => {
   try {
     const categories = await Category.findAll({
@@ -125,8 +113,8 @@ const getCategoriesWithTotals = async (req, res) => {
         }
       ],
       attributes: [
-        'id', 
-        'name', 
+        'id',
+        'name',
         'color',
         [sequelize.fn('SUM', sequelize.col('expenses.amount')), 'totalAmount'],
         [sequelize.fn('COUNT', sequelize.col('expenses.id')), 'expenseCount']

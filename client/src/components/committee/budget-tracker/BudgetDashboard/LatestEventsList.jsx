@@ -7,11 +7,9 @@ const LatestEventsList = ({ events: propEvents }) => {
   const [events, setEvents] = useState(propEvents || []);
   const [loading, setLoading] = useState(!propEvents);
   const [error, setError] = useState(null);
-  const [debugInfo, setDebugInfo] = useState(null);
-  
-  // Get the API URL from environment
+
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-  
+
   useEffect(() => {
     // If events are provided as props, use them
     if (propEvents && propEvents.length) {
@@ -19,7 +17,7 @@ const LatestEventsList = ({ events: propEvents }) => {
       setLoading(false);
       return;
     }
-    
+
     const fetchLatestEvents = async () => {
       try {
         setLoading(true);
@@ -28,63 +26,45 @@ const LatestEventsList = ({ events: propEvents }) => {
         const urlClubId = queryParams.get('club_id');
         const storedClubId = sessionStorage.getItem("selectedClubId");
         const clubId = urlClubId || storedClubId;
-        
-        // Collect debug information
-        const debug = {
-          urlClubId,
-          storedClubId,
-          finalClubId: clubId,
-          apiUrlUsed: `${apiUrl}/bt_eventRoute/latest?club_id=${clubId}&limit=3`
-        };
-        setDebugInfo(debug);
-        console.log("Debug info:", debug);
-        
+
         if (!clubId) {
           throw new Error('No club ID found. Please select a club first.');
         }
-        
+
         // Make sure we're using the correct endpoint
-        // Note: Check if apiUrl already includes /api or not
-        const endpoint = apiUrl.includes('/api') 
-          ? `${apiUrl}/bt_eventRoute/latest` 
+        const endpoint = apiUrl.includes('/api')
+          ? `${apiUrl}/bt_eventRoute/latest`
           : `${apiUrl}/api/bt_eventRoute/latest`;
-        
-        console.log(`Fetching latest events from: ${endpoint}?club_id=${clubId}&limit=3`);
-        
+
         const response = await fetch(`${endpoint}?club_id=${clubId}&limit=3`);
-        
+
         if (!response.ok) {
           const errorText = await response.text();
-          console.error(`API error (${response.status}):`, errorText);
           throw new Error(`Server error: ${response.status} ${response.statusText}`);
         }
-        
+
         const data = await response.json();
-        console.log("Fetched latest events:", data);
-        
+
         if (Array.isArray(data)) {
           setEvents(data);
           setError(null);
         } else {
-          console.error("Unexpected data format:", data);
           throw new Error('Received invalid data format from server');
         }
       } catch (err) {
         console.error('Error fetching latest events:', err);
         setError(`Failed to load latest events: ${err.message}`);
-        
+
         // Try fallback endpoint if the first one failed
         try {
           if (apiUrl.includes('/api')) {
             const fallbackEndpoint = apiUrl.replace('/api', '');
-            console.log(`Trying fallback endpoint: ${fallbackEndpoint}/api/bt_eventRoute/latest`);
-            
-            const clubId = debugInfo.finalClubId;
+
+            const clubId = urlClubId || storedClubId;
             const fallbackResponse = await fetch(`${fallbackEndpoint}/api/bt_eventRoute/latest?club_id=${clubId}&limit=3`);
-            
+
             if (fallbackResponse.ok) {
               const fallbackData = await fallbackResponse.json();
-              console.log("Fallback fetch successful:", fallbackData);
               if (Array.isArray(fallbackData)) {
                 setEvents(fallbackData);
                 setError(null);
@@ -98,15 +78,14 @@ const LatestEventsList = ({ events: propEvents }) => {
         setLoading(false);
       }
     };
-    
+
     fetchLatestEvents();
   }, [apiUrl, propEvents]);
-  
+
   if (loading) {
     return <Spin tip="Loading latest events..." />;
   }
-  
-  // If there's an error but we have events from props, still show them
+
   if (error && events.length === 0) {
     return (
       <div>
@@ -117,12 +96,6 @@ const LatestEventsList = ({ events: propEvents }) => {
           showIcon
           style={{ marginBottom: '20px' }}
         />
-        {debugInfo && (
-          <details style={{ marginBottom: '10px', fontSize: '12px', color: '#999' }}>
-            <summary>Debug Info (click to expand)</summary>
-            <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
-          </details>
-        )}
         <ul className="latest-events-list">
           <li className="event-item">
             <span className="event-name">No events available</span>
@@ -131,7 +104,7 @@ const LatestEventsList = ({ events: propEvents }) => {
       </div>
     );
   }
-  
+
   return (
     <div>
       {error && (

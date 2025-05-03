@@ -1,5 +1,3 @@
-// const { Budget, Expense, Category, BTevent, sequelize } = require('../../models');
-
 const db = require('../../models');
 const Budget = db.Budget;
 const Expense = db.Expense;
@@ -8,89 +6,70 @@ const BTevent = db.BTevent;
 const Event = db.Event;
 const sequelize = db.sequelize;
 
-console.log('Available models:', Object.keys(db));
-
 const { Op } = require('sequelize');
 
-// Get dashboard data (combined endpoint)
+// Get combined dashboard data for frontend
 const getDashboardData = async (req, res) => {
   try {
     const { club_id } = req.query;
-    console.log('Dashboard query params:', req.query);
-    
-    // Log and validate club_id
-    console.log('Using club_id:', club_id);
-    
-    // Prepare where clause for Budget query
+
     const budgetWhereClause = club_id ? { club_id } : {};
-    console.log('club_id from query:', club_id);
-    console.log('Where clause:', budgetWhereClause);
-    
+    const expenseWhereClause = club_id ? { club_id } : {};
+
     // Get latest budget for the club
     const latestBudget = await Budget.findOne({
       where: budgetWhereClause,
       order: [['createdAt', 'DESC']]
     });
-    
-    // Prepare where clause for Expense queries
-    const expenseWhereClause = club_id ? { club_id } : {};
-    
-    // Get total spent - Now filtering by club_id
+
+    // Get total spent amount
     const totalSpentResult = await Expense.findOne({
       attributes: [
         [sequelize.fn('SUM', sequelize.col('amount')), 'totalSpent']
       ],
-      where: expenseWhereClause // Apply club_id filter
+      where: expenseWhereClause
     });
-    
+
     // Calculate budget values
     const totalBudget = latestBudget ? parseFloat(latestBudget.totalAmount) : 0;
     const totalSpent = totalSpentResult ? parseFloat(totalSpentResult.getDataValue('totalSpent') || 0) : 0;
     const remaining = totalBudget - totalSpent;
-    
-    // Get monthly expenses - Now filtering by club_id
+
     const monthlyExpensesQuery = await Expense.findAll({
       attributes: [
         [sequelize.fn('date_part', 'month', sequelize.col('date')), 'month'],
         [sequelize.fn('SUM', sequelize.col('amount')), 'total']
       ],
-      where: expenseWhereClause, // Apply club_id filter
+      where: expenseWhereClause,
       group: [sequelize.fn('date_part', 'month', sequelize.col('date'))]
     });
-    
-    // Format monthly expenses specifically for semesters
+
+    // Format monthly expenses for semesters (Sep-Jun)
     const monthLabels = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-      
-    // Initialize monthlyExpenses with the format expected by frontend
     const monthlyExpenses = {
       labels: monthLabels,
       data: Array(10).fill(0)
     };
-    
-    // Map the database results to match the expected structure
+
+    // Map database results to expected frontend structure
     monthlyExpensesQuery.forEach(expense => {
       const month = parseInt(expense.getDataValue('month'));
       let index = -1;
-      
+
       if (month >= 9 && month <= 12) {
         // Semester 1: Sep (9) to Dec (12)
-        index = month - 9; // Convert to 0-3
+        index = month - 9;
       } else if (month >= 1 && month <= 6) {
         // Semester 2: Jan (1) to Jun (6)
         index = month + 3;
       }
-      
+
       if (index >= 0 && index < 10) {
         monthlyExpenses.data[index] = parseFloat(expense.getDataValue('total') || 0);
       }
     });
-    
-    // Get all expenses for analysis - Now filtering by club_id
-    const allExpenses = await Expense.findAll({
-      where: expenseWhereClause // Apply club_id filter
-    });
-    
-    // Get category breakdown - Now using JOIN with proper WHERE clause
+
+    // Get category breakdown with proper JOIN
     const categoryBreakdownQuery = await Category.findAll({
       attributes: [
         'id', 'name', 'color',
@@ -100,21 +79,21 @@ const getDashboardData = async (req, res) => {
         model: Expense,
         as: 'expenses',
         attributes: [],
-        where: expenseWhereClause, // Apply club_id filter to joined expenses
+        where: expenseWhereClause,
         required: false
       }],
       group: ['Category.id'],
       order: [['name', 'ASC']]
     });
-    
-    // Format category data to match frontend expectations
+
+    // Format category data for frontend
     const expenseBreakdown = {
       labels: categoryBreakdownQuery.map(category => category.name),
       data: categoryBreakdownQuery.map(category => parseFloat(category.getDataValue('total') || 0)),
-      colors: categoryBreakdownQuery.map(category => category.color || '#' + Math.floor(Math.random()*16777215).toString(16))
+      colors: categoryBreakdownQuery.map(category => category.color || '#' + Math.floor(Math.random() * 16777215).toString(16))
     };
-    
-    // Get latest events - Now includes general events by using the association
+
+    // Get latest events with proper filtering
     const latestEventsQuery = club_id ?
       {
         where: { club_id },
@@ -125,7 +104,7 @@ const getDashboardData = async (req, res) => {
         limit: 5,
         order: [['date', 'DESC']]
       };
-    
+
     const latestEvents = await BTevent.findAll({
       ...latestEventsQuery,
       include: [
@@ -140,30 +119,28 @@ const getDashboardData = async (req, res) => {
         }
       ]
     });
-    
-    // Format latest events to match frontend expectations
+
+    // Format latest events for frontend
     const formattedLatestEvents = latestEvents.map(event => {
       const rawEvent = event.get({ plain: true });
-      
-      // Calculate the total expense amount for this event
+
+      // Calculate total expense for this event
       const totalExpense = rawEvent.expenses.reduce(
         (sum, expense) => sum + parseFloat(expense.amount || 0), 0
       );
-      
+
       return {
         id: rawEvent.id,
         name: rawEvent.name,
         totalExpense,
-        amount: `AED ${totalExpense.toLocaleString()}`, // Pre-format to match frontend expectation
+        amount: `AED ${totalExpense.toLocaleString()}`,
         general_event_id: rawEvent.general_event_id,
-        // Include a flag to identify events from the general system
         is_general_event: !!rawEvent.general_event_id,
-        // Include the original event title if it's from the general system
         original_title: rawEvent.generalEvent ? rawEvent.generalEvent.title : null
       };
     });
-    
-    // Compile dashboard data with the structure expected by frontend
+
+    // Compile dashboard data with expected frontend structure
     const dashboardData = {
       budgetSummary: {
         totalBudget,
@@ -175,7 +152,7 @@ const getDashboardData = async (req, res) => {
       expenseBreakdown,
       latestEvents: formattedLatestEvents,
     };
-    
+
     return res.status(200).json(dashboardData);
   } catch (error) {
     console.error('Error getting dashboard data:', error);
@@ -183,15 +160,12 @@ const getDashboardData = async (req, res) => {
   }
 };
 
-// Get budget summary (total, spent, remaining)
 const getBudgetSummary = async (req, res) => {
   try {
     const { club_id } = req.query;
-    
-    // Prepare where clause based on club_id
+
     const whereClause = club_id ? { club_id } : {};
-    
-    // Get the current budget
+
     const budget = await Budget.findOne({
       where: whereClause,
       order: [['createdAt', 'DESC']]
@@ -201,7 +175,6 @@ const getBudgetSummary = async (req, res) => {
       return res.status(404).json({ message: 'No budget found' });
     }
 
-    // Get total expenses
     const totalExpensesResult = await Expense.findOne({
       attributes: [
         [sequelize.fn('SUM', sequelize.col('amount')), 'totalSpent']
@@ -226,24 +199,19 @@ const getBudgetSummary = async (req, res) => {
   }
 };
 
-// Get monthly expenses for chart
 const getMonthlyExpenses = async (req, res) => {
   try {
     const { fiscalYear, club_id } = req.query;
 
-    // Prepare where clause
     const whereClause = club_id ? { club_id } : {};
-    
-    // Define semester months
+
     const semesterMonths = ['09', '10', '11', '12', '01', '02', '03', '04', '05', '06'];
 
-    // Initialize result object with all months set to 0
     const monthlyExpenses = {
       labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
       data: Array(10).fill(0)
     };
 
-    // Add fiscal year filter if provided
     if (fiscalYear) {
       whereClause[sequelize.Op.and] = sequelize.literal(
         `(
@@ -253,7 +221,6 @@ const getMonthlyExpenses = async (req, res) => {
       );
     }
 
-    // Query for expenses grouped by month
     const expenses = await Expense.findAll({
       attributes: [
         [sequelize.fn('date_part', 'month', sequelize.col('date')), 'month'],
@@ -264,7 +231,6 @@ const getMonthlyExpenses = async (req, res) => {
       raw: true
     });
 
-    // Map the database results to our monthlyExpenses structure
     expenses.forEach(expense => {
       const monthNum = expense.month.toString().padStart(2, '0');
       const monthIndex = semesterMonths.indexOf(monthNum);
@@ -281,15 +247,12 @@ const getMonthlyExpenses = async (req, res) => {
   }
 };
 
-// Get expense breakdown by category
 const getExpenseBreakdown = async (req, res) => {
   try {
     const { club_id } = req.query;
-    
-    // Prepare where clause for expenses
+
     const expenseWhereClause = club_id ? { club_id } : {};
-    
-    // Get all categories with their total expenses
+
     const categories = await Category.findAll({
       attributes: ['id', 'name', 'color'],
       include: [
@@ -311,7 +274,6 @@ const getExpenseBreakdown = async (req, res) => {
       ]
     });
 
-    // Format the data for the doughnut chart
     const expenseBreakdown = {
       labels: categories.map(category => category.name),
       data: categories.map(category => parseFloat(category.total) || 0),

@@ -13,6 +13,35 @@ const {
 
 /**
  * @swagger
+ * /bt_eventRoute/latest:
+ *   get:
+ *     summary: Get latest events for a specific club
+ *     tags: [Events]
+ *     parameters:
+ *       - in: query
+ *         name: club_id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Club ID
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         default: 3
+ *         description: Number of events to return
+ *     responses:
+ *       200:
+ *         description: Latest events retrieved successfully.
+ *       400:
+ *         description: Club ID is required.
+ *       500:
+ *         description: Server error.
+ */
+router.get('/latest', getLatestEventsByClub);
+
+/**
+ * @swagger
  * /events:
  *   get:
  *     summary: Get all events with their expenses
@@ -214,34 +243,34 @@ router.put('/:id', updateEventBT);
  */
 router.delete('/:id', deleteEventBT);
 
-/**
- * @swagger
- * /bt_eventRoute/latest:
- *   get:
- *     summary: Get latest events for a specific club
- *     tags: [Events]
- *     parameters:
- *       - in: query
- *         name: club_id
- *         schema:
- *           type: integer
- *         required: true
- *         description: Club ID
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *         default: 3
- *         description: Number of events to return
- *     responses:
- *       200:
- *         description: Latest events retrieved successfully.
- *       400:
- *         description: Club ID is required.
- *       500:
- *         description: Server error.
- */
-router.get('/latest', getLatestEventsByClub);
+// /**
+//  * @swagger
+//  * /bt_eventRoute/latest:
+//  *   get:
+//  *     summary: Get latest events for a specific club
+//  *     tags: [Events]
+//  *     parameters:
+//  *       - in: query
+//  *         name: club_id
+//  *         schema:
+//  *           type: integer
+//  *         required: true
+//  *         description: Club ID
+//  *       - in: query
+//  *         name: limit
+//  *         schema:
+//  *           type: integer
+//  *         default: 3
+//  *         description: Number of events to return
+//  *     responses:
+//  *       200:
+//  *         description: Latest events retrieved successfully.
+//  *       400:
+//  *         description: Club ID is required.
+//  *       500:
+//  *         description: Server error.
+//  */
+// router.get('/latest', getLatestEventsByClub);
 
 
 module.exports = router;

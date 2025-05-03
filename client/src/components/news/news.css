@@ -155,7 +155,7 @@
 }
 
 .delete-news-link {
-  color: #ff3333;
+  color: #ff3333 !important;
   text-decoration: none;
 }
 
@@ -241,15 +241,6 @@
   font-weight: 500;
 }
 
-.loading-message {
-  color: var(--info-text, #0288d1);
-  background-color: var(--info-bg, #e1f5fe);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  text-align: center;
-  font-weight: 500;
-}
 
 .file-info {
   font-size: 0.85rem;

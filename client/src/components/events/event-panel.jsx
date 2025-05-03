@@ -152,6 +152,18 @@ function E4EventPanel() {
           ...data,
           image: updatedImage
         });
+        let index = 1;
+        const isValidImage = (img) => img && img !== "";
+        if (!isValidImage(updatedImage[`image${index}`])) {
+          for (let i = 2; i <= 7; i++) {
+            if (isValidImage(updatedImage[`image${i}`])) {
+              console.log("awdawdasd" + i);
+              index = i;
+              break;
+            }
+          }
+        }
+        setCurrentImage(index);
       } catch(error) {
         console.error("Error fetching images:", error);
       };

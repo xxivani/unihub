@@ -120,7 +120,7 @@ function EventCards() {
 
       <CardGroup className="events-card-group">
         {events.map((event, index) => (
-          <Card key={index} className="event-card">
+          <Card key={index} className="event-card-m">
             <canvas className="event-img" ref={(el) => canvasRefs.current[event.id * 10] = el} onClick={() => window.location.href=`/event-details?eventid=${event.id}`}/>{/*<Card.Img variant="top" src="assets/images/img.jpeg" className="event-img" />*/}
             <Card.Body>
               <Card.Title>

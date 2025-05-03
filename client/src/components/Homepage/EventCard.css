@@ -33,17 +33,19 @@
   flex-wrap: wrap;
 }
 
-.event-card {
+.event-card-m {
   border: none !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: var(--e4-search) !important;
   transition: transform 0.3s ease-in-out, background-color 0.4s ease;
+  justify-content: center !important;
+  align-items: center !important;
   max-width: 370px;
   width: 100%;
   margin-bottom: 20px;
 }
 
-.event-card:hover {
+.event-card-m:hover {
   transform: translateY(-5px);
 }
 

@@ -217,20 +217,18 @@ const BrowseEvents = () =>{
           const updatedEvents = data.map((event) => {
             const curImages = int_image.filter(img => img.eventName == event.title);
             for (let col = 0; col == 0; col++) {
-              if (event.image[`image${col}`]) {
-                const imgFound = curImages.find(img => img.position == col + 1) || {};
-                event = {
-                  ...event,
-                  image: {
-                    ...event.image,
-                    [`image${col}`]: imgFound?.URL,
-                    [`imageBr${col}`]: imgFound.brightness,
-                    [`imageSa${col}`]: imgFound.saturation,
-                    [`imageBl${col}`]: imgFound.blur,
-                    [`imageIn${col}`]: imgFound.inversion,
-                  }
-                };
-              }
+              const imgFound = curImages.find(img => img.position == col + 1) || {};
+              event = {
+                ...event,
+                image: {
+                  ...event.image,
+                  [`image${col}`]: imgFound?.URL,
+                  [`imageBr${col}`]: imgFound.brightness,
+                  [`imageSa${col}`]: imgFound.saturation,
+                  [`imageBl${col}`]: imgFound.blur,
+                  [`imageIn${col}`]: imgFound.inversion,
+                }
+              };
             }
             return event;
           });

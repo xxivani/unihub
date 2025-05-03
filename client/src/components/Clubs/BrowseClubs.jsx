@@ -168,45 +168,126 @@ const BrowseClubs = () => {
     }
   };
 
-  const handleEditClick = (club) => {
-    setEditingClub(club);
+  // const handleEditClick = (club) => {
+  //   setEditingClub(club);
+  // };
+  const handleEditClick = async (club) => {
+    try {
+      // Fetch the budget for this club
+      const response = await fetch(`${API_URL}/budgetRoute/club/${club.club_id}`);
+      if (!response.ok) {
+        console.warn("Budget not found for this club.");
+        setEditingClub({ ...club, club_budget: "" }); // Optional: handle no budget
+        console.log('editing club: ', club);
+        return;
+      }
+  
+      const budget = await response.json();
+  
+      // Add budget value to club object
+      const clubWithBudget = {
+        ...club,
+        club_budget: budget.totalAmount || 0,
+      };
+  
+      setEditingClub(clubWithBudget);
+    } catch (error) {
+      console.error("Error fetching budget:", error);
+      setEditingClub({ ...club, club_budget: "" }); // Fallback
+    }
   };
+  
 
   const handleEditFormChange = (field, value) => {
     setEditingClub({ ...editingClub, [field]: value });
   };
 
+  // const handleEditFormSubmit = async (e) => {
+  //   e.preventDefault();
+  //   console.log('Enditing club budget: ', editingClub.club_budget)
+
+  //   const formData = new FormData();
+  //   formData.append("club_name", editingClub.club_name);
+  //   formData.append("club_description", editingClub.club_description);
+  //   formData.append("club_category", editingClub.club_category || "");
+  //   if (editImageFile) {
+  //     formData.append("image", editImageFile);
+  //   }
+
+  //   try {
+  //     const response = await fetch(`${API_URL}/clubs/${editingClub.club_id}`, {
+  //       method: "PUT",
+  //       body: formData,
+  //     });
+
+  //     if (response.ok) {
+  //       alert("Club updated successfully!");
+  //       setEditingClub(null);
+  //       setEditImageFile(null);
+  //       window.location.reload();
+  //     } else {
+  //       alert("Failed to update club.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Edit club error:", error);
+  //     alert("Error updating club.");
+  //   }
+  // };
+
   const handleEditFormSubmit = async (e) => {
     e.preventDefault();
   
-    const formData = new FormData();
-    formData.append("club_name", editingClub.club_name);
-    formData.append("club_description", editingClub.club_description);
-    formData.append("club_category", editingClub.club_category || ""); 
-    if (editImageFile) {
-      formData.append("image", editImageFile);
-    }
-  
     try {
-      const response = await fetch(`${API_URL}/clubs/${editingClub.club_id}`, {
+      // Step 1: Update the club
+      const clubResponse = await fetch(`${API_URL}/clubs/${editingClub.club_id}`, {
         method: "PUT",
-        body: formData, 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          club_name: editingClub.club_name,
+          club_description: editingClub.club_description,
+          club_thumbnail_url: editingClub.club_thumbnail_url,
+        }),
       });
   
-      if (response.ok) {
-        alert("Club updated successfully!");
-        setEditingClub(null);
-        setEditImageFile(null);
-        window.location.reload(); 
-      } else {
+      if (!clubResponse.ok) {
         alert("Failed to update club.");
+        return;
       }
+  
+      // Step 2: Fetch club's current budget to get the budget ID
+      const budgetResponse = await fetch(`${API_URL}/budgetRoute/club/${editingClub.club_id}`);
+      const budgetData = await budgetResponse.json();
+  
+      if (!budgetResponse.ok || !budgetData.id) {
+        alert("Club updated, but budget not found.");
+        return;
+      }
+  
+      // Step 3: Update the budget
+      const updateBudgetResponse = await fetch(`${API_URL}/budgetRoute/${budgetData.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          totalAmount: parseFloat(editingClub.club_budget), // Make sure to cast properly
+          // Optionally include: fiscalYear or description
+        }),
+      });
+  
+      if (!updateBudgetResponse.ok) {
+        alert("Club updated, but failed to update budget.");
+        return;
+      }
+  
+      alert("Club and budget updated successfully!");
+      setEditingClub(null);
+      window.location.reload();
+  
     } catch (error) {
-      console.error("Edit club error:", error);
-      alert("Error updating club.");
+      console.error("Error updating club or budget:", error);
+      alert("An error occurred while updating.");
     }
   };
-  
+
   const filteredClubs = clubs.filter((club) => {
     const matchesSearch = club.club_name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "" || club.club_category === selectedCategory;
@@ -397,6 +478,15 @@ const BrowseClubs = () => {
               </div>
 
               <div className="edit-form-group">
+                <label>Club Budget:</label>
+                <input
+                  type="number"
+                  value={editingClub.club_budget || ""}
+                  onChange={(e) => handleEditFormChange("club_budget", e.target.value)}
+                />
+              </div>
+
+              <div className="edit-form-group">
                 <label>Club Description:</label>
                 <textarea
                   value={editingClub.club_description}
@@ -404,6 +494,8 @@ const BrowseClubs = () => {
                   required
                 />
               </div>
+
+
 
               <button type="submit" className="save-changes-btn">Save Changes</button>
             </form>

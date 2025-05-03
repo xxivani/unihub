@@ -1,22 +1,28 @@
 const { Club } = require('../models');
+const { createDefaultBudget } = require('./budget-tracker/budgetController');
 const path = require('path');
 const fs = require('fs');
 
 const createClub = async (req, res) => {
   try {
-    const { club_name, club_description, club_category } = req.body;
+    console.log(req.body);
+    const { club_name, club_description, club_category, club_budget } = req.body;
     const imageFile = req.files?.image?.[0];
 
     const club_thumbnail_url = imageFile
       ? `/uploads/images/${imageFile.filename}`
       : '/uploads/images/default.jpg';
 
-    const newClub = await Club.create({
-      club_name,
-      club_description,
-      club_category,
-      club_thumbnail_url
-    });
+      const newClub = await Club.create({
+        club_name,
+        club_description,
+        club_thumbnail_url,
+        club_category,
+        club_created_at: new Date(),
+      });
+      
+      // Create default budget for the new club
+      await createDefaultBudget(newClub.club_id, club_budget);
 
     res.status(201).json({
       message: 'Club created successfully',

@@ -6,7 +6,6 @@ import { FaMoneyBillWave, FaPlus, FaEdit } from "react-icons/fa";
 import LatestEventsList from "./LatestEventsList";
 import ExpenseBreakdownChart from "../../../charts/ExpenseBreakdown";
 import BTCommitteeMembers from "../../budget-tracker/BudgetDashboard/BTCommitteeMembers";
-// import AddExpenseButton from "./AddExpense";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../../../committee-dashboard/Sidebar";
 import { Modal, Form, Input, Button, message } from "antd";

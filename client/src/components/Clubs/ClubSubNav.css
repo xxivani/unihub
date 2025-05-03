@@ -45,3 +45,18 @@ body[data-theme="dark"] .sub-nav-button {
 body[data-theme="dark"] .sub-nav-button:hover {
     color: #aaa;
 }
+
+@media screen and (max-width: 768px) {
+    .club-sub-nav {
+      flex-direction: column;
+      gap: 15px;
+      padding: 10px 20px;
+    }
+  
+    .sub-nav-button {
+      width: 100%;
+      text-align: left;
+      padding: 12px 15px;
+    }
+  }
+  

@@ -227,4 +227,58 @@ body[data-theme="dark"] .team-list p {
   .view-event-btn:hover {
     background-color: #c9af74;
   }
+
+body[data-theme="dark"] .event-card {
+    background: #2a2a2a;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+  }
+  
+  
+  body[data-theme="dark"] .event-title,
+  body[data-theme="dark"] .event-description {
+    color: #ccc;
+  }
+  
+  
+  body[data-theme="dark"] .view-event-btn {
+    background-color: #a78e55;
+    color: white;
+  }
+  
+  body[data-theme="dark"] .view-event-btn:hover {
+    background-color: #8e7744;
+  }
+
+  @media screen and (max-width: 768px) {
+    .club-details-container {
+      flex-direction: column;
+      padding: 2rem 1rem;
+    }
+  
+    .club-info-panel,
+    .club-committee-panel {
+      padding: 1.5rem;
+    }
+  
+    .event-card {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  
+    .view-event-btn {
+      width: 100%;
+    }
+  
+    .team-member {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .committee-list,
+    .team-list {
+      gap: 1rem;
+    }
+  }
+  
+  
   

@@ -161,7 +161,7 @@
   font-size: 1.1rem;
 }
 
-/* Filter Dropdown */
+
 .filter-dropdown {
   padding: 10px 15px;
   border: 1px solid #ccc;
@@ -189,3 +189,57 @@ body[data-theme="dark"] .filter-dropdown:hover {
   background-color: #3a3a3a;
   border-color: #777;
 }
+
+@media screen and (max-width: 768px) {
+  .browse-clubs-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .browse-clubs-search-filter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .browse-clubs-search {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .browse-clubs-actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .browse-clubs-title {
+    font-size: 1.5rem;
+  }
+
+  .browse-clubs-search input {
+    padding: 0.5rem;
+  }
+
+  .filter-button,
+  .create-club-button,
+  .edit-clubs-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .filter-dropdown {
+    width: 100%;
+  }
+
+  .pagination-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+

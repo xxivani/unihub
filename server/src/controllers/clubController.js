@@ -1,4 +1,4 @@
-const { Club } = require('../models');
+const { Club, Budget } = require('../models');
 const { createDefaultBudget } = require('./budget-tracker/budgetController');
 const path = require('path');
 const fs = require('fs');
@@ -108,6 +108,7 @@ const deleteClub = async (req, res) => {
     }
 
     await club.destroy();
+    await Budget.destroy({ where: { club_id: req.params.id } });
 
     res.status(200).json({ message: 'Club deleted successfully' });
   } catch (error) {

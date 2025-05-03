@@ -40,7 +40,9 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: 'clubs',
         key: 'club_id'
-      }
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
     },
   }, {
     sequelize,

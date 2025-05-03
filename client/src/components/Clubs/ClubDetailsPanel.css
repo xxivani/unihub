@@ -249,6 +249,11 @@ body[data-theme="dark"] .event-card {
     background-color: #8e7744;
   }
 
+  body[data-theme="dark"] .event-info p,
+  body[data-theme="dark"] .event-info strong {
+  color: #ccc;
+}
+
   @media screen and (max-width: 768px) {
     .club-details-container {
       flex-direction: column;

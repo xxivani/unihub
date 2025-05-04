@@ -1,4 +1,4 @@
-const { BTevent, Expense, Category, Event, Club, sequelize } = require('../../models');
+const { BTevent, Expense, Category, Event, Club, Budget, sequelize } = require('../../models');
 const { Op } = require('sequelize');
 
 // Get all events for budget tracking with linked general events
@@ -217,6 +217,7 @@ const getBTeventById = async (req, res) => {
 };
 
 // Create a new event with expenses
+
 const createEventBT = async (req, res) => {
   const transaction = await sequelize.transaction();
 
@@ -252,6 +253,42 @@ const createEventBT = async (req, res) => {
       club_id: parseInt(club_id),
       general_event_id: general_event_id || null
     }, { transaction });
+
+    // Calculate total expense amount
+    let totalExpenseAmount = 0;
+    if (categories && categories.length > 0) {
+      totalExpenseAmount = categories.reduce((sum, category) => {
+        const amount = parseFloat(category.amount);
+        return sum + (isNaN(amount) ? 0 : Math.max(0, amount));
+      }, 0);
+    }
+
+    // ADD: Check if expenses would exceed budget
+    const budget = await Budget.findOne({ 
+      where: { club_id },
+      order: [['createdAt', 'DESC']]
+    });
+
+    if (budget) {
+      const totalExpensesResult = await Expense.findOne({
+        attributes: [
+          [sequelize.fn('SUM', sequelize.col('amount')), 'totalSpent']
+        ],
+        where: { club_id },
+        raw: true
+      });
+
+      const currentTotal = parseFloat(totalExpensesResult.totalSpent) || 0;
+      
+      if (currentTotal + totalExpenseAmount > budget.totalAmount) {
+        await transaction.rollback();
+        return res.status(400).json({ 
+          message: `Event expenses would exceed budget. Available: AED ${(budget.totalAmount - currentTotal).toFixed(2)}`,
+          available: budget.totalAmount - currentTotal,
+          budgetLimit: budget.totalAmount
+        });
+      }
+    }
 
     // Create expenses for each category (if any)
     let expensePromises = [];
@@ -398,8 +435,56 @@ const updateEventBT = async (req, res) => {
       general_event_id: general_event_id || null
     }, { transaction });
 
-    // If categories are provided, update the expenses
+    // If categories are provided, validate budget before updating expenses
     if (categories && Array.isArray(categories)) {
+      // Get current expenses for this event
+      const currentExpenses = await Expense.findAll({
+        where: { eventId: id },
+        transaction
+      });
+
+      const currentEventTotal = currentExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+
+      // Calculate new total expense amount
+      let newExpenseAmount = 0;
+      newExpenseAmount = categories.reduce((sum, category) => {
+        const amount = parseFloat(category.amount);
+        return sum + (isNaN(amount) ? 0 : Math.max(0, amount));
+      }, 0);
+
+      const expenseDifference = newExpenseAmount - currentEventTotal;
+
+      // Check budget if increasing expenses
+      if (expenseDifference > 0) {
+        const budget = await Budget.findOne({ 
+          where: { club_id },
+          order: [['createdAt', 'DESC']],
+          transaction
+        });
+
+        if (budget) {
+          const totalExpensesResult = await Expense.findOne({
+            attributes: [
+              [sequelize.fn('SUM', sequelize.col('amount')), 'totalSpent']
+            ],
+            where: { club_id },
+            raw: true,
+            transaction
+          });
+
+          const currentTotal = parseFloat(totalExpensesResult.totalSpent) || 0;
+          
+          if (currentTotal + expenseDifference > budget.totalAmount) {
+            await transaction.rollback();
+            return res.status(400).json({ 
+              message: `Updated expenses would exceed budget. Available: AED ${(budget.totalAmount - currentTotal).toFixed(2)}`,
+              available: budget.totalAmount - currentTotal,
+              budgetLimit: budget.totalAmount
+            });
+          }
+        }
+      }
+
       // First, delete all existing expenses for this event
       await Expense.destroy({
         where: { eventId: id },

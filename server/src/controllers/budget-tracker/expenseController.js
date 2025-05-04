@@ -51,8 +51,40 @@ const createExpense = async (req, res) => {
       return res.status(400).json({ message: 'Amount and category are required' });
     }
 
+    // Validate amount is not negative
+    if (parseFloat(amount) < 0) {
+      return res.status(400).json({ message: 'Amount cannot be negative' });
+    }
+
     if (!club_id) {
       return res.status(400).json({ message: 'Club ID is required' });
+    }
+
+    // Check if expense would exceed budget
+    const budget = await Budget.findOne({ 
+      where: { club_id },
+      order: [['createdAt', 'DESC']]
+    });
+
+    if (budget) {
+      const totalExpensesResult = await Expense.findOne({
+        attributes: [
+          [sequelize.fn('SUM', sequelize.col('amount')), 'totalSpent']
+        ],
+        where: { club_id },
+        raw: true
+      });
+
+      const currentTotal = parseFloat(totalExpensesResult.totalSpent) || 0;
+      const newExpenseAmount = parseFloat(amount);
+      
+      if (currentTotal + newExpenseAmount > budget.totalAmount) {
+        return res.status(400).json({ 
+          message: `Expense would exceed budget. Available: AED ${(budget.totalAmount - currentTotal).toFixed(2)}`,
+          available: budget.totalAmount - currentTotal,
+          budgetLimit: budget.totalAmount
+        });
+      }
     }
 
     const category = await Category.findByPk(categoryId);
@@ -89,6 +121,7 @@ const createExpense = async (req, res) => {
     return res.status(500).json({ message: 'Failed to create expense', error: error.message });
   }
 };
+
 
 const updateExpense = async (req, res) => {
   try {

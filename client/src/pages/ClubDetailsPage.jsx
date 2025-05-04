@@ -9,7 +9,7 @@ function ClubDetailsPage() {
   const [club, setClub] = useState(null);
   const [activeTab, setActiveTab] = useState("about");
 
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5050/api";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
   useEffect(() => {
     console.log("Fetching club details for ID:", id);

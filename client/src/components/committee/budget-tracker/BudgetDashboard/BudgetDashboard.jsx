@@ -168,6 +168,44 @@ const BudgetDashboard = () => {
         }
     };
 
+    const getBudgetWarning = () => {
+        const remaining = parseFloat(budgetSummary.remaining || 0);
+        const total = parseFloat(budgetSummary.totalBudget || 0);
+        
+        if (total === 0) return null;
+        
+        const percentageRemaining = (remaining / total) * 100;
+        
+        if (percentageRemaining < 0) {
+          return (
+            <div style={{ 
+              color: 'red', 
+              fontWeight: 'bold', 
+              padding: '10px', 
+              marginTop: '10px',
+              backgroundColor: '#fee',
+              borderRadius: '4px'
+            }}>
+              ⚠️ Budget exceeded! You've overspent by AED {Math.abs(remaining).toLocaleString()}
+            </div>
+          );
+        } else if (percentageRemaining < 10) {
+          return (
+            <div style={{ 
+              color: 'orange', 
+              padding: '10px', 
+              marginTop: '10px',
+              backgroundColor: '#fff3cd',
+              borderRadius: '4px'
+            }}>
+              ⚠️ Warning: Only {percentageRemaining.toFixed(1)}% of budget remaining
+            </div>
+          );
+        }
+        
+        return null;
+      };
+
     //fallback for when clubs cant be fetched
     useEffect(() => {
         // Check if we have access first before fetching data
@@ -366,6 +404,7 @@ const BudgetDashboard = () => {
                             </div>
                         </div>
                     </div>
+                    {getBudgetWarning()}
                 </div>
                 <h4 className="monthly-expense-title">Monthly Expense</h4>
                 <div className="monthly-expense">

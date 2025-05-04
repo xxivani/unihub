@@ -109,24 +109,22 @@ function EventAddExpenseButton({ onAddEvent }) {
         return;
       }
 
-      // Check for date and format it correctly
-      let formattedDate = null;
-      if (values.eventDate) {
-        // If it's already a string, use it directly
-        if (typeof values.eventDate === 'string') {
-          formattedDate = values.eventDate;
-        }
-        // If it has a format method (moment or dayjs object), use it
-        else if (values.eventDate.format) {
-          formattedDate = values.eventDate.format('YYYY-MM-DD');
-        }
-        // Otherwise, try to convert to ISO string and extract the date part
-        else {
-          formattedDate = new Date(values.eventDate).toISOString().split('T')[0];
-        }
+      // Calculate total expense
+      const totalExpense = Object.values(selectedCategories).reduce((sum, amount) => {
+        const numAmount = parseFloat(amount);
+        return sum + (isNaN(numAmount) ? 0 : Math.max(0, numAmount));
+      }, 0);
+
+      // Check date formatting...
+      let formattedDate = values.eventDate;
+      if (typeof values.eventDate === 'string') {
+        formattedDate = values.eventDate;
+      } else if (values.eventDate.format) {
+        formattedDate = values.eventDate.format('YYYY-MM-DD');
+      } else {
+        formattedDate = new Date(values.eventDate).toISOString().split('T')[0];
       }
 
-      // If we still don't have a valid date, show an error
       if (!formattedDate) {
         message.error('Please select a valid date');
         return;
@@ -153,12 +151,20 @@ function EventAddExpenseButton({ onAddEvent }) {
         body: JSON.stringify(eventData)
       });
 
+      const responseData = await eventResponse.json();
+
       if (!eventResponse.ok) {
-        const errorData = await eventResponse.json();
-        throw new Error(errorData.message || `Failed to create event: ${eventResponse.status}`);
+        if (eventResponse.status === 400 && responseData.budgetLimit) {
+          // Show specific budget error
+          message.error(responseData.message);
+          message.info(`Available budget: AED ${responseData.available}`);
+        } else {
+          message.error(responseData.message || `Failed to create event: ${eventResponse.status}`);
+        }
+        return;
       }
 
-      const createdEvent = await eventResponse.json();
+      const createdEvent = await responseData;
 
       // Call the parent function to refresh data
       if (onAddEvent) {

@@ -21,7 +21,7 @@ const createClub = async (req, res) => {
         club_created_at: new Date(),
       });
       
-      // Create default budget for the new club
+      
       await createDefaultBudget(newClub.club_id, club_budget);
 
     res.status(201).json({
@@ -101,7 +101,7 @@ const deleteClub = async (req, res) => {
       return res.status(404).json({ message: 'Club not found' });
     }
 
-    // Delete image if exists (safely strip leading slash)
+    
     const imagePath = path.join(__dirname, '../../', club.club_thumbnail_url.replace(/^\/+/, ''));
     if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);

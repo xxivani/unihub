@@ -1,4 +1,4 @@
-const { Event, BTevent, Category, Expense, sequelize } = require('../models');
+const { Event, BTevent, Expense, sequelize } = require('../models');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -235,6 +235,195 @@ const getEventById = async (req, res) => {
 //new uupdate event
 
 // Modified updateEvent function
+// const updateEvent = async (req, res) => {
+//   const transaction = await sequelize.transaction();
+  
+//   try {
+//     const eventId = req.params.id;
+//     const {title, description, location, time, club, date, deadline, capacity, price, team, budget_required, budget} = req.body;
+    
+//     const event = await Event.findByPk(eventId, {
+//       include: [{ model: BTevent, as: 'budgetEvent' }],
+//       transaction
+//     });
+    
+//     if (!event) {
+//       await transaction.rollback();
+//       return res.status(404).json({ message: 'Event not found' });
+//     }
+    
+//     const updateData = {
+//       title: title || event.title,
+//       description: description || event.description,
+//       location: location || event.location,
+//       time: time || event.time,
+//       club: club || event.club,
+//       date: date || event.date,
+//       deadline: deadline || event.deadline,
+//       capacity: capacity || event.capacity,
+//       price: price || event.price,
+//       team: team || event.team,
+//       budget_required: budget_required !== undefined ? budget_required : event.budget_required,
+//       budget: budget ? budget : event.budget,
+//       updatedAt: new Date(),
+//     };
+    
+//     if (req.files?.image) {
+//       updateData.image[0] = `/uploads/event/images/${path.basename(req.files.image[0].path)}`;
+//     }
+    
+//     await event.update(updateData, { transaction });
+    
+//     // Handle budget tracking event sync
+//     if (event.budget_required || budget_required) {
+//       // Try to determine club_id from club name
+//       const clubModel = require('../models').Club;
+//       const clubRecord = await clubModel.findOne({
+//         where: { club_name: updateData.club },
+//         transaction
+//       });
+      
+//       const club_id = clubRecord ? clubRecord.club_id : null;
+      
+//       // Parse date string if it's in DD/MM/YYYY format
+//       let formattedDate = updateData.date;
+//       if (formattedDate.includes('/')) {
+//         const [day, month, year] = formattedDate.split('/');
+//         formattedDate = `${year}-${month}-${day}`;
+//       }
+      
+//       if (event.budgetEvent) {
+//         // Update existing budget tracking event
+//         await event.budgetEvent.update({
+//           name: updateData.title,
+//           date: formattedDate,
+//           description: event.description,
+//           club_id
+//         }, { transaction });
+//       } else if (budget_required) {
+//         // Create new budget tracking event if needed
+//         await BTevent.create({
+//           name: updateData.title,
+//           date: formattedDate,
+//           status: 'ONGOING',
+//           description: event.description || '',
+//           club_id,
+//           general_event_id: event.id
+//         }, { transaction });
+//       }
+//     }
+    
+//     await transaction.commit();
+//     res.status(200).json({ message: 'Event updated successfully', event });
+//   } catch (error) {
+//     await transaction.rollback();
+//     console.error('Error updating event:', error);
+//     res.status(500).json({ message: 'Server error', error: error.message });
+//   }
+// };
+
+
+// Modified updateEvent function
+// const updateEvent = async (req, res) => {
+//   const transaction = await sequelize.transaction();
+  
+//   try {
+//     const eventId = req.params.id;
+//     const {title, description, location, time, club, date, deadline, capacity, price, team, budget_required, budget} = req.body;
+    
+//     const event = await Event.findByPk(eventId, {
+//       include: [{ model: BTevent, as: 'budgetEvent' }],
+//       transaction
+//     });
+    
+//     if (!event) {
+//       await transaction.rollback();
+//       return res.status(404).json({ message: 'Event not found' });
+//     }
+    
+//     const updateData = {
+//       title: title || event.title,
+//       description: description || event.description,
+//       location: location || event.location,
+//       time: time || event.time,
+//       club: club || event.club,
+//       date: date || event.date,
+//       deadline: deadline || event.deadline,
+//       capacity: capacity || event.capacity,
+//       price: price || event.price,
+//       team: team || event.team,
+//       budget_required: budget_required !== undefined ? budget_required : event.budget_required,
+//       budget: budget ? budget : event.budget,
+//       updatedAt: new Date(),
+//     };
+    
+//     if (req.files?.image) {
+//       updateData.image[0] = `/uploads/event/images/${path.basename(req.files.image[0].path)}`;
+//     }
+    
+//     await event.update(updateData, { transaction });
+    
+//     // Handle budget tracking event sync
+//     if (event.budget_required || budget_required) {
+//       // Try to determine club_id from club name
+//       const clubModel = require('../models').Club;
+//       const clubRecord = await clubModel.findOne({
+//         where: { club_name: updateData.club },
+//         transaction
+//       });
+      
+//       const club_id = clubRecord ? clubRecord.club_id : null;
+      
+//       // Parse date string if it's in DD/MM/YYYY format
+//       let formattedDate = updateData.date;
+//       if (formattedDate.includes('/')) {
+//         const [day, month, year] = formattedDate.split('/');
+//         formattedDate = `${year}-${month}-${day}`;
+//       }
+      
+//       if (event.budgetEvent) {
+//         // Update existing budget tracking event
+//         await event.budgetEvent.update({
+//           name: updateData.title,
+//           date: formattedDate,
+//           description: updateData.description, // Use the updated description
+//           club_id
+//         }, { transaction });
+        
+//         // Update all associated expenses' dates
+//         await Expense.update(
+//           { date: formattedDate },
+//           {
+//             where: { eventId: event.budgetEvent.id },
+//             transaction
+//           }
+//         );
+        
+//       } else if (budget_required) {
+//         // Create new budget tracking event if needed
+//         await BTevent.create({
+//           name: updateData.title,
+//           date: formattedDate,
+//           status: 'ONGOING',
+//           description: updateData.description, // Use the updated description
+//           club_id,
+//           general_event_id: event.id
+//         }, { transaction });
+//       }
+//     }
+    
+//     await transaction.commit();
+//     res.status(200).json({ message: 'Event updated successfully', event });
+//   } catch (error) {
+//     await transaction.rollback();
+//     console.error('Error updating event:', error);
+//     res.status(500).json({ message: 'Server error', error: error.message });
+//   }
+// };
+
+// Modified updateEvent function with debug logging
+// Modified updateEvent function
+// Modified updateEvent function (clean version)
 const updateEvent = async (req, res) => {
   const transaction = await sequelize.transaction();
   
@@ -274,8 +463,15 @@ const updateEvent = async (req, res) => {
     
     await event.update(updateData, { transaction });
     
-    // Handle budget tracking event sync
-    if (event.budget_required || budget_required) {
+    // Parse date string if it's in DD/MM/YYYY format
+    let formattedDate = updateData.date;
+    if (formattedDate.includes('/')) {
+      const [day, month, year] = formattedDate.split('/');
+      formattedDate = `${year}-${month}-${day}`;
+    }
+    
+    // Update BTevent if it exists (regardless of budget_required status)
+    if (event.budgetEvent) {
       // Try to determine club_id from club name
       const clubModel = require('../models').Club;
       const clubRecord = await clubModel.findOne({
@@ -285,32 +481,42 @@ const updateEvent = async (req, res) => {
       
       const club_id = clubRecord ? clubRecord.club_id : null;
       
-      // Parse date string if it's in DD/MM/YYYY format
-      let formattedDate = updateData.date;
-      if (formattedDate.includes('/')) {
-        const [day, month, year] = formattedDate.split('/');
-        formattedDate = `${year}-${month}-${day}`;
-      }
+      // Update existing budget tracking event
+      await event.budgetEvent.update({
+        name: updateData.title,
+        date: formattedDate,
+        description: updateData.description,
+        club_id
+      }, { transaction });
       
-      if (event.budgetEvent) {
-        // Update existing budget tracking event
-        await event.budgetEvent.update({
-          name: updateData.title,
-          date: formattedDate,
-          description: event.description,
-          club_id
-        }, { transaction });
-      } else if (budget_required) {
-        // Create new budget tracking event if needed
-        await BTevent.create({
-          name: updateData.title,
-          date: formattedDate,
-          status: 'ONGOING',
-          description: event.description || '',
-          club_id,
-          general_event_id: event.id
-        }, { transaction });
-      }
+      // Update all associated expenses' dates
+      await Expense.update(
+        { date: formattedDate },
+        {
+          where: { eventId: event.budgetEvent.id },
+          transaction
+        }
+      );
+      
+    } else if (budget_required) {
+      // Only create new budget tracking event if budget_required is true
+      const clubModel = require('../models').Club;
+      const clubRecord = await clubModel.findOne({
+        where: { club_name: updateData.club },
+        transaction
+      });
+      
+      const club_id = clubRecord ? clubRecord.club_id : null;
+      
+      // Create new budget tracking event if needed
+      await BTevent.create({
+        name: updateData.title,
+        date: formattedDate,
+        status: 'ONGOING',
+        description: updateData.description,
+        club_id,
+        general_event_id: event.id
+      }, { transaction });
     }
     
     await transaction.commit();

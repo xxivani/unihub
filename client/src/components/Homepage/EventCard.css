@@ -40,9 +40,15 @@
   transition: transform 0.3s ease-in-out, background-color 0.4s ease;
   justify-content: center !important;
   align-items: center !important;
+  overflow: hidden;
+  object-fit: cover;
   max-width: 370px;
   width: 100%;
   margin-bottom: 20px;
+}
+
+.event-card-m canvas {
+  width: 100%;
 }
 
 .event-card-m:hover {

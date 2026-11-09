@@ -102,6 +102,8 @@ function Login() {
         "user",
         JSON.stringify({ email: email.trim(), token: "demo", role: demo.role, id: demo.id })
       );
+      if (demo.role === "committee") sessionStorage.setItem("selectedClubId", "2");
+      else sessionStorage.removeItem("selectedClubId");
       navigate(demo.role === "student" ? "/" : "/committee/dashboard");
       return;
     }
@@ -196,7 +198,7 @@ function Login() {
               <h2 style={{ marginBottom: "10px" }}>Login Your Account</h2>
               {DEMO_MODE && (
                 <p style={{ fontSize: "0.85rem", marginBottom: "10px" }}>
-                  Demo: student@example.com, committee@example.com or admin@example.com (any password)
+                  Demo: student@example.com, committee@example.com (PAWS committee) or admin@example.com. Any password.
                 </p>
               )}
               {error && <p style={{ color: "red" }}>{error}</p>}

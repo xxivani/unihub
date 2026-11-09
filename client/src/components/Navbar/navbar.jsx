@@ -11,11 +11,6 @@ import ScreenReaderButton from "../settings/ScreenReaderButton";
 const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
 
 const ROLE_LABEL = { student: "Student", committee: "Committee", admin: "Admin" };
-const ROLE_BANNER = {
-  student: "STUDENT VIEW · browse clubs, join events, apply for roles",
-  committee: "COMMITTEE VIEW · manage events, roles, budget and images",
-  admin: "ADMIN VIEW · manage clubs, news and external events",
-};
 
 const CustomNavbar = () => {
   const [user, setUser] = useState(null);
@@ -38,6 +33,7 @@ const CustomNavbar = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem("user");
+    sessionStorage.removeItem("selectedClubId");
     document.body.removeAttribute("data-role");
     document.title = "UniHub";
     setUser(null);
@@ -55,6 +51,8 @@ const CustomNavbar = () => {
       ? { ...user, role: "committee", id: 6, email: "committee@example.com" }
       : { ...user, role: "student", id: 2, email: "student@example.com" };
     sessionStorage.setItem("user", JSON.stringify(next));
+    if (toCommittee) sessionStorage.setItem("selectedClubId", "2");
+    else sessionStorage.removeItem("selectedClubId");
     window.location.assign(toCommittee ? "/committee/dashboard" : "/");
   };
 
@@ -103,6 +101,11 @@ const CustomNavbar = () => {
                 align="end"
               >
                 <NavDropdown.Item onClick={handleSettings}>Settings</NavDropdown.Item>
+                {DEMO_MODE && user.role !== "admin" && (
+                  <NavDropdown.Item onClick={handleSwitchView}>
+                    Switch to {user.role === "student" ? "Committee" : "Student"} view
+                  </NavDropdown.Item>
+                )}
                 <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
               </NavDropdown>
 
@@ -112,16 +115,6 @@ const CustomNavbar = () => {
       </Container>
     </Navbar>
 
-    {user && (
-      <div className={`role-banner role-banner--${user.role}`}>
-        <span>{ROLE_BANNER[user.role] || user.role}</span>
-        {DEMO_MODE && user.role !== "admin" && (
-          <button type="button" className="role-banner__switch" onClick={handleSwitchView}>
-            Switch to {user.role === "student" ? "Committee" : "Student"} view
-          </button>
-        )}
-      </div>
-    )}
     </>
   );
 };

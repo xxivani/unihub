@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import "./EventExpenses.css"
 import EventExpensesTable from "./EventExpenseTable";
 import FilterBar from "./FilterBar";
@@ -7,17 +8,17 @@ import { useState, useEffect, useRef } from "react";
 import { Alert } from 'antd';
 
 const EventExpenses = () => {
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [clubName, setClubName] = useState("");
   const [allEvents, setAllEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [dataLoading, setDataLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [clubName, setClubName] = useState('');
-
   const searchTimeout = useRef(null);
+
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   // Get club_id from URL parameters
   const location = useLocation();
@@ -86,11 +87,8 @@ const EventExpenses = () => {
         String(event.club_id) === String(clubId)
       );
 
-      // Store all events for client-side filtering
       setAllEvents(clubSpecificEvents);
       setFilteredEvents(clubSpecificEvents);
-
-      // Reset active filter when refreshing all events
       setActiveFilter('all');
     } catch (error) {
       console.error('Error fetching events:', error);
@@ -112,7 +110,6 @@ const EventExpenses = () => {
       setError(null);
 
       const url = `${apiUrl}/bt_eventRoute/filter/${status}?club_id=${clubId}`;
-
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -121,7 +118,6 @@ const EventExpenses = () => {
 
       const events = await response.json();
 
-      // Additional safety check filtering
       const clubSpecificEvents = events.filter(event =>
         String(event.club_id) === String(clubId)
       );
@@ -138,7 +134,6 @@ const EventExpenses = () => {
   // Client-side search function
   const applyClientSearch = (query) => {
     if (!query.trim()) {
-      // If search is empty, show events based on current filter
       if (activeFilter === 'all') {
         setFilteredEvents(allEvents);
       } else {
@@ -147,16 +142,13 @@ const EventExpenses = () => {
       return;
     }
 
-    // Case-insensitive search within current filter results
     const lowerQuery = query.toLowerCase().trim();
 
-    // First filter by status if needed
     let baseEvents = allEvents;
     if (activeFilter !== 'all') {
       baseEvents = allEvents.filter(event => event.status === activeFilter);
     }
 
-    // Then apply search filter
     const searchResults = baseEvents.filter(event =>
       event.name && event.name.toLowerCase().includes(lowerQuery)
     );
@@ -174,12 +166,10 @@ const EventExpenses = () => {
     const query = e.target.value;
     setSearchQuery(query);
 
-    // Clear previous timeout
     if (searchTimeout.current) {
       clearTimeout(searchTimeout.current);
     }
 
-    // Set a new timeout for debouncing (300ms delay)
     searchTimeout.current = setTimeout(() => {
       applyClientSearch(query);
     }, 300);

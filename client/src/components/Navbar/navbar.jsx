@@ -8,7 +8,14 @@ import { FaMoon, FaSun } from "react-icons/fa";
 import { Button } from "react-bootstrap";
 import ScreenReaderButton from "../settings/ScreenReaderButton";
 
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
+
 const ROLE_LABEL = { student: "Student", committee: "Committee", admin: "Admin" };
+const ROLE_BANNER = {
+  student: "STUDENT VIEW · browse clubs, join events, apply for roles",
+  committee: "COMMITTEE VIEW · manage events, roles, budget and images",
+  admin: "ADMIN VIEW · manage clubs, news and external events",
+};
 
 const CustomNavbar = () => {
   const [user, setUser] = useState(null);
@@ -41,7 +48,18 @@ const CustomNavbar = () => {
     navigate("/settings");
   };
 
+  // Demo mode only: flip between student and committee without logging out.
+  const handleSwitchView = () => {
+    const toCommittee = user.role === "student";
+    const next = toCommittee
+      ? { ...user, role: "committee", id: 6, email: "committee@example.com" }
+      : { ...user, role: "student", id: 2, email: "student@example.com" };
+    sessionStorage.setItem("user", JSON.stringify(next));
+    window.location.assign(toCommittee ? "/committee/dashboard" : "/");
+  };
+
   return (
+    <>
     <Navbar bg="dark" className="navbar navbar-dark" expand="lg" fixed="top">
       <Container>
         <Navbar.Brand as={Link} to="/">UniHub</Navbar.Brand>
@@ -93,6 +111,18 @@ const CustomNavbar = () => {
         </Navbar.Collapse>
       </Container>
     </Navbar>
+
+    {user && (
+      <div className={`role-banner role-banner--${user.role}`}>
+        <span>{ROLE_BANNER[user.role] || user.role}</span>
+        {DEMO_MODE && user.role !== "admin" && (
+          <button type="button" className="role-banner__switch" onClick={handleSwitchView}>
+            Switch to {user.role === "student" ? "Committee" : "Student"} view
+          </button>
+        )}
+      </div>
+    )}
+    </>
   );
 };
 

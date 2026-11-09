@@ -102,7 +102,7 @@ function Login() {
         "user",
         JSON.stringify({ email: email.trim(), token: "demo", role: demo.role, id: demo.id })
       );
-      navigate("/");
+      navigate(demo.role === "student" ? "/" : "/committee/dashboard");
       return;
     }
 
@@ -142,7 +142,7 @@ function Login() {
             const userData = { email, token: data.token, role: data.role, id: data.id };
             sessionStorage.setItem("user", JSON.stringify(userData));
             alert("Login successful!");
-            navigate("/");
+            navigate(data.role === "student" ? "/" : "/committee/dashboard");
           } else {
             alert(data.error || "Invalid email or password");
           }

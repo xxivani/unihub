@@ -2,6 +2,16 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
+// Demo mode (set VITE_DEMO_MODE=true on Vercel): no backend needed.
+// Any password works for these three emails; each sets a role so the
+// student / committee / admin views can be shown.
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
+const DEMO_ACCOUNTS = {
+  "student@example.com": { role: "student", id: 2 },
+  "committee@example.com": { role: "committee", id: 6 },
+  "admin@example.com": { role: "admin", id: 1 },
+};
+
 function Login() {
   console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
 
@@ -18,31 +28,34 @@ function Login() {
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 
-
-
-  
   useEffect(() => {
+    if (DEMO_MODE) {
+      setIsConnecting(false);
+      setApiConnectionStatus("Demo mode (no backend)");
+      return;
+    }
+
     if (import.meta.env.DEV) {
       console.log("Environment variables:", import.meta.env);
       console.log("API URL being used:", apiUrl);
     }
-    
+
     const testApiConnection = async () => {
       setIsConnecting(true);
       try {
         console.log("Attempting to connect to:", `${apiUrl}/health`);
         const response = await fetch(`${apiUrl}/health`);
-        
+
         console.log("Response status:", response.status);
         console.log("Response headers:", Object.fromEntries([...response.headers]));
-        
+
         const responseText = await response.text();
         console.log("Raw response:", responseText);
-        
+
         try {
           const data = JSON.parse(responseText);
           console.log("Parsed response:", data);
-          
+
           if (response.ok) {
             setApiConnectionStatus("Connected successfully");
           } else {
@@ -58,7 +71,7 @@ function Login() {
       }
       setIsConnecting(false);
     };
-    
+
     testApiConnection();
   }, [apiUrl]);
 
@@ -76,26 +89,41 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
+    if (DEMO_MODE) {
+      const demo = DEMO_ACCOUNTS[email.trim().toLowerCase()];
+      if (!demo) {
+        alert(
+          "Demo mode: use student@example.com, committee@example.com or admin@example.com (any password)."
+        );
+        return;
+      }
+      sessionStorage.setItem(
+        "user",
+        JSON.stringify({ email: email.trim(), token: "demo", role: demo.role, id: demo.id })
+      );
+      navigate("/");
+      return;
+    }
 
     // const loginApiUrl = "http://localhost:5000";
     //const loginApiUrl = import.meta.env.VITE_API_URL;
     const loginApiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
     console.log("Using API URL:", loginApiUrl);
-    
+
     try {
       // Show loading state
       setIsConnecting(true);
-      
+
       const response = await fetch(`${loginApiUrl}/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include" 
+        credentials: "include"
       });
-      
+
       console.log("Login response status:", response.status);
-      
+
       // Handle all response types
       if (response.status === 500) {
         console.error("Server error");
@@ -106,15 +134,15 @@ function Login() {
       } else {
         const contentType = response.headers.get("content-type");
         console.log("Content-Type:", contentType);
-        
+
         if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
-          
+
           if (response.ok) {
             const userData = { email, token: data.token, role: data.role, id: data.id };
             sessionStorage.setItem("user", JSON.stringify(userData));
             alert("Login successful!");
-            navigate("/"); 
+            navigate("/");
           } else {
             alert(data.error || "Invalid email or password");
           }
@@ -140,7 +168,7 @@ function Login() {
           Status: {apiConnectionStatus}
         </div>
       )}
-      
+
       {/* Background Shapes */}
       <div className="circle"></div>
       <div className="line"></div>
@@ -166,6 +194,11 @@ function Login() {
           <div className="card-content">
             <div className="login-section">
               <h2 style={{ marginBottom: "10px" }}>Login Your Account</h2>
+              {DEMO_MODE && (
+                <p style={{ fontSize: "0.85rem", marginBottom: "10px" }}>
+                  Demo: student@example.com, committee@example.com or admin@example.com (any password)
+                </p>
+              )}
               {error && <p style={{ color: "red" }}>{error}</p>}
               <form className="login-form" onSubmit={handleLogin}>
                 <div className="form-group">
@@ -186,7 +219,7 @@ function Login() {
                       placeholder="Enter your password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      required
+                      required={!DEMO_MODE}
                     />
                     <button
                       type="button"
@@ -197,8 +230,8 @@ function Login() {
                     </button>
                   </div>
                 </div>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="login-button"
                   disabled={isConnecting}
                 >

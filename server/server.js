@@ -17,15 +17,35 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 console.log(`Running in ${process.env.NODE_ENV} environment`);
 
 app.use(express.json());
+
+// --- CORS ---------------------------------------------------------------
+// Original uni + local origins stay. For the Vercel/Railway deployment:
+//  - set CORS_ORIGINS on the server to a comma-separated list (e.g. your custom domain)
+//  - any https://*.vercel.app origin is allowed (demo-grade; tighten for real use)
+const defaultOrigins = [
+  'https://team77.dev.bham.team',
+  'https://team77.bham.team',
+  'http://localhost:3000',
+  'http://localhost:5173'
+];
+const extraOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map(s => s.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+const allowedOrigins = new Set([...defaultOrigins, ...extraOrigins]);
+const vercelOrigin = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i;
+
 const corsOptions = {
-  origin: [
-    'https://team77.dev.bham.team',
-    'https://team77.bham.team',
-    'http://localhost:3000',
-    'http://localhost:5173'  
-  ],
+  origin: (origin, callback) => {
+    // no Origin header = same-origin / curl / server-to-server
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.has(origin) || vercelOrigin.test(origin)) {
+      return callback(null, true);
+    }
+    return callback(null, false);
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
@@ -39,7 +59,7 @@ app.use('/api/uploads', express.static('/app/uploads'));
 //app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
-app.get('/health', (req, res) => {  
+app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -92,8 +112,8 @@ app.use('/api/image-management', imageRoutes);
 app.use('/image-management', imageRoutes);
 
 const clubRoutes = require('./src/routes/clubs');
-app.use('/api/clubs', clubRoutes); 
-app.use('/clubs', clubRoutes); 
+app.use('/api/clubs', clubRoutes);
+app.use('/clubs', clubRoutes);
 
 
 const budgetRoutes = require('./src/routes/budgetRoute');

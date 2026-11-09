@@ -1,11 +1,14 @@
 import "./navbar.css";
+import "./roleTheme.css";
 import { Navbar, Nav, NavDropdown, Container } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useTheme } from "../../ThemeContext";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { Button } from "react-bootstrap";
 import ScreenReaderButton from "../settings/ScreenReaderButton";
+
+const ROLE_LABEL = { student: "Student", committee: "Committee", admin: "Admin" };
 
 const CustomNavbar = () => {
   const [user, setUser] = useState(null);
@@ -15,12 +18,21 @@ const CustomNavbar = () => {
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsed = JSON.parse(storedUser);
+      setUser(parsed);
+      // drives the role-based colours in roleTheme.css
+      document.body.setAttribute("data-role", parsed.role);
+      document.title = `UniHub · ${ROLE_LABEL[parsed.role] || parsed.role}`;
     }
+    return () => {
+      document.body.removeAttribute("data-role");
+    };
   }, []);
 
   const handleLogout = () => {
     sessionStorage.removeItem("user");
+    document.body.removeAttribute("data-role");
+    document.title = "UniHub";
     setUser(null);
     navigate("/auth");
   };
@@ -30,9 +42,14 @@ const CustomNavbar = () => {
   };
 
   return (
-    <Navbar bg="dark" className="navbar navbar-dark" expand="lg" fixed="top"> 
+    <Navbar bg="dark" className="navbar navbar-dark" expand="lg" fixed="top">
       <Container>
         <Navbar.Brand as={Link} to="/">UniHub</Navbar.Brand>
+        {user && (
+          <span className={`role-pill role-pill--${user.role}`}>
+            {ROLE_LABEL[user.role] || user.role}
+          </span>
+        )}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
@@ -41,10 +58,10 @@ const CustomNavbar = () => {
             <Nav.Link as={Link} to="/roles">Role Openings</Nav.Link>
             <Nav.Link as={Link} to="/news">News</Nav.Link>
             <Nav.Link as={Link} to="/external-events">External Events</Nav.Link>
-            
+
             {/* Committee Dropdown: Only show if not a student */}
             {user && user.role !== "student" && (
-              <NavDropdown title="Committee" id="committee-dropdown" menuVariant="dark">
+              <NavDropdown title="Committee Tools" id="committee-dropdown" menuVariant="dark">
                 <NavDropdown.Item as={Link} to="/committee/dashboard">Dashboard</NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/committee/events">Events</NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/committee/roles">Role Openings</NavDropdown.Item>
@@ -70,7 +87,7 @@ const CustomNavbar = () => {
                 <NavDropdown.Item onClick={handleSettings}>Settings</NavDropdown.Item>
                 <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
               </NavDropdown>
-              
+
             )}
           </Nav>
         </Navbar.Collapse>

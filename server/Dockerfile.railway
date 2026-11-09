@@ -1,0 +1,19 @@
+# Railway-specific image. The original server/Dockerfile (nodemon, dev) is left untouched.
+FROM node:20-alpine
+
+WORKDIR /app
+
+RUN apk add --no-cache postgresql-client
+
+COPY package*.json ./
+# sequelize-cli is a devDependency and we need it at boot for migrations/seeds,
+# so install dev deps BEFORE setting NODE_ENV=production.
+RUN npm install --include=dev
+
+COPY . .
+
+RUN mkdir -p /app/uploads
+ENV NODE_ENV=production
+
+EXPOSE 5000
+CMD ["sh", "scripts/start.sh"]

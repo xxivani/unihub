@@ -1,0 +1,36 @@
+/* Role-based look. Navbar.jsx sets <body data-role="student|committee|admin">.
+   Specificity is deliberately higher than the existing !important .navbar rules. */
+
+body[data-role="student"] .navbar.navbar-dark {
+  background-color: #1d3fbb !important;
+  box-shadow: inset 0 -3px 0 #7aa2ff;
+}
+
+body[data-role="committee"] .navbar.navbar-dark {
+  background-color: #0b5d4b !important;
+  box-shadow: inset 0 -3px 0 #2dd4a3;
+}
+
+body[data-role="admin"] .navbar.navbar-dark {
+  background-color: #7a1630 !important;
+  box-shadow: inset 0 -3px 0 #ff7a96;
+}
+
+.role-pill {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  vertical-align: middle;
+}
+
+.role-pill--committee { background: #2dd4a3; color: #043d31; border-color: #2dd4a3; }
+.role-pill--student   { background: #7aa2ff; color: #0b1f66; border-color: #7aa2ff; }
+.role-pill--admin     { background: #ff7a96; color: #4a0a1b; border-color: #ff7a96; }

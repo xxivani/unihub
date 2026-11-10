@@ -1,76 +1,50 @@
-import { useState, useEffect } from "react";
-import { Avatar, List, Spin } from "antd";
+import { useEffect, useState } from "react";
+import { api, initials, prettyRole } from "../budgetUtils";
 
-const BTCommitteeMembers = () => {
+const ORDER = ["PRESIDENT", "VICE_PRESIDENT", "TREASURER"];
+const rank = (p) => {
+  const i = ORDER.indexOf(p);
+  return i === -1 ? ORDER.length : i;
+};
+
+const BTCommitteeMembers = ({ clubId }) => {
   const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const [state, setState] = useState("loading");
 
   useEffect(() => {
-    const fetchCommitteeMembers = async () => {
-      try {
-        setLoading(true);
-
-        const queryParams = new URLSearchParams(window.location.search);
-        const urlClubId = queryParams.get('club_id');
-        const storedClubId = sessionStorage.getItem("selectedClubId");
-        const clubId = urlClubId || storedClubId;
-
-        if (!clubId) {
-          throw new Error('No club ID found');
-        }
-
-        const response = await fetch(`${apiUrl}/committee-members/by-club/${clubId}`);
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch committee members');
-        }
-
-        const data = await response.json();
-
-        const formattedMembers = data.map(member => ({
-          title: member.committee_member_name,
-          description: member.committee_member_position.replace(/_/g, ' '),
-          avatar: `https://api.dicebear.com/9.x/miniavs/svg?seed=${member.committee_member_name}`,
-        }));
-
-        setMembers(formattedMembers);
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching committee members:', err);
-        setError('Failed to load committee members');
-      } finally {
-        setLoading(false);
-      }
+    if (!clubId) return;
+    let cancelled = false;
+    setState("loading");
+    api(`/committee-members/by-club/${clubId}`)
+      .then((list) => {
+        if (cancelled) return;
+        setMembers([...list].sort((a, b) => rank(a.committee_member_position) - rank(b.committee_member_position)));
+        setState("ready");
+      })
+      .catch(() => !cancelled && setState("error"));
+    return () => {
+      cancelled = true;
     };
+  }, [clubId]);
 
-    fetchCommitteeMembers();
-  }, [apiUrl]);
-
-  if (loading) {
-    return <Spin tip="Loading committee members..." />;
-  }
-
-  if (error && members.length === 0) {
-    return <div className="error-message">{error}</div>;
-  }
+  if (state === "loading") return <p className="bt-empty">Loading committee…</p>;
+  if (state === "error") return <p className="bt-empty">Committee members are unavailable right now.</p>;
+  if (!members.length) return <p className="bt-empty">No committee members listed.</p>;
 
   return (
-    <List
-      itemLayout="horizontal"
-      dataSource={members}
-      renderItem={(item) => (
-        <List.Item>
-          <List.Item.Meta
-            avatar={<Avatar src={item.avatar} />}
-            title={item.title}
-            description={item.description}
-          />
-        </List.Item>
-      )}
-    />
+    <ul className="bt-people">
+      {members.map((m) => (
+        <li key={m.committee_member_id}>
+          <span className="bt-avatar" aria-hidden="true">
+            {initials(m.committee_member_name)}
+          </span>
+          <span className="bt-person">
+            <strong>{m.committee_member_name}</strong>
+            <small>{prettyRole(m.committee_member_position)}</small>
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 };
 

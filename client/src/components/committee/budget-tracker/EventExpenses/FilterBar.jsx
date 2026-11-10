@@ -1,90 +1,24 @@
-import { useState, useEffect } from 'react';
-import { Menu, ConfigProvider } from 'antd';
-
-const items = [
-  { label: 'All Events', key: 'all' },
-  { label: 'Ongoing', key: 'ONGOING' },
-  { label: 'Completed', key: 'COMPLETED' },
+const ITEMS = [
+  { label: "All events", key: "all" },
+  { label: "Ongoing", key: "ONGOING" },
+  { label: "Completed", key: "COMPLETED" },
 ];
 
-const FilterBar = ({ onFilterChange, initialFilter = 'all' }) => {
-  // Set the initial state from props if provided
-  const [current, setCurrent] = useState(initialFilter);
-
-  // Track current theme
-  const getInitialTheme = () => document.body.getAttribute("data-theme") || "light";
-  const [currentTheme, setCurrentTheme] = useState(getInitialTheme());
-  const isDarkTheme = currentTheme === "dark";
-
-  // Update selected state when initialFilter changes
-  useEffect(() => {
-    if (initialFilter && initialFilter !== current) {
-      setCurrent(initialFilter);
-    }
-  }, [initialFilter]);
-
-  // Watch for theme changes
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const newTheme = document.body.getAttribute("data-theme");
-      setCurrentTheme(newTheme);
-    });
-
-    observer.observe(document.body, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => observer.disconnect();
-  }, []);
-
-  const onClick = (e) => {
-    setCurrent(e.key);
-    if (onFilterChange) {
-      onFilterChange(e.key);
-    }
-  };
-
-  return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Menu: {
-            horizontalItemBorderRadius: 10,
-            colorPrimary: "#4a6831",
-            colorBgContainer: isDarkTheme ? "#121212" : "#ffffff",
-            colorItemBg: isDarkTheme ? "#121212" : "#ffffff",
-            horizontalItemSelectedColor: isDarkTheme ? "white" : "#314521",
-            itemHoverColor: isDarkTheme ? "#88b663" : "#4a6831",
-            itemSelectedBg: isDarkTheme ? "#3a4d2a" : "#e6f0dd",
-            itemSelectedColor: isDarkTheme ? "white" : "#314521",
-            itemActiveBg: isDarkTheme ? "#2a3a1f" : "#e6f0dd",
-            colorItemText: isDarkTheme ? "#ffffff" : "#000000",
-          },
-        },
-      }}
-    >
-      <Menu
-        onClick={onClick}
-        selectedKeys={[current]}
-        mode="horizontal"
-        style={{
-          width: '330px',
-          backgroundColor: isDarkTheme ? "#121212" : "#ffffff",
-        }}
+const FilterBar = ({ value = "all", onChange }) => (
+  <div className="bt-seg" role="tablist" aria-label="Filter by status">
+    {ITEMS.map((item) => (
+      <button
+        key={item.key}
+        type="button"
+        role="tab"
+        aria-selected={value === item.key}
+        className={value === item.key ? "is-active" : ""}
+        onClick={() => onChange(item.key)}
       >
-        {items.map((item) => (
-          <Menu.Item
-            key={item.key}
-            style={{
-              fontWeight: current === item.key ? 'bold' : 'normal',
-              fontSize: "16px",
-              padding: '0px 15px',
-              backgroundColor: 'transparent',
-            }}
-          >
-            {item.label}
-          </Menu.Item>
-        ))}
-      </Menu>
-    </ConfigProvider>
-  );
-};
+        {item.label}
+      </button>
+    ))}
+  </div>
+);
 
 export default FilterBar;

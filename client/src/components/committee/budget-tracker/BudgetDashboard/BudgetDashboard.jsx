@@ -1,468 +1,254 @@
-import { useState, useEffect } from "react";
-import "./BudgetDashboard.css";
-import "../../../charts/MonthlyExpenses";
-import MonthlyExpensesChart from "../../../charts/MonthlyExpenses";
-import { FaMoneyBillWave } from "react-icons/fa";
-import LatestEventsList from "./LatestEventsList";
-import ExpenseBreakdownChart from "../../../charts/ExpenseBreakdown";
-import BTCommitteeMembers from "../../budget-tracker/BudgetDashboard/BTCommitteeMembers";
+import { useEffect, useState, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../../../committee-dashboard/Sidebar";
-import { message } from "antd";
+import { MonthlyChart, DonutChart } from "../../../charts/BudgetCharts";
+import LatestEventsList from "./LatestEventsList";
+import BTCommitteeMembers from "./BTCommitteeMembers";
+import { api, getUser, money, categoryMeta, academicYear } from "../budgetUtils";
+import "../bt-shared.css";
+import "./BudgetDashboard.css";
+
+const usageTone = (pct) => (pct >= 90 ? "danger" : pct >= 75 ? "warn" : "ok");
 
 const BudgetDashboard = () => {
-    const [dashboardData, setDashboardData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const urlClubId = new URLSearchParams(location.search).get("club_id");
 
-    const [clubs, setClubs] = useState([]);
-    const [selectedClubId, setSelectedClubId] = useState(null);
-    const [userRole, setUserRole] = useState("");
-    const [hasAccess, setHasAccess] = useState(false);
-    const [permissionLoading, setPermissionLoading] = useState(true);
+  const user = getUser();
+  const isAdmin = user?.role === "admin";
 
-    const location = useLocation();
-    const navigate = useNavigate();
-    const queryParams = new URLSearchParams(location.search);
-    const urlClubId = queryParams.get('club_id');
+  const [clubs, setClubs] = useState([]);
+  const [clubId, setClubId] = useState(null);
+  const [club, setClub] = useState(null);
+  const [data, setData] = useState(null);
+  const [status, setStatus] = useState("loading"); // loading | ready | error | noclub
+  const [error, setError] = useState("");
+  const [reloadKey, setReloadKey] = useState(0);
 
-    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
-    // Check permission to access budget tracker
-    useEffect(() => {
-        const checkBudgetAccess = async () => {
-            try {
-                setPermissionLoading(true);
-
-                const user = JSON.parse(sessionStorage.getItem("user"));
-
-                if (!user || !user.id) {
-                    console.log("No user found, redirecting to login");
-                    navigate("/login");
-                    return;
-                }
-
-                if (user.role === "admin") {
-                    setHasAccess(true);
-                    setPermissionLoading(false);
-                    return;
-                }
-
-                // First get their committee_member_id
-                const committeeMemberRes = await fetch(`${apiUrl}/committee-members/by-user/${user.id}`);
-
-                if (!committeeMemberRes.ok) {
-                    console.error("Failed to fetch committee member info");
-                    setHasAccess(false);
-                    setPermissionLoading(false);
-                    message.error("You don't have permission to access the Budget Tracker.");
-
-                }
-
-                const committeeMemberData = await committeeMemberRes.json();
-
-                if (!committeeMemberData || !committeeMemberData.committee_member_id) {
-                    console.error("No committee member ID found");
-                    setHasAccess(false);
-                    setPermissionLoading(false);
-                    message.error("You don't have permission to access the Budget Tracker.");
-
-                }
-
-                const committee_member_id = committeeMemberData.committee_member_id;
-
-                // Now fetch the permissions for this committee member
-                const permissionsRes = await fetch(`${apiUrl}/committee-member-permissions/${committee_member_id}`);
-
-                if (!permissionsRes.ok) {
-                    console.error("Failed to fetch permissions");
-                    setHasAccess(false);
-                    setPermissionLoading(false);
-                    message.error("You don't have permission to access the Budget Tracker.");
-
-                }
-
-                const permissions = await permissionsRes.json();
-
-                // Check if the user has the UpdateBudget permission
-                const hasBudgetPermission = permissions.some(p => p.permission === "UpdateBudget");
-
-                setHasAccess(hasBudgetPermission);
-
-            } catch (error) {
-                console.error("Error checking budget access:", error);
-                setHasAccess(false);
-            } finally {
-                setPermissionLoading(false);
-            }
-        };
-
-        checkBudgetAccess();
-    }, [navigate, apiUrl]);
-
-    const fetchDashboardData = async () => {
-        try {
-            setLoading(true);
-            const url = selectedClubId ?
-                `${apiUrl}/bt_dashboardRoute?club_id=${selectedClubId}` :
-                `${apiUrl}/bt_dashboardRoute`;
-
-            console.log("Dashboard fetch URL:", url);
-
-            const response = await fetch(url);
-            console.log("Dashboard response status:", response.status);
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch dashboard data');
-            }
-
-            const data = await response.json();
-            console.log("Dashboard data received:", data);
-
-            setDashboardData(data);
-            setError(null);
-        } catch (err) {
-            console.error('Error fetching dashboard data:', err);
-            setError('Failed to load dashboard data');
-        } finally {
-            setLoading(false);
+  // 1. Work out which club to show. Committee members are pinned to their own club.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        let id = urlClubId || sessionStorage.getItem("selectedClubId");
+        let list = [];
+        if (isAdmin) {
+          list = await api("/clubs");
+          if (!id && list.length) id = String(list[0].club_id);
+        } else if (user?.id) {
+          try {
+            const member = await api(`/committee-members/by-user/${user.id}`);
+            if (member?.club_id) id = String(member.club_id);
+          } catch {
+            /* fall back to URL / session club */
+          }
         }
+        if (cancelled) return;
+        setClubs(list);
+        if (!id) {
+          setStatus("noclub");
+          return;
+        }
+        sessionStorage.setItem("selectedClubId", id);
+        setClubId(id);
+      } catch (e) {
+        if (!cancelled) {
+          setError(e.message);
+          setStatus("error");
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    const fetchClubs = async () => {
-        try {
-            const res = await fetch(`${apiUrl}/clubs`);
-            console.log("Clubs fetch URL:", `${apiUrl}/clubs`);
-
-            if (!res.ok) {
-                throw new Error(`Failed to fetch clubs: ${res.status}`);
-            }
-
-            const data = await res.json();
-            console.log("Clubs fetched:", data);
-
-            setClubs(data);
-            return data;
-
-        } catch (err) {
-            console.error("Failed to fetch clubs:", err);
+  // 2. Load the dashboard whenever the club changes.
+  useEffect(() => {
+    if (!clubId) return;
+    let cancelled = false;
+    setStatus("loading");
+    Promise.all([api(`/bt_dashboardRoute?club_id=${clubId}`), api(`/clubs/${clubId}`).catch(() => null)])
+      .then(([dashboard, clubInfo]) => {
+        if (cancelled) return;
+        setData(dashboard);
+        setClub(clubInfo);
+        setError("");
+        setStatus("ready");
+        if (urlClubId !== String(clubId)) {
+          navigate({ pathname: location.pathname, search: `?club_id=${clubId}` }, { replace: true });
         }
+      })
+      .catch((e) => {
+        if (cancelled) return;
+        setError(e.message || "Could not load the budget.");
+        setStatus("error");
+      });
+    return () => {
+      cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clubId, reloadKey]);
 
-    const fetchCommitteeClub = async (userId) => {
-        try {
-            const res = await fetch(`${apiUrl}/committee-members/by-user/${userId}`);
-            if (!res.ok) {
-                throw new Error(`Failed to fetch committee member's club: ${res.status}`);
-            }
+  const onClubChange = useCallback((e) => {
+    sessionStorage.setItem("selectedClubId", e.target.value);
+    setClubId(e.target.value);
+  }, []);
 
-            const data = await res.json();
-            console.log("Committee member's club:", data);
+  const summary = data?.budgetSummary || { totalBudget: 0, totalSpent: 0, remaining: 0 };
+  const total = Number(summary.totalBudget) || 0;
+  const spent = Number(summary.totalSpent) || 0;
+  const remaining = Number(summary.remaining) || 0;
+  const pct = total > 0 ? Math.min(100, Math.round((spent / total) * 100)) : 0;
+  const tone = usageTone(total > 0 ? (spent / total) * 100 : 0);
 
-            if (data && data.club_id) {
-                return data.club_id;
-            }
-            return null;
-        } catch (err) {
-            console.error("Failed to fetch committee member's club_id:", err);
-        }
-    };
+  const breakdown = (data?.expenseBreakdown || []).map((item, i) => ({
+    label: categoryMeta(item.category, i).label,
+    color: categoryMeta(item.category, i).color,
+    value: Number(item.amount) || 0,
+  }));
+  const breakdownTotal = breakdown.reduce((s, b) => s + b.value, 0);
 
-    const getBudgetWarning = () => {
-        const remaining = parseFloat(budgetSummary.remaining || 0);
-        const total = parseFloat(budgetSummary.totalBudget || 0);
-        
-        if (total === 0) return null;
-        
-        const percentageRemaining = (remaining / total) * 100;
-        
-        if (percentageRemaining < 0) {
-          return (
-            <div style={{ 
-              color: 'red', 
-              fontWeight: 'bold', 
-              padding: '10px', 
-              marginTop: '10px',
-              backgroundColor: '#fee',
-              borderRadius: '4px'
-            }}>
-              ⚠️ Budget exceeded! You've overspent by AED {Math.abs(remaining).toLocaleString()}
+  const expensesLink = `/committee/budget-tracker/event-expenses${clubId ? `?club_id=${clubId}` : ""}`;
+
+  return (
+    <div className="bt-page">
+      <div className="bt-layout">
+        <aside className="bt-sidebar">
+          <Sidebar />
+        </aside>
+
+        <main className="bt-main">
+          <header className="bt-header">
+            <div>
+              <h1 className="bt-title">Budget Tracker</h1>
+              <p className="bt-subtitle">
+                {club?.club_name ? `${club.club_name} · ` : ""}Academic year {academicYear()}
+              </p>
             </div>
-          );
-        } else if (percentageRemaining < 10) {
-          return (
-            <div style={{ 
-              color: 'orange', 
-              padding: '10px', 
-              marginTop: '10px',
-              backgroundColor: '#fff3cd',
-              borderRadius: '4px'
-            }}>
-              ⚠️ Warning: Only {percentageRemaining.toFixed(1)}% of budget remaining
+            <div className="bt-header-actions">
+              {isAdmin && clubs.length > 0 && (
+                <select className="bt-select" value={clubId || ""} onChange={onClubChange} aria-label="Select club">
+                  {clubs.map((c) => (
+                    <option key={c.club_id} value={c.club_id}>
+                      {c.club_name}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <Link to={expensesLink} className="bt-btn bt-btn-primary" onClick={() => window.scrollTo(0, 0)}>
+                Manage event expenses
+              </Link>
             </div>
-          );
-        }
-        
-        return null;
-      };
+          </header>
 
-    //fallback for when clubs cant be fetched
-    useEffect(() => {
-        // Check if we have access first before fetching data
-        if (hasAccess && !permissionLoading) {
-            //check for user role and fetch appropriate clubs
-            const user = JSON.parse(sessionStorage.getItem("user"));
-            if (user && user.id) {
-                console.log("User found:", user);
-                setUserRole(user.role);
-
-                if (user.role === "admin") {
-                    fetchClubs().catch(() => {
-                        // Fallback - fetch dashboard without club filtering
-                        fetchDashboardData();
-                    });
-                } else {
-                    fetchCommitteeClub(user.id).catch(() => {
-                        // Fallback - fetch dashboard without club filtering
-                        fetchDashboardData();
-                    });
-                }
-            } else {
-                console.log("No user found, fetching dashboard data without club filtering");
-                fetchDashboardData();
-            }
-        }
-    }, [hasAccess, permissionLoading]);
-
-    // Initialize club selection on component mount
-    useEffect(() => {
-        if (hasAccess && !permissionLoading) {
-            const initializeClubSelection = async () => {
-                try {
-                    // Get user info from session storage
-                    const user = JSON.parse(sessionStorage.getItem("user"));
-                    if (user && user.id) {
-                        console.log("User found:", user);
-                        setUserRole(user.role);
-
-                        // Handle club selection based on user role
-                        if (user.role === "admin") {
-                            // For admin, fetch all clubs
-                            const clubsData = await fetchClubs();
-
-                            // Determine which club ID to use (priority: URL > session > first club)
-                            if (urlClubId) {
-                                // URL parameter has highest priority
-                                setSelectedClubId(urlClubId);
-                                sessionStorage.setItem("selectedClubId", urlClubId);
-                            } else {
-                                // Fall back to session storage or first club
-                                const storedClubId = sessionStorage.getItem("selectedClubId");
-                                if (storedClubId) {
-                                    setSelectedClubId(storedClubId);
-                                } else if (clubsData && clubsData.length > 0) {
-                                    setSelectedClubId(clubsData[0].club_id);
-                                    sessionStorage.setItem("selectedClubId", clubsData[0].club_id);
-                                }
-                            }
-                        } else {
-                            // For committee members, get their specific club
-                            const committeeClubId = await fetchCommitteeClub(user.id);
-                            if (committeeClubId) {
-                                setSelectedClubId(committeeClubId);
-                                sessionStorage.setItem("selectedClubId", committeeClubId);
-                            }
-                        }
-                    } else {
-                        console.log("No user found, using URL parameter or falling back to all clubs");
-                        if (urlClubId) {
-                            setSelectedClubId(urlClubId);
-                            sessionStorage.setItem("selectedClubId", urlClubId);
-                        }
-                    }
-                } catch (error) {
-                    console.error("Error initializing club selection:", error);
-                }
-            };
-
-            initializeClubSelection();
-        }
-    }, [urlClubId, hasAccess, permissionLoading]);
-
-    // Fetch dashboard data when selectedClubId changes
-    useEffect(() => {
-        if (selectedClubId && hasAccess && !permissionLoading) {
-            console.log("Selected club ID changed to:", selectedClubId);
-
-            // Update URL with club_id without reloading page
-            const newParams = new URLSearchParams(location.search);
-            newParams.set('club_id', selectedClubId);
-            navigate({
-                pathname: location.pathname,
-                search: newParams.toString()
-            }, { replace: true });
-
-            fetchDashboardData();
-        }
-    }, [selectedClubId, location.pathname, location.search, navigate, hasAccess, permissionLoading]);
-
-    if (permissionLoading) {
-        return (
-            <div className="budget-dashboard">
-                <div className="budget-dashboard-sidebar">
-                    <Sidebar />
-                </div>
-                <div className="main-budget-dash">
-                    <p>Checking permissions...</p>
-                </div>
+          {status === "noclub" && (
+            <div className="bt-card bt-state">
+              <h2>No club linked to your account</h2>
+              <p>Ask your club president to add you to the committee to see its budget.</p>
             </div>
-        );
-    }
+          )}
 
-    if (!hasAccess) {
-        return (
-            <div className="access-denied" >
-                <h2>Access Denied</h2>
-                <p>You don't have permission to access the Budget Tracker.</p>
+          {status === "error" && (
+            <div className="bt-card bt-state" role="alert">
+              <h2>Couldn&apos;t load the budget</h2>
+              <p>{error}</p>
+              <button type="button" className="bt-btn bt-btn-primary" onClick={() => (clubId ? setReloadKey((k) => k + 1) : window.location.reload())}>
+                Try again
+              </button>
             </div>
-        );
-    }
+          )}
 
-    if (loading) {
-        return (
-            <div className="budget-dashboard">
-                <div className="budget-dashboard-sidebar">
-                    <Sidebar />
-                </div>
-                <div className="main-budget-dash">
-                    <p>Loading dashboard data...</p>
-                </div>
+          {status === "loading" && (
+            <div className="bt-skeletons" aria-busy="true" aria-label="Loading budget">
+              <div className="bt-skeleton" />
+              <div className="bt-skeleton" />
+              <div className="bt-skeleton" />
             </div>
-        );
-    }
+          )}
 
-    if (error) {
-        return (
-            <div className="budget-dashboard">
-                <div className="budget-dashboard-sidebar">
-                    <Sidebar />
-                </div>
-                <div className="main-budget-dash">
-                    <p className="error-message">{error}</p>
-                </div>
-            </div>
-        );
-    }
+          {status === "ready" && (
+            <>
+              <section className="bt-stats" aria-label="Budget summary">
+                <article className="bt-card bt-stat">
+                  <span className="bt-stat-label">Total budget</span>
+                  <strong className="bt-stat-value">{money(total)}</strong>
+                  <span className="bt-stat-note">Allocated for this academic year</span>
+                </article>
+                <article className="bt-card bt-stat">
+                  <span className="bt-stat-label">Spent or committed</span>
+                  <strong className="bt-stat-value">{money(spent)}</strong>
+                  <div className={`bt-progress bt-progress-${tone}`} role="progressbar" aria-valuenow={pct} aria-valuemin="0" aria-valuemax="100">
+                    <span style={{ width: `${pct}%` }} />
+                  </div>
+                  <span className="bt-stat-note">{pct}% of budget used</span>
+                </article>
+                <article className="bt-card bt-stat">
+                  <span className="bt-stat-label">Remaining</span>
+                  <strong className={`bt-stat-value ${remaining < 0 ? "bt-negative" : ""}`}>{money(remaining)}</strong>
+                  <span className="bt-stat-note">{remaining < 0 ? "Over budget" : "Available to allocate"}</span>
+                </article>
+              </section>
 
-    const budgetSummary = dashboardData?.budgetSummary || {};
-
-    return (
-        <div className="budget-dashboard">
-            <div className="budget-dashboard-sidebar">
-                <Sidebar />
-            </div>
-
-            <div className="main-budget-dash">
-                <div className="budget">
-                    <div className="budget-dashboard-title">
-                        <h2>Dashboard</h2>
-                    </div>
-                    <div className="budget-boxes">
-                        <div className="budget-box1">
-                            <div className="budget-box-wrapper">
-                                <div className="icon">
-                                    <FaMoneyBillWave className="budget-icon" />
-                                    <p className="budget-box-title">Total Budget</p>
-                                </div>
-                                <div className="amount">
-                                    <p className="budget-box-amt">AED {parseFloat(budgetSummary.totalBudget || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="budget-box2">
-                            <div className="budget-box-wrapper">
-                                <div className="icon">
-                                    <FaMoneyBillWave className="budget-icon" />
-                                    <p className="budget-box-title">Budget Spent</p>
-                                </div>
-                                <div className="amount">
-                                    <p className="budget-box-amt">AED {parseFloat(budgetSummary.totalSpent || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="budget-box3">
-                            <div className="budget-box-wrapper">
-                                <div className="icon">
-                                    <FaMoneyBillWave className="budget-icon" />
-                                    <p className="budget-box-title">Remainder</p>
-                                </div>
-                                <div className="amount">
-                                    <p className="budget-box-amt">AED {parseFloat(budgetSummary.remaining || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {getBudgetWarning()}
+              {tone !== "ok" && (
+                <div className={`bt-alert bt-alert-${tone}`} role="status">
+                  {remaining < 0
+                    ? `Budget exceeded by ${money(Math.abs(remaining))}.`
+                    : `Only ${100 - pct}% of the budget is left. Review upcoming events before committing more spend.`}
                 </div>
-                <h4 className="monthly-expense-title">Monthly Expense</h4>
-                <div className="monthly-expense">
-                    <MonthlyExpensesChart data={dashboardData?.monthlyExpenses} />
-                </div>
-                <h4 className="latest-event-expense-title">Latest Events</h4>
-                <div className="latest-event-expense">
-                    <LatestEventsList
-                        events={dashboardData?.latestEvents && dashboardData.latestEvents.length > 0
-                            ? dashboardData.latestEvents.map(event => ({
-                                id: event.id,
-                                name: event.name,
-                                amount: `${(event.totalExpense || event.amount || 0).toLocaleString()}`
-                            }))
-                            : null
-                        }
-                    />
-                </div>
-            </div>
+              )}
 
-            <div className="expense-breakdown">
-                <div>
-                    {userRole === "admin" && (
-                        <div className="select-club-container-bt">
-                            <select
-                                className="select-club-dropdown-bt"
-                                value={selectedClubId || ""}
-                                onChange={(e) => {
-                                    setSelectedClubId(e.target.value);
-                                    sessionStorage.setItem("selectedClubId", e.target.value);
-                                }}
-                            >
-                                <option value="">All Clubs</option>
-                                {clubs.map(club => (
-                                    <option key={club.club_id} value={club.club_id}>{club.club_name}</option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
-                </div>
-                <h4 className="expense-breakdown-title">Club Expenses Breakdown</h4>
-                <div className="expense-breakdown-chart">
-                    <ExpenseBreakdownChart data={dashboardData?.expenseBreakdown} />
-                </div>
+              <section className="bt-grid-2">
+                <article className="bt-card">
+                  <h2 className="bt-card-title">Monthly spending</h2>
+                  <p className="bt-card-sub">AED per month, including planned events</p>
+                  <MonthlyChart data={data?.monthlyExpenses || []} />
+                </article>
 
-                <h4 className="budget-committee-members-title">Committee Members</h4>
-                <div className="budget-committee-members">
-                    <BTCommitteeMembers />
-                </div>
-                <div>
-                    <Link to="/committee/budget-tracker/event-expenses"
-                        onClick={() => window.scrollTo(0, 0)}
-                        className="budget-next-button">Go Next</Link>
-                </div>
-            </div>
+                <article className="bt-card">
+                  <h2 className="bt-card-title">Spending by category</h2>
+                  <p className="bt-card-sub">Share of total spend</p>
+                  <div className="bt-donut-wrap">
+                    <DonutChart data={breakdown} centerLabel="Total" centerValue={money(breakdownTotal)} />
+                    <ul className="bt-legend">
+                      {breakdown.map((b) => (
+                        <li key={b.label}>
+                          <span className="bt-dot" style={{ background: b.color }} />
+                          <span className="bt-legend-name">{b.label}</span>
+                          <span className="bt-legend-value">{money(b.value)}</span>
+                          <span className="bt-legend-pct">{breakdownTotal ? Math.round((b.value / breakdownTotal) * 100) : 0}%</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </article>
+              </section>
 
-        </div>
-    );
+              <section className="bt-grid-2">
+                <article className="bt-card">
+                  <div className="bt-card-head">
+                    <h2 className="bt-card-title">Recent events</h2>
+                    <Link to={expensesLink} className="bt-link" onClick={() => window.scrollTo(0, 0)}>
+                      View all
+                    </Link>
+                  </div>
+                  <LatestEventsList events={data?.latestEvents || []} />
+                </article>
+
+                <article className="bt-card">
+                  <h2 className="bt-card-title">Committee</h2>
+                  <p className="bt-card-sub">People who can manage this budget</p>
+                  <BTCommitteeMembers clubId={clubId} />
+                </article>
+              </section>
+            </>
+          )}
+        </main>
+      </div>
+    </div>
+  );
 };
 
 export default BudgetDashboard;

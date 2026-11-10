@@ -1,433 +1,162 @@
-import { Space, Table, Tag, Typography, Button, Form, Input, Select, Modal, Checkbox, ConfigProvider, InputNumber } from 'antd';
-import Pagination from "../../../viewRO/Pagination";
-import { useState, useEffect } from 'react';
-import { EditOutlined, DeleteOutlined, LinkOutlined } from '@ant-design/icons';
-import { useLocation } from "react-router-dom";
-import EventAddExpenseButton from './EventExpensesForm';
-import './EventExpenses.css';
-import "./EventExpensesForm.css";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import ExpenseModal from "./ExpenseModal";
+import { api, categoryMeta, moneyExact, sumCategories } from "../budgetUtils";
 
-const { Text } = Typography;
-const { Option } = Select;
+const PAGE_SIZE = 8;
 
-const EventExpensesTable = ({ events, onEventUpdate }) => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 5;
-    const [editingEvent, setEditingEvent] = useState(null);
-    const [form] = Form.useForm();
-    const [selectedCategories, setSelectedCategories] = useState({});
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [data, setData] = useState([]);
+const EventExpensesTable = ({ events = [], clubId, onChanged, notify }) => {
+  const [page, setPage] = useState(1);
+  const [editing, setEditing] = useState(null);
+  const [deleting, setDeleting] = useState(null);
+  const [busy, setBusy] = useState(false);
 
-    // Get club_id from URL parameters for event operations
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
-    const clubId = queryParams.get('club_id') || sessionStorage.getItem('selectedClubId');
+  const pages = Math.max(1, Math.ceil(events.length / PAGE_SIZE));
+  useEffect(() => {
+    if (page > pages) setPage(pages);
+  }, [page, pages]);
 
-    // Track current theme
-    const getInitialTheme = () => document.body.getAttribute("data-theme") || "light";
-    const [currentTheme, setCurrentTheme] = useState(getInitialTheme());
-    const isDarkTheme = currentTheme === "dark";
+  const rows = events.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-    // Watch for theme changes
-    useEffect(() => {
-        const observer = new MutationObserver(() => {
-            const newTheme = document.body.getAttribute("data-theme");
-            setCurrentTheme(newTheme);
-        });
+  const save = async (values) => {
+    await api(`/bt_eventRoute/${editing.id}`, {
+      method: "PUT",
+      body: JSON.stringify({ ...values, club_id: clubId, general_event_id: editing.general_event_id }),
+    });
+    setEditing(null);
+    notify?.("success", "Expenses updated.");
+    onChanged?.();
+  };
 
-        observer.observe(document.body, { attributes: true, attributeFilter: ["data-theme"] });
-        return () => observer.disconnect();
-    }, []);
+  const remove = async () => {
+    setBusy(true);
+    try {
+      await api(`/bt_eventRoute/${deleting.id}`, { method: "DELETE" });
+      setDeleting(null);
+      notify?.("success", "Event removed from the budget tracker.");
+      onChanged?.();
+    } catch (e) {
+      notify?.("error", e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
 
-    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
-    // Update local data when events prop changes
-    useEffect(() => {
-        if (events) {
-            setData(events);
-        }
-    }, [events]);
-
-    // Handle delete event
-    const handleDelete = async (record) => {
-        if (window.confirm(`Are you sure you want to delete this event from the budget tracker? ${record.general_event_id ? '\n\nNote: This will only remove it from budget tracking, not from the events system.' : ''}`)) {
-            try {
-                const url = `${apiUrl}/bt_eventRoute/${record.id}`;
-
-                const response = await fetch(url, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Server returned status ${response.status}: ${errorText}`);
-                }
-
-                // Update local state after deletion
-                const updatedData = data.filter(item => item.id !== record.id);
-                setData(updatedData);
-
-                // Notify parent component if provided
-                if (onEventUpdate) {
-                    onEventUpdate();
-                }
-
-                alert("Event deleted successfully from budget tracking!");
-            } catch (error) {
-                console.error("Error deleting event:", error);
-                alert(`Failed to delete event: ${error.message}`);
-            }
-        }
-    };
-
-    const columns = [
-        {
-            title: "Event Name",
-            dataIndex: "name",
-            key: "name",
-            render: (text, record) => (
-                <div>
-                    <a>{text}</a>
-                    {record.general_event_id && (
-                        <Tag color="blue" style={{ marginLeft: '8px' }}>
-                            <LinkOutlined /> Linked
-                        </Tag>
-                    )}
-                </div>
-            ),
-        },
-        {
-            title: "Event Date",
-            dataIndex: "date",
-            key: "date",
-            width: 150,
-        },
-        {
-            title: "Event Status",
-            dataIndex: "status",
-            key: "status",
-        },
-        {
-            title: "Total Expense",
-            dataIndex: "expense",
-            key: "expense",
-            width: 150,
-        },
-        {
-            title: "Expense Categories",
-            dataIndex: "categories",
-            key: "categories",
-            render: (_, { categories }) => (
-                <>
-                    {categories && categories.map(({ name, amount }) => (
-                        <Tag
-                            color={categoryColors[name]}
-                            key={name}
-                            style={{
-                                marginBottom: '4px',
-                                marginRight: '4px',
-                                display: 'inline-block',
-                            }}
-                        >
-                            AED {amount}
-                        </Tag>
-                    ))}
-                </>
-            ),
-        },
-        {
-            title: "Actions",
-            width: 150,
-            render: (_, record) => {
-                const totalExpense = record.categories
-                    ? record.categories.reduce((sum, category) => sum + Number(category.amount || 0), 0)
-                    : 0;
-
-                const isLinked = !!record.general_event_id;
-
-                return (
-                    <Space size="middle">
-                        <Button
-                            type="link"
-                            icon={<EditOutlined />}
-                            onClick={() => handleEdit(record)}
-                        >
-                            {totalExpense === 0 ? "Add" : "Edit"}
-                        </Button>
-                        {!isLinked && (
-                            <Button
-                                type="link"
-                                icon={<DeleteOutlined />}
-                                danger
-                                onClick={() => handleDelete(record)}
-                            >
-                                Delete
-                            </Button>
-                        )}
-                    </Space>
-                );
-            },
-        },
-    ];
-
-    const handleEdit = (record) => {
-        setEditingEvent(record);
-
-        // Set the form fields with the event's existing data
-        form.setFieldsValue({
-            name: record.name,
-            date: record.date,
-            status: record.status,
-            description: record.description || "",
-        });
-
-        // Initialize selectedCategories with ONLY the categories that exist in the event
-        const initialSelectedCategories = {};
-        if (record.categories && record.categories.length > 0) {
-            record.categories.forEach(({ name, amount }) => {
-                initialSelectedCategories[name] = amount.toString();
-            });
-        }
-        setSelectedCategories(initialSelectedCategories);
-    };
-
-    const handleSave = async () => {
-        form.validateFields().then(async (values) => {
-            try {
-                setLoading(true);
-
-                // Convert selected categories to array format
-                const updatedCategories = Object.entries(selectedCategories).map(([name, amount]) => {
-                    const numAmount = parseFloat(amount);
-                    return {
-                        name,
-                        amount: isNaN(numAmount) ? 0 : Math.max(0, numAmount) // Ensure minimum of 0
-                    };
-                });
-
-                // Prepare update data
-                const updateData = {
-                    name: values.name,
-                    date: values.date,
-                    status: values.status,
-                    description: values.description || '',
-                    categories: updatedCategories,
-                    club_id: clubId,
-                    general_event_id: editingEvent.general_event_id // Preserve the link to general event
-                };
-
-                const response = await fetch(`${apiUrl}/bt_eventRoute/${editingEvent.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updateData)
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to update event');
-                }
-
-                const updatedEvent = await response.json();
-
-                // Update local state with the returned data
-                const updatedData = data.map((item) =>
-                    item.id === editingEvent.id ? updatedEvent : item
-                );
-
-                setData(updatedData);
-                setEditingEvent(null);
-                setSelectedCategories({});
-
-                // Notify parent component if provided
-                if (onEventUpdate) {
-                    onEventUpdate();
-                }
-
-                alert('Event updated successfully');
-            } catch (error) {
-                console.error('Error updating event:', error);
-                alert(`Failed to update event: ${error.message}`);
-            } finally {
-                setLoading(false);
-            }
-        });
-    };
-
-    const handleCheckboxChange = (category, checked) => {
-        setSelectedCategories((prev) => {
-            if (checked) {
-                return {
-                    ...prev,
-                    [category]: "", // When checked, show the input field with empty value
-                };
-            } else {
-                const newCategories = { ...prev };
-                delete newCategories[category]; // Remove category when unchecked
-                return newCategories;
-            }
-        });
-    };
-
-    const handleAmountChange = (category, value) => {
-        setSelectedCategories((prev) => ({
-            ...prev,
-            [category]: value,
-        }));
-    };
-
-    // Calculate total expense from all selected categories
-    const calculateTotalExpense = () => {
-        return Object.values(selectedCategories)
-            .reduce((sum, amount) => sum + (Number(amount) || 0), 0);
-    };
-
-    const categories = ["catering", "materials", "prize", "venue", "transportation"];
-
-    const categoryColors = {
-        catering: "blue",
-        materials: "green",
-        prize: "gold",
-        venue: "purple",
-        transportation: "red",
-    };
-
-    const totalPages = Math.ceil(data.length / pageSize);
-    const paginatedData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
+  if (!events.length) {
     return (
-        <ConfigProvider
-            theme={{
-                token: {
-                    colorPrimary: "#314521",
-                    colorPrimaryHover: "#4a6831",
-                    colorBgContainer: isDarkTheme ? "#ebebed" : "#ffffff",
-                    colorBorderSecondary: isDarkTheme ? "#555555" : "#f0f0f0",
-                },
-            }}
-        >
-            <div style={{
-                marginBottom: 16,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-            }}>
-                <div className='category-legend' style={{ display: 'flex', alignItems: 'center' }}>
-                    <Text strong style={{ marginRight: 8 }}>Category Legend: </Text>
-                    <Space size="small">
-                        {Object.entries(categoryColors).map(([category, color]) => (
-                            <Tag color={color} key={category}>
-                                {category.toUpperCase()}
-                            </Tag>
-                        ))}
-                    </Space>
-                </div>
-
-                <EventAddExpenseButton onAddEvent={onEventUpdate || (() => { })} />
-            </div>
-
-            {data.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '20px' }}>
-                    <p>No events found for this club. Add an event to get started.</p>
-                </div>
-            ) : (
-                <>
-                    <Table
-                        columns={columns}
-                        dataSource={paginatedData}
-                        pagination={false}
-                        rowKey="id"
-                        loading={loading}
-                    />
-                    <Pagination
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        onPageChange={setCurrentPage}
-                    />
-                </>
-            )}
-
-            <Modal
-                title={<div className='event-expense-form-modal-title'>
-                    {editingEvent && editingEvent.categories &&
-                        editingEvent.categories.reduce((sum, category) => sum + Number(category.amount || 0), 0) > 0
-                        ? 'Edit Event'
-                        : 'Add Expenses to Event'}
-                </div>}
-                open={!!editingEvent}
-                onCancel={() => setEditingEvent(null)}
-                onOk={handleSave}
-                confirmLoading={loading}
-            >
-                <Form form={form} layout="vertical">
-                    <Form.Item name="name" label="Event Name" rules={[{ required: true }]}>
-                        <Input disabled={editingEvent?.general_event_id} />
-                    </Form.Item>
-                    <Form.Item name="date" label="Event Date" rules={[{ required: true }]}>
-                        <Input disabled={editingEvent?.general_event_id} />
-                    </Form.Item>
-                    <Form.Item name="status" label="Event Status" rules={[{ required: true }]}>
-                        <Select>
-                            <Option value="ONGOING">ONGOING</Option>
-                            <Option value="COMPLETED">COMPLETED</Option>
-                        </Select>
-                    </Form.Item>
-                    <Form.Item name="description" label="Description">
-                        <Input.TextArea rows={3} />
-                    </Form.Item>
-                    <Form.Item label="Expense Category" name="category">
-                        {categories.map((category) => (
-                            <div key={category} style={{ marginBottom: "8px" }}>
-                                <Checkbox
-                                    checked={selectedCategories[category] !== undefined}
-                                    onChange={(e) => handleCheckboxChange(category, e.target.checked)}
-                                >
-                                    {category}
-                                </Checkbox>
-
-                                {selectedCategories[category] !== undefined && (
-                                    <Input
-                                        type="number"
-                                        placeholder="Enter amount"
-                                        value={selectedCategories[category]}
-                                        onChange={(e) => handleAmountChange(category, e.target.value)}
-                                        style={{ width: "100%", marginTop: "5px" }}
-                                    />
-                                )}
-                            </div>
-                        ))}
-                    </Form.Item>
-
-                    <div style={{ marginBottom: 16 }}>
-                        <strong>Total Expense: AED {calculateTotalExpense().toFixed(2)}</strong>
-                    </div>
-
-                    {editingEvent?.general_event_id && (
-                        <div style={{
-                            marginBottom: 16,
-                            color: '#1890ff',
-                            padding: '10px',
-                            background: isDarkTheme ? '#111d2c' : '#e6f7ff',
-                            borderRadius: '4px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px'
-                        }}>
-                            <LinkOutlined /> This event is linked to a general event. Some fields cannot be edited directly.
-                        </div>
-                    )}
-
-                    {/* Hidden field for club_id */}
-                    <input type="hidden" id="club_id" value={clubId} />
-                </Form>
-            </Modal>
-        </ConfigProvider>
+      <div className="bt-table-empty">
+        <strong>No events found</strong>
+        <p>Try a different filter, or add an expense to get started.</p>
+      </div>
     );
+  }
+
+  return (
+    <>
+      <div className="bt-table-wrap">
+        <table className="bt-table">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Categories</th>
+              <th className="bt-num">Total</th>
+              <th aria-label="Actions" />
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => {
+              const total = sumCategories(r.categories);
+              return (
+                <tr key={r.id}>
+                  <td>
+                    <div className="bt-cell-title">
+                      {r.name}
+                      {r.general_event_id && <span className="bt-badge bt-badge-linked">Linked</span>}
+                    </div>
+                  </td>
+                  <td className="bt-nowrap">{r.date}</td>
+                  <td>
+                    <span className={`bt-badge bt-badge-${String(r.status).toLowerCase()}`}>{r.status === "COMPLETED" ? "Completed" : "Ongoing"}</span>
+                  </td>
+                  <td>
+                    <div className="bt-chips">
+                      {(r.categories || []).map((c, i) => {
+                        const meta = categoryMeta(c.name, i);
+                        return (
+                          <span key={c.name} className="bt-chip" title={meta.label}>
+                            <i style={{ background: meta.color }} />
+                            {meta.label} {Number(c.amount).toLocaleString("en-GB")}
+                          </span>
+                        );
+                      })}
+                      {!r.categories?.length && <span className="bt-muted">No expenses yet</span>}
+                    </div>
+                  </td>
+                  <td className="bt-num bt-strong">{moneyExact(total)}</td>
+                  <td className="bt-actions">
+                    <button type="button" className="bt-btn bt-btn-sm" onClick={() => setEditing(r)}>
+                      {total === 0 ? "Add" : "Edit"}
+                    </button>
+                    {!r.general_event_id && (
+                      <button type="button" className="bt-btn bt-btn-sm bt-btn-danger" onClick={() => setDeleting(r)}>
+                        Delete
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {pages > 1 && (
+        <nav className="bt-pager" aria-label="Pagination">
+          <button type="button" className="bt-btn bt-btn-sm" disabled={page === 1} onClick={() => setPage(page - 1)}>
+            Previous
+          </button>
+          <span>
+            Page {page} of {pages}
+          </span>
+          <button type="button" className="bt-btn bt-btn-sm" disabled={page === pages} onClick={() => setPage(page + 1)}>
+            Next
+          </button>
+        </nav>
+      )}
+
+      <ExpenseModal
+        open={!!editing}
+        initial={editing}
+        linked={!!editing?.general_event_id}
+        title={editing && sumCategories(editing.categories) > 0 ? "Edit event expenses" : "Add expenses to event"}
+        onClose={() => setEditing(null)}
+        onSubmit={save}
+      />
+
+      {deleting &&
+        createPortal(
+          <div className="bt-overlay" onMouseDown={(e) => e.target === e.currentTarget && setDeleting(null)}>
+            <div className="bt-modal bt-confirm" role="alertdialog" aria-modal="true">
+              <h2>Remove from budget tracker?</h2>
+              <p className="bt-muted">
+                &ldquo;{deleting.name}&rdquo; and its recorded expenses will be removed from the budget tracker.
+              </p>
+              <div className="bt-modal-actions">
+                <button type="button" className="bt-btn" onClick={() => setDeleting(null)}>
+                  Cancel
+                </button>
+                <button type="button" className="bt-btn bt-btn-danger bt-solid" onClick={remove} disabled={busy}>
+                  {busy ? "Removing…" : "Remove"}
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+    </>
+  );
 };
 
 export default EventExpensesTable;

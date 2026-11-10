@@ -1,269 +1,148 @@
-/* eslint-disable no-undef */
-import "./EventExpenses.css"
-import EventExpensesTable from "./EventExpenseTable";
-import FilterBar from "./FilterBar";
-import { FaSearch } from "react-icons/fa";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
-import { Alert } from 'antd';
+import EventExpensesTable from "./EventExpenseTable";
+import EventAddExpenseButton from "./EventExpensesForm";
+import FilterBar from "./FilterBar";
+import { api, moneyExact, resolveClubId, sumCategories } from "../budgetUtils";
+import "../bt-shared.css";
+import "./EventExpenses.css";
 
 const EventExpenses = () => {
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [clubName, setClubName] = useState("");
-  const [allEvents, setAllEvents] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]);
-  const [activeFilter, setActiveFilter] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [dataLoading, setDataLoading] = useState(false);
-  const searchTimeout = useRef(null);
-
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
-  // Get club_id from URL parameters
   const location = useLocation();
   const navigate = useNavigate();
-  const queryParams = new URLSearchParams(location.search);
-  const clubId = queryParams.get('club_id') || sessionStorage.getItem('selectedClubId');
+  const clubId = resolveClubId(location.search);
 
-  // Redirect if no clubId is found
+  const [events, setEvents] = useState([]);
+  const [clubName, setClubName] = useState("");
+  const [status, setStatus] = useState("loading"); // loading | ready | error
+  const [error, setError] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [query, setQuery] = useState("");
+  const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
+
+  const notify = useCallback((type, message) => {
+    setToast({ type, message });
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 3500);
+  }, []);
+  useEffect(() => () => clearTimeout(toastTimer.current), []);
+
   useEffect(() => {
-    if (!clubId) {
-      navigate('/committee/budget-tracker');
-      return;
-    }
+    if (!clubId) navigate("/committee/budget-tracker", { replace: true });
   }, [clubId, navigate]);
 
-  // Fetch events on component mount or when clubId changes
-  useEffect(() => {
-    if (clubId) {
-      fetchAllEvents();
-      fetchClubName();
-    } else {
-      setLoading(false);
+  const load = useCallback(async () => {
+    if (!clubId) return;
+    try {
+      const list = await api(`/bt_eventRoute?club_id=${clubId}`);
+      setEvents(list.filter((e) => String(e.club_id) === String(clubId)));
+      setError("");
+      setStatus("ready");
+    } catch (e) {
+      setError(e.message || "Failed to load events.");
+      setStatus("error");
     }
   }, [clubId]);
 
-  const fetchClubName = async () => {
-    try {
-      const response = await fetch(`${apiUrl}/clubs/${clubId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setClubName(data.club_name || `Club ${clubId}`);
-      } else {
-        setClubName(`Club ${clubId}`);
-      }
-    } catch (error) {
-      console.error("Error fetching club name:", error);
-      setClubName(`Club ${clubId}`);
-    }
-  };
-
-  // Fetch all events and store them for client-side filtering
-  const fetchAllEvents = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      if (!clubId) {
-        setAllEvents([]);
-        setFilteredEvents([]);
-        setError("No club selected. Please select a club to view events.");
-        setLoading(false);
-        return;
-      }
-
-      const url = `${apiUrl}/bt_eventRoute?club_id=${clubId}`;
-
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch events: ${response.status}`);
-      }
-
-      const events = await response.json();
-
-      // Only keep events that belong to this club
-      const clubSpecificEvents = events.filter(event =>
-        String(event.club_id) === String(clubId)
-      );
-
-      setAllEvents(clubSpecificEvents);
-      setFilteredEvents(clubSpecificEvents);
-      setActiveFilter('all');
-    } catch (error) {
-      console.error('Error fetching events:', error);
-      setError(`Failed to load events: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Apply server-side filtering by status
-  const applyServerFilter = async (status) => {
-    if (status === 'all') {
-      setFilteredEvents(allEvents);
-      return;
-    }
-
-    try {
-      setDataLoading(true);
-      setError(null);
-
-      const url = `${apiUrl}/bt_eventRoute/filter/${status}?club_id=${clubId}`;
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`Failed to filter events: ${response.status} ${response.statusText}`);
-      }
-
-      const events = await response.json();
-
-      const clubSpecificEvents = events.filter(event =>
-        String(event.club_id) === String(clubId)
-      );
-
-      setFilteredEvents(clubSpecificEvents);
-    } catch (error) {
-      console.error('Error filtering events:', error);
-      setError(`Failed to filter events: ${error.message}`);
-    } finally {
-      setDataLoading(false);
-    }
-  };
-
-  // Client-side search function
-  const applyClientSearch = (query) => {
-    if (!query.trim()) {
-      if (activeFilter === 'all') {
-        setFilteredEvents(allEvents);
-      } else {
-        applyServerFilter(activeFilter);
-      }
-      return;
-    }
-
-    const lowerQuery = query.toLowerCase().trim();
-
-    let baseEvents = allEvents;
-    if (activeFilter !== 'all') {
-      baseEvents = allEvents.filter(event => event.status === activeFilter);
-    }
-
-    const searchResults = baseEvents.filter(event =>
-      event.name && event.name.toLowerCase().includes(lowerQuery)
-    );
-
-    setFilteredEvents(searchResults);
-  };
-
-  const handleFilterChange = async (status) => {
-    setActiveFilter(status);
-    applyServerFilter(status);
-  };
-
-  // Debounced search handler for dynamic updates
-  const handleSearchInputChange = (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-
-    if (searchTimeout.current) {
-      clearTimeout(searchTimeout.current);
-    }
-
-    searchTimeout.current = setTimeout(() => {
-      applyClientSearch(query);
-    }, 300);
-  };
-
-  // Clean up timeout on component unmount
   useEffect(() => {
-    return () => {
-      if (searchTimeout.current) {
-        clearTimeout(searchTimeout.current);
-      }
-    };
-  }, []);
+    load();
+    if (clubId) {
+      api(`/clubs/${clubId}`)
+        .then((c) => setClubName(c?.club_name || ""))
+        .catch(() => setClubName(""));
+    }
+  }, [clubId, load]);
 
-  const handleSearchButton = () => {
-    applyClientSearch(searchQuery);
-  };
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return events.filter((e) => (filter === "all" || e.status === filter) && (!q || (e.name || "").toLowerCase().includes(q)));
+  }, [events, filter, query]);
 
-  // Preserve club_id when navigating back
-  const getBackUrl = () => {
-    return clubId ? `/committee/budget-tracker?club_id=${clubId}` : "/committee/budget-tracker";
-  };
+  const totals = useMemo(
+    () => ({
+      count: events.length,
+      ongoing: events.filter((e) => e.status === "ONGOING").length,
+      spent: events.reduce((s, e) => s + sumCategories(e.categories), 0),
+    }),
+    [events]
+  );
 
-  if (loading) {
-    return <div className="event-expenses-page">
-      <div className="main-event-expenses">
-        <div className="loading-indicator">Loading events...</div>
-      </div>
-    </div>;
-  }
+  const backUrl = clubId ? `/committee/budget-tracker?club_id=${clubId}` : "/committee/budget-tracker";
 
   return (
-    <div className="event-expenses-page">
-      <div className="main-event-expenses">
-        <div>
-          <div className="event-expenses-title">
-            <h2>Event Expenses{clubName ? ` for ${clubName}` : ''}</h2>
-          </div>
+    <div className="bt-page">
+      <div className="bt-layout bt-layout-narrow">
+        <main className="bt-main">
+          <nav className="bt-crumbs" aria-label="Breadcrumb">
+            <Link to={backUrl} onClick={() => window.scrollTo(0, 0)}>
+              Budget Tracker
+            </Link>
+            <span>/</span>
+            <span>Event expenses</span>
+          </nav>
 
-          {error && (
-            <Alert
-              message="Error"
-              description={error}
-              type="error"
-              showIcon
-              style={{ marginBottom: '20px', maxWidth: '100%' }}
-              closable
-              onClose={() => setError(null)}
-            />
-          )}
-
-          <div className="event-expenses-controls">
-            <div className="event-expenses-filter-bar">
-              <FilterBar onFilterChange={handleFilterChange} initialFilter={activeFilter} />
+          <header className="bt-header">
+            <div>
+              <h1 className="bt-title">Event expenses</h1>
+              <p className="bt-subtitle">{clubName || "Your club"}</p>
             </div>
-          </div>
-          <div className="event-expenses-search-bar">
-            <FaSearch className="event-expenses-search-icon" />
-            <input
-              type="text"
-              placeholder="Search for events"
-              value={searchQuery}
-              onChange={handleSearchInputChange}
-              onKeyUp={(e) => e.key === 'Enter' && handleSearchButton()}
-            />
-            <button onClick={handleSearchButton}>Search</button>
-          </div>
+            <EventAddExpenseButton clubId={clubId} onAddEvent={load} notify={notify} />
+          </header>
 
-          <div className="event-expenses-table">
-            {dataLoading ? (
-              <div className="table-loading-overlay">
-              </div>
-            ) : null}
-            <div className={dataLoading ? "table-container faded" : "table-container"}>
-              <EventExpensesTable
-                events={filteredEvents}
-                onEventUpdate={() => {
-                  fetchAllEvents();
+          <section className="bt-mini-stats" aria-label="Summary">
+            <div className="bt-card">
+              <span>Events tracked</span>
+              <strong>{totals.count}</strong>
+            </div>
+            <div className="bt-card">
+              <span>Ongoing</span>
+              <strong>{totals.ongoing}</strong>
+            </div>
+            <div className="bt-card">
+              <span>Total spent or committed</span>
+              <strong>{moneyExact(totals.spent)}</strong>
+            </div>
+          </section>
 
-                  if (activeFilter !== 'all') {
-                    handleFilterChange(activeFilter);
-                  }
-                }}
+          <section className="bt-card bt-table-card">
+            <div className="bt-toolbar">
+              <FilterBar value={filter} onChange={setFilter} />
+              <input
+                className="bt-input bt-search"
+                type="search"
+                placeholder="Search events"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Search events"
               />
             </div>
-          </div>
 
-          <div className="event-expenses-button-container">
-            <div>
-              <Link to={getBackUrl()} onClick={() => window.scrollTo(0, 0)} className="event-expenses-back-button">Go Back</Link>
-            </div>
+            {status === "loading" && <p className="bt-empty">Loading events…</p>}
+            {status === "error" && (
+              <div className="bt-alert bt-alert-danger" role="alert">
+                {error}{" "}
+                <button type="button" className="bt-btn bt-btn-sm" onClick={load}>
+                  Retry
+                </button>
+              </div>
+            )}
+            {status === "ready" && <EventExpensesTable events={visible} clubId={clubId} onChanged={load} notify={notify} />}
+          </section>
+
+          <div>
+            <Link to={backUrl} className="bt-btn" onClick={() => window.scrollTo(0, 0)}>
+              ← Back to dashboard
+            </Link>
           </div>
-        </div>
+        </main>
       </div>
+
+      {toast && (
+        <div className={`bt-toast ${toast.type === "error" ? "bt-toast-error" : ""}`} role="status">
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 };

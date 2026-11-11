@@ -1,99 +1,94 @@
-import { useState, useEffect } from "react";
-import Title from "../../components/viewRO/Title";
-import RoleOpeningCard from "../../components/viewRO/RoleOpeningCard";
-import Pagination from "../../components/viewRO/Pagination";
-import ongoingRolesSample from "../../components/viewRO/ongoing-roles"; // fallback sample data
-
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { useApi, PageHeader, SearchBox, Chips, Tabs, Mono, Badge, Skeletons, EmptyState, fmtDate, toDate, daysLeft } from "../../ui/ui";
 
 const RoleOpenings = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [roles, setRoles] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const rolesPerPage = 2;
+  const roles = useApi("/role-openings");
+  const clubs = useApi("/clubs");
+  const [search, setSearch] = useState("");
+  const [club, setClub] = useState("All clubs");
+  const [status, setStatus] = useState("open");
 
-  useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const [rolesResponse, clubsResponse] = await Promise.all([
-          fetch(`${apiUrl}/role-openings`),
-          fetch(`${apiUrl}/clubs`)
-        ]);
-  
-        if (!rolesResponse.ok || !clubsResponse.ok) {
-          throw new Error("Failed to fetch role openings or clubs");
-        }
+  const clubName = (id) => (clubs.data || []).find((c) => c.club_id === id)?.club_name || "";
+  const all = roles.data || [];
+  const names = ["All clubs", ...Array.from(new Set(all.map((r) => clubName(r.club_id)).filter(Boolean))).sort()];
 
-        // const data = await response.json();
-        const rolesData = await rolesResponse.json();
-        const clubsData = await clubsResponse.json();
-        const clubMap = Object.fromEntries(clubsData.map(club => [club.club_id, club.club_name]));
-        const ongoingRoles = rolesData.filter(role => role.status === "ONGOING");
-
-        if (ongoingRoles.length > 0) {
-          setRoles(ongoingRoles.map((role, i) => ({
-            title: `${role.position} for ${clubMap[role.club_id] || "Unknown Club"}`,
-            description: role.description,
-            deadline: new Date(role.due_date).toLocaleDateString(),
-            imageSrc: role.thumbnail_url 
-              ? `${apiUrl.replace(/\/api$/, '')}${role.thumbnail_url}` 
-              : `https://picsum.photos/200/150?random=${i + 1}`,
-            id: role.role_opening_id,
-            club_id: role.club_id
-          })));
-                    
-          // setRoles(ongoingRoles.map(role => ({
-          //   title: `${role.position} for ${clubMap[role.club_id] || "Unknown Club"}`,
-          //   description: role.description,
-          //   deadline: new Date(role.due_date).toLocaleDateString(),
-          //   imageSrc: "https://picsum.photos/200/150",
-          //   id: role.role_opening_id,
-          //   club_id: role.club_id
-          // })));
-        } else {
-          console.log("No ongoing roles from API. Using fallback.");
-          setRoles(ongoingRolesSample);
-        }
-      } catch (err) {
-        console.error("API error, using fallback data:", err);
-        setRoles(ongoingRolesSample);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRoles();
-  }, []);
-
-  const totalPages = Math.ceil(roles.length / rolesPerPage);
-  const indexOfLastRole = currentPage * rolesPerPage;
-  const indexOfFirstRole = indexOfLastRole - rolesPerPage;
-  const currentRoles = roles.slice(indexOfFirstRole, indexOfLastRole);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  if (loading) {
-    return <p>Loading role openings...</p>;
-  }
+  const list = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return all
+      .filter((r) => (status === "all" ? true : status === "open" ? r.status === "ONGOING" : r.status !== "ONGOING"))
+      .filter((r) => club === "All clubs" || clubName(r.club_id) === club)
+      .filter((r) => !q || `${r.position} ${r.description}`.toLowerCase().includes(q))
+      .sort((a, b) => toDate(a.due_date) - toDate(b.due_date));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [all, clubs.data, search, club, status]);
 
   return (
-    <div className="role-openings-wrapper">
-      <Title />
-      {currentRoles.map((role, index) => (
-        <RoleOpeningCard
-          key={role.id || index}
-          role={role}
-          index={role.id || index}
-        />
-      ))}
+    <div className="ux-page">
+      <PageHeader eyebrow="Get involved" title="Role openings" lead="Societies are looking for people to help run them. Pick a role that suits your skills and apply in a couple of minutes." />
+      <div className="ux-wrap ux-body">
+        <div className="ux-toolbar">
+          <SearchBox value={search} onChange={setSearch} placeholder="Search roles" />
+          <Tabs
+            options={[
+              ["open", "Open"],
+              ["closed", "Closed"],
+              ["all", "All"],
+            ]}
+            value={status}
+            onChange={setStatus}
+          />
+          <span className="ux-count">{list.length} roles</span>
+        </div>
+        <div style={{ marginBottom: 24 }}>
+          <Chips options={names} value={club} onChange={setClub} />
+        </div>
 
-      <Pagination 
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
+        {roles.loading && <Skeletons n={3} />}
+        {!roles.loading && list.length === 0 && <EmptyState title="No roles found">Try changing the filters.</EmptyState>}
+        <div className="ux-list">
+          {list.map((r) => {
+            const open = r.status === "ONGOING";
+            const left = daysLeft(r.due_date);
+            return (
+              <article className="ux-card ux-row ux-hover" key={r.role_opening_id}>
+                <div style={{ display: "flex", gap: 16, minWidth: 0 }}>
+                  <Mono name={clubName(r.club_id)} />
+                  <div style={{ minWidth: 0 }}>
+                    <h3>{r.position}</h3>
+                    <p className="ux-meta" style={{ marginBottom: 8 }}>
+                      <span>{clubName(r.club_id)}</span>
+                    </p>
+                    <p className="ux-desc">{r.description}</p>
+                    <p className="ux-row-meta">
+                      <span>Deadline {fmtDate(r.due_date)}</span>
+                      {open && left != null && <span>{left} days left</span>}
+                      <span>{r.number_of_registrations ?? 0} applicants</span>
+                    </p>
+                    {r.eligibility_criteria && (
+                      <p className="ux-meta" style={{ marginTop: 8 }}>
+                        <span style={{ whiteSpace: "normal" }}>Eligibility: {r.eligibility_criteria}</span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="ux-row-side">
+                  <Badge kind={open ? "ok" : "muted"}>{open ? "Open" : "Closed"}</Badge>
+                  {open ? (
+                    <Link to={`/roles/apply/${r.role_opening_id}`} className="ux-btn ux-btn-primary">
+                      Apply now
+                    </Link>
+                  ) : (
+                    <button className="ux-btn" disabled>
+                      Applications closed
+                    </button>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };

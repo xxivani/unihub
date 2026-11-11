@@ -20,26 +20,32 @@ const IMG = (n) => `/assets/images/${n}`;
 
 /* ------------------------------------------------------------------ clubs */
 const clubs = [
-  { club_id: 1, club_name: "WiSTEM Society", club_category: "STEM", club_thumbnail_url: "https://picsum.photos/seed/wistem/400/300",
+  { club_id: 1, club_name: "WiSTEM Society", club_category: "STEM", club_thumbnail_url: null,
     club_description: "A community for women in science, technology, engineering and maths: speaker nights, mentoring, lab visits and a very good snack budget." },
   { club_id: 2, club_name: "PAWS", club_category: "Social", club_thumbnail_url: IMG("logo-paws.jpeg"),
     club_description: "Plants and Animal Welfare Society. We run shelter volunteering days, adoption drives, pet therapy sessions and fundraisers for local rescues." },
-  { club_id: 3, club_name: "ACM", club_category: "Tech", club_thumbnail_url: "https://picsum.photos/seed/acm/400/300",
+  { club_id: 3, club_name: "ACM", club_category: "Tech", club_thumbnail_url: null,
     club_description: "The Association for Computing Machinery chapter: hackathons, coding workshops, interview prep and industry talks." },
-  { club_id: 4, club_name: "Robotics Club", club_category: "Engineering", club_thumbnail_url: "https://picsum.photos/seed/robotics/400/300",
+  { club_id: 4, club_name: "Robotics Club", club_category: "Engineering", club_thumbnail_url: null,
     club_description: "Design, build and compete. Weekly build nights, line-follower leagues and an annual robotics showcase." },
-  { club_id: 5, club_name: "Music Club", club_category: "Arts", club_thumbnail_url: "https://picsum.photos/seed/music/400/300",
+  { club_id: 5, club_name: "Music Club", club_category: "Arts", club_thumbnail_url: null,
     club_description: "Open mic nights, jam sessions, a student choir and the winter concert. All instruments and levels welcome." },
-  { club_id: 6, club_name: "Debate Society", club_category: "Social", club_thumbnail_url: "https://picsum.photos/seed/debate/400/300",
+  { club_id: 6, club_name: "Debate Society", club_category: "Social", club_thumbnail_url: null,
     club_description: "Weekly practice rounds, the Intra-Uni Debate Cup and training for inter-university tournaments." },
-  { club_id: 7, club_name: "Photography Society", club_category: "Arts", club_thumbnail_url: "https://picsum.photos/seed/photo/400/300",
+  { club_id: 7, club_name: "Photography Society", club_category: "Arts", club_thumbnail_url: null,
     club_description: "Photo walks, editing workshops, gallery nights and a shared pool of camera equipment." },
-  { club_id: 8, club_name: "Dance Crew", club_category: "Arts", club_thumbnail_url: "https://picsum.photos/seed/dance/400/300",
+  { club_id: 8, club_name: "Dance Crew", club_category: "Arts", club_thumbnail_url: null,
     club_description: "Hip-hop, contemporary and Bollywood classes plus the Intra-Uni Dance Competition each spring." },
+  { club_id: 9, club_name: "Entrepreneurship Society", club_category: "Business", club_thumbnail_url: null,
+    club_description: "Pitch nights, founder talks, a startup incubator and CV clinics for students who want to build something of their own." },
+  { club_id: 10, club_name: "Sports Club", club_category: "Sports", club_thumbnail_url: null,
+    club_description: "Football, basketball, badminton and cricket leagues with weekly training sessions and an annual inter-university cup." },
+  { club_id: 11, club_name: "Film Society", club_category: "Arts", club_thumbnail_url: null,
+    club_description: "Weekly screenings, documentary nights and a short-film competition judged by industry guests." },
 ].map((c) => ({ ...c, club_created_at: iso(-300) }));
 
 const clubName = (id) => clubs.find((c) => c.club_id === Number(id))?.club_name;
-const budgets = { 1: 15000, 2: 14000, 3: 18000, 4: 20000, 5: 12000, 6: 8000, 7: 7000, 8: 9000 };
+const budgets = { 9: 9000, 10: 11000, 11: 6000, 1: 15000, 2: 16000, 3: 18000, 4: 20000, 5: 12000, 6: 8000, 7: 7000, 8: 9000 };
 
 const contacts = {
   1: { phone: "+971 50 111 2201", email: "wistem@example.com", instagram: "@uobd_wistem", whatsapp: "+971 50 111 2201" },
@@ -50,6 +56,9 @@ const contacts = {
   6: { phone: "+971 50 111 2206", email: "debate@example.com", instagram: "@uobd_debate", whatsapp: "+971 50 111 2206" },
   7: { phone: "+971 50 111 2207", email: "photo@example.com", instagram: "@uobd_photo", whatsapp: "+971 50 111 2207" },
   8: { phone: "+971 50 111 2208", email: "dance@example.com", instagram: "@uobd_dance", whatsapp: "+971 50 111 2208" },
+  9: { phone: "+971 50 111 2209", email: "entrepreneurship@example.com", instagram: "@uobd_ent", whatsapp: "+971 50 111 2209" },
+  10: { phone: "+971 50 111 2210", email: "sports@example.com", instagram: "@uobd_sports", whatsapp: "+971 50 111 2210" },
+  11: { phone: "+971 50 111 2211", email: "film@example.com", instagram: "@uobd_film", whatsapp: "+971 50 111 2211" },
 };
 
 /* ------------------------------------------------------------------ users */
@@ -95,6 +104,11 @@ let members = [
   mkMember(18, 53, "Omar Hussein", "omar.hussein@example.com", "PRESIDENT", 6, "Debate captain.", ALL_PERMS),
   mkMember(19, 54, "Maria Lee", "maria.lee@example.com", "PRESIDENT", 7, "Photographer.", ALL_PERMS),
   mkMember(20, 55, "Kenji Tanaka", "kenji.tanaka@example.com", "PRESIDENT", 8, "Choreographer.", ALL_PERMS),
+  mkMember(21, 56, "Yusuf Karim", "yusuf.karim@example.com", "PRESIDENT", 9, "Founder of a campus startup.", ALL_PERMS),
+  mkMember(22, 57, "Natalie Cho", "natalie.cho@example.com", "TREASURER", 9, "Finance student.", ["UpdateBudget"]),
+  mkMember(23, 58, "Idris Bello", "idris.bello@example.com", "PRESIDENT", 10, "Football captain.", ALL_PERMS),
+  mkMember(24, 59, "Ines Duarte", "ines.duarte@example.com", "EVENTS_OFFICER", 10, "Runs league fixtures.", ["CreateEvent"]),
+  mkMember(25, 60, "Theo Park", "theo.park@example.com", "PRESIDENT", 11, "Media student.", ALL_PERMS),
 ];
 let nextMemberId = 100;
 
@@ -130,6 +144,20 @@ const EV = [
   [18, "Intra-Uni Debate Cup", "Debate Society", 15, "10:00-17:00", "Lecture Theatre 2", 80, 54, 5, "Eight teams, three rounds and a grand final judged by faculty.", "mun.jpg", team("Omar Hussein", "Maria Lee")],
   [19, "Golden Hour Photo Walk", "Photography Society", 7, "16:30-18:30", "Creek Harbour (meet at Gate 2)", 25, 19, 0, "Chase the light with tips on composition and exposure from senior members.", "picnic.webp", team("Maria Lee", "Omar Hussein")],
   [20, "Intra-Uni Dance Competition", "Dance Crew", 28, "17:00-20:00", "Main Auditorium", 200, 88, 5, "Solo and crew categories judged by professional choreographers.", "dance.jpeg", team("Kenji Tanaka", "Maria Lee")],
+  [21, "Dog Training Basics Workshop", "PAWS", 9, "15:00-16:30", "Sports Field", 30, 18, 10, "A professional trainer teaches sit, stay and recall. Bring your own dog or practise with ours from the shelter.", "paws.jpeg", team("Jonah Brooks", "Carlos Mendez", "Hana Suleiman", "Tariq Al Fahim (Trainer)")],
+  [22, "Cat Café Pop-up", "PAWS", 17, "11:00-15:00", "Student Café", 80, 41, 15, "Spend time with adoptable cats over coffee and cake. All proceeds go to the Dubai Animal Rescue Centre.", "matcha.webp", team("Emily Nguyen", "Sameer Roy", "Jonah Brooks")],
+  [23, "Careers in Veterinary Science", "PAWS", 22, "17:00-18:30", "Lecture Theatre 3", 120, 57, 0, "A practising vet and a wildlife conservationist discuss training routes, daily life and how to get work experience.", "panda.jpg", team("Sameer Roy", "Emily Nguyen", "Carlos Mendez", "Dr. Rania Aziz (Vet)")],
+  [24, "Beach Clean-up with PAWS", "PAWS", -24, "08:00-12:00", "Kite Beach", 50, 46, 0, "Morning clean-up to protect nesting turtles and shore birds. Gloves, bags and breakfast provided.", "social.jpeg", team("Jonah Brooks", "Sameer Roy", "Carlos Mendez")],
+  [25, "Spring Adoption Drive", "PAWS", 40, "10:00-16:00", "Main Courtyard", 300, 52, 0, "Our biggest adoption event of the year, with four partner shelters, a vet check-up booth and a pet-photo corner.", "paws.jpeg", team("Sameer Roy", "Emily Nguyen", "Carlos Mendez", "Shelter Partners")],
+  [26, "Startup Pitch Night", "Entrepreneurship Society", 10, "18:00-20:30", "Campus Innovation Hub", 100, 64, 0, "Six student teams pitch to a panel of local founders and investors for seed prizes and mentoring.", "mun.jpg", team("Yusuf Karim", "Natalie Cho", "", "Judging Panel")],
+  [27, "Sunday Football League: Round 4", "Sports Club", 4, "16:00-19:00", "Sports Complex Pitch 2", 70, 56, 0, "Four-team round of the inter-faculty league. Spectators welcome.", "hero.jpeg", team("Idris Bello", "Ines Duarte")],
+  [28, "Film Night: Documentary Screening", "Film Society", 13, "19:00-21:30", "Lecture Theatre 1", 140, 72, 0, "A screening of an award-winning environmental documentary followed by a short discussion.", "img.jpeg", team("Theo Park", "Maria Lee")],
+  [29, "CV & LinkedIn Clinic", "Entrepreneurship Society", -14, "14:00-16:00", "Careers Room 210", 40, 40, 0, "One-to-one feedback on CVs and profiles from recent graduates working in industry.", "imageM.jpg", team("Natalie Cho", "Yusuf Karim")],
+  [30, "Python for Beginners Bootcamp", "ACM", -20, "10:00-16:00", "Computer Lab 4", 40, 38, 0, "A full day introduction to Python with exercises, culminating in a small text-adventure game.", "img.jpeg", team("Priya Sharma", "Zane Malik", "Noah Walker")],
+  [31, "Charity 5-a-side Tournament", "Sports Club", 23, "14:00-18:00", "Sports Complex", 96, 48, 10, "Teams of five compete for the trophy; entry fees are donated to the university hardship fund.", "hero.jpeg", team("Idris Bello", "Ines Duarte")],
+  [32, "Acoustic Sessions", "Music Club", -12, "18:30-20:30", "Student Café", 60, 58, 0, "An intimate evening of unplugged sets by Music Club members.", "dance.jpeg", team("Hina Sato", "Sara Ibrahim")],
+  [33, "Mock Parliament", "Debate Society", -30, "13:00-17:00", "Lecture Theatre 2", 90, 74, 0, "Students take on ministerial roles and debate a live policy bill in parliamentary style.", "mun.jpg", team("Omar Hussein", "Maria Lee")],
+  [34, "Women in Tech Mentoring Brunch", "WiSTEM Society", 30, "10:30-12:30", "Faculty Lounge", 50, 27, 0, "Pair up with an industry mentor for a relaxed brunch and goal-setting session.", "hero.jpeg", team("Ariana Patel", "David Chen", "Leila Hassan", "Industry Mentors")],
 ];
 
 const followersOf = (id) => {
@@ -147,6 +175,7 @@ let events = EV.map(([id, title, club, off, time, location, capacity, followed, 
   location,
   time,
   date: longDate(off),
+  date_iso: iso(off, 12),
   deadline: iso(off - 1, 9),
   capacity,
   followed,
@@ -177,6 +206,11 @@ const PAWS_BT = {
   7: { catering: 180, venue: 120, materials: 60 },
   8: { catering: 600, materials: 300, venue: 250 },
   9: { transportation: 1200, venue: 800, catering: 500 },
+  21: { materials: 150, venue: 100 },
+  22: { catering: 300, materials: 120, venue: 200 },
+  23: { venue: 150, catering: 100 },
+  24: { transportation: 350, materials: 80 },
+  25: { catering: 500, venue: 300, materials: 200 },
 };
 const cats = ["catering", "materials", "prize", "venue", "transportation"];
 let btEvents = [];
@@ -263,6 +297,11 @@ const roleOpenings = [
   [7, 5, "Band Coordinator", "Match musicians into jam groups and schedule practice rooms.", 12, "ONGOING", "Any instrument. Good with scheduling."],
   [8, 1, "Outreach Officer", "Build links with local schools and run STEM outreach days.", -12, "COMPLETED", "Enthusiastic communicator; DBS check required."],
   [9, 7, "Equipment Manager", "Look after camera gear loans and maintain the kit inventory.", 18, "ONGOING", "Reliable and detail-oriented."],
+  [10, 2, "Fundraising Lead", "Plan and run PAWS fundraisers: bake sales, sponsored walks and corporate donations for our partner shelters.", 20, "ONGOING", "Good communicator who is comfortable approaching local businesses."],
+  [11, 2, "Photographer & Videographer", "Capture event highlights for our social channels and newsletter. Own camera or phone with a good lens preferred.", 11, "ONGOING", "Portfolio or sample work helpful; available for evening events."],
+  [12, 9, "Partnerships Officer", "Build relationships with startups and sponsors to bring speakers and prizes to our events.", 15, "ONGOING", "Confident at networking and writing professional emails."],
+  [13, 10, "Fixtures Secretary", "Schedule league fixtures, book pitches and keep results up to date.", 8, "ONGOING", "Organised, and reliable on weekends."],
+  [14, 11, "Programme Curator", "Choose the films for each semester and write the screening notes.", -6, "COMPLETED", "A broad film knowledge and an eye for variety."],
 ].map(([id, club_id, position, description, due, status, elig], i) => ({
   role_opening_id: id,
   club_id,
@@ -283,6 +322,10 @@ const APPLICANTS = [
   ["Rohan Kapoor", "+971 50 118 6632", "rohan.kapoor@example.com", "Ran the social channels for my school's eco club. Happy to commit four hours weekly."],
   ["Sofia Alvarez", "+971 54 775 0921", "sofia.alvarez@example.com", "I love animals and storytelling. I have a small photography portfolio of shelter dogs."],
   ["Alex Morgan", "+971 50 000 0002", "student@example.com", "I have joined three PAWS events this term and would love to take on more responsibility."],
+  ["Hamza Qureshi", "+971 55 310 4468", "hamza.qureshi@example.com", "Treasurer of my secondary school's charity club; I raised AED 4,000 for a local shelter and enjoy approaching sponsors."],
+  ["Chloe Martin", "+971 52 774 1903", "chloe.martin@example.com", "Business student with a part-time job in retail events. I can pitch to businesses and handle cash responsibly."],
+  ["Dev Patel", "+971 50 662 8821", "dev.patel@example.com", "I shoot weddings and events on weekends and can deliver edited highlights within 48 hours."],
+  ["Lina Haddad", "+971 54 108 3396", "lina.haddad@example.com", "Photography minor with a portfolio of animal portraits. Available for every evening event."],
 ];
 let registrations = [];
 let nextRegId = 1;
@@ -304,6 +347,8 @@ const addRegs = (roleId, rows, statuses) =>
 addRegs(1, [APPLICANTS[0], APPLICANTS[1], APPLICANTS[2], APPLICANTS[3], APPLICANTS[5]], ["PENDING", "PENDING", "SELECTED", "PENDING", "PENDING"]);
 addRegs(2, [APPLICANTS[1], APPLICANTS[4], APPLICANTS[3], APPLICANTS[0]], ["PENDING", "PENDING", "REJECTED", "PENDING"]);
 addRegs(3, [APPLICANTS[0], APPLICANTS[1], APPLICANTS[2], APPLICANTS[3], APPLICANTS[4], APPLICANTS[5]], ["SELECTED", "REJECTED", "REJECTED", "SELECTED", "REJECTED", "REJECTED"]);
+addRegs(10, [APPLICANTS[6], APPLICANTS[7], APPLICANTS[1], APPLICANTS[4]], ["PENDING", "PENDING", "PENDING", "REJECTED"]);
+addRegs(11, [APPLICANTS[8], APPLICANTS[9], APPLICANTS[2]], ["PENDING", "PENDING", "SELECTED"]);
 addRegs(5, [{ 0: "Alex Morgan", 1: "+971 50 000 0002", 2: "student@example.com", 3: "I teach Python to my younger cousins and want to do it for the club." }], ["PENDING"]);
 const roleWithCount = (r) => ({ ...r, number_of_registrations: registrations.filter((g) => g.role_opening_id === r.role_opening_id).length });
 
@@ -318,6 +363,10 @@ let news = [
   [6, "Winter Concert Tickets On Sale", "The Music Club's winter concert features the choir, jazz ensemble and guest soloists. Tickets are limited to 250 and available at the Student Union desk.", "dance.jpeg", "Music Club", -17],
   [7, "New Sports Hall Opening Hours", "The refurbished sports hall is open 7am to 10pm weekdays. Court bookings are now handled through the UniHub app.", "picnic.webp", "Student Affairs", -21],
   [8, "Robotics Club Wins Regional Qualifier", "Our team placed first in the regional line-follower qualifier and will travel to the national finals in February. Congratulations!", "imageM.jpg", "Robotics Club", -26],
+  [9, "Entrepreneurship Society Opens Incubator Applications", "Student teams with an early-stage idea can apply for desk space, mentoring and a AED 3,000 seed grant. Applications close at the end of the month.", "social.jpeg", "Entrepreneurship Society", -4],
+  [10, "Campus Sustainability Week: What's On", "Five days of talks, a clothes swap, a bike repair clinic and the PAWS beach clean-up. Full timetable inside the newsletter.", "picnic.webp", "Student Affairs", -11],
+  [11, "Debate Society Takes Second at Regional Cup", "Our first team reached the grand final in Abu Dhabi and lost by a single point. Practice rounds continue every Thursday.", "mun.jpg", "Debate Society", -19],
+  [12, "Counselling & Wellbeing Drop-ins Extended", "Free drop-in sessions are now available Monday to Thursday afternoons in the Student Support Centre, no booking needed.", "hero.jpeg", "Student Support", -23],
 ].map(([news_id, news_title, news_content, thumb, news_author, off]) => ({
   news_id,
   news_title,
@@ -339,6 +388,8 @@ let externalEvents = [
   [5, "Founders in Conversation", "An evening with three local startup founders on building companies from campus.", "Campus Innovation Hub", 6, 18, 120, 88, "Free", "GUEST_LECTURE", "UoB Entrepreneurship Hub", "Event Host", "Hub Manager", "Founder Panel"],
   [6, "Data Visualisation Workshop", "Hands-on three-hour workshop on turning messy data into clear charts using free tools.", "Knowledge Park Lab 3", 11, 14, 40, 31, "AED 30", "WORKSHOP", "Data Society UAE", "Workshop Lead", "Lab Assistant", "Guest Instructor"],
   [7, "Winter Social Mixer", "Casual networking evening for students from every local university with live music and food trucks.", "Alserkal Avenue", 24, 19, 250, 120, "AED 25", "SOCIAL_GATHERING", "Student Mixer Collective", "Social Chair", "Venue Team", ""],
+  [9, "Women in Engineering Conference", "A day of keynotes, workshops and mentoring for women studying or working in engineering fields.", "Dubai Design District", 29, 9, 350, 190, "AED 40", "CAREER", "Engineers UAE", "Programme Chair", "Venue Lead", "Keynote: Chief Engineer, utilities provider"],
+  [10, "Sustainability Hackathon", "Teams design low-cost solutions for campus energy and waste problems, judged by sustainability professionals.", "Masdar Hub Dubai", 36, 10, 160, 72, "Free", "HACKATHON", "Green Futures Network", "Hack Lead", "Operations", "Judge: Head of Sustainability"],
   [8, "Cybersecurity Industry Night", "Short talks from security teams plus a capture-the-flag warm-up for beginners.", "Emirates Towers Conference Room", 17, 18, 100, 64, "Free", "NETWORKING", "Cyber Guild", "Host", "Operations", "Security Lead"],
 ].map(([id, name, description, location, off, hour, max, att, ticket, category, org, corg, mgr, speaker]) => ({
   external_event_id: id,
@@ -522,6 +573,7 @@ export function handle(method, path, query, body) {
           location: body.location || "TBC",
           time: body.time || "12:00-13:00",
           date: body.date ? new Date(body.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : longDate(14),
+          date_iso: body.date ? new Date(body.date + "T12:00:00").toISOString() : iso(14, 12),
           deadline: body.deadline || iso(13),
           capacity: Number(body.capacity) || 50,
           followed: 0,

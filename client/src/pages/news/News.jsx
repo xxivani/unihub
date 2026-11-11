@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { Row } from "../../ui/classic";
 import { api, useApi, getUser, PageHeader, SearchBox, Skeletons, EmptyState, Badge, Modal, useToast, toneFor, toDate, fmtDate, IconDoc } from "../../ui/ui";
 
 const News = () => {
@@ -56,8 +57,8 @@ const News = () => {
   );
 
   return (
-    <div className="ux-page">
-      <PageHeader eyebrow="Campus updates" title="News" lead="Announcements, newsletters and society updates from across the university.">
+    <div className="ux-page cl">
+      <PageHeader title="News" lead="Announcements, newsletters and society updates from across the university.">
         {isAdmin && (
           <Link to="/news/create-news-post" className="ux-btn ux-btn-primary">
             New post
@@ -65,7 +66,7 @@ const News = () => {
         )}
       </PageHeader>
       <div className="ux-wrap ux-body">
-        <div className="ux-toolbar">
+        <div className="cl-filters">
           <SearchBox value={search} onChange={setSearch} placeholder="Search news" />
           <span className="ux-count">{list.length} posts</span>
         </div>
@@ -73,15 +74,14 @@ const News = () => {
         {error && <EmptyState title="Couldn't load news">{error}</EmptyState>}
         {!loading && !error && list.length === 0 && <EmptyState title="No posts found">Try another search.</EmptyState>}
 
-        {feature && (
-          <div className="ux-card ux-news-feature">
-            <div className="ux-news-art" style={toneFor(feature.news_author)}>Latest · {feature.news_author}</div>
-            <Card n={feature} big />
-          </div>
-        )}
-        <div className="ux-grid">
-          {rest.map((n) => (
-            <Card key={n.news_id} n={n} />
+        <div className="cl-list">
+          {list.map((n) => (
+            <Row key={n.news_id} name={n.news_author} title={n.news_title}
+              kicker={`${n.news_author} · ${fmtDate(n.news_created_at)}`} desc={n.news_content}>
+              {n.news_pdf_url && <a className="ux-btn ux-btn-primary" href={n.news_pdf_url} target="_blank" rel="noopener noreferrer">Read</a>}
+              {isAdmin && <Link className="ux-btn" to={`/news/edit/${n.news_id}`}>Edit</Link>}
+              {isAdmin && <button type="button" className="ux-btn ux-btn-danger" onClick={() => setRemoving(n)}>Delete</button>}
+            </Row>
           ))}
         </div>
       </div>

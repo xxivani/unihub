@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { api, useApi, getUser, PageHeader, SearchBox, Chips, Tabs, EventCard, Skeletons, EmptyState, Pager, useToast, isUpcoming, eventDate, useFollowing } from "../ui/ui";
+import { Link, useNavigate } from "react-router-dom";
+import { Row } from "../ui/classic";
+import { api, useApi, getUser, PageHeader, SearchBox, Chips, Tabs, Skeletons, IconClock, IconPin, fmtDate, priceLabel, EmptyState, Pager, useToast, isUpcoming, eventDate, useFollowing } from "../ui/ui";
 
 const PER_PAGE = 9;
 
@@ -51,35 +52,41 @@ const Events = () => {
   };
 
   return (
-    <div className="ux-page">
-      <PageHeader eyebrow="Campus life" title="Events" lead="Socials, talks, workshops and competitions run by student societies. Follow an event to hold your place." />
+    <div className="ux-page cl">
+      <PageHeader title="Events" lead="Socials, talks, workshops and competitions run by student societies." />
       <div className="ux-wrap ux-body">
-        <div className="ux-toolbar">
+        <div className="cl-filters">
           <SearchBox value={search} onChange={reset(setSearch)} placeholder="Search events, clubs or places" />
-          <Tabs
-            options={[
-              ["upcoming", "Upcoming"],
-              ["past", "Past"],
-              ["all", "All"],
-            ]}
-            value={when}
-            onChange={reset(setWhen)}
-          />
-          <span className="ux-count">
-            {list.length} event{list.length === 1 ? "" : "s"}
-          </span>
+          <Tabs options={[["upcoming", "Upcoming"], ["past", "Past"], ["all", "All"]]} value={when} onChange={reset(setWhen)} />
+          <span className="ux-count">{list.length} event{list.length === 1 ? "" : "s"}</span>
         </div>
-        <div style={{ marginBottom: 24 }}>
+        <div style={{ marginBottom: 22 }}>
           <Chips options={clubNames} value={club} onChange={reset(setClub)} />
         </div>
 
-        {loading && <Skeletons n={6} />}
+        {loading && <Skeletons n={4} />}
         {error && <EmptyState title="Couldn't load events">{error}</EmptyState>}
         {!loading && !error && shown.length === 0 && <EmptyState title="No events match">Try a different search or filter.</EmptyState>}
-        <div className="ux-grid">
-          {shown.map((e) => (
-            <EventCard key={e.id} event={e} followed={followed.has(e.id)} onFollow={follow} busy={busy === e.id} />
-          ))}
+        <div className="cl-list">
+          {shown.map((e) => {
+            const cap = Number(e.capacity) || 0;
+            const taken = Number(e.followed) || 0;
+            const full = cap > 0 && taken >= cap && !followed.has(e.id);
+            return (
+              <Row key={e.id} img={e.image?.thumbnail} name={e.club} title={e.title} to={`/event-details?eventid=${e.id}`}
+                kicker={`${e.club} · ${priceLabel(e.price)}`}
+                meta={<><span><IconClock />{fmtDate(eventDate(e))} · {e.time}</span><span><IconPin />{e.location}</span></>}
+                desc={e.description}>
+                <Link to={`/event-details?eventid=${e.id}`} className="ux-btn ux-btn-primary">Details</Link>
+                {isUpcoming(e) && (
+                  <button type="button" className="ux-btn" disabled={busy === e.id || full} onClick={() => follow(e)}>
+                    {followed.has(e.id) ? "Following" : full ? "Full" : "Follow"}
+                  </button>
+                )}
+                <small>{cap ? `${Math.max(cap - taken, 0)} spots left` : ""}</small>
+              </Row>
+            );
+          })}
         </div>
         <Pager page={page} pages={pages} onChange={(p) => { setPage(p); window.scrollTo(0, 0); }} />
       </div>

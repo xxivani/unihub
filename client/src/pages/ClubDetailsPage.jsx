@@ -24,10 +24,10 @@ const ClubDetailsPage = () => {
   }, [id]);
 
   const c = club.data;
-  if (club.loading) return <div className="ux-page"><div className="ux-wrap ux-body"><Skeletons n={2} /></div></div>;
+  if (club.loading) return <div className="ux-page cl"><div className="ux-wrap ux-body"><Skeletons n={2} /></div></div>;
   if (!c)
     return (
-      <div className="ux-page">
+      <div className="ux-page cl">
         <div className="ux-wrap ux-body">
           <EmptyState title="Club not found" action={<Link to="/clubs" className="ux-btn ux-btn-primary">All clubs</Link>}>
             We couldn't find that club.
@@ -57,7 +57,7 @@ const ClubDetailsPage = () => {
   };
 
   return (
-    <div className="ux-page">
+    <div className="ux-page cl">
       <PageHeader crumbs={[["Clubs", "/clubs"], [c.club_name]]} eyebrow={c.club_category} title={c.club_name} lead={c.club_description}>
         <button type="button" className={`ux-btn${joined ? "" : " ux-btn-primary"}`} disabled={busy} onClick={toggle}>
           {joined ? "Member · Leave club" : "Join club"}

@@ -1,0 +1,481 @@
+/* Classic UniHub look (sand, yellow, black) for student-facing pages, tidied.
+   Everything is scoped to .cl so the committee pages keep the shared design system. */
+
+.ux-page.cl {
+  --bg: #fdfbf7;
+  --surface: #ffffff;
+  --surface-2: #f6f0e3;
+  --border: #e8e0cc;
+  --text: #1d2130;
+  --muted: #6b6455;
+  --accent: #111111;
+  --accent-2: #000000;
+  --accent-soft: #f4ecd6;
+  --on-accent: #ffffff;
+  --gold: #f4be37;
+  --sand: #f4ecdb;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 6px 22px rgba(0, 0, 0, 0.12);
+  --radius: 10px;
+}
+body[data-theme="dark"] .ux-page.cl {
+  --bg: #14130f;
+  --surface: #1d1b15;
+  --surface-2: #26231a;
+  --border: #38342a;
+  --text: #f1ece0;
+  --muted: #b5ad99;
+  --accent: #f4be37;
+  --accent-2: #ffd566;
+  --accent-soft: #2b2718;
+  --on-accent: #111;
+  --sand: #24211a;
+}
+
+/* titles: bold caps with the short bar, as before */
+.cl .ux-header {
+  background: transparent;
+  border: 0;
+  padding: 44px 0 4px;
+}
+.cl .ux-header .ux-eyebrow {
+  display: none;
+}
+.cl .ux-header h1 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.cl .ux-header h1::before {
+  content: "";
+  width: 64px;
+  height: 5px;
+  background: var(--text);
+  flex: none;
+}
+.cl .ux-header p.ux-lead {
+  margin-top: 10px;
+  color: var(--muted);
+}
+
+/* buttons: black, yellow for the main call to action */
+.cl .ux-btn {
+  border-radius: 6px;
+  border-color: var(--text);
+}
+.cl .ux-btn-primary {
+  background: #111;
+  border-color: #111;
+  color: #fff !important;
+}
+.cl .ux-btn-primary:hover {
+  background: #000;
+}
+.cl .ux-btn-gold {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #000 !important;
+}
+.cl .ux-btn-gold:hover {
+  background: #e8b025;
+  border-color: #e8b025;
+}
+body[data-theme="dark"] .cl .ux-btn-primary {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #000 !important;
+}
+
+/* row cards */
+.cl-list {
+  display: grid;
+  gap: 16px;
+}
+.cl-row {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  background: var(--sand);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.cl-row:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+.cl-img {
+  position: relative;
+  height: 138px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--c1, #8d7a5c), var(--c2, #5a4a33));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 700;
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+}
+.cl-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cl-body {
+  min-width: 0;
+}
+.cl-kicker {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 4px;
+}
+.cl-body h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+.cl-body h3 a {
+  color: inherit;
+}
+.cl-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  font-size: 0.86rem;
+  color: var(--text);
+  margin: 0 0 6px;
+}
+.cl-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cl-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cl-side {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 128px;
+}
+.cl-side small {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+/* filter bar */
+.cl-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.cl-filters .ux-search {
+  flex: 1 1 260px;
+}
+.cl .ux-chip {
+  border-radius: 999px;
+}
+.cl .ux-chip.is-on,
+.cl .ux-tab.is-on {
+  background: #111;
+  border-color: #111;
+  color: #fff;
+}
+body[data-theme="dark"] .cl .ux-chip.is-on,
+body[data-theme="dark"] .cl .ux-tab.is-on {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #000;
+}
+
+/* ------------------------------------------------------------------ home */
+.cl-hero {
+  position: relative;
+  min-height: 560px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background: #14110c center / cover no-repeat;
+  padding: 64px 8vw;
+  color: #fff;
+}
+.cl-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.55) 55%, rgba(0, 0, 0, 0.78) 100%);
+}
+.cl-hero > div {
+  position: relative;
+  text-align: right;
+  max-width: 560px;
+}
+.cl-hero h1 {
+  margin: 0;
+  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  line-height: 1.08;
+  font-weight: 700;
+  color: #fff;
+}
+.cl-hero h1 span {
+  display: block;
+}
+.cl-hero h1 span:nth-child(2) {
+  color: var(--gold);
+}
+.cl-hero p {
+  margin: 18px 0 0 auto;
+  max-width: 420px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+}
+.cl-hero-cta {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 26px;
+  flex-wrap: wrap;
+}
+.cl-hero .ux-btn {
+  padding: 13px 26px;
+}
+.cl-hero .ux-btn-ghost {
+  border-color: #fff;
+  color: #fff !important;
+  background: transparent;
+}
+.cl-hero .ux-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+.cl-section {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 64px 24px 0;
+}
+.cl-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 26px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.cl-title::before {
+  content: "";
+  width: 64px;
+  height: 5px;
+  background: var(--text);
+  flex: none;
+}
+.cl-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+}
+.cl-card {
+  background: var(--sand);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.cl-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+.cl-card .cl-img {
+  height: 180px;
+  border-radius: 0;
+}
+.cl-card-body {
+  padding: 18px 20px 20px;
+}
+.cl-card-body h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+.cl-card-body h3 a {
+  color: inherit;
+}
+.cl-center {
+  text-align: center;
+  margin-top: 34px;
+}
+.cl-about {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 44px;
+  align-items: center;
+  background: #e7dcc6;
+  border-radius: 10px;
+  padding: 44px 48px;
+}
+body[data-theme="dark"] .cl-about {
+  background: #26231a;
+}
+.cl-about h3 {
+  font-size: 2rem;
+  margin: 0 0 12px;
+}
+.cl-about p {
+  line-height: 1.7;
+  margin: 0 0 10px;
+}
+.cl-about .cl-pic {
+  height: 280px;
+  border-radius: 8px;
+  background: #8d7a5c center / cover no-repeat;
+}
+.cl-news {
+  background: #14181f;
+  border-radius: 10px;
+  padding: 40px 44px 44px;
+  color: #fff;
+}
+.cl-news .cl-title {
+  color: #fff;
+}
+.cl-news .cl-title::before {
+  background: #fff;
+}
+.cl-news-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+.cl-news-card {
+  background: #1d232d;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cl-news-card small {
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+.cl-news-card h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: #fff;
+  line-height: 1.35;
+}
+.cl-news-card p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: #b8c2d0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cl-end {
+  height: 64px;
+}
+
+/* footer: black */
+.ux-footer {
+  background: #000;
+}
+
+@media (max-width: 860px) {
+  .cl-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+  .cl-img {
+    height: 170px;
+  }
+  .cl-side {
+    flex-direction: row;
+    align-items: center;
+  }
+  .cl-side .ux-btn {
+    flex: 1;
+  }
+  .cl-cards,
+  .cl-news-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cl-about {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 28px 22px;
+  }
+  .cl-news {
+    padding: 28px 20px;
+  }
+  .cl-hero {
+    justify-content: center;
+    padding: 48px 6vw;
+    min-height: 480px;
+  }
+  .cl-hero > div,
+  .cl-hero-cta {
+    text-align: center;
+    justify-content: center;
+  }
+  .cl-hero p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cl .ux-header h1 {
+    font-size: 1.6rem;
+  }
+}
+
+/* beat the shared heading colour rule on dark/photo blocks */
+.ux-page.cl .cl-hero h1,
+.ux-page.cl .cl-hero h1 span {
+  color: #fff !important;
+}
+.ux-page.cl .cl-hero h1 span:nth-child(2) {
+  color: var(--gold) !important;
+}
+.ux-page.cl .cl-news h2,
+.ux-page.cl .cl-news-card h4 {
+  color: #fff !important;
+}
+.ux-page.cl .cl-title {
+  margin: 0 0 26px;
+}
+.ux-page.cl .cl-about .cl-title {
+  margin-bottom: 16px;
+}
+.cl-img span {
+  font-size: 2rem;
+}

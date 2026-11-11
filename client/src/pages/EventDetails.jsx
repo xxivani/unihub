@@ -11,10 +11,10 @@ const EventDetails = () => {
   const [busy, setBusy] = useState(false);
   const [toast, toastNode] = useToast();
 
-  if (loading) return <div className="ux-page"><div className="ux-wrap ux-body"><Skeletons n={2} /></div></div>;
+  if (loading) return <div className="ux-page cl"><div className="ux-wrap ux-body"><Skeletons n={2} /></div></div>;
   if (error || !event)
     return (
-      <div className="ux-page">
+      <div className="ux-page cl">
         <div className="ux-wrap ux-body">
           <EmptyState title="Event not found" action={<Link to="/events" className="ux-btn ux-btn-primary">Back to events</Link>}>
             That event may have been removed.
@@ -48,7 +48,7 @@ const EventDetails = () => {
   };
 
   return (
-    <div className="ux-page">
+    <div className="ux-page cl">
       <PageHeader crumbs={[["Events", "/events"], [event.title]]} eyebrow={event.club} title={event.title}>
         {past ? <Badge kind="muted">This event has finished</Badge> : null}
       </PageHeader>

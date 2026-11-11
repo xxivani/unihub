@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useApi, getUser, PageHeader, SearchBox, Chips, ClubCard, Skeletons, EmptyState } from "../ui/ui";
+import { Row } from "../ui/classic";
+import { useApi, getUser, PageHeader, SearchBox, Chips, Skeletons, EmptyState } from "../ui/ui";
 
 const Clubs = () => {
   const user = getUser();
@@ -18,26 +19,28 @@ const Clubs = () => {
   const countFor = (name) => (events.data || []).filter((e) => e.club === name).length;
 
   return (
-    <div className="ux-page">
-      <PageHeader eyebrow="Communities" title="Clubs & societies" lead="Student-run societies across academics, arts, tech and social causes. Find yours and join.">
-        {user?.role === "admin" && (
-          <Link to="/create-club" className="ux-btn ux-btn-primary">
-            Add club
-          </Link>
-        )}
+    <div className="ux-page cl">
+      <PageHeader title="Clubs" lead="Student-run societies across academics, arts, tech and social causes.">
+        {user?.role === "admin" && <Link to="/create-club" className="ux-btn ux-btn-primary">Add club</Link>}
       </PageHeader>
       <div className="ux-wrap ux-body">
-        <div className="ux-toolbar">
+        <div className="cl-filters">
           <SearchBox value={search} onChange={setSearch} placeholder="Search clubs" />
-          <Chips options={cats} value={cat} onChange={setCat} />
           <span className="ux-count">{list.length} clubs</span>
         </div>
-        {loading && <Skeletons n={6} />}
+        <div style={{ marginBottom: 22 }}>
+          <Chips options={cats} value={cat} onChange={setCat} />
+        </div>
+        {loading && <Skeletons n={4} />}
         {error && <EmptyState title="Couldn't load clubs">{error}</EmptyState>}
         {!loading && !error && list.length === 0 && <EmptyState title="No clubs found">Try a different search.</EmptyState>}
-        <div className="ux-grid">
+        <div className="cl-list">
           {list.map((c) => (
-            <ClubCard key={c.club_id} club={c} extra={`${countFor(c.club_name)} events this term`} />
+            <Row key={c.club_id} img={c.club_thumbnail_url} name={c.club_name} title={c.club_name} to={`/club-details/${c.club_id}`}
+              kicker={c.club_category} desc={c.club_description}
+              meta={<span>{countFor(c.club_name)} event{countFor(c.club_name) === 1 ? "" : "s"} this term</span>}>
+              <Link to={`/club-details/${c.club_id}`} className="ux-btn ux-btn-primary">View club</Link>
+            </Row>
           ))}
         </div>
       </div>

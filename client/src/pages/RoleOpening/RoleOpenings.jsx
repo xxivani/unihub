@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useApi, PageHeader, SearchBox, Chips, Tabs, Mono, Badge, Skeletons, EmptyState, fmtDate, toDate, daysLeft } from "../../ui/ui";
+import { Row } from "../../ui/classic";
+import { useApi, PageHeader, SearchBox, Chips, Tabs, Skeletons, EmptyState, fmtDate, toDate, daysLeft } from "../../ui/ui";
 
 const RoleOpenings = () => {
   const roles = useApi("/role-openings");
@@ -24,10 +25,10 @@ const RoleOpenings = () => {
   }, [all, clubs.data, search, club, status]);
 
   return (
-    <div className="ux-page">
-      <PageHeader eyebrow="Get involved" title="Role openings" lead="Societies are looking for people to help run them. Pick a role that suits your skills and apply in a couple of minutes." />
+    <div className="ux-page cl">
+      <PageHeader title="Role openings" lead="Societies are looking for people to help run them. Pick a role and apply in a couple of minutes." />
       <div className="ux-wrap ux-body">
-        <div className="ux-toolbar">
+        <div className="cl-filters">
           <SearchBox value={search} onChange={setSearch} placeholder="Search roles" />
           <Tabs
             options={[
@@ -46,45 +47,17 @@ const RoleOpenings = () => {
 
         {roles.loading && <Skeletons n={3} />}
         {!roles.loading && list.length === 0 && <EmptyState title="No roles found">Try changing the filters.</EmptyState>}
-        <div className="ux-list">
+        <div className="cl-list">
           {list.map((r) => {
             const open = r.status === "ONGOING";
             const left = daysLeft(r.due_date);
             return (
-              <article className="ux-card ux-row ux-hover" key={r.role_opening_id}>
-                <div style={{ display: "flex", gap: 16, minWidth: 0 }}>
-                  <Mono name={clubName(r.club_id)} />
-                  <div style={{ minWidth: 0 }}>
-                    <h3>{r.position}</h3>
-                    <p className="ux-meta" style={{ marginBottom: 8 }}>
-                      <span>{clubName(r.club_id)}</span>
-                    </p>
-                    <p className="ux-desc">{r.description}</p>
-                    <p className="ux-row-meta">
-                      <span>Deadline {fmtDate(r.due_date)}</span>
-                      {open && left != null && <span>{left} days left</span>}
-                      <span>{r.number_of_registrations ?? 0} applicants</span>
-                    </p>
-                    {r.eligibility_criteria && (
-                      <p className="ux-meta" style={{ marginTop: 8 }}>
-                        <span style={{ whiteSpace: "normal" }}>Eligibility: {r.eligibility_criteria}</span>
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="ux-row-side">
-                  <Badge kind={open ? "ok" : "muted"}>{open ? "Open" : "Closed"}</Badge>
-                  {open ? (
-                    <Link to={`/roles/apply/${r.role_opening_id}`} className="ux-btn ux-btn-primary">
-                      Apply now
-                    </Link>
-                  ) : (
-                    <button className="ux-btn" disabled>
-                      Applications closed
-                    </button>
-                  )}
-                </div>
-              </article>
+              <Row key={r.role_opening_id} name={clubName(r.club_id)} title={r.position}
+                kicker={`${clubName(r.club_id)} · ${open ? "Open" : "Closed"}`}
+                meta={<><span>Deadline {fmtDate(r.due_date)}</span>{open && left != null && <span>{left} days left</span>}<span>{r.number_of_registrations ?? 0} applicants</span></>}
+                desc={r.description}>
+                {open ? <Link to={`/roles/apply/${r.role_opening_id}`} className="ux-btn ux-btn-primary">Apply now</Link> : <button className="ux-btn" disabled>Closed</button>}
+              </Row>
             );
           })}
         </div>

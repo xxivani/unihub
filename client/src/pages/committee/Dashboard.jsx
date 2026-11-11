@@ -1,112 +1,105 @@
 import { Link } from "react-router-dom";
-import { useApi, useMyClub, PageHeader, CommitteeNav, Badge, Skeletons, isUpcoming, eventDate, fmtDate, toDate, daysLeft, priceLabel } from "../../ui/ui";
+import { useApi, useMyClub, Skeletons, isUpcoming, eventDate, fmtDate, priceLabel, initials, IconClock, IconPin } from "../../ui/ui";
+import { Thumb } from "../../ui/classic";
+import "./dashboard.css";
 
 const money = (n) => `AED ${Number(n || 0).toLocaleString("en-GB", { maximumFractionDigits: 0 })}`;
+const label = (s = "") => s.toLowerCase().split("_").map((w) => w[0]?.toUpperCase() + w.slice(1)).join(" ");
+
+const Svg = ({ children }) => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
+);
+const NAV = [
+  ["/committee/dashboard", "Dashboard", <Svg key="a"><rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" /></Svg>],
+  ["/committee/events", "Events", <Svg key="b"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></Svg>],
+  ["/committee/roles", "Role openings", <Svg key="c"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5M18 8v6M15 11h6" /></Svg>],
+  ["/committee/budget-tracker", "Budget", <Svg key="d"><path d="M3 20h18M6 16V9M11 16V5M16 16v-5M21 16V8" /></Svg>],
+  ["/committee/image-management", "Images", <Svg key="e"><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="9" cy="10" r="1.6" /><path d="M21 16l-5-5-8 9" /></Svg>],
+];
 
 const Dashboard = () => {
-  const { user, clubId, club } = useMyClub();
+  const { clubId, club } = useMyClub();
   const events = useApi("/events");
-  const roles = useApi("/role-openings");
-  const regs = useApi("/role-opening-registrations");
-  const budget = useApi(clubId ? `/bt_dashboardRoute?club_id=${clubId}` : null, [clubId]);
+  const members = useApi(clubId ? `/committee-members/by-club/${clubId}` : null, [clubId]);
+  const stats = useApi(clubId ? `/club-stats?club_id=${clubId}` : null, [clubId]);
 
-  const upcoming = (events.data || []).filter(isUpcoming).sort((a, b) => eventDate(a) - eventDate(b));
-  const myRoles = roles.data || [];
-  const roleIds = new Set(myRoles.map((r) => r.role_opening_id));
-  const applications = (regs.data || []).filter((r) => roleIds.has(r.role_opening_id));
-  const pending = applications.filter((r) => r.status === "PENDING");
-  const openRoles = myRoles.filter((r) => r.status === "ONGOING");
-  const sum = budget.data?.budgetSummary;
-  const pct = sum?.totalBudget ? Math.round((sum.totalSpent / sum.totalBudget) * 100) : 0;
-  const roleName = (id) => myRoles.find((r) => r.role_opening_id === id)?.position || "";
-  const signups = upcoming.reduce((s, e) => s + (Number(e.followed) || 0), 0);
+  const all = events.data || [];
+  const upcoming = all.filter(isUpcoming).sort((a, b) => eventDate(a) - eventDate(b));
+  const past = all.filter((e) => !isUpcoming(e));
+  const next = upcoming[0];
+  const attended = past.map((e) => Number(e.followed) || 0);
+  const avg = attended.length ? Math.round(attended.reduce((s, n) => s + n, 0) / attended.length) : 0;
+  const sum = stats.data?.budgetSummary;
+  const left = sum ? Number(sum.totalBudget) - Number(sum.totalSpent) : null;
+  const pct = next && Number(next.capacity) ? Math.min(100, Math.round(((Number(next.followed) || 0) / Number(next.capacity)) * 100)) : 0;
+  const team = members.data || [];
 
   return (
-    <div className="ux-page">
-      <PageHeader eyebrow="Committee" title={club?.club_name ? `${club.club_name} dashboard` : "Committee dashboard"} lead={`Welcome back${user?.email ? `, ${user.email.split("@")[0]}` : ""}. Here is what needs your attention.`}>
-        <Link to="/committee/events/create" className="ux-btn ux-btn-primary">New event</Link>
-        <Link to="/committee/roles/create" className="ux-btn">Post a role</Link>
-      </PageHeader>
-      <CommitteeNav />
-      <div className="ux-wrap ux-body">
-        <div className="ux-kpis">
-          <div className="ux-card ux-kpi"><span>Upcoming events</span><b>{upcoming.length}</b><small>{signups} sign-ups so far</small></div>
-          <div className="ux-card ux-kpi"><span>Open roles</span><b>{openRoles.length}</b><small>{applications.length} applications total</small></div>
-          <div className="ux-card ux-kpi"><span>Awaiting review</span><b>{pending.length}</b><small>applications pending</small></div>
-          <div className="ux-card ux-kpi"><span>Budget used</span><b>{sum ? `${pct}%` : "–"}</b><small>{sum ? `${money(sum.remaining)} remaining` : "loading"}</small></div>
+    <div className="db">
+      <aside className="db-rail" aria-label="Committee navigation">
+        {NAV.map(([to, name, icon]) => (
+          <Link key={to} to={to} title={name} aria-label={name} className={to === "/committee/dashboard" ? "is-on" : ""}>{icon}</Link>
+        ))}
+      </aside>
+      <main className="db-main">
+        <div className="db-top">
+          <div>
+            <p>Committee dashboard</p>
+            <h1>{club?.club_name || "Your club"}</h1>
+          </div>
+          <Link to="/committee/events/create" className="db-btn">Create event</Link>
         </div>
 
-        <div className="ux-two">
-          <section className="ux-card ux-card-pad">
-            <div className="ux-section-head" style={{ marginBottom: 12 }}>
-              <h3 className="ux-card-title" style={{ margin: 0 }}>Upcoming events</h3>
-              <Link to="/committee/events" className="ux-more">Manage →</Link>
+        {events.loading ? <Skeletons n={2} /> : (
+          <>
+            <div className="db-kpis">
+              <div className="db-card"><span>Members</span><b>{team.length || "–"}</b><small>on the committee</small></div>
+              <div className="db-card"><span>Events held</span><b>{past.length}</b><small>{upcoming.length} coming up</small></div>
+              <div className="db-card"><span>Avg. attendance</span><b>{avg}</b><small>per past event</small></div>
+              <div className="db-card"><span>Budget left</span><b>{left == null ? "–" : money(left)}</b><small>{sum ? `of ${money(sum.totalBudget)}` : ""}</small></div>
             </div>
-            {events.loading ? <Skeletons n={1} /> : (
-              <ul className="ux-mini-list">
-                {upcoming.slice(0, 5).map((e) => {
-                  const cap = Number(e.capacity) || 0;
-                  return (
-                    <li key={e.id}>
-                      <div>
-                        <b>{e.title}</b>
-                        <small>{fmtDate(eventDate(e))} · {e.time} · {e.location}</small>
-                      </div>
-                      <Badge kind={cap && e.followed / cap > 0.85 ? "warn" : undefined}>{e.followed}/{cap}</Badge>
-                    </li>
-                  );
-                })}
-                {!upcoming.length && <li><small>No upcoming events. Create one to get started.</small></li>}
-              </ul>
-            )}
-          </section>
 
-          <section className="ux-card ux-card-pad">
-            <h3 className="ux-card-title">Quick actions</h3>
-            <div className="ux-quick">
-              <Link to="/committee/events/create">Create event<small>Publish to students</small></Link>
-              <Link to="/committee/roles/create">Post a role<small>Recruit for your team</small></Link>
-              <Link to="/committee/budget-tracker">Budget tracker<small>Spend & remaining</small></Link>
-              <Link to="/committee/image-management">Event images<small>Manage galleries</small></Link>
-            </div>
-          </section>
-        </div>
-
-        <div className="ux-two" style={{ marginTop: 20 }}>
-          <section className="ux-card ux-card-pad">
-            <div className="ux-section-head" style={{ marginBottom: 12 }}>
-              <h3 className="ux-card-title" style={{ margin: 0 }}>Recent applications</h3>
-              <Link to="/committee/roles" className="ux-more">All roles →</Link>
-            </div>
-            <ul className="ux-mini-list">
-              {[...applications].sort((a, b) => toDate(b.created_at) - toDate(a.created_at)).slice(0, 5).map((a) => (
-                <li key={a.role_opening_registration_id}>
-                  <div>
-                    <b>{a.user_name}</b>
-                    <small>{roleName(a.role_opening_id)} · {fmtDate(a.created_at)}</small>
+            <div className="db-grid">
+              <section className="db-card">
+                <h2>Next event</h2>
+                {next ? (
+                  <div className="db-next">
+                    <Thumb src={next.image?.thumbnail} name={next.club} />
+                    <div>
+                      <h3>{next.title}</h3>
+                      <p><IconClock /> {fmtDate(eventDate(next))} · {next.time}</p>
+                      <p><IconPin /> {next.location}</p>
+                      <p className="db-muted">{priceLabel(next.price)} · {Number(next.followed) || 0} of {Number(next.capacity) || 0} spots taken</p>
+                      <div className="db-bar"><i style={{ width: `${pct}%` }} /></div>
+                    </div>
                   </div>
-                  <Badge kind={a.status === "SELECTED" ? "ok" : a.status === "REJECTED" ? "bad" : "warn"}>{a.status.charAt(0) + a.status.slice(1).toLowerCase()}</Badge>
-                </li>
-              ))}
-              {!applications.length && <li><small>No applications yet.</small></li>}
-            </ul>
-          </section>
-          <section className="ux-card ux-card-pad">
-            <div className="ux-section-head" style={{ marginBottom: 12 }}>
-              <h3 className="ux-card-title" style={{ margin: 0 }}>Closing soon</h3>
+                ) : <p className="db-muted">No upcoming events. Create one to get started.</p>}
+              </section>
+              <section className="db-card">
+                <h2>Quick links</h2>
+                <Link className="db-link" to="/committee/events"><span>Manage events</span><i>→</i></Link>
+                <Link className="db-link" to="/committee/roles"><span>Role openings</span><i>→</i></Link>
+                <Link className="db-link" to="/committee/budget-tracker"><span>Budget tracker</span><i>→</i></Link>
+                <Link className="db-link" to="/committee/image-management"><span>Image management</span><i>→</i></Link>
+              </section>
             </div>
-            <ul className="ux-mini-list">
-              {[...openRoles].sort((a, b) => toDate(a.due_date) - toDate(b.due_date)).slice(0, 4).map((r) => (
-                <li key={r.role_opening_id}>
-                  <div><b>{r.position}</b><small>{daysLeft(r.due_date)} days left · {r.number_of_registrations} applicants</small></div>
-                  <Link to={`/committee/roles/view/${r.role_opening_id}`} className="ux-btn ux-btn-sm">Review</Link>
-                </li>
-              ))}
-              {!openRoles.length && <li><small>No open roles.</small></li>}
-            </ul>
-          </section>
-        </div>
-      </div>
+
+            <section className="db-card">
+              <h2>Committee members</h2>
+              <div className="db-members">
+                {team.map((m) => (
+                  <div key={m.committee_member_id}>
+                    <span className="db-av">{initials(m.committee_member_name)}</span>
+                    <b>{m.committee_member_name}</b>
+                    <small>{label(m.committee_member_position)}</small>
+                  </div>
+                ))}
+                {!team.length && <p className="db-muted">No members listed yet.</p>}
+              </div>
+            </section>
+          </>
+        )}
+      </main>
     </div>
   );
 };

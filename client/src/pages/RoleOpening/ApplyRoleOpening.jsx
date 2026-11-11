@@ -16,10 +16,10 @@ const ApplyRoleOpening = () => {
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   const r = role.data;
-  if (role.loading) return <div className="ux-page"><div className="ux-wrap ux-body"><Skeletons n={2} /></div></div>;
+  if (role.loading) return <div className="ux-page cl"><div className="ux-wrap ux-body"><Skeletons n={2} /></div></div>;
   if (!r)
     return (
-      <div className="ux-page">
+      <div className="ux-page cl">
         <div className="ux-wrap ux-body">
           <EmptyState title="Role not found" action={<Link to="/roles" className="ux-btn ux-btn-primary">All roles</Link>}>
             This opening may have been removed.
@@ -57,7 +57,7 @@ const ApplyRoleOpening = () => {
   };
 
   return (
-    <div className="ux-page">
+    <div className="ux-page cl">
       <PageHeader crumbs={[["Role openings", "/roles"], [r.position]]} eyebrow={club.data?.club_name} title={r.position} lead={r.description}>
         <Badge kind={open ? "ok" : "muted"}>{open ? `${daysLeft(r.due_date)} days left` : "Closed"}</Badge>
       </PageHeader>

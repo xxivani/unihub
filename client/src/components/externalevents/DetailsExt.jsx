@@ -11,10 +11,10 @@ const DetailsExt = () => {
   const [busy, setBusy] = useState(false);
   const [toast, toastNode] = useToast();
 
-  if (loading) return <div className="ux-page"><div className="ux-wrap ux-body"><Skeletons n={2} /></div></div>;
+  if (loading) return <div className="ux-page cl"><div className="ux-wrap ux-body"><Skeletons n={2} /></div></div>;
   if (!e)
     return (
-      <div className="ux-page">
+      <div className="ux-page cl">
         <div className="ux-wrap ux-body">
           <EmptyState title="Event not found" action={<Link to="/external-events" className="ux-btn ux-btn-primary">All external events</Link>}>
             It may have been removed.
@@ -51,7 +51,7 @@ const DetailsExt = () => {
   };
 
   return (
-    <div className="ux-page">
+    <div className="ux-page cl">
       <PageHeader crumbs={[["External events", "/external-events"], [e.external_event_name]]} eyebrow={pretty(e.external_event_category)} title={e.external_event_name} />
       <div className="ux-wrap ux-body">
         <div className="ux-detail">

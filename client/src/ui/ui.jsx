@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
 import "./ui.css";
+import "./classic.css";
 
 export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 

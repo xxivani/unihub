@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useApi, useMyClub, Skeletons, isUpcoming, eventDate, fmtDate, priceLabel, initials, IconClock, IconPin } from "../../ui/ui";
 import { Thumb } from "../../ui/classic";
-import "./dashboard.css";
+import "./Dashboard.css";
 
 const money = (n) => `AED ${Number(n || 0).toLocaleString("en-GB", { maximumFractionDigits: 0 })}`;
 const label = (s = "") => s.toLowerCase().split("_").map((w) => w[0]?.toUpperCase() + w.slice(1)).join(" ");

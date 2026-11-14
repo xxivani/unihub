@@ -49,7 +49,7 @@ const ExternalEvents = () => {
             const cap = Number(e.external_event_max_number_of_attendees) || 0;
             const taken = Number(e.external_event_number_of_attendees) || 0;
             return (
-              <Row key={e.external_event_id} img={e.external_event_image_url} name={e.external_event_name} title={e.external_event_name}
+              <Row key={e.external_event_id} img={e.external_event_image_url} name={e.external_event_name} hint={e.external_event_category} title={e.external_event_name}
                 to={`/external-events/${e.external_event_id}`}
                 kicker={`${pretty(e.external_event_category)} · ${e.external_event_organizer}`}
                 meta={<><span><IconClock />{fmtDate(e.external_event_date)} · {timeOf(e.external_event_time)}</span><span><IconPin />{e.external_event_location}</span><span><IconTag />{e.external_event_ticket_amount}</span></>}

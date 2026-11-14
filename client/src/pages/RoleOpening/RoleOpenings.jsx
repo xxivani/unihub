@@ -52,7 +52,7 @@ const RoleOpenings = () => {
             const open = r.status === "ONGOING";
             const left = daysLeft(r.due_date);
             return (
-              <Row key={r.role_opening_id} name={clubName(r.club_id)} title={r.position}
+              <Row key={r.role_opening_id} name={r.position} title={r.position}
                 kicker={`${clubName(r.club_id)} · ${open ? "Open" : "Closed"}`}
                 meta={<><span>Deadline {fmtDate(r.due_date)}</span>{open && left != null && <span>{left} days left</span>}<span>{r.number_of_registrations ?? 0} applicants</span></>}
                 desc={r.description}>

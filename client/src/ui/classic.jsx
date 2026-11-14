@@ -1,17 +1,21 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { toneFor } from "./ui";
+import { pickImage, SAFE } from "./images";
 
-// Image block: photo if we have one, otherwise a coloured tile with initials. Never overlaps text.
-export const Thumb = ({ src, name = "", className = "cl-img" }) => (
-  <div className={className} style={toneFor(name)}>
-    {src ? <img src={src} alt="" loading="lazy" onError={(e) => (e.currentTarget.style.display = "none")} /> : null}
-    {!src && <span>{name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase()}</span>}
-  </div>
-);
+// Image block: the given photo, else a relevant stock photo, else an initials tile. Never overlaps text.
+export const Thumb = ({ src, name = "", hint = "", className = "cl-img" }) => {
+  const [bad, setBad] = useState(false);
+  const url = bad ? SAFE : src || pickImage(name, hint);
+  return (
+    <div className={className}>
+      <img src={url} alt="" loading="lazy" onError={() => setBad(true)} />
+    </div>
+  );
+};
 
-export const Row = ({ img, name, kicker, title, to, meta, desc, children }) => (
+export const Row = ({ img, name, hint, kicker, title, to, meta, desc, children }) => (
   <article className="cl-row">
-    {to ? <Link to={to} aria-label={title}><Thumb src={img} name={name || title} /></Link> : <Thumb src={img} name={name || title} />}
+    {to ? <Link to={to} aria-label={title}><Thumb src={img} name={name || title} hint={hint} /></Link> : <Thumb src={img} name={name || title} hint={hint} />}
     <div className="cl-body">
       {kicker && <p className="cl-kicker">{kicker}</p>}
       <h3>{to ? <Link to={to}>{title}</Link> : title}</h3>

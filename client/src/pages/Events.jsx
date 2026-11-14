@@ -73,7 +73,7 @@ const Events = () => {
             const taken = Number(e.followed) || 0;
             const full = cap > 0 && taken >= cap && !followed.has(e.id);
             return (
-              <Row key={e.id} img={e.image?.thumbnail} name={e.club} title={e.title} to={`/event-details?eventid=${e.id}`}
+              <Row key={e.id} img={e.image?.thumbnail} name={e.club} hint={e.title} title={e.title} to={`/event-details?eventid=${e.id}`}
                 kicker={`${e.club} · ${priceLabel(e.price)}`}
                 meta={<><span><IconClock />{fmtDate(eventDate(e))} · {e.time}</span><span><IconPin />{e.location}</span></>}
                 desc={e.description}>

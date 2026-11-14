@@ -76,7 +76,7 @@ const News = () => {
 
         <div className="cl-list">
           {list.map((n) => (
-            <Row key={n.news_id} name={n.news_author} title={n.news_title}
+            <Row key={n.news_id} name={n.news_author} hint={n.news_title} title={n.news_title}
               kicker={`${n.news_author} · ${fmtDate(n.news_created_at)}`} desc={n.news_content}>
               {n.news_pdf_url && <a className="ux-btn ux-btn-primary" href={n.news_pdf_url} target="_blank" rel="noopener noreferrer">Read</a>}
               {isAdmin && <Link className="ux-btn" to={`/news/edit/${n.news_id}`}>Edit</Link>}

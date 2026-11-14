@@ -30,7 +30,7 @@ const Home = () => {
         <div className="cl-cards">
           {featured.map((e) => (
             <article className="cl-card" key={e.id}>
-              <Link to={`/event-details?eventid=${e.id}`} aria-label={e.title}><Thumb src={e.image?.thumbnail} name={e.club} /></Link>
+              <Link to={`/event-details?eventid=${e.id}`} aria-label={e.title}><Thumb src={e.image?.thumbnail} name={e.club} hint={e.title} /></Link>
               <div className="cl-card-body">
                 <p className="cl-kicker">{e.club} · {priceLabel(e.price)}</p>
                 <h3><Link to={`/event-details?eventid=${e.id}`}>{e.title}</Link></h3>

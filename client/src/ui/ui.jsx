@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
 import "./ui.css";
 import "./classic.css";
+import { pickImage, SAFE } from "./images";
 
 export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -133,11 +134,14 @@ export const IconArrow = (p) => <Ic {...p} d={<path d="M5 12h14M13 6l6 6-6 6" />
 export const IconDoc = (p) => <Ic {...p} d={<><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4M9 13h6M9 17h6" /></>} />;
 
 /* ------------------------------------------------------------- small blocks */
-export const Mono = ({ name, src, size, tone }) => (
-  <span className={`ux-mono${size === "lg" ? " ux-mono-lg" : ""}`} style={toneFor(tone || name)} aria-hidden="true">
-    {src ? <img src={src} alt="" /> : initials(name)}
-  </span>
-);
+export const Mono = ({ name, src, size }) => {
+  const [bad, setBad] = useState(false);
+  return (
+    <span className={`ux-mono${size === "lg" ? " ux-mono-lg" : ""}`} aria-hidden="true">
+      <img src={bad ? SAFE : src || pickImage(name)} alt="" onError={() => setBad(true)} />
+    </span>
+  );
+};
 
 export const Badge = ({ children, kind }) => <span className={`ux-badge${kind ? ` ux-badge-${kind}` : ""}`}>{children}</span>;
 
@@ -291,6 +295,7 @@ export function EventCard({ event, followed, onFollow, busy }) {
   return (
     <article className="ux-card ux-event ux-hover">
       <Link to={`/event-details?eventid=${event.id}`} className="ux-cover" style={toneFor(event.club)} aria-label={`Open ${event.title}`}>
+        <img className="ux-cover-img" src={event.image?.thumbnail || pickImage(event.club, event.title)} alt="" loading="lazy" onError={(e) => { e.currentTarget.src = SAFE; }} />
         <span className="ux-date">
           <b>{dayOf(d)}</b>
           <span>{monOf(d)}</span>

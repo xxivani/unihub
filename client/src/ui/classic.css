@@ -115,7 +115,7 @@ body[data-theme="dark"] .cl .ux-btn-primary {
   height: 138px;
   border-radius: 8px;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--c1, #8d7a5c), var(--c2, #5a4a33));
+  background: #e8e0cc;
   display: flex;
   align-items: center;
   justify-content: center;
